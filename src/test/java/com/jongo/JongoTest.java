@@ -1,21 +1,22 @@
 package com.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.Iterator;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.util.JSON;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.lang.reflect.Field;
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class JongoTest
 {
+    private static final String MONGO_ID = "_id";
     private DBCollection pois;
 
     @Before
@@ -98,12 +99,8 @@ public class JongoTest
         DBCursor cursor = pois.find(Jongo.createQuery("{address:'22 rue des murlins'}"));
 
         DBObject murlins = cursor.next();
-        Poi p = Poi.class.newInstance();
-        for (Field field : p.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            field.
-            field.set(p, murlins.get(field.getName()));
-        }
+        murlins.put(MONGO_ID, murlins.get(MONGO_ID).toString());
+        Poi p = Jongo.unmarshallString(murlins.toString(), Poi.class);
         assertThat(p.address).isEqualTo("22 rue des murlins");
     }
 }

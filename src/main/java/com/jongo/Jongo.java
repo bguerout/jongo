@@ -1,16 +1,28 @@
 package com.jongo;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-import org.codehaus.jackson.map.ObjectMapper;
+import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
+import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.introspect.VisibilityChecker.Std;
+
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 public class Jongo
 {
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper;
+
+    static
+    {
+        mapper = new ObjectMapper();
+        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
+    }
 
     static DBObject createQuery(String query)
     {
