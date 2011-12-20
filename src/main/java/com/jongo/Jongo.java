@@ -2,6 +2,7 @@ package com.jongo;
 
 import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
 import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -20,7 +21,8 @@ public class Jongo
     static
     {
         mapper = new ObjectMapper();
-        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
+        mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
         mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
     }
 

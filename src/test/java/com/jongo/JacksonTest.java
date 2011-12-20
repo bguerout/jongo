@@ -1,10 +1,10 @@
 package com.jongo;
 
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.IOException;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Test;
 
 public class JacksonTest
 {
@@ -19,12 +19,30 @@ public class JacksonTest
     }
 
     @Test
-    public void shouldUnMarshall() throws IOException
+    public void shouldUnmarshall() throws IOException
     {
         Poi poi = Jongo.unmarshallString("{\"address\":\"22 rue des murlins\"}", Poi.class);
 
         assertThat(poi.address).isEqualTo("22 rue des murlins");
-
     }
 
+    @Test
+    public void shouldMarshallComplex() throws IOException
+    {
+        Poi poi = new Poi("22 rue des murlins");
+        poi.coordinate = new Coordinate(48, 2);
+
+        String json = Jongo.marshallQuery(poi);
+
+        assertThat(json).isEqualTo("{\"address\":\"22 rue des murlins\",\"coordinate\":{\"lat\":48,\"lng\":2}}");
+    }
+
+    @Test
+    public void shouldUnmarshallComplex() throws IOException
+    {
+        Poi poi = Jongo.unmarshallString("{\"address\":\"22 rue des murlins\",\"coordinate\":{\"lat\":48,\"lng\":2}}", Poi.class);
+
+        assertThat(poi.coordinate.lat).isEqualTo(48);
+        assertThat(poi.coordinate.lng).isEqualTo(2);
+    }
 }

@@ -103,4 +103,21 @@ public class JongoTest
         Poi p = Jongo.unmarshallString(murlins.toString(), Poi.class);
         assertThat(p.address).isEqualTo("22 rue des murlins");
     }
+
+    @Test
+    public void shouldFindComplexBeanEntity() throws Exception
+    {
+        Poi poi = new Poi("22 rue des murlins", 48, 2);
+        DBObject marshall = Jongo.marshall(poi);
+        pois.save(marshall);
+
+        DBObject createQuery = Jongo.createQuery("{'coordinate.lat':48}");
+        DBCursor cursor = pois.find(createQuery);
+
+        DBObject murlins = cursor.next();
+        murlins.put(MONGO_ID, murlins.get(MONGO_ID).toString());
+        Poi p = Jongo.unmarshallString(murlins.toString(), Poi.class);
+        assertThat(p.coordinate.lat).isEqualTo(48);
+        assertThat(p.coordinate.lng).isEqualTo(2);
+    }
 }
