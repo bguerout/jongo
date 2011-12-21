@@ -12,7 +12,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.introspect.VisibilityChecker.Std;
 
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 public class Jongo
 {
@@ -26,11 +25,6 @@ public class Jongo
         mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
     }
 
-    static DBObject createQuery(String query)
-    {
-        return ((DBObject) JSON.parse(query));
-    }
-
     static String marshallQuery(Object obj) throws IOException
     {
         Writer writer = new StringWriter();
@@ -42,7 +36,7 @@ public class Jongo
     {
         Writer writer = new StringWriter();
         mapper.writeValue(writer, obj);
-        return createQuery(writer.toString());
+        return DBObjectConvertor.from(writer.toString());
     }
 
     public static <T> T unmarshallString(String json, Class<T> clazz) throws IOException
