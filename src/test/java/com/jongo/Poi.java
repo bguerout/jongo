@@ -19,4 +19,8 @@ public class Poi
         this.address = address;
         this.coordinate = new Coordinate(lat, lng);
     }
+
+    public void setCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
+    }
 }
