@@ -16,30 +16,26 @@
 
 package com.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.MongoException;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.net.UnknownHostException;
 import java.util.Iterator;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
-import com.mongodb.MongoException;
-
-public class MongoCollectionTest
-{
+public class MongoCollectionTest {
     MongoCollection mongoCollection;
 
     @Before
-    public void setUp() throws UnknownHostException, MongoException
-    {
+    public void setUp() throws UnknownHostException, MongoException {
         mongoCollection = new MongoCollection("jongo", "poi");
         mongoCollection.drop();
     }
 
     @Test
-    public void canFindEntity() throws Exception
-    {
+    public void canFindEntity() throws Exception {
         /* given */
         String address = "22 rue des murlins";
         mongoCollection.save(new Poi(address));
@@ -53,8 +49,7 @@ public class MongoCollectionTest
     }
 
     @Test
-    public void canFindEntityUsingSubProperty() throws Exception
-    {
+    public void canFindEntityUsingSubProperty() throws Exception {
         /* given */
         String address = "22 rue des murlins";
         int lat = 48, lng = 2;

@@ -16,22 +16,18 @@
 
 package com.jongo;
 
-public class Poi
-{
+public class Poi {
     String address;
     Coordinate coordinate;
 
-    Poi()
-    {
+    Poi() {
     }
 
-    public Poi(String address)
-    {
+    public Poi(String address) {
         this.address = address;
     }
 
-    public Poi(String address, int lat, int lng)
-    {
+    public Poi(String address, int lat, int lng) {
         this.address = address;
         this.coordinate = new Coordinate(lat, lng);
     }

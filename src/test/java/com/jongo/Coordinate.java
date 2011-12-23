@@ -16,16 +16,13 @@
 
 package com.jongo;
 
-public class Coordinate
-{
+public class Coordinate {
     int lat, lng;
 
-    Coordinate()
-    {
+    Coordinate() {
     }
 
-    public Coordinate(int lat, int lng)
-    {
+    public Coordinate(int lat, int lng) {
         this.lat = lat;
         this.lng = lng;
     }
