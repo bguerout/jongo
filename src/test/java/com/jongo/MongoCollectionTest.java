@@ -18,6 +18,7 @@ package com.jongo;
 
 import com.jongo.model.Poi;
 import com.mongodb.MongoException;
+import org.bson.BSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +50,24 @@ public class MongoCollectionTest {
         /* then */
         assertThat(results.next().address).isEqualTo(address);
         assertThat(results.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canExecuteQueryAndMapResult() throws Exception {
+
+        /* given */
+        String address = "22 rue des murlins";
+        mongoCollection.save(new Poi(address));//TODO save method must return generated id
+
+        /* when */
+        String id = mongoCollection.findOne("{address:{$exists:true}}", new ResultMapper<String>() {
+            public String map(BSONObject result) {
+                return result.get(MongoCollection.MONGO_ID).toString();
+            }
+        });
+
+        /* then */
+        assertThat(id).isNotNull();
     }
 
     @Test

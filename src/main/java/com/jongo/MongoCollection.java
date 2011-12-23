@@ -16,10 +16,7 @@
 
 package com.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
+import com.mongodb.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -27,6 +24,7 @@ import java.util.Iterator;
 
 public class MongoCollection {
 
+    public static final String MONGO_ID = "_id";
     private final DBCollection collection;
     private final DBObjectConvertor convertor;
 
@@ -46,5 +44,10 @@ public class MongoCollection {
 
     public void drop() {
         collection.drop();
+    }
+
+    public <T> T findOne(String query, ResultMapper<T> resultMapper) {
+        DBObject result = collection.findOne(convertor.convert(query));
+        return resultMapper.map(result);
     }
 }
