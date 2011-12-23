@@ -20,7 +20,7 @@ Iterator<MyPojo> results = mongoCollection.find("{name:'John Doe'}", MyPojo.clas
 
 Save an entity :
 ----------------
-mongoCollection.save(new Poi(address, lat, lng));
+mongoCollection.save(new User(address));
 
 ----------------------------------#Dev Zone#---------------------------------------------
 To get the code and build from source, do the following:
