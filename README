@@ -1,0 +1,31 @@
+================================ Jongo ===============================
+
+Jongo is a tiny sugar over Mongo Java Driver :
+ * Writing 'find' queries as if you were in a Mongo Shell
+ * Map Mongo Entities to your POJO (using Jackson or a custom Mapper).
+
+Code is better than words :
+
+Find entity and obtain id :
+--------------------------
+ String id = mongoCollection.findOne("{address:{$exists:true}}", new ResultMapper<String>() {
+     public String map(BSONObject result) {
+         return result.get(MongoCollection.MONGO_ID).toString();
+     }
+ });
+
+Find entities  :
+----------------
+Iterator<MyPojo> results = mongoCollection.find("{name:'John Doe'}", MyPojo.class);
+
+Save an entity :
+----------------
+mongoCollection.save(new Poi(address, lat, lng));
+
+----------------------------------#Dev Zone#---------------------------------------------
+To get the code and build from source, do the following:
+
+git clone  git://github.com/bguerout/jongo.git
+cd jongo
+mvn clean install
+
