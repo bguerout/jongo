@@ -16,6 +16,7 @@
 
 package com.jongo;
 
+import com.jongo.model.Poi;
 import com.mongodb.MongoException;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,9 @@ import java.util.Iterator;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest {
-    MongoCollection mongoCollection;
+
+
+    private MongoCollection mongoCollection;
 
     @Before
     public void setUp() throws UnknownHostException, MongoException {

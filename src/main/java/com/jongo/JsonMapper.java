@@ -28,7 +28,6 @@ public class JsonMapper {
         this.mapper = ObjectMapperFactory.createConfLessMapper();
     }
 
-
     public <T> T getEntity(String json, Class<T> clazz) throws IOException {
         return mapper.readValue(json, clazz);
     }

@@ -16,6 +16,7 @@
 
 package com.jongo;
 
+import com.jongo.model.Poi;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,19 +34,20 @@ public class JsonMapperTest {
 
 
     @Test
-    public void canConvertQueryResultToObjects() throws IOException {
+    public void canConvertJsonToEntity() throws IOException {
+
+        Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\"}", Poi.class);
+
+        assertThat(poi.address).isEqualTo("22 rue des murlins");
+    }
+
+    @Test
+    public void canConvertNestedJsonToEntities() throws IOException {
         Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\",\"coordinate\":{\"lat\":48,\"lng\":2}}", Poi.class);
 
         assertThat(poi.coordinate.lat).isEqualTo(48);
         assertThat(poi.coordinate.lng).isEqualTo(2);
     }
 
-    @Test
-    public void canConvertQueryResultToObject() throws IOException {
-
-        Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\"}", Poi.class);
-
-        assertThat(poi.address).isEqualTo("22 rue des murlins");
-    }
 
 }

@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package com.jongo;
+package com.jongo.model;
 
-public class Coordinate {
-    int lat, lng;
+public class Poi {
 
-    Coordinate() {
+    public String address;
+    public Coordinate coordinate;
+
+    Poi() {
     }
 
-    public Coordinate(int lat, int lng) {
-        this.lat = lat;
-        this.lng = lng;
+    public Poi(String address) {
+        this.address = address;
+    }
+
+    public Poi(String address, int lat, int lng) {
+        this.address = address;
+        this.coordinate = new Coordinate(lat, lng);
+    }
+
+    public void setCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 }

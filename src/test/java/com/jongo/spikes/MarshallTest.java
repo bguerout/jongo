@@ -16,9 +16,9 @@
 
 package com.jongo.spikes;
 
-import com.jongo.Coordinate;
+import com.jongo.model.Coordinate;
 import com.jongo.ObjectMapperFactory;
-import com.jongo.Poi;
+import com.jongo.model.Poi;
 import org.junit.Test;
 
 import java.io.IOException;
