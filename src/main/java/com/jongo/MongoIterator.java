@@ -24,14 +24,19 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class MongoIterator<E> implements Iterator<E> {
+
     private final DBCursor cursor;
     private final Class<E> clazz;
     private final JsonMapper mapper;
 
     public MongoIterator(DBCursor cursor, Class<E> clazz) {
-        this.cursor = cursor;
+        this(cursor, clazz, new JsonMapper());
+    }
+
+    public MongoIterator(DBCursor cursor, Class<E> clazz, JsonMapper mapper) {
         this.clazz = clazz;
-        this.mapper = new JsonMapper();
+        this.cursor = cursor;
+        this.mapper = mapper;
     }
 
     public boolean hasNext() {
