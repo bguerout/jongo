@@ -25,6 +25,7 @@ import org.bson.BSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.jongo.model.Coordinate;
 import com.jongo.model.Poi;
 import com.mongodb.MongoException;
 
@@ -103,7 +104,7 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void canSortEntitiesOnAddress() throws Exception {
+    public void canSortEntities() throws Exception {
 	/* given */
 	mongoCollection.save(new Poi("23 rue des murlins"));
 	mongoCollection.save(new Poi("21 rue des murlins"));
@@ -117,5 +118,59 @@ public class MongoCollectionTest {
 	assertThat(results.next().address).isEqualTo("22 rue des murlins");
 	assertThat(results.next().address).isEqualTo("23 rue des murlins");
 	assertThat(results.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canFilterDistinctEntities() throws Exception {
+	/* given */
+	mongoCollection.save(new Poi(address));
+	mongoCollection.save(new Poi(address));
+	mongoCollection.save(new Poi("23 rue des murlins"));
+
+	/* when */
+	Iterator<String> addresses = mongoCollection.distinct("address", "", String.class);
+
+	/* then */
+	assertThat(addresses.next()).isEqualTo(address);
+	assertThat(addresses.next()).isEqualTo("23 rue des murlins");
+	assertThat(addresses.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canFilterDistinctEntitiesOnTypedProperty() throws Exception {
+	/* given */
+	mongoCollection.save(new Poi(address, lat, lng));
+	mongoCollection.save(new Poi(address, lat, lng));
+	mongoCollection.save(new Poi(address, 4, 1));
+
+	/* when */
+	Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", "", Coordinate.class);
+
+	/* then */
+	Coordinate first = coordinates.next();
+	assertThat(first.lat).isEqualTo(lat);
+	assertThat(first.lng).isEqualTo(lng);
+	Coordinate second = coordinates.next();
+	assertThat(second.lat).isEqualTo(4);
+	assertThat(second.lng).isEqualTo(1);
+	assertThat(coordinates.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canFilterDistinctEntitiesWithQuery() throws Exception {
+	/* given */
+	mongoCollection.save(new Poi(address, lat, lng));
+	mongoCollection.save(new Poi(address, lat, lng));
+	mongoCollection.save(new Poi(null, 4, 1));
+
+	/* when */
+	Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", "{address:{$exists:true}}",
+		Coordinate.class);
+
+	/* then */
+	Coordinate first = coordinates.next();
+	assertThat(first.lat).isEqualTo(lat);
+	assertThat(first.lng).isEqualTo(lng);
+	assertThat(coordinates.hasNext()).isFalse();
     }
 }

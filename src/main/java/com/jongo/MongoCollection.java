@@ -19,6 +19,7 @@ package com.jongo;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.List;
 
 import com.jongo.marshall.JsonMapper;
 import com.mongodb.DBCollection;
@@ -42,6 +43,16 @@ public class MongoCollection {
 	DBObject ref = mapper.convert(query);
 	DBCursor cursor = collection.find(ref);
 	return new MongoIterator<T>(cursor, clazz, mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
+	DBObject ref = mapper.convert(query);
+	List<?> distinct = collection.distinct(key, ref);
+	if (clazz.equals(String.class))
+	    return (Iterator<T>) distinct.iterator();
+	else
+	    return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
     }
 
     public <D> void save(D document) throws IOException {

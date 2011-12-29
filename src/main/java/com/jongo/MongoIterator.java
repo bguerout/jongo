@@ -23,16 +23,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import com.jongo.marshall.JsonMapper;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 public class MongoIterator<E> implements Iterator<E> {
 
-    private final DBCursor cursor;
+    private final Iterator<DBObject> cursor;
     private final Class<E> clazz;
     private final JsonMapper mapper;
 
-    public MongoIterator(DBCursor cursor, Class<E> clazz, JsonMapper mapper) {
+    public MongoIterator(Iterator<DBObject> cursor, Class<E> clazz, JsonMapper mapper) {
 	this.clazz = clazz;
 	this.cursor = cursor;
 	this.mapper = mapper;
