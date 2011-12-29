@@ -38,10 +38,12 @@ public class MongoCollectionTest {
 	mongoCollection.drop();
     }
 
+    String address = "22 rue des murlins", id = "1";
+    int lat = 48, lng = 2;
+
     @Test
-    public void canFindEntity() throws Exception {
+    public void canFindEntityOnAddress() throws Exception {
 	/* given */
-	String address = "22 rue des murlins";
 	mongoCollection.save(new Poi(address));
 
 	/* when */
@@ -55,10 +57,24 @@ public class MongoCollectionTest {
     }
 
     @Test
+    public void canFindEntityOnId() throws Exception {
+	/* given */
+	mongoCollection.save(new Poi(id, address));
+
+	/* when */
+	Iterator<Poi> results = mongoCollection.find("{_id: '1'}", Poi.class);
+
+	/* then */
+	Poi result = results.next();
+	assertThat(result.address).isEqualTo(address);
+	assertThat(result.id).isEqualTo(id);
+	assertThat(results.hasNext()).isFalse();
+    }
+
+    @Test
     public void canExecuteQueryAndMapResult() throws Exception {
 
 	/* given */
-	String address = "22 rue des murlins";
 	mongoCollection.save(new Poi(address));// TODO save method must return
 					       // generated id
 
@@ -76,8 +92,6 @@ public class MongoCollectionTest {
     @Test
     public void canFindEntityUsingSubProperty() throws Exception {
 	/* given */
-	String address = "22 rue des murlins";
-	int lat = 48, lng = 2;
 	mongoCollection.save(new Poi(address, lat, lng));
 
 	/* when */

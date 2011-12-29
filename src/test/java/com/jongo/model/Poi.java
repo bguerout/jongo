@@ -32,6 +32,11 @@ public class Poi {
 	this.address = address;
     }
 
+    public Poi(String id, String address) {
+	this.id = id;
+	this.address = address;
+    }
+
     public Poi(String address, int lat, int lng) {
 	this.address = address;
 	this.coordinate = new Coordinate(lat, lng);
