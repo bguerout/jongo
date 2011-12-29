@@ -39,7 +39,8 @@ public class MongoCollection {
     }
 
     public <T> Iterator<T> find(String query, Class<T> clazz) {
-	DBCursor cursor = collection.find(mapper.convert(query));
+	DBObject ref = mapper.convert(query);
+	DBCursor cursor = collection.find(ref);
 	return new MongoIterator<T>(cursor, clazz, mapper);
     }
 
