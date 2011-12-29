@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.jongo;
+package com.jongo.marshall;
+
+import static com.jongo.MongoCollection.MONGO_ID;
 
 import javax.persistence.Id;
 
@@ -26,7 +28,7 @@ public class MongoPropertyNamingStrategy extends PropertyNamingStrategy {
     @Override
     public String nameForField(MapperConfig<?> config, AnnotatedField field, String defaultName) {
 	if (field.getAnnotated().isAnnotationPresent(Id.class))
-	    return "_id";
+	    return MONGO_ID;
 	return super.nameForField(config, field, defaultName);
     }
 }

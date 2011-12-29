@@ -16,47 +16,50 @@
 
 package com.jongo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
 
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+
+import com.jongo.marshall.JsonMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 
 public class MongoIteratorTest {
 
-
     @Test(expected = NoSuchElementException.class)
     public void shouldFailWhenNoMoreElements() throws Exception {
-        DBCursor cursor = mock(DBCursor.class);
-        when(cursor.hasNext()).thenReturn(false);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class);
+	DBCursor cursor = mock(DBCursor.class);
+	when(cursor.hasNext()).thenReturn(false);
+	MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class, new JsonMapper());
 
-        iterator.next();
+	iterator.next();
     }
 
     @Test
     public void shouldCheckCursorStatusOnHasNext() {
-        DBCursor cursor = mock(DBCursor.class);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class);
+	DBCursor cursor = mock(DBCursor.class);
+	MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class, new JsonMapper());
 
-        iterator.hasNext();
+	iterator.hasNext();
 
-        verify(cursor).hasNext();
+	verify(cursor).hasNext();
     }
 
     @Test
     public void whenIterateShouldConvertDbObjectToEntity() throws Exception {
 
-        JsonMapper jsonMapper = mock(JsonMapper.class);
-        DBCursor cursor = mock(DBCursor.class);
-        when(cursor.hasNext()).thenReturn(true);
-        when(cursor.next()).thenReturn(new BasicDBObject("test", "value"));
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class, jsonMapper);
+	JsonMapper jsonMapper = mock(JsonMapper.class);
+	DBCursor cursor = mock(DBCursor.class);
+	when(cursor.hasNext()).thenReturn(true);
+	when(cursor.next()).thenReturn(new BasicDBObject("test", "value"));
+	MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class, jsonMapper);
 
-        iterator.next();
+	iterator.next();
 
-        verify(jsonMapper).getEntity("{ \"test\" : \"value\"}", String.class);
+	verify(jsonMapper).getEntity("{ \"test\" : \"value\"}", String.class);
     }
 }

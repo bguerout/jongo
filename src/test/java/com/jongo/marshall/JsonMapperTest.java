@@ -14,40 +14,39 @@
  * limitations under the License.
  */
 
-package com.jongo;
+package com.jongo.marshall;
 
-import com.jongo.model.Poi;
-import org.junit.Before;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.IOException;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.jongo.model.Poi;
 
 public class JsonMapperTest {
     private JsonMapper jsonMapper;
 
     @Before
     public void setUp() throws Exception {
-        jsonMapper = new JsonMapper();
+	jsonMapper = new JsonMapper();
     }
-
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
 
-        Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\"}", Poi.class);
+	Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\"}", Poi.class);
 
-        assertThat(poi.address).isEqualTo("22 rue des murlins");
+	assertThat(poi.address).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
-        Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\",\"coordinate\":{\"lat\":48,\"lng\":2}}", Poi.class);
+	Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\",\"coordinate\":{\"lat\":48,\"lng\":2}}",
+		Poi.class);
 
-        assertThat(poi.coordinate.lat).isEqualTo(48);
-        assertThat(poi.coordinate.lng).isEqualTo(2);
+	assertThat(poi.coordinate.lat).isEqualTo(48);
+	assertThat(poi.coordinate.lng).isEqualTo(2);
     }
-
-
 }

@@ -16,38 +16,43 @@
 
 package com.jongo;
 
-import com.mongodb.*;
-
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+
+import com.jongo.marshall.JsonMapper;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 
 public class MongoCollection {
 
     public static final String MONGO_ID = "_id";
     private final DBCollection collection;
-    private final DBObjectConvertor convertor;
+    private final JsonMapper mapper;
 
     public MongoCollection(String database, String collection) throws UnknownHostException, MongoException {
-        this.collection = new Mongo().getDB(database).getCollection(collection);
-        this.convertor = new DBObjectConvertor();
+	this.collection = new Mongo().getDB(database).getCollection(collection);
+	this.mapper = new JsonMapper();
     }
 
     public <T> Iterator<T> find(String query, Class<T> clazz) {
-        DBCursor cursor = collection.find(convertor.convert(query));
-        return new MongoIterator<T>(cursor, clazz);
+	DBCursor cursor = collection.find(mapper.convert(query));
+	return new MongoIterator<T>(cursor, clazz, mapper);
     }
 
     public <D> void save(D document) throws IOException {
-        collection.save(convertor.convert(document));
+	collection.save(mapper.convert(document));
     }
 
     public void drop() {
-        collection.drop();
+	collection.drop();
     }
 
     public <T> T findOne(String query, ResultMapper<T> resultMapper) {
-        DBObject result = collection.findOne(convertor.convert(query));
-        return resultMapper.map(result);
+	DBObject result = collection.findOne(mapper.convert(query));
+	return resultMapper.map(result);
     }
 }

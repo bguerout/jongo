@@ -16,6 +16,7 @@
 
 package com.jongo.model;
 
+
 public class Coordinate {
 
     public int lat, lng;
@@ -24,7 +25,7 @@ public class Coordinate {
     }
 
     public Coordinate(int lat, int lng) {
-        this.lat = lat;
-        this.lng = lng;
+	this.lat = lat;
+	this.lng = lng;
     }
 }
