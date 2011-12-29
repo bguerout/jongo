@@ -25,7 +25,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.introspect.VisibilityChecker;
+import org.codehaus.jackson.map.introspect.VisibilityChecker.Std;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -56,7 +56,7 @@ public class JsonMapper {
 	ObjectMapper mapper = new ObjectMapper();
 	mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
 	mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
-	mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
+	mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
 
 	mapper.setPropertyNamingStrategy(new MongoPropertyNamingStrategy());
 	return mapper;

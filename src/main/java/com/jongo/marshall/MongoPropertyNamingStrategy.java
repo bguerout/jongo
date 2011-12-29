@@ -24,7 +24,7 @@ import org.codehaus.jackson.map.MapperConfig;
 import org.codehaus.jackson.map.PropertyNamingStrategy;
 import org.codehaus.jackson.map.introspect.AnnotatedField;
 
-public class MongoPropertyNamingStrategy extends PropertyNamingStrategy {
+class MongoPropertyNamingStrategy extends PropertyNamingStrategy {
     @Override
     public String nameForField(MapperConfig<?> config, AnnotatedField field, String defaultName) {
 	if (field.getAnnotated().isAnnotationPresent(Id.class))
