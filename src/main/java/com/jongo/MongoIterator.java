@@ -16,12 +16,14 @@
 
 package com.jongo;
 
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import static com.jongo.MongoCollection.MONGO_ID;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 public class MongoIterator<E> implements Iterator<E> {
 
@@ -30,33 +32,41 @@ public class MongoIterator<E> implements Iterator<E> {
     private final JsonMapper mapper;
 
     public MongoIterator(DBCursor cursor, Class<E> clazz) {
-        this(cursor, clazz, new JsonMapper());
+	this(cursor, clazz, new JsonMapper());
     }
 
     public MongoIterator(DBCursor cursor, Class<E> clazz, JsonMapper mapper) {
-        this.clazz = clazz;
-        this.cursor = cursor;
-        this.mapper = mapper;
+	this.clazz = clazz;
+	this.cursor = cursor;
+	this.mapper = mapper;
     }
 
     public boolean hasNext() {
-        return cursor.hasNext();
+	return cursor.hasNext();
     }
 
     public E next() {
-        if (!hasNext())
-            throw new NoSuchElementException();
+	if (!hasNext())
+	    throw new NoSuchElementException();
 
-        try {
-            DBObject dbObject = cursor.next();
-            String json = dbObject.toString();
-            return mapper.getEntity(json, clazz);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+	try {
+	    DBObject dbObject = cursor.next();
+	    setIdProperly(dbObject);
+
+	    String json = dbObject.toString();
+	    return mapper.getEntity(json, clazz);
+	} catch (IOException e) {
+	    throw new IllegalArgumentException(e);
+	}
+    }
+
+    private void setIdProperly(DBObject dbObject) {
+	Object id = dbObject.get(MONGO_ID);
+	if (id != null)
+	    dbObject.put(MONGO_ID, id.toString());
     }
 
     public void remove() {
-        throw new UnsupportedOperationException("remove() method is not supported");
+	throw new UnsupportedOperationException("remove() method is not supported");
     }
 }

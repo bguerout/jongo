@@ -16,8 +16,12 @@
 
 package com.jongo.model;
 
+import javax.persistence.Id;
+
 public class Poi {
 
+    @Id
+    public String id;
     public String address;
     public Coordinate coordinate;
 
@@ -25,15 +29,15 @@ public class Poi {
     }
 
     public Poi(String address) {
-        this.address = address;
+	this.address = address;
     }
 
     public Poi(String address, int lat, int lng) {
-        this.address = address;
-        this.coordinate = new Coordinate(lat, lng);
+	this.address = address;
+	this.coordinate = new Coordinate(lat, lng);
     }
 
     public void setCoordinate(Coordinate coordinate) {
-        this.coordinate = coordinate;
+	this.coordinate = coordinate;
     }
 }
