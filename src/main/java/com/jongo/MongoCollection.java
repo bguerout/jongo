@@ -16,17 +16,13 @@
 
 package com.jongo;
 
+import com.jongo.marshall.JsonMapper;
+import com.mongodb.*;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
-
-import com.jongo.marshall.JsonMapper;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
 
 public class MongoCollection {
 
@@ -35,36 +31,36 @@ public class MongoCollection {
     private final JsonMapper mapper;
 
     public MongoCollection(String database, String collection) throws UnknownHostException, MongoException {
-	this.collection = new Mongo().getDB(database).getCollection(collection);
-	this.mapper = new JsonMapper();
+        this.collection = new Mongo().getDB(database).getCollection(collection);
+        this.mapper = new JsonMapper();
     }
 
     public <T> Iterator<T> find(String query, Class<T> clazz) {
-	DBObject ref = mapper.convert(query);
-	DBCursor cursor = collection.find(ref);
-	return new MongoIterator<T>(cursor, clazz, mapper);
+        DBObject ref = mapper.convert(query);
+        DBCursor cursor = collection.find(ref);
+        return new MongoIterator<T>(cursor, clazz, mapper);
     }
 
     @SuppressWarnings("unchecked")
     public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
-	DBObject ref = mapper.convert(query);
-	List<?> distinct = collection.distinct(key, ref);
-	if (clazz.equals(String.class))
-	    return (Iterator<T>) distinct.iterator();
-	else
-	    return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
+        DBObject ref = mapper.convert(query);
+        List<?> distinct = collection.distinct(key, ref);
+        if (clazz.equals(String.class))
+            return (Iterator<T>) distinct.iterator();
+        else
+            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
     }
 
     public <D> void save(D document) throws IOException {
-	collection.save(mapper.convert(document));
+        collection.save(mapper.convert(document));
     }
 
     public void drop() {
-	collection.drop();
+        collection.drop();
     }
 
     public <T> T findOne(String query, ResultMapper<T> resultMapper) {
-	DBObject result = collection.findOne(mapper.convert(query));
-	return resultMapper.map(result);
+        DBObject result = collection.findOne(mapper.convert(query));
+        return resultMapper.map(result);
     }
 }

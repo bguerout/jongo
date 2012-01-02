@@ -16,19 +16,19 @@
 
 package com.jongo.marshall;
 
-import static com.jongo.MongoCollection.MONGO_ID;
-
-import javax.persistence.Id;
-
 import org.codehaus.jackson.map.MapperConfig;
 import org.codehaus.jackson.map.PropertyNamingStrategy;
 import org.codehaus.jackson.map.introspect.AnnotatedField;
 
+import javax.persistence.Id;
+
+import static com.jongo.MongoCollection.MONGO_ID;
+
 class MongoPropertyNamingStrategy extends PropertyNamingStrategy {
     @Override
     public String nameForField(MapperConfig<?> config, AnnotatedField field, String defaultName) {
-	if (field.getAnnotated().isAnnotationPresent(Id.class))
-	    return MONGO_ID;
-	return super.nameForField(config, field, defaultName);
+        if (field.getAnnotated().isAnnotationPresent(Id.class))
+            return MONGO_ID;
+        return super.nameForField(config, field, defaultName);
     }
 }

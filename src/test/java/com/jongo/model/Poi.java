@@ -29,20 +29,20 @@ public class Poi {
     }
 
     public Poi(String address) {
-	this.address = address;
+        this.address = address;
     }
 
     public Poi(String id, String address) {
-	this.id = id;
-	this.address = address;
+        this.id = id;
+        this.address = address;
     }
 
     public Poi(String address, int lat, int lng) {
-	this.address = address;
-	this.coordinate = new Coordinate(lat, lng);
+        this.address = address;
+        this.coordinate = new Coordinate(lat, lng);
     }
 
     public void setCoordinate(Coordinate coordinate) {
-	this.coordinate = coordinate;
+        this.coordinate = coordinate;
     }
 }

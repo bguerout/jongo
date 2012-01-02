@@ -25,7 +25,7 @@ public class Coordinate {
     }
 
     public Coordinate(int lat, int lng) {
-	this.lat = lat;
-	this.lng = lng;
+        this.lat = lat;
+        this.lng = lng;
     }
 }

@@ -16,49 +16,48 @@
 
 package com.jongo.marshall;
 
-import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
-import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.introspect.VisibilityChecker.Std;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.introspect.VisibilityChecker.Std;
-
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
+import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
 
 public class JsonMapper {
 
     private final ObjectMapper mapper;
 
     public JsonMapper() {
-	this.mapper = createConfLessMapper();
+        this.mapper = createConfLessMapper();
     }
 
     public <T> T getEntity(String json, Class<T> clazz) throws IOException {
-	return mapper.readValue(json, clazz);
+        return mapper.readValue(json, clazz);
     }
 
     public DBObject convert(String jsonQuery) {
-	return ((DBObject) JSON.parse(jsonQuery));
+        return ((DBObject) JSON.parse(jsonQuery));
     }
 
     public DBObject convert(Object obj) throws IOException {
-	Writer writer = new StringWriter();
-	mapper.writeValue(writer, obj);
-	return convert(writer.toString());
+        Writer writer = new StringWriter();
+        mapper.writeValue(writer, obj);
+        return convert(writer.toString());
     }
 
     private ObjectMapper createConfLessMapper() {
-	ObjectMapper mapper = new ObjectMapper();
-	mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
-	mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
-	mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
+        mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
+        mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
 
-	mapper.setPropertyNamingStrategy(new MongoPropertyNamingStrategy());
-	return mapper;
+        mapper.setPropertyNamingStrategy(new MongoPropertyNamingStrategy());
+        return mapper;
     }
 }
