@@ -37,8 +37,12 @@ public class JsonMapper {
         this.mapper = createConfLessMapper();
     }
 
-    public <T> T getEntity(String json, Class<T> clazz) throws IOException {
-        return mapper.readValue(json, clazz);
+    public <T> T getEntity(String json, Class<T> clazz) {
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public DBObject convert(String jsonQuery) {

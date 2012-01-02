@@ -31,6 +31,8 @@ import static org.fest.assertions.Assertions.assertThat;
 public class MongoCollectionTest {
 
     private MongoCollection mongoCollection;
+    private String address = "22 rue des murlins", id = "1";
+    private int lat = 48, lng = 2;
 
     @Before
     public void setUp() throws UnknownHostException, MongoException {
@@ -38,8 +40,6 @@ public class MongoCollectionTest {
         mongoCollection.drop();
     }
 
-    String address = "22 rue des murlins", id = "1";
-    int lat = 48, lng = 2;
 
     @Test
     public void canFindEntityOnAddress() throws Exception {
@@ -72,7 +72,7 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void canExecuteQueryAndMapResult() throws Exception {
+    public void canFindOneWithMapper() throws Exception {
 
         /* given */
         mongoCollection.save(new Poi(address));// TODO save method must return
@@ -87,6 +87,19 @@ public class MongoCollectionTest {
 
         /* then */
         assertThat(id).isNotNull();
+    }
+
+    @Test
+    public void canFindOne() throws Exception {
+
+        /* given */
+        mongoCollection.save(new Poi("999", address));
+
+        /* when */
+        Poi poi = mongoCollection.findOne("{_id:'999'}", Poi.class);
+
+        /* then */
+        assertThat(poi.id).isEqualTo("999");
     }
 
     @Test

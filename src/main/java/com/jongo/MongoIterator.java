@@ -19,7 +19,6 @@ package com.jongo;
 import com.jongo.marshall.JsonMapper;
 import com.mongodb.DBObject;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -45,15 +44,13 @@ public class MongoIterator<E> implements Iterator<E> {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        try {
-            DBObject dbObject = cursor.next();
-            setIdProperly(dbObject);
 
-            String json = dbObject.toString();
-            return mapper.getEntity(json, clazz);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+        DBObject dbObject = cursor.next();
+        setIdProperly(dbObject);
+
+        String json = dbObject.toString();
+        return mapper.getEntity(json, clazz);
+
     }
 
     private void setIdProperly(DBObject dbObject) {

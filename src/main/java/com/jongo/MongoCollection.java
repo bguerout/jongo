@@ -35,6 +35,17 @@ public class MongoCollection {
         this.mapper = new JsonMapper();
     }
 
+    public <T> T findOne(String query, ResultMapper<T> resultMapper) {
+        DBObject result = collection.findOne(mapper.convert(query));
+        return resultMapper.map(result);
+    }
+
+    public <T> T findOne(String query, Class<T> clazz) {
+        DBObject ref = mapper.convert(query);
+        DBObject result = collection.findOne(ref);
+        return mapper.getEntity(result.toString(), clazz);
+    }
+
     public <T> Iterator<T> find(String query, Class<T> clazz) {
         DBObject ref = mapper.convert(query);
         DBCursor cursor = collection.find(ref);
@@ -59,8 +70,5 @@ public class MongoCollection {
         collection.drop();
     }
 
-    public <T> T findOne(String query, ResultMapper<T> resultMapper) {
-        DBObject result = collection.findOne(mapper.convert(query));
-        return resultMapper.map(result);
-    }
+
 }
