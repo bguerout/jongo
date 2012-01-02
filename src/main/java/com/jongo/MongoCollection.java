@@ -54,12 +54,12 @@ public class MongoCollection {
 
     @SuppressWarnings("unchecked")
     public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
-        DBObject ref = mapper.convert(query);
-        List<?> distinct = collection.distinct(key, ref);
-        if (clazz.equals(String.class))
-            return (Iterator<T>) distinct.iterator();
-        else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
+	DBObject ref = mapper.convert(query);
+	List<?> distinct = collection.distinct(key, ref);
+	if ("java.lang".equals(clazz.getPackage().getName()))
+	    return (Iterator<T>) distinct.iterator();
+	else
+	    return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
     }
 
     public <D> void save(D document) throws IOException {

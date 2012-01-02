@@ -133,19 +133,35 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void canFilterDistinctEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi("23 rue des murlins"));
+    public void canFilterDistinctStringEntities() throws Exception {
+	/* given */
+	mongoCollection.save(new Poi(address));
+	mongoCollection.save(new Poi(address));
+	mongoCollection.save(new Poi("23 rue des murlins"));
 
-        /* when */
-        Iterator<String> addresses = mongoCollection.distinct("address", "", String.class);
+	/* when */
+	Iterator<String> addresses = mongoCollection.distinct("address", "", String.class);
 
-        /* then */
-        assertThat(addresses.next()).isEqualTo(address);
-        assertThat(addresses.next()).isEqualTo("23 rue des murlins");
-        assertThat(addresses.hasNext()).isFalse();
+	/* then */
+	assertThat(addresses.next()).isEqualTo(address);
+	assertThat(addresses.next()).isEqualTo("23 rue des murlins");
+	assertThat(addresses.hasNext()).isFalse();
+    }
+    
+    @Test
+    public void canFilterDistinctIntegerEntities() throws Exception {
+    /* given */
+    mongoCollection.save(new Poi(address, lat, lng));
+    mongoCollection.save(new Poi(address, lat, lng));
+    mongoCollection.save(new Poi(address, 4, 1));
+
+    /* when */
+    Iterator<Integer> addresses = mongoCollection.distinct("coordinate.lat", "", Integer.class);
+
+    /* then */
+    assertThat(addresses.next()).isEqualTo(lat);
+    assertThat(addresses.next()).isEqualTo(4);
+    assertThat(addresses.hasNext()).isFalse();
     }
 
     @Test
