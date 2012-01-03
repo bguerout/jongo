@@ -56,6 +56,11 @@ public class MongoCollection {
         return new MongoIterator<T>(cursor, clazz, mapper);
     }
 
+    public long count(String query) {
+	DBObject ref = mapper.convert(query);
+	return collection.count(ref);
+    }
+    
     @SuppressWarnings("unchecked")
     public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
 	DBObject ref = mapper.convert(query);
@@ -66,8 +71,10 @@ public class MongoCollection {
 	    return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
     }
 
-    public <D> void save(D document) throws IOException {
-        collection.save(mapper.convert(document));
+    public <D> String save(D document) throws IOException {
+        DBObject dbObject = mapper.convert(document);
+	WriteResult save = collection.save(dbObject);
+	return dbObject.get(MONGO_ID).toString();
     }
 
     public void drop() {

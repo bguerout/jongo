@@ -57,6 +57,20 @@ public class MongoCollectionTest {
     }
 
     @Test
+    public void canUpdateEntity() throws Exception {
+	/* given */
+        mongoCollection.save(new Poi(id, address));
+        Iterator<Poi> pois = mongoCollection.find("{_id: '1'}", Poi.class);
+        Poi poi = pois.next();
+        poi.address = null;
+        mongoCollection.save(poi);
+
+        /* when */
+        Iterator<Poi> results = mongoCollection.find("{_id: '1'}", Poi.class);
+        assertThat(results.next().address).isNull();
+    }
+    
+    @Test
     public void canFindEntityOnId() throws Exception {
         /* given */
         mongoCollection.save(new Poi(id, address));
@@ -200,5 +214,16 @@ public class MongoCollectionTest {
         assertThat(first.lat).isEqualTo(lat);
         assertThat(first.lng).isEqualTo(lng);
         assertThat(coordinates.hasNext()).isFalse();
+    }
+    
+    @Test
+    public void canCountEntities() throws Exception {
+        /* given */
+        mongoCollection.save(new Poi(address, lat, lng));
+        mongoCollection.save(new Poi(null, 4, 1));
+        
+        /* then */
+        assertThat(mongoCollection.count("{'address': {$exists:true}}")).isEqualTo(1);
+        assertThat(mongoCollection.count("{'coordinate.lat': {$exists:true}}")).isEqualTo(2);
     }
 }
