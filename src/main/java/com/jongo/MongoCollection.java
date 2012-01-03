@@ -16,13 +16,17 @@
 
 package com.jongo;
 
+import com.jongo.marshall.BSONPrimitives;
 import com.jongo.marshall.JsonMapper;
 import com.mongodb.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class MongoCollection {
 
@@ -56,7 +60,7 @@ public class MongoCollection {
     public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
 	DBObject ref = mapper.convert(query);
 	List<?> distinct = collection.distinct(key, ref);
-	if ("java.lang".equals(clazz.getPackage().getName()))
+	if (BSONPrimitives.contains(clazz))
 	    return (Iterator<T>) distinct.iterator();
 	else
 	    return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
