@@ -1,4 +1,4 @@
-package com.jongo.marshall;
+package com.jongo;
 
 import java.util.Date;
 import java.util.HashSet;

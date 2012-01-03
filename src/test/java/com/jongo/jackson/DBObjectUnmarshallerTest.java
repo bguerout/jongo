@@ -14,38 +14,41 @@
  * limitations under the License.
  */
 
-package com.jongo.marshall;
+package com.jongo.jackson;
 
 import com.jongo.model.Poi;
-import org.junit.Before;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JsonMapperTest {
-    private JsonMapper jsonMapper;
-
-    @Before
-    public void setUp() throws Exception {
-        jsonMapper = new JsonMapper();
-    }
+public class DBObjectUnmarshallerTest {
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
 
-        Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\"}", Poi.class);
+        DBObjectUnmarshaller<Poi> binder = new DBObjectUnmarshaller<Poi>(Poi.class, new ObjectMapper());
+        DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
+
+        Poi poi = binder.map(dbObject);
 
         assertThat(poi.address).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
-        Poi poi = jsonMapper.getEntity("{\"address\":\"22 rue des murlins\",\"coordinate\":{\"lat\":48,\"lng\":2}}",
-                Poi.class);
+
+        DBObjectUnmarshaller<Poi> binder = new DBObjectUnmarshaller<Poi>(Poi.class, new ObjectMapper());
+        DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
+        dbObject.put("coordinate", new BasicDBObject("lat", "48"));
+
+        Poi poi = binder.map(dbObject);
 
         assertThat(poi.coordinate.lat).isEqualTo(48);
-        assertThat(poi.coordinate.lng).isEqualTo(2);
+
     }
 }

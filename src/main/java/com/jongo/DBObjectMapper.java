@@ -16,9 +16,9 @@
 
 package com.jongo;
 
-import org.bson.BSONObject;
+import com.mongodb.DBObject;
 
-public interface ResultMapper<T> {
+public interface DBObjectMapper<T> {
 
-    <T> T map(BSONObject result);
+    <T> T map(DBObject result);
 }

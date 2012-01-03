@@ -16,9 +16,11 @@
 
 package com.jongo;
 
-import com.jongo.marshall.JsonMapper;
+import com.jongo.jackson.DBObjectUnmarshaller;
+import com.jongo.jackson.JsonProcessor;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -27,11 +29,18 @@ import static org.mockito.Mockito.*;
 
 public class MongoIteratorTest {
 
+    private DBObjectMapper dbObjectMapper;
+
+    @Before
+    public void setUp() throws Exception {
+        dbObjectMapper = new JsonProcessor().createMapper(String.class);
+    }
+
     @Test(expected = NoSuchElementException.class)
     public void shouldFailWhenNoMoreElements() throws Exception {
         DBCursor cursor = mock(DBCursor.class);
         when(cursor.hasNext()).thenReturn(false);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class, new JsonMapper());
+        MongoIterator<String> iterator = new MongoIterator<String>(cursor, dbObjectMapper);
 
         iterator.next();
     }
@@ -39,7 +48,7 @@ public class MongoIteratorTest {
     @Test
     public void shouldCheckCursorStatusOnHasNext() {
         DBCursor cursor = mock(DBCursor.class);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class, new JsonMapper());
+        MongoIterator<String> iterator = new MongoIterator<String>(cursor, dbObjectMapper);
 
         iterator.hasNext();
 
@@ -49,14 +58,15 @@ public class MongoIteratorTest {
     @Test
     public void whenIterateShouldConvertDbObjectToEntity() throws Exception {
 
-        JsonMapper jsonMapper = mock(JsonMapper.class);
+        BasicDBObject resultEntity = new BasicDBObject("test", "value");
+        DBObjectUnmarshaller binder = mock(DBObjectUnmarshaller.class);
         DBCursor cursor = mock(DBCursor.class);
         when(cursor.hasNext()).thenReturn(true);
-        when(cursor.next()).thenReturn(new BasicDBObject("test", "value"));
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, String.class, jsonMapper);
+        when(cursor.next()).thenReturn(resultEntity);
+        MongoIterator<String> iterator = new MongoIterator<String>(cursor, binder);
 
         iterator.next();
 
-        verify(jsonMapper).getEntity("{ \"test\" : \"value\"}", String.class);
+        verify(binder).map(resultEntity);
     }
 }

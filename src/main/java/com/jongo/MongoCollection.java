@@ -16,70 +16,68 @@
 
 package com.jongo;
 
-import com.jongo.marshall.BSONPrimitives;
-import com.jongo.marshall.JsonMapper;
+import com.jongo.jackson.JsonProcessor;
 import com.mongodb.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class MongoCollection {
 
     public static final String MONGO_ID = "_id";
     private final DBCollection collection;
-    private final JsonMapper mapper;
+    private final JsonProcessor jsonProcessor;
 
     public MongoCollection(String database, String collection) throws UnknownHostException, MongoException {
         this.collection = new Mongo().getDB(database).getCollection(collection);
-        this.mapper = new JsonMapper();
-    }
-
-    public <T> T findOne(String query, ResultMapper<T> resultMapper) {
-        DBObject result = collection.findOne(mapper.convert(query));
-        return resultMapper.map(result);
+        this.jsonProcessor = new JsonProcessor();
     }
 
     public <T> T findOne(String query, Class<T> clazz) {
-        DBObject ref = mapper.convert(query);
-        DBObject result = collection.findOne(ref);
-        return mapper.getEntity(result.toString(), clazz);
+        return findOne(query, jsonProcessor.createMapper(clazz));
+    }
+
+    public <T> T findOne(String query, DBObjectMapper<T> dbObjectMapper) {
+        DBObject result = collection.findOne(jsonProcessor.toDBObject(query));
+        if (result == null)
+            return null;//TODO we preserve mongo driver behaviour when findOne query has no result (should we throw an exception instead ?)
+        else
+            return dbObjectMapper.map(result);
     }
 
     public <T> Iterator<T> find(String query, Class<T> clazz) {
-        DBObject ref = mapper.convert(query);
+        return find(query, jsonProcessor.createMapper(clazz));
+    }
+
+    public <T> Iterator<T> find(String query, DBObjectMapper<T> dbObjectMapper) {
+        DBObject ref = jsonProcessor.toDBObject(query);
         DBCursor cursor = collection.find(ref);
-        return new MongoIterator<T>(cursor, clazz, mapper);
+        return new MongoIterator(cursor, dbObjectMapper);
     }
 
     public long count(String query) {
-	DBObject ref = mapper.convert(query);
-	return collection.count(ref);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
-	DBObject ref = mapper.convert(query);
-	List<?> distinct = collection.distinct(key, ref);
-	if (BSONPrimitives.contains(clazz))
-	    return (Iterator<T>) distinct.iterator();
-	else
-	    return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), clazz, mapper);
+        DBObject ref = jsonProcessor.toDBObject(query);
+        return collection.count(ref);
     }
 
-    public <D> String save(D document) throws IOException {
-        DBObject dbObject = mapper.convert(document);
-	WriteResult save = collection.save(dbObject);
-	return dbObject.get(MONGO_ID).toString();
+    @SuppressWarnings("unchecked")
+    public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
+        DBObject ref = jsonProcessor.toDBObject(query);
+        List<?> distinct = collection.distinct(key, ref);
+        if (BSONPrimitives.contains(clazz))
+            return (Iterator<T>) distinct.iterator();
+        else
+            return new MongoIterator((Iterator<DBObject>) distinct.iterator(), jsonProcessor.createMapper(clazz));
+    }
+
+    public <D> void save(D document) throws IOException {
+        collection.save(jsonProcessor.toDBObject(document));
     }
 
     public void drop() {
         collection.drop();
     }
-
 
 }

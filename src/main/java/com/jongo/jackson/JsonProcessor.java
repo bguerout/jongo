@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.jongo.marshall;
+package com.jongo.jackson;
 
+import com.jongo.DBObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -29,38 +30,38 @@ import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
 import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
 
-public class JsonMapper {
+public class JsonProcessor {
 
-    private final ObjectMapper mapper;
+    private final ObjectMapper objectMapper;
 
-    public JsonMapper() {
-        this.mapper = createConfLessMapper();
+    public JsonProcessor() {
+        this.objectMapper = createMapperForNonAnnotatedBean();
     }
 
-    public <T> T getEntity(String json, Class<T> clazz) {
-        try {
-            return mapper.readValue(json, clazz);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public <T> DBObjectMapper<T> createMapper(Class<T> clazz) {
+        return new DBObjectUnmarshaller(clazz, objectMapper); //TODO caching created binder should be better (a map with class as key )
     }
 
-    public DBObject convert(String jsonQuery) {
-        return ((DBObject) JSON.parse(jsonQuery));
+    public DBObject toDBObject(String jsonData) {
+        return ((DBObject) JSON.parse(jsonData));
     }
 
-    public DBObject convert(Object obj) throws IOException {
+    public DBObject toDBObject(Object entity) throws IOException {
+        String entityAsJson = getEntityAsJson(entity);
+        return toDBObject(entityAsJson);
+    }
+
+    private String getEntityAsJson(Object obj) throws IOException {
         Writer writer = new StringWriter();
-        mapper.writeValue(writer, obj);
-        return convert(writer.toString());
+        objectMapper.writeValue(writer, obj);
+        return writer.toString();
     }
 
-    private ObjectMapper createConfLessMapper() {
+    private ObjectMapper createMapperForNonAnnotatedBean() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
         mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
         mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
-
         mapper.setPropertyNamingStrategy(new MongoPropertyNamingStrategy());
         return mapper;
     }

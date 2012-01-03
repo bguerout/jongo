@@ -16,24 +16,19 @@
 
 package com.jongo;
 
-import com.jongo.marshall.JsonMapper;
 import com.mongodb.DBObject;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static com.jongo.MongoCollection.MONGO_ID;
-
 public class MongoIterator<E> implements Iterator<E> {
 
     private final Iterator<DBObject> cursor;
-    private final Class<E> clazz;
-    private final JsonMapper mapper;
+    private final DBObjectMapper<E> mapper;
 
-    public MongoIterator(Iterator<DBObject> cursor, Class<E> clazz, JsonMapper mapper) {
-        this.clazz = clazz;
-        this.cursor = cursor;
+    public MongoIterator(Iterator<DBObject> cursor, DBObjectMapper<E> mapper) {
         this.mapper = mapper;
+        this.cursor = cursor;
     }
 
     public boolean hasNext() {
@@ -44,19 +39,7 @@ public class MongoIterator<E> implements Iterator<E> {
         if (!hasNext())
             throw new NoSuchElementException();
 
-
-        DBObject dbObject = cursor.next();
-        setIdProperly(dbObject);
-
-        String json = dbObject.toString();
-        return mapper.getEntity(json, clazz);
-
-    }
-
-    private void setIdProperly(DBObject dbObject) {
-        Object id = dbObject.get(MONGO_ID);
-        if (id != null)
-            dbObject.put(MONGO_ID, id.toString());
+        return mapper.map(cursor.next());
     }
 
     public void remove() {
