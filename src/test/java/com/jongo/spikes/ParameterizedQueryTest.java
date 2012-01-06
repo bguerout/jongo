@@ -16,7 +16,9 @@
 
 package com.jongo.spikes;
 
+import com.jongo.jackson.JsonProcessor;
 import com.mongodb.DBObject;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -24,32 +26,34 @@ import java.util.Date;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class QueryTemplateTest {
+public class ParameterizedQueryTest {
 
-    private QueryTemplate template = new QueryTemplate();
+    private JsonProcessor processor;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWithoutParameters() throws Exception {
-        template.parameterize("{id:#}");
+    @Before
+    public void setUp() throws Exception {
+        processor = new JsonProcessor();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenNotEnoughParameters() throws Exception {
-        template.parameterize("{id:#,id2:#}", "123");
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#,id2:#}", new Object[]{"123"});
+        query.toDBObject();
     }
 
     @Test
     public void canMapParameter() throws Exception {
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{"123"});
 
-        DBObject dbObject = template.parameterize("{id:#}", "123");
+        DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("id")).isEqualTo("123");
     }
 
     @Test
     public void canMapParameters() throws Exception {
-
-        DBObject dbObject = template.parameterize("{id:#, test:#}", "123", "456");
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#, test:#}", new Object[]{"123", "456"});
+        DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("id")).isEqualTo("123");
         assertThat(dbObject.get("test")).isEqualTo("456");
@@ -59,8 +63,9 @@ public class QueryTemplateTest {
     public void canMapDateParameter() throws Exception {
 
         Date epoch = new Date(0);
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{mydate:#}", new Object[]{epoch});
 
-        DBObject dbObject = template.parameterize("{mydate:#}", epoch);
+        DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("mydate")).isEqualTo(epoch);
     }
@@ -71,8 +76,9 @@ public class QueryTemplateTest {
         ArrayList<String> elements = new ArrayList<String>();
         elements.add("1");
         elements.add("2");
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{$in:#}", new Object[]{elements});
 
-        DBObject dbObject = template.parameterize("{$in:#}", elements);
+        DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("$in")).isEqualTo(elements);
     }
@@ -80,7 +86,9 @@ public class QueryTemplateTest {
     @Test
     public void canHandleNullParameter() throws Exception {
 
-        DBObject dbObject = template.parameterize("{id:#}", null);
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{null});
+
+        DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("id")).isNull();
     }
@@ -88,7 +96,9 @@ public class QueryTemplateTest {
     @Test
     public void canHandleBooleanParameter() throws Exception {
 
-        DBObject dbObject = template.parameterize("{id:#}", true);
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{true});
+
+        DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("id")).isEqualTo(Boolean.TRUE);
     }

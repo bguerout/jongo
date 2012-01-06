@@ -16,60 +16,49 @@
 
 package com.jongo.spikes;
 
+import com.jongo.jackson.JsonProcessor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 import java.util.regex.Matcher;
 
-public class QueryTemplate {
+public class ParameterizedQuery implements Query {
 
     private static final char DEFAULT_TOKEN = '#';
     private final String token;
+    private final JsonProcessor processor;
+    private final String query;
+    private Object[] parameters;
 
-    public QueryTemplate() {
-        this("" + DEFAULT_TOKEN);
+    public ParameterizedQuery(JsonProcessor processor, String query, Object[] parameters) {
+        this.query = query;
+        this.parameters = parameters;
+        this.processor = processor;
+        this.token = "" + DEFAULT_TOKEN;
+        checkIfQueryCanBeParameterized();
     }
 
-    public QueryTemplate(String token) {
-        this.token = token;
+    @Override
+    public DBObject toDBObject() {
+        return processor.toDBObject(generateParameterizedQuery());
     }
 
-
-    public DBObject parameterize(String query, Object... parameters) {
-
-        parameters = convertNullVargsToANullParameter(parameters);
-        checkIfAllParametersCanBeInserted(query, parameters);
-
+    private String generateParameterizedQuery() {
+        String parameterizedQuery = query;
         int paramIndex = 0;
-        while (query.contains(token)) {
-            Object parameter = parameters[paramIndex++];
-            query = parameterizeFirstToken(query, parameter);
+        while (parameterizedQuery.contains(token)) {
+            String paramAsJson = JSON.serialize(parameters[(paramIndex++)]);
+            parameterizedQuery = parameterizedQuery.replaceFirst("#", getMatcherWithEscapedDollar(paramAsJson));
         }
-
-
-        return ((DBObject) JSON.parse(query));
+        return parameterizedQuery;
     }
 
-    private void checkIfAllParametersCanBeInserted(String query, Object[] parameters) {
-        int nbTokens = countTokens(query);
+    private void checkIfQueryCanBeParameterized() {
+        int nbTokens = countTokens();
         if (nbTokens > parameters.length) {
             throw new IllegalArgumentException("Query has more anchors " + nbTokens + " than parameters" + parameters.length);
         }
     }
-
-    private Object[] convertNullVargsToANullParameter(Object[] parameters) {
-        if (parameters == null) {
-            parameters = new Object[]{null};
-        }
-        return parameters;
-    }
-
-    private String parameterizeFirstToken(String query, Object param) {
-        String paramAsJson = JSON.serialize(param);
-        query = query.replaceFirst("#", getMatcherWithEscapedDollar(paramAsJson));
-        return query;
-    }
-
 
     /**
      * http://veerasundar.com/blog/2010/01/java-lang-illegalargumentexception-illegal-group-reference-in-string-replaceall/
@@ -78,7 +67,7 @@ public class QueryTemplate {
         return Matcher.quoteReplacement(serialized);
     }
 
-    private int countTokens(String json) {
-        return json.split(token).length - 1;
+    private int countTokens() {
+        return query.split(token).length - 1;
     }
 }
