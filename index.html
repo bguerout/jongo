@@ -5,9 +5,10 @@
 <title>bguerout/jongo @ GitHub</title>
 <style type="text/css">
 body {
-	color: #000000;
-	background-color: #f0b684;
+	color: #7e6f5d;
 	font-family: Helvetica, Arial, FreeSans, sans-serif;
+	margin: 0;
+	padding: 0;
 }
 
 #container {
@@ -21,35 +22,65 @@ body {
 
 #header {
 	margin-bottom: 75px;
+	color: #7e6f5d;
+}
+
+#header #jongo-logo {
+	position: relative;
+	top: 25px;
+	right: 10px;
+}
+
+#header-background {
+	position: absolute;
+	width: 100%;
+	height: 230px;
+	background-color: #3f2716;
+	-moz-box-shadow: 0px 0px 10px 10px #7e6f5d;
+	-webkit-box-shadow: 0px 0px 10px 10px #7e6f5d;
+	box-shadow: 0px 0px 10px 10px #7e6f5d;
 }
 
 h1 {
 	font-size: 3.8em;
-	color: #0f497b;
+	color: #aa814d;
 	margin: 0;
 	margin-bottom: 15px;
 }
 
 h1 .small {
 	font-size: 0.4em;
+	color: #7e6f5d;
 }
 
 h1 a {
-	text-decoration: none
+	text-decoration: none;
 }
 
 h2 {
-	color: #0f497b;
+	color: #3f2716;
 	margin-bottom: 5px;
 }
 
 h3 {
 	text-align: center;
-	color: #0f497b;
+	color: #3f2716;
 }
 
 a {
-	color: #0f497b;
+	color: #3f2716;
+}
+
+a:active {
+	color: inherit
+}
+
+a:visited {
+	color: inherit
+}
+
+a:hover {
+	color: inherit
 }
 
 .description {
@@ -75,17 +106,20 @@ hr {
 
 .footer {
 	text-align: center;
-	padding-top: 30px;
+	padding-top: 50px;
 	font-style: italic;
+	font-size: 75%;
 }
 </style>
 </head>
 <body>
+	<div id="header-background" />
 	<div id="container">
 		<div id="header">
 			<h1>
-				<a href="https://github.com/bguerout/jongo">jongo</a> <span
-					class="small">by <a href="https://github.com/bguerout">bguerout</a></span>
+				<a href="https://github.com/bguerout/jongo">jongo</a><img
+					id="jongo-logo" src="jongo.png" /> <span class="small">by <a
+					href="https://github.com/bguerout">bguerout</a></span>
 			</h1>
 			<div class="description">Sugar over Mongo Java Driver (because
 				DBObject sucks)</div>
@@ -113,7 +147,7 @@ hr {
 			You can download this project in either <a
 				href="https://github.com/bguerout/jongo/zipball/master">zip</a> or <a
 				href="https://github.com/bguerout/jongo/tarball/master">tar
-				formats. 
+				formats.</a>
 		</p>
 		<p>
 			You can also clone the project with <a href="http://git-scm.com">Git</a>
