@@ -16,6 +16,7 @@
 
 package com.jongo.spikes;
 
+import com.jongo.ParameterizedQuery;
 import com.jongo.jackson.JsonProcessor;
 import com.mongodb.DBObject;
 import org.junit.Before;
@@ -33,6 +34,13 @@ public class ParameterizedQueryTest {
     @Before
     public void setUp() throws Exception {
         processor = new JsonProcessor();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWithCharParameter() throws Exception {
+        char c = '1';
+        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{c});
+        query.toDBObject();
     }
 
     @Test(expected = IllegalArgumentException.class)

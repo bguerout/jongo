@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jongo.spikes;
+package com.jongo;
 
 import com.mongodb.DBObject;
 

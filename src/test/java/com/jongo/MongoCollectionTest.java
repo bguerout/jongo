@@ -55,6 +55,20 @@ public class MongoCollectionTest {
     }
 
     @Test
+    public void canFindOneWithMapperAndParameters() throws Exception {
+
+        /* given */
+        mongoCollection.save(new Poi("999", address));// TODO save method must return
+        // generated id
+
+        /* when */
+        String id = mongoCollection.findOne("{_id:#}", new Object[]{"999"}, new IdDBObjectMapper());
+
+        /* then */
+        assertThat(id).isEqualTo("999");
+    }
+
+    @Test
     public void canFindOne() throws Exception {
 
         /* given */
@@ -66,6 +80,20 @@ public class MongoCollectionTest {
         /* then */
         assertThat(poi.id).isEqualTo("999");
     }
+
+    @Test
+    public void canFindOneWithParameters() throws Exception {
+
+        /* given */
+        mongoCollection.save(new Poi("999", address));
+
+        /* when */
+        Poi poi = mongoCollection.findOne("{_id:#}", new Object[]{"999"}, Poi.class);
+
+        /* then */
+        assertThat(poi.id).isEqualTo("999");
+    }
+
 
     @Test
     public void shouldFailWhenNoResultOnFindOneCommand() throws Exception {
@@ -89,7 +117,20 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void canFindEntitiesUsingAddress() throws Exception {
+    public void canFindEntitiesWithMapperAndParameters() throws Exception {
+        /* given */
+        mongoCollection.save(new Poi(id, address));
+
+        /* when */
+        Iterator<String> results = mongoCollection.find("{ _id: #}", new Object[]{"1"}, new IdDBObjectMapper());
+
+        /* then */
+        assertThat(results.hasNext()).isTrue();
+        assertThat(results.next()).isEqualTo(id);
+    }
+
+    @Test
+    public void canFindEntities() throws Exception {
         /* given */
         mongoCollection.save(new Poi(address));
 
@@ -144,34 +185,34 @@ public class MongoCollectionTest {
 
     @Test
     public void canFilterDistinctStringEntities() throws Exception {
-	/* given */
-	mongoCollection.save(new Poi(address));
-	mongoCollection.save(new Poi(address));
-	mongoCollection.save(new Poi("23 rue des murlins"));
+        /* given */
+        mongoCollection.save(new Poi(address));
+        mongoCollection.save(new Poi(address));
+        mongoCollection.save(new Poi("23 rue des murlins"));
 
-	/* when */
-	Iterator<String> addresses = mongoCollection.distinct("address", "", String.class);
+        /* when */
+        Iterator<String> addresses = mongoCollection.distinct("address", "", String.class);
 
-	/* then */
-	assertThat(addresses.next()).isEqualTo(address);
-	assertThat(addresses.next()).isEqualTo("23 rue des murlins");
-	assertThat(addresses.hasNext()).isFalse();
+        /* then */
+        assertThat(addresses.next()).isEqualTo(address);
+        assertThat(addresses.next()).isEqualTo("23 rue des murlins");
+        assertThat(addresses.hasNext()).isFalse();
     }
 
     @Test
     public void canFilterDistinctIntegerEntities() throws Exception {
-    /* given */
-    mongoCollection.save(new Poi(address, lat, lng));
-    mongoCollection.save(new Poi(address, lat, lng));
-    mongoCollection.save(new Poi(address, 4, 1));
+        /* given */
+        mongoCollection.save(new Poi(address, lat, lng));
+        mongoCollection.save(new Poi(address, lat, lng));
+        mongoCollection.save(new Poi(address, 4, 1));
 
-    /* when */
-    Iterator<Integer> addresses = mongoCollection.distinct("coordinate.lat", "", Integer.class);
+        /* when */
+        Iterator<Integer> addresses = mongoCollection.distinct("coordinate.lat", "", Integer.class);
 
-    /* then */
-    assertThat(addresses.next()).isEqualTo(lat);
-    assertThat(addresses.next()).isEqualTo(4);
-    assertThat(addresses.hasNext()).isFalse();
+        /* then */
+        assertThat(addresses.next()).isEqualTo(lat);
+        assertThat(addresses.next()).isEqualTo(4);
+        assertThat(addresses.hasNext()).isFalse();
     }
 
     @Test
@@ -225,7 +266,7 @@ public class MongoCollectionTest {
 
     @Test
     public void canUpdateEntity() throws Exception {
-    /* given */
+        /* given */
         mongoCollection.save(new Poi(id, address));
         Iterator<Poi> pois = mongoCollection.find("{_id: '1'}", Poi.class);
         Poi poi = pois.next();

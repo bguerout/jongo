@@ -39,21 +39,44 @@ public class MongoCollection {
         return findOne(query, jsonProcessor.createMapper(clazz));
     }
 
-    public <T> T findOne(String query, DBObjectMapper<T> dbObjectMapper) {
-        DBObject result = collection.findOne(jsonProcessor.toDBObject(query));
+    public <T> T findOne(String query, Object[] parameters, Class<T> clazz) {
+        return findOne(query, parameters, jsonProcessor.createMapper(clazz));
+    }
+
+    public <T> T findOne(String query, DBObjectMapper<T> resultMapper) {
+        Query staticQuery = new StaticQuery(jsonProcessor, query);
+        return findOne(staticQuery.toDBObject(), resultMapper);
+    }
+
+    public <T> T findOne(String query, Object[] parameters, DBObjectMapper<T> resultMapper) {
+        Query parameterizedQuery = new ParameterizedQuery(jsonProcessor, query, parameters);
+        return findOne(parameterizedQuery.toDBObject(), resultMapper);
+    }
+
+    private <T> T findOne(DBObject queryAsDBObject, DBObjectMapper<T> dbObjectMapper) {
+        DBObject result = collection.findOne(queryAsDBObject);
         if (result == null)
-            return null;//TODO we preserve mongo driver behaviour when findOne query has no result (should we throw an exception instead ?)
+            return null;
         else
             return dbObjectMapper.map(result);
     }
+
 
     public <T> Iterator<T> find(String query, Class<T> clazz) {
         return find(query, jsonProcessor.createMapper(clazz));
     }
 
     public <T> Iterator<T> find(String query, DBObjectMapper<T> dbObjectMapper) {
-        DBObject ref = jsonProcessor.toDBObject(query);
-        DBCursor cursor = collection.find(ref);
+        return find(jsonProcessor.toDBObject(query), dbObjectMapper);
+    }
+
+    public <T> Iterator<T> find(String query, Object[] parameters, DBObjectMapper<T> dbObjectMapper) {
+        Query parameterizedQuery = new ParameterizedQuery(jsonProcessor, query, parameters);
+        return find(parameterizedQuery.toDBObject(), dbObjectMapper);
+    }
+
+    private <T> Iterator<T> find(DBObject queryAsDBObject, DBObjectMapper<T> dbObjectMapper) {
+        DBCursor cursor = collection.find(queryAsDBObject);
         return new MongoIterator(cursor, dbObjectMapper);
     }
 
@@ -79,5 +102,6 @@ public class MongoCollection {
     public void drop() {
         collection.drop();
     }
+
 
 }
