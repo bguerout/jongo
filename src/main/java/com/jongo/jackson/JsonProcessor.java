@@ -38,17 +38,13 @@ public class JsonProcessor {
         this.objectMapper = createMapperForNonAnnotatedBean();
     }
 
-    public <T> DBObjectMapper<T> createMapper(Class<T> clazz) {
+    public <T> DBObjectMapper<T> createEntityMapper(Class<T> clazz) {
         return new DBObjectUnmarshaller(clazz, objectMapper); //TODO caching created binder should be better (a map with class as key )
     }
 
-    public DBObject toDBObject(String jsonData) {
-        return ((DBObject) JSON.parse(jsonData));
-    }
-
-    public DBObject toDBObject(Object entity) throws IOException {
+    public DBObject getEntityAsDBObject(Object entity) throws IOException {
         String entityAsJson = getEntityAsJson(entity);
-        return toDBObject(entityAsJson);
+        return ((DBObject) JSON.parse(entityAsJson));
     }
 
     private String getEntityAsJson(Object obj) throws IOException {

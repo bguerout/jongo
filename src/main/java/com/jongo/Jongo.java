@@ -16,18 +16,20 @@
 
 package com.jongo;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import com.jongo.jackson.JsonProcessor;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 
-public class StaticQuery implements Query {
+public class Jongo {
 
-    private final String query;
+    private final DB database;
 
-    public StaticQuery(String query) {
-        this.query = query;
+    public Jongo(DB database) {
+        this.database = database;
     }
 
-    public DBObject toDBObject() {
-        return ((DBObject) JSON.parse(query));
+    public MongoCollection getCollection(String name) {
+        DBCollection dbCollection = database.getCollection(name);
+        return new MongoCollection(dbCollection, new JsonProcessor());
     }
 }

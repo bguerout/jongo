@@ -33,7 +33,7 @@ public class MongoIteratorTest {
 
     @Before
     public void setUp() throws Exception {
-        dbObjectMapper = new JsonProcessor().createMapper(String.class);
+        dbObjectMapper = new JsonProcessor().createEntityMapper(String.class);
     }
 
     @Test(expected = NoSuchElementException.class)

@@ -16,7 +16,6 @@
 
 package com.jongo;
 
-import com.jongo.jackson.JsonProcessor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
@@ -27,21 +26,19 @@ public class ParameterizedQuery implements Query {
 
     private static final char DEFAULT_TOKEN = '#';
     private final String token;
-    private final JsonProcessor processor;
     private final String templateQuery;
     private Object[] parameters;
 
-    public ParameterizedQuery(JsonProcessor processor, String templateQuery, Object[] parameters) {
+    public ParameterizedQuery(String templateQuery, Object[] parameters) {
         this.templateQuery = templateQuery;
         this.parameters = parameters;
-        this.processor = processor;
         this.token = "" + DEFAULT_TOKEN;
         checkIfQueryCanBeParameterized();
     }
 
     @Override
     public DBObject toDBObject() {
-        return processor.toDBObject(generateParameterizedQuery());
+        return ((DBObject) JSON.parse(generateParameterizedQuery()));
     }
 
     private String generateParameterizedQuery() {

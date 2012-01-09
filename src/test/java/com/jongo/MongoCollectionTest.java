@@ -16,9 +16,12 @@
 
 package com.jongo;
 
+import com.jongo.jackson.JsonProcessor;
 import com.jongo.model.Coordinate;
 import com.jongo.model.Poi;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +39,8 @@ public class MongoCollectionTest {
 
     @Before
     public void setUp() throws UnknownHostException, MongoException {
-        mongoCollection = new MongoCollection("jongo", "poi");
+        DBCollection collection = new Mongo().getDB("jongo").getCollection("poi");
+        mongoCollection = new MongoCollection(collection, new JsonProcessor());
         mongoCollection.drop();
     }
 
@@ -272,6 +276,14 @@ public class MongoCollectionTest {
         Poi poi = pois.next();
         poi.address = null;
         mongoCollection.save(poi);
+    }
+
+    @Test
+    public void canGetCollectionName() throws Exception {
+
+        String name = mongoCollection.getName();
+
+        assertThat(name).isEqualTo("poi");
     }
 
     private static class IdDBObjectMapper implements DBObjectMapper<String> {

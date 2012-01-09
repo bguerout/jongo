@@ -17,9 +17,7 @@
 package com.jongo.spikes;
 
 import com.jongo.ParameterizedQuery;
-import com.jongo.jackson.JsonProcessor;
 import com.mongodb.DBObject;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -29,29 +27,22 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ParameterizedQueryTest {
 
-    private JsonProcessor processor;
-
-    @Before
-    public void setUp() throws Exception {
-        processor = new JsonProcessor();
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithCharParameter() throws Exception {
         char c = '1';
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{c});
+        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{c});
         query.toDBObject();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenNotEnoughParameters() throws Exception {
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#,id2:#}", new Object[]{"123"});
+        ParameterizedQuery query = new ParameterizedQuery("{id:#,id2:#}", new Object[]{"123"});
         query.toDBObject();
     }
 
     @Test
     public void canMapParameter() throws Exception {
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{"123"});
+        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{"123"});
 
         DBObject dbObject = query.toDBObject();
 
@@ -60,7 +51,7 @@ public class ParameterizedQueryTest {
 
     @Test
     public void canMapParameters() throws Exception {
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#, test:#}", new Object[]{"123", "456"});
+        ParameterizedQuery query = new ParameterizedQuery("{id:#, test:#}", new Object[]{"123", "456"});
         DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("id")).isEqualTo("123");
@@ -71,7 +62,7 @@ public class ParameterizedQueryTest {
     public void canMapDateParameter() throws Exception {
 
         Date epoch = new Date(0);
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{mydate:#}", new Object[]{epoch});
+        ParameterizedQuery query = new ParameterizedQuery("{mydate:#}", new Object[]{epoch});
 
         DBObject dbObject = query.toDBObject();
 
@@ -84,7 +75,7 @@ public class ParameterizedQueryTest {
         ArrayList<String> elements = new ArrayList<String>();
         elements.add("1");
         elements.add("2");
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{$in:#}", new Object[]{elements});
+        ParameterizedQuery query = new ParameterizedQuery("{$in:#}", new Object[]{elements});
 
         DBObject dbObject = query.toDBObject();
 
@@ -94,7 +85,7 @@ public class ParameterizedQueryTest {
     @Test
     public void canHandleNullParameter() throws Exception {
 
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{null});
+        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{null});
 
         DBObject dbObject = query.toDBObject();
 
@@ -104,7 +95,7 @@ public class ParameterizedQueryTest {
     @Test
     public void canHandleBooleanParameter() throws Exception {
 
-        ParameterizedQuery query = new ParameterizedQuery(processor, "{id:#}", new Object[]{true});
+        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{true});
 
         DBObject dbObject = query.toDBObject();
 

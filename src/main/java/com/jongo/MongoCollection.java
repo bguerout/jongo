@@ -17,10 +17,11 @@
 package com.jongo;
 
 import com.jongo.jackson.JsonProcessor;
-import com.mongodb.*;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,26 +31,26 @@ public class MongoCollection {
     private final DBCollection collection;
     private final JsonProcessor jsonProcessor;
 
-    public MongoCollection(String database, String collection) throws UnknownHostException, MongoException {
-        this.collection = new Mongo().getDB(database).getCollection(collection);
-        this.jsonProcessor = new JsonProcessor();
+    public MongoCollection(DBCollection dbCollection, JsonProcessor jsonProcessor) {
+        this.collection = dbCollection;
+        this.jsonProcessor = jsonProcessor;
     }
 
     public <T> T findOne(String query, Class<T> clazz) {
-        return findOne(query, jsonProcessor.createMapper(clazz));
+        return findOne(query, jsonProcessor.createEntityMapper(clazz));
     }
 
     public <T> T findOne(String query, Object[] parameters, Class<T> clazz) {
-        return findOne(query, parameters, jsonProcessor.createMapper(clazz));
+        return findOne(query, parameters, jsonProcessor.createEntityMapper(clazz));
     }
 
     public <T> T findOne(String query, DBObjectMapper<T> resultMapper) {
-        Query staticQuery = new StaticQuery(jsonProcessor, query);
+        Query staticQuery = new StaticQuery(query);
         return findOne(staticQuery.toDBObject(), resultMapper);
     }
 
     public <T> T findOne(String query, Object[] parameters, DBObjectMapper<T> resultMapper) {
-        Query parameterizedQuery = new ParameterizedQuery(jsonProcessor, query, parameters);
+        Query parameterizedQuery = new ParameterizedQuery(query, parameters);
         return findOne(parameterizedQuery.toDBObject(), resultMapper);
     }
 
@@ -63,15 +64,16 @@ public class MongoCollection {
 
 
     public <T> Iterator<T> find(String query, Class<T> clazz) {
-        return find(query, jsonProcessor.createMapper(clazz));
+        return find(query, jsonProcessor.createEntityMapper(clazz));
     }
 
     public <T> Iterator<T> find(String query, DBObjectMapper<T> dbObjectMapper) {
-        return find(jsonProcessor.toDBObject(query), dbObjectMapper);
+        Query staticQuery = new StaticQuery(query);
+        return find(staticQuery.toDBObject(), dbObjectMapper);
     }
 
     public <T> Iterator<T> find(String query, Object[] parameters, DBObjectMapper<T> dbObjectMapper) {
-        Query parameterizedQuery = new ParameterizedQuery(jsonProcessor, query, parameters);
+        Query parameterizedQuery = new ParameterizedQuery(query, parameters);
         return find(parameterizedQuery.toDBObject(), dbObjectMapper);
     }
 
@@ -81,26 +83,31 @@ public class MongoCollection {
     }
 
     public long count(String query) {
-        DBObject ref = jsonProcessor.toDBObject(query);
-        return collection.count(ref);
+        Query staticQuery = new StaticQuery(query);
+        return collection.count(staticQuery.toDBObject());
     }
 
     @SuppressWarnings("unchecked")
     public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
-        DBObject ref = jsonProcessor.toDBObject(query);
+        Query staticQuery = new StaticQuery(query);
+        DBObject ref = staticQuery.toDBObject();
         List<?> distinct = collection.distinct(key, ref);
         if (BSONPrimitives.contains(clazz))
             return (Iterator<T>) distinct.iterator();
         else
-            return new MongoIterator((Iterator<DBObject>) distinct.iterator(), jsonProcessor.createMapper(clazz));
+            return new MongoIterator((Iterator<DBObject>) distinct.iterator(), jsonProcessor.createEntityMapper(clazz));
     }
 
     public <D> void save(D document) throws IOException {
-        collection.save(jsonProcessor.toDBObject(document));
+        collection.save(jsonProcessor.getEntityAsDBObject(document));
     }
 
     public void drop() {
         collection.drop();
+    }
+
+    public String getName() {
+        return collection.getName();
     }
 
 

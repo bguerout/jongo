@@ -16,18 +16,29 @@
 
 package com.jongo;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import com.mongodb.DB;
+import com.mongodb.Mongo;
+import org.junit.Before;
+import org.junit.Test;
 
-public class StaticQuery implements Query {
+import static org.fest.assertions.Assertions.assertThat;
 
-    private final String query;
+public class JongoTest {
 
-    public StaticQuery(String query) {
-        this.query = query;
+    private Jongo jongo;
+
+    @Before
+    public void setUp() throws Exception {
+        Mongo mongo = new Mongo();
+        DB database = mongo.getDB("jongo");
+        jongo = new Jongo(database);
     }
 
-    public DBObject toDBObject() {
-        return ((DBObject) JSON.parse(query));
+    @Test
+    public void canObtainACollection() throws Exception {
+        MongoCollection collection = jongo.getCollection("collection-name");
+
+        assertThat(collection).isNotNull();
+        assertThat(collection.getName()).isEqualTo("collection-name");
     }
 }
