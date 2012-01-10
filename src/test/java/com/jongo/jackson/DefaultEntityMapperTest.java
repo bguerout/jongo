@@ -26,12 +26,12 @@ import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class DBObjectUnmarshallerTest {
+public class DefaultEntityMapperTest {
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
 
-        DBObjectUnmarshaller<Poi> binder = new DBObjectUnmarshaller<Poi>(Poi.class, new ObjectMapper());
+        DefaultEntityMapper<Poi> binder = new DefaultEntityMapper<Poi>(Poi.class, new ObjectMapper());
         DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
 
         Poi poi = binder.map(dbObject);
@@ -42,7 +42,7 @@ public class DBObjectUnmarshallerTest {
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
 
-        DBObjectUnmarshaller<Poi> binder = new DBObjectUnmarshaller<Poi>(Poi.class, new ObjectMapper());
+        DefaultEntityMapper<Poi> binder = new DefaultEntityMapper<Poi>(Poi.class, new ObjectMapper());
         DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
         dbObject.put("coordinate", new BasicDBObject("lat", "48"));
 

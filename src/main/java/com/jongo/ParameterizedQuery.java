@@ -54,7 +54,7 @@ public class ParameterizedQuery implements Query {
     private void checkIfQueryCanBeParameterized() {
         int nbTokens = countTokens();
         if (nbTokens > parameters.length) {
-            throw new IllegalArgumentException("Query has more anchors " + nbTokens + " than parameters" + parameters.length);
+            throw new IllegalArgumentException("Query has more tokens " + nbTokens + " than parameters" + parameters.length);
         }
         for (Object parameter : parameters) {
             if (parameter != null && parameter.getClass().equals(Character.class))

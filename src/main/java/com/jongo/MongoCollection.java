@@ -16,7 +16,7 @@
 
 package com.jongo;
 
-import com.jongo.jackson.JsonProcessor;
+import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -29,19 +29,19 @@ public class MongoCollection {
 
     public static final String MONGO_ID = "_id";
     private final DBCollection collection;
-    private final JsonProcessor jsonProcessor;
+    private final EntityProcessor entityProcessor;
 
-    public MongoCollection(DBCollection dbCollection, JsonProcessor jsonProcessor) {
+    public MongoCollection(DBCollection dbCollection, EntityProcessor entityProcessor) {
         this.collection = dbCollection;
-        this.jsonProcessor = jsonProcessor;
+        this.entityProcessor = entityProcessor;
     }
 
     public <T> T findOne(String query, Class<T> clazz) {
-        return findOne(query, jsonProcessor.createEntityMapper(clazz));
+        return findOne(query, entityProcessor.createEntityMapper(clazz));
     }
 
     public <T> T findOne(String query, Object[] parameters, Class<T> clazz) {
-        return findOne(query, parameters, jsonProcessor.createEntityMapper(clazz));
+        return findOne(query, parameters, entityProcessor.createEntityMapper(clazz));
     }
 
     public <T> T findOne(String query, DBObjectMapper<T> resultMapper) {
@@ -62,9 +62,8 @@ public class MongoCollection {
             return dbObjectMapper.map(result);
     }
 
-
     public <T> Iterator<T> find(String query, Class<T> clazz) {
-        return find(query, jsonProcessor.createEntityMapper(clazz));
+        return find(query, entityProcessor.createEntityMapper(clazz));
     }
 
     public <T> Iterator<T> find(String query, DBObjectMapper<T> dbObjectMapper) {
@@ -95,11 +94,11 @@ public class MongoCollection {
         if (BSONPrimitives.contains(clazz))
             return (Iterator<T>) distinct.iterator();
         else
-            return new MongoIterator((Iterator<DBObject>) distinct.iterator(), jsonProcessor.createEntityMapper(clazz));
+            return new MongoIterator((Iterator<DBObject>) distinct.iterator(), entityProcessor.createEntityMapper(clazz));
     }
 
     public <D> void save(D document) throws IOException {
-        collection.save(jsonProcessor.getEntityAsDBObject(document));
+        collection.save(entityProcessor.getEntityAsDBObject(document));
     }
 
     public void drop() {
@@ -110,5 +109,7 @@ public class MongoCollection {
         return collection.getName();
     }
 
-
+    public DBCollection getDBCollection() {
+        return collection;
+    }
 }

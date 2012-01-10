@@ -24,12 +24,12 @@ import java.io.IOException;
 
 import static com.jongo.MongoCollection.MONGO_ID;
 
-public class DBObjectUnmarshaller<T> implements DBObjectMapper<T> {
+public class DefaultEntityMapper<T> implements DBObjectMapper<T> {
 
     private final Class<T> clazz;
     private final ObjectMapper mapper;
 
-    public DBObjectUnmarshaller(Class<T> clazz, ObjectMapper mapper) {
+    public DefaultEntityMapper(Class<T> clazz, ObjectMapper mapper) {
         this.clazz = clazz;
         this.mapper = mapper;
     }

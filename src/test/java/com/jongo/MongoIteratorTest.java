@@ -16,8 +16,8 @@
 
 package com.jongo;
 
-import com.jongo.jackson.DBObjectUnmarshaller;
-import com.jongo.jackson.JsonProcessor;
+import com.jongo.jackson.DefaultEntityMapper;
+import com.jongo.jackson.EntityProcessor;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import org.junit.Before;
@@ -33,7 +33,7 @@ public class MongoIteratorTest {
 
     @Before
     public void setUp() throws Exception {
-        dbObjectMapper = new JsonProcessor().createEntityMapper(String.class);
+        dbObjectMapper = new EntityProcessor().createEntityMapper(String.class);
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -59,7 +59,7 @@ public class MongoIteratorTest {
     public void whenIterateShouldConvertDbObjectToEntity() throws Exception {
 
         BasicDBObject resultEntity = new BasicDBObject("test", "value");
-        DBObjectUnmarshaller binder = mock(DBObjectUnmarshaller.class);
+        DefaultEntityMapper binder = mock(DefaultEntityMapper.class);
         DBCursor cursor = mock(DBCursor.class);
         when(cursor.hasNext()).thenReturn(true);
         when(cursor.next()).thenReturn(resultEntity);

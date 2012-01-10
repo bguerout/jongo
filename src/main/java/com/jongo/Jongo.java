@@ -16,7 +16,7 @@
 
 package com.jongo;
 
-import com.jongo.jackson.JsonProcessor;
+import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 
@@ -30,6 +30,6 @@ public class Jongo {
 
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
-        return new MongoCollection(dbCollection, new JsonProcessor());
+        return new MongoCollection(dbCollection, new EntityProcessor());
     }
 }

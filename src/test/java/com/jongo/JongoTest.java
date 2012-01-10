@@ -36,9 +36,11 @@ public class JongoTest {
 
     @Test
     public void canObtainACollection() throws Exception {
+
         MongoCollection collection = jongo.getCollection("collection-name");
 
         assertThat(collection).isNotNull();
         assertThat(collection.getName()).isEqualTo("collection-name");
+        assertThat(collection.getDBCollection().getFullName()).isEqualTo("jongo.collection-name");
     }
 }

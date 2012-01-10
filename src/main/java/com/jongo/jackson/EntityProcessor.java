@@ -30,16 +30,16 @@ import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
 import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
 
-public class JsonProcessor {
+public class EntityProcessor {
 
     private final ObjectMapper objectMapper;
 
-    public JsonProcessor() {
+    public EntityProcessor() {
         this.objectMapper = createMapperForNonAnnotatedBean();
     }
 
     public <T> DBObjectMapper<T> createEntityMapper(Class<T> clazz) {
-        return new DBObjectUnmarshaller(clazz, objectMapper); //TODO caching created binder should be better (a map with class as key )
+        return new DefaultEntityMapper(clazz, objectMapper); //TODO caching created binder should be better (a map with class as key )
     }
 
     public DBObject getEntityAsDBObject(Object entity) throws IOException {

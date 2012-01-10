@@ -16,7 +16,7 @@
 
 package com.jongo;
 
-import com.jongo.jackson.JsonProcessor;
+import com.jongo.jackson.EntityProcessor;
 import com.jongo.model.Coordinate;
 import com.jongo.model.Poi;
 import com.mongodb.DBCollection;
@@ -40,7 +40,7 @@ public class MongoCollectionTest {
     @Before
     public void setUp() throws UnknownHostException, MongoException {
         DBCollection collection = new Mongo().getDB("jongo").getCollection("poi");
-        mongoCollection = new MongoCollection(collection, new JsonProcessor());
+        mongoCollection = new MongoCollection(collection, new EntityProcessor());
         mongoCollection.drop();
     }
 
