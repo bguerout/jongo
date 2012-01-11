@@ -24,6 +24,7 @@ import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 public class MongoCollection {
 
@@ -101,6 +102,13 @@ public class MongoCollection {
         DBObject dbObject = entityProcessor.getEntityAsDBObject(document);
         collection.save(dbObject);
         return dbObject.get(MONGO_ID).toString();
+    }
+
+    @Deprecated
+    // TODO use save or generic method
+    public void index(String query) {
+        DBObject dbObject = ((DBObject) JSON.parse(query));
+        collection.insert(dbObject); // TODO don't save id
     }
 
     public void drop() {

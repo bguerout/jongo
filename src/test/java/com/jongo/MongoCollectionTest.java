@@ -40,9 +40,15 @@ public class MongoCollectionTest {
 
     @Before
     public void setUp() throws UnknownHostException, MongoException {
-        DBCollection collection = new Mongo().getDB("jongo").getCollection("poi");
-        mongoCollection = new MongoCollection(collection, new EntityProcessor());
-        mongoCollection.drop();
+        mongoCollection = connect("jongo", "poi", true);
+    }
+
+    private MongoCollection connect(String dbname, String colname, boolean drop) throws UnknownHostException {
+        DBCollection collection = new Mongo().getDB(dbname).getCollection(colname);
+        MongoCollection col = new MongoCollection(collection, new EntityProcessor());
+        if (drop)
+            col.drop();
+        return col;
     }
 
     String addressExists = "{address:{$exists:true}}";
@@ -173,6 +179,22 @@ public class MongoCollectionTest {
 
         assertThat(mongoCollection.find("{coordinate.lat: {$ne: 2}}", Poi.class)).hasSize(2);
         assertThat(mongoCollection.find("{coordinate.lat: {$in: [1,2,3]}}", Poi.class)).hasSize(3);
+    }
+
+    @Test
+    public void canUseGeospacial() throws Exception {
+        /* given */
+        mongoCollection.save(new Poi(address, 1, 1));
+        mongoCollection.save(new Poi(address, 4, 4));
+
+        MongoCollection indexes = connect("jongo", "system.indexes", false);
+        indexes.index("{'name': 'coordinate' , 'ns' : 'jongo.poi' , 'key' : { 'coordinate' : '2d'}}");
+
+        /* then */
+        assertThat(mongoCollection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}", Poi.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}", Poi.class)).hasSize(2);
+        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}", Poi.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}", Poi.class)).hasSize(1);
     }
 
     @Test
