@@ -45,80 +45,59 @@ public class MongoCollectionTest {
         mongoCollection.drop();
     }
 
-    @Test
-    public void canFindOneWithMapper() throws Exception {
-
-        /* given */
-        mongoCollection.save(new Poi(address));// TODO save method must return
-        // generated id
-
-        /* when */
-        String id = mongoCollection.findOne("{address:{$exists:true}}", new IdDBObjectMapper());
-
-        /* then */
-        assertThat(id).isNotNull();
-    }
-
-    @Test
-    public void canFindOneWithMapperAndParameters() throws Exception {
-
-        /* given */
-        mongoCollection.save(new Poi("999", address));// TODO save method must
-        // return
-        // generated id
-
-        /* when */
-        String id = mongoCollection.findOne("{_id:#}", new Object[] { "999" }, new IdDBObjectMapper());
-
-        /* then */
-        assertThat(id).isEqualTo("999");
-    }
+    String addressExists = "{address:{$exists:true}}";
 
     @Test
     public void canFindOne() throws Exception {
-
         /* given */
-        mongoCollection.save(new Poi("999", address));
+        mongoCollection.save(new Poi("999", address));// TODO return id
 
         /* when */
-        Poi poi = mongoCollection.findOne("{_id:'999'}", Poi.class);
+        String id = mongoCollection.findOne(addressExists, new IdDBObjectMapper());
+        Poi poi = mongoCollection.findOne(addressExists, Poi.class);
 
         /* then */
+        assertThat(id).isEqualTo("999");
         assertThat(poi.id).isEqualTo("999");
     }
 
     @Test
     public void canFindOneWithParameters() throws Exception {
-
         /* given */
-        mongoCollection.save(new Poi("999", address));
+        mongoCollection.save(new Poi("999", address));// TODO return id
 
         /* when */
+        String id = mongoCollection.findOne("{_id:#}", new Object[] { "999" }, new IdDBObjectMapper());
         Poi poi = mongoCollection.findOne("{_id:#}", new Object[] { "999" }, Poi.class);
 
         /* then */
+        assertThat(id).isEqualTo("999");
         assertThat(poi.id).isEqualTo("999");
     }
 
     @Test
-    public void shouldFailWhenNoResultOnFindOneCommand() throws Exception {
-
+    public void shouldEmptyResultBeCorrect() throws Exception {
         assertThat(mongoCollection.findOne("{_id:'invalid-id'}", Poi.class)).isNull();
         assertThat(mongoCollection.findOne("{_id:'invalid-id'}", new IdDBObjectMapper())).isNull();
+
+        assertThat(mongoCollection.find("{_id:'invalid-id'}", Poi.class)).hasSize(0);
     }
 
     @Test
-    public void canFindEntitiesWithMapper() throws Exception {
+    public void canFindEntities() throws Exception {
         /* given */
         mongoCollection.save(new Poi(id, address));
 
         /* when */
-        Iterator<String> results = mongoCollection.find("{ _id: '1'}", new IdDBObjectMapper());
+        Iterator<String> strings = mongoCollection.find(addressExists, new IdDBObjectMapper());
+        Iterator<Poi> pois = mongoCollection.find(addressExists, Poi.class);
 
         /* then */
-        assertThat(results.hasNext()).isTrue();
-        assertThat(results.next()).isEqualTo(id);
-        assertThat(results.hasNext()).isFalse();
+        assertThat(strings.next()).isEqualTo(id);
+        assertThat(pois.next().id).isEqualTo(id);
+
+        assertThat(strings.hasNext()).isFalse();
+        assertThat(pois.hasNext()).isFalse();
     }
 
     @Test
@@ -127,26 +106,11 @@ public class MongoCollectionTest {
         mongoCollection.save(new Poi(id, address));
 
         /* when */
-        Iterator<String> results = mongoCollection.find("{ _id: #}", new Object[] { "1" }, new IdDBObjectMapper());
+        Iterator<String> strings = mongoCollection.find("{_id:#}", new Object[] { "1" }, new IdDBObjectMapper());
 
         /* then */
-        assertThat(results.hasNext()).isTrue();
-        assertThat(results.next()).isEqualTo(id);
-    }
-
-    @Test
-    public void canFindEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address));
-
-        /* when */
-        Iterator<Poi> results = mongoCollection.find("{address:{$exists:true}}", Poi.class);
-
-        /* then */
-        Poi result = results.next();
-        assertThat(result.address).isEqualTo(address);
-        assertThat(result.id).isNotNull();
-        assertThat(results.hasNext()).isFalse();
+        assertThat(strings.hasNext()).isTrue();
+        assertThat(strings.next()).isEqualTo(id);
     }
 
     @Test
@@ -160,14 +124,6 @@ public class MongoCollectionTest {
         /* then */
         assertThat(results.next().coordinate.lat).isEqualTo(lat);
         assertThat(results.hasNext()).isFalse();
-    }
-
-    @Test
-    public void shouldReturnAnEmptyListWhenNoResultOnFindCommand() throws Exception {
-
-        Iterator<Poi> iterator = mongoCollection.find("{_id:'invalid-id'}", Poi.class);
-
-        assertThat(iterator.hasNext()).isFalse();
     }
 
     @Test
@@ -198,9 +154,7 @@ public class MongoCollectionTest {
         Iterator<Poi> results = mongoCollection.find("{'$query':{}, '$maxScan':2}", Poi.class);
 
         /* then */
-        results.next();
-        results.next();
-        assertThat(results.hasNext()).isFalse();
+        assertThat(results).hasSize(2);
     }
 
     @Test
@@ -215,6 +169,7 @@ public class MongoCollectionTest {
         assertThat(mongoCollection.find("{coordinate.lat: {$lt: 2}}", Poi.class)).hasSize(1);
         assertThat(mongoCollection.find("{coordinate.lat: {$gte: 2}}", Poi.class)).hasSize(2);
         assertThat(mongoCollection.find("{coordinate.lat: {$lte: 2}}", Poi.class)).hasSize(2);
+        assertThat(mongoCollection.find("{coordinate.lat: {$gt: 1, $lt: 3}}", Poi.class)).hasSize(1);
 
         assertThat(mongoCollection.find("{coordinate.lat: {$ne: 2}}", Poi.class)).hasSize(2);
         assertThat(mongoCollection.find("{coordinate.lat: {$in: [1,2,3]}}", Poi.class)).hasSize(3);
@@ -280,7 +235,7 @@ public class MongoCollectionTest {
         mongoCollection.save(new Poi(null, 4, 1));
 
         /* when */
-        Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", "{address:{$exists:true}}", Coordinate.class);
+        Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", addressExists, Coordinate.class);
 
         /* then */
         Coordinate first = coordinates.next();
@@ -296,7 +251,7 @@ public class MongoCollectionTest {
         mongoCollection.save(new Poi(null, 4, 1));
 
         /* then */
-        assertThat(mongoCollection.count("{'address': {$exists:true}}")).isEqualTo(1);
+        assertThat(mongoCollection.count(addressExists)).isEqualTo(1);
         assertThat(mongoCollection.count("{'coordinate.lat': {$exists:true}}")).isEqualTo(2);
     }
 
@@ -308,14 +263,19 @@ public class MongoCollectionTest {
         Poi poi = pois.next();
         poi.address = null;
         mongoCollection.save(poi);
+
+        /* when */
+        pois = mongoCollection.find("{_id: '1'}", Poi.class);
+
+        /* then */
+        poi = pois.next();
+        assertThat(poi.id).isEqualTo(id);
+        assertThat(poi.address).isNull();
     }
 
     @Test
     public void canGetCollectionName() throws Exception {
-
-        String name = mongoCollection.getName();
-
-        assertThat(name).isEqualTo("poi");
+        assertThat(mongoCollection.getName()).isEqualTo("poi");
     }
 
     private static class IdDBObjectMapper implements DBObjectMapper<String> {
