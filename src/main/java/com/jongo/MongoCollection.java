@@ -97,8 +97,10 @@ public class MongoCollection {
             return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), entityProcessor.createEntityMapper(clazz));
     }
 
-    public <D> void save(D document) throws IOException {
-        collection.save(entityProcessor.getEntityAsDBObject(document));
+    public <D> String save(D document) throws IOException {
+        DBObject dbObject = entityProcessor.getEntityAsDBObject(document);
+        collection.save(dbObject);
+        return dbObject.get(MONGO_ID).toString();
     }
 
     public void drop() {

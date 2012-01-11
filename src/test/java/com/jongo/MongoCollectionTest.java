@@ -50,29 +50,29 @@ public class MongoCollectionTest {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        mongoCollection.save(new Poi("999", address));// TODO return id
+        String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        String id = mongoCollection.findOne(addressExists, new IdDBObjectMapper());
+        String poiId = mongoCollection.findOne(addressExists, new IdDBObjectMapper());
         Poi poi = mongoCollection.findOne(addressExists, Poi.class);
 
         /* then */
-        assertThat(id).isEqualTo("999");
-        assertThat(poi.id).isEqualTo("999");
+        assertThat(poiId).isEqualTo(id);
+        assertThat(poi.id).isEqualTo(id);
     }
 
     @Test
     public void canFindOneWithParameters() throws Exception {
         /* given */
-        mongoCollection.save(new Poi("999", address));// TODO return id
+        String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        String id = mongoCollection.findOne("{_id:#}", new Object[] { "999" }, new IdDBObjectMapper());
-        Poi poi = mongoCollection.findOne("{_id:#}", new Object[] { "999" }, Poi.class);
+        String poiId = mongoCollection.findOne("{_id:#}", new Object[] { id }, new IdDBObjectMapper());
+        Poi poi = mongoCollection.findOne("{_id:#}", new Object[] { id }, Poi.class);
 
         /* then */
-        assertThat(id).isEqualTo("999");
-        assertThat(poi.id).isEqualTo("999");
+        assertThat(poiId).isEqualTo(id);
+        assertThat(poi.id).isEqualTo(id);
     }
 
     @Test
