@@ -32,4 +32,8 @@ public class Jongo {
         DBCollection dbCollection = database.getCollection(name);
         return new MongoCollection(dbCollection, new EntityProcessor());
     }
+
+    public DB getDatabase() {
+        return database;
+    }
 }
