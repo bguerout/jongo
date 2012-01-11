@@ -47,16 +47,16 @@ public class MongoCollection {
 
     public <T> T findOne(String query, DBObjectMapper<T> resultMapper) {
         Query staticQuery = new StaticQuery(query);
-        return findOne(staticQuery.toDBObject(), resultMapper);
+        return findOne(staticQuery, resultMapper);
     }
 
     public <T> T findOne(String query, Object[] parameters, DBObjectMapper<T> resultMapper) {
         Query parameterizedQuery = new ParameterizedQuery(query, parameters);
-        return findOne(parameterizedQuery.toDBObject(), resultMapper);
+        return findOne(parameterizedQuery, resultMapper);
     }
 
-    private <T> T findOne(DBObject queryAsDBObject, DBObjectMapper<T> dbObjectMapper) {
-        DBObject result = collection.findOne(queryAsDBObject);
+    private <T> T findOne(Query query, DBObjectMapper<T> dbObjectMapper) {
+        DBObject result = collection.findOne(query.toDBObject());
         if (result == null)
             return null;
         else
@@ -69,17 +69,17 @@ public class MongoCollection {
 
     public <T> Iterator<T> find(String query, DBObjectMapper<T> dbObjectMapper) {
         Query staticQuery = new StaticQuery(query);
-        return find(staticQuery.toDBObject(), dbObjectMapper);
+        return find(staticQuery, dbObjectMapper);
     }
 
     public <T> Iterator<T> find(String query, Object[] parameters, DBObjectMapper<T> dbObjectMapper) {
         Query parameterizedQuery = new ParameterizedQuery(query, parameters);
-        return find(parameterizedQuery.toDBObject(), dbObjectMapper);
+        return find(parameterizedQuery, dbObjectMapper);
     }
 
-    private <T> Iterator<T> find(DBObject queryAsDBObject, DBObjectMapper<T> dbObjectMapper) {
-        DBCursor cursor = collection.find(queryAsDBObject);
-        return new MongoIterator<T>(cursor, dbObjectMapper);
+    private <T> Iterator<T> find(Query query, DBObjectMapper<T> dbObjectMapper) {
+        DBCursor cursor = collection.find(query.toDBObject());
+        return new MongoIterator(cursor, dbObjectMapper);
     }
 
     public long count(String query) {
