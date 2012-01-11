@@ -16,14 +16,14 @@
 
 package com.jongo;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
 import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 
 public class MongoCollection {
 
@@ -78,7 +78,7 @@ public class MongoCollection {
 
     private <T> Iterator<T> find(DBObject queryAsDBObject, DBObjectMapper<T> dbObjectMapper) {
         DBCursor cursor = collection.find(queryAsDBObject);
-        return new MongoIterator(cursor, dbObjectMapper);
+        return new MongoIterator<T>(cursor, dbObjectMapper);
     }
 
     public long count(String query) {
@@ -94,7 +94,7 @@ public class MongoCollection {
         if (BSONPrimitives.contains(clazz))
             return (Iterator<T>) distinct.iterator();
         else
-            return new MongoIterator((Iterator<DBObject>) distinct.iterator(), entityProcessor.createEntityMapper(clazz));
+            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), entityProcessor.createEntityMapper(clazz));
     }
 
     public <D> void save(D document) throws IOException {

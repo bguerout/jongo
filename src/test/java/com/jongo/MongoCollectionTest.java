@@ -324,5 +324,4 @@ public class MongoCollectionTest {
             return result.get(MongoCollection.MONGO_ID).toString();
         }
     }
-
 }

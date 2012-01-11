@@ -20,5 +20,5 @@ import com.mongodb.DBObject;
 
 public interface DBObjectMapper<T> {
 
-    <T> T map(DBObject result);
+    T map(DBObject result);
 }
