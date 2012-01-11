@@ -204,6 +204,23 @@ public class MongoCollectionTest {
     }
 
     @Test
+    public void canUseConditionnalOperator() throws Exception {
+        /* given */
+        mongoCollection.save(new Poi(address, 1, 1));
+        mongoCollection.save(new Poi(address, 2, 1));
+        mongoCollection.save(new Poi(address, 3, 1));
+
+        /* then */
+        assertThat(mongoCollection.find("{coordinate.lat: {$gt: 2}}", Poi.class)).hasSize(1);
+        assertThat(mongoCollection.find("{coordinate.lat: {$lt: 2}}", Poi.class)).hasSize(1);
+        assertThat(mongoCollection.find("{coordinate.lat: {$gte: 2}}", Poi.class)).hasSize(2);
+        assertThat(mongoCollection.find("{coordinate.lat: {$lte: 2}}", Poi.class)).hasSize(2);
+
+        assertThat(mongoCollection.find("{coordinate.lat: {$ne: 2}}", Poi.class)).hasSize(2);
+        assertThat(mongoCollection.find("{coordinate.lat: {$in: [1,2,3]}}", Poi.class)).hasSize(3);
+    }
+
+    @Test
     public void canFilterDistinctStringEntities() throws Exception {
         /* given */
         mongoCollection.save(new Poi(address));
@@ -263,8 +280,7 @@ public class MongoCollectionTest {
         mongoCollection.save(new Poi(null, 4, 1));
 
         /* when */
-        Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", "{address:{$exists:true}}",
-                Coordinate.class);
+        Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", "{address:{$exists:true}}", Coordinate.class);
 
         /* then */
         Coordinate first = coordinates.next();
