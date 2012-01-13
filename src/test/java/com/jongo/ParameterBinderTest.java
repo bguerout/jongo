@@ -16,8 +16,6 @@
 
 package com.jongo;
 
-import com.jongo.ParameterizedQuery;
-import com.mongodb.DBObject;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,48 +23,48 @@ import java.util.Date;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ParameterizedQueryTest {
+public class ParameterBinderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithCharParameter() throws Exception {
         char c = '1';
-        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{c});
-        query.toDBObject();
+        ParameterBinder template = new ParameterBinder("{id:#}");
+        template.bind(c);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenNotEnoughParameters() throws Exception {
-        ParameterizedQuery query = new ParameterizedQuery("{id:#,id2:#}", new Object[]{"123"});
-        query.toDBObject();
+        ParameterBinder template = new ParameterBinder("{id:#,id2:#}");
+        template.bind("123");
     }
 
     @Test
     public void canMapParameter() throws Exception {
-        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{"123"});
+        ParameterBinder template = new ParameterBinder("{id:#}");
 
-        DBObject dbObject = query.toDBObject();
+        String query = template.bind("123");
 
-        assertThat(dbObject.get("id")).isEqualTo("123");
+        assertThat(query).isEqualTo("{id:\"123\"}");
     }
 
     @Test
     public void canMapParameters() throws Exception {
-        ParameterizedQuery query = new ParameterizedQuery("{id:#, test:#}", new Object[]{"123", "456"});
-        DBObject dbObject = query.toDBObject();
+        ParameterBinder template = new ParameterBinder("{id:#, test:#}");
 
-        assertThat(dbObject.get("id")).isEqualTo("123");
-        assertThat(dbObject.get("test")).isEqualTo("456");
+        String query = template.bind("123", "456");
+
+        assertThat(query).isEqualTo("{id:\"123\", test:\"456\"}");
     }
 
     @Test
     public void canMapDateParameter() throws Exception {
 
         Date epoch = new Date(0);
-        ParameterizedQuery query = new ParameterizedQuery("{mydate:#}", new Object[]{epoch});
+        ParameterBinder template = new ParameterBinder("{mydate:#}");
 
-        DBObject dbObject = query.toDBObject();
+        String query = template.bind(epoch);
 
-        assertThat(dbObject.get("mydate")).isEqualTo(epoch);
+        assertThat(query).isEqualTo("{mydate:{ \"$date\" : \"1970-01-01T00:00:00.000Z\"}}");
     }
 
     @Test
@@ -75,31 +73,31 @@ public class ParameterizedQueryTest {
         ArrayList<String> elements = new ArrayList<String>();
         elements.add("1");
         elements.add("2");
-        ParameterizedQuery query = new ParameterizedQuery("{$in:#}", new Object[]{elements});
+        ParameterBinder template = new ParameterBinder("{$in:#}");
 
-        DBObject dbObject = query.toDBObject();
+        String query = template.bind(elements);
 
-        assertThat(dbObject.get("$in")).isEqualTo(elements);
+        assertThat(query).isEqualTo("{$in:[ \"1\" , \"2\"]}");
     }
 
     @Test
-    public void canHandleNullParameter() throws Exception {
+    public void canHandleSingleNullParameter() throws Exception {
 
-        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{null});
+        ParameterBinder template = new ParameterBinder("{id:#}");
 
-        DBObject dbObject = query.toDBObject();
+        String query = template.bind(null);
 
-        assertThat(dbObject.get("id")).isNull();
+        assertThat(query).isEqualTo("{id: null }");
     }
 
     @Test
     public void canHandleBooleanParameter() throws Exception {
 
-        ParameterizedQuery query = new ParameterizedQuery("{id:#}", new Object[]{true});
+        ParameterBinder template = new ParameterBinder("{id:#}");
 
-        DBObject dbObject = query.toDBObject();
+        String query = template.bind(true);
 
-        assertThat(dbObject.get("id")).isEqualTo(Boolean.TRUE);
+        assertThat(query).isEqualTo("{id:true}");
     }
 }
 

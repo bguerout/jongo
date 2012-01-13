@@ -16,49 +16,48 @@
 
 package com.jongo;
 
-import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
 
-public class ParameterizedQuery implements Query {
+public class ParameterBinder {
 
-    private static final char DEFAULT_TOKEN = '#';
+    private static final String DEFAULT_TOKEN = "#";
     private final String token;
-    private final String templateQuery;
-    private Object[] parameters;
+    private final String template;
 
-    public ParameterizedQuery(String templateQuery, Object[] parameters) {
-        this.templateQuery = templateQuery;
-        this.parameters = parameters;
-        this.token = "" + DEFAULT_TOKEN;
-        checkIfQueryCanBeParameterized();
+    public ParameterBinder(String template) {
+        this.template = template;
+        this.token = DEFAULT_TOKEN;
     }
 
-    @Override
-    public DBObject toDBObject() {
-        return ((DBObject) JSON.parse(generateParameterizedQuery()));
+    public String bind(Object... parameters) {
+        if (parameters == null) {
+            parameters = new Object[]{null};
+        }
+        assertThatParamsCanBeBound(parameters);
+        return generateQueryFromTemplate(parameters);
     }
 
-    private String generateParameterizedQuery() {
-        String query = templateQuery;
+    private String generateQueryFromTemplate(Object[] parameters) {
+        String query = template;
         int paramIndex = 0;
         while (query.contains(token)) {
-            String paramAsJson = JSON.serialize(parameters[(paramIndex++)]);
+            String paramAsJson = JSON.serialize(parameters[paramIndex++]);
             query = query.replaceFirst("#", getMatcherWithEscapedDollar(paramAsJson));
         }
         return query;
     }
 
-    private void checkIfQueryCanBeParameterized() {
+    private void assertThatParamsCanBeBound(Object[] parameters) {
         int nbTokens = countTokens();
         if (nbTokens > parameters.length) {
             throw new IllegalArgumentException("Query has more tokens " + nbTokens + " than parameters" + parameters.length);
         }
         for (Object parameter : parameters) {
             if (parameter != null && parameter.getClass().equals(Character.class))
-                throw new IllegalArgumentException("Char parameter is not allowed: " + Arrays.toString(parameters) + " in query: " + templateQuery);
+                throw new IllegalArgumentException("Char parameter is not allowed: " + Arrays.toString(parameters) + " in query: " + template);
         }
     }
 
@@ -70,6 +69,6 @@ public class ParameterizedQuery implements Query {
     }
 
     private int countTokens() {
-        return templateQuery.split(token).length - 1;
+        return template.split(token).length - 1;
     }
 }

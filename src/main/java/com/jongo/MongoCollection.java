@@ -16,15 +16,15 @@
 
 package com.jongo;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
 import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 public class MongoCollection {
 
@@ -51,8 +51,8 @@ public class MongoCollection {
     }
 
     public <T> T findOne(String query, Object[] parameters, DBObjectMapper<T> resultMapper) {
-        Query parameterizedQuery = new ParameterizedQuery(query, parameters);
-        return findOne(parameterizedQuery, resultMapper);
+        String bindedQuery = new ParameterBinder(query).bind(parameters);
+        return findOne(new StaticQuery(bindedQuery), resultMapper);
     }
 
     private <T> T findOne(Query query, DBObjectMapper<T> dbObjectMapper) {
@@ -73,8 +73,8 @@ public class MongoCollection {
     }
 
     public <T> Iterator<T> find(String query, Object[] parameters, DBObjectMapper<T> dbObjectMapper) {
-        Query parameterizedQuery = new ParameterizedQuery(query, parameters);
-        return find(parameterizedQuery, dbObjectMapper);
+        String bindedQuery = new ParameterBinder(query).bind(parameters);
+        return find(new StaticQuery(bindedQuery), dbObjectMapper);
     }
 
     private <T> Iterator<T> find(Query query, DBObjectMapper<T> dbObjectMapper) {
