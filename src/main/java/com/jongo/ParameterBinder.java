@@ -25,33 +25,35 @@ public class ParameterBinder {
 
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
-    private final String template;
 
-    public ParameterBinder(String template) {
-        this.template = template;
+    public ParameterBinder() {
         this.token = DEFAULT_TOKEN;
     }
 
-    public String bind(Object... parameters) {
-        if (parameters == null) {
-            parameters = new Object[]{null};
-        }
-        assertThatParamsCanBeBound(parameters);
-        return generateQueryFromTemplate(parameters);
+    /**
+     * TODO should we handle non primitive types -> searching by criteria
+     */
+    public String bind(String template, Object... parameters) {
+        assertThatParamsCanBeBound(template, parameters);
+        return generateQueryFromTemplate(template, parameters);
     }
 
-    private String generateQueryFromTemplate(Object[] parameters) {
+    private String generateQueryFromTemplate(String template, Object[] parameters) {
         String query = template;
         int paramIndex = 0;
         while (query.contains(token)) {
-            String paramAsJson = JSON.serialize(parameters[paramIndex++]);
+            String paramAsJson = serializeAsJson(parameters[paramIndex++]);
             query = query.replaceFirst("#", getMatcherWithEscapedDollar(paramAsJson));
         }
         return query;
     }
 
-    private void assertThatParamsCanBeBound(Object[] parameters) {
-        int nbTokens = countTokens();
+    private String serializeAsJson(Object parameter) {
+        return JSON.serialize(parameter);
+    }
+
+    private void assertThatParamsCanBeBound(String template, Object[] parameters) {
+        int nbTokens = countTokens(template);
         if (nbTokens > parameters.length) {
             throw new IllegalArgumentException("Query has more tokens " + nbTokens + " than parameters" + parameters.length);
         }
@@ -68,7 +70,7 @@ public class ParameterBinder {
         return Matcher.quoteReplacement(serialized);
     }
 
-    private int countTokens() {
+    private int countTokens(String template) {
         return template.split(token).length - 1;
     }
 }

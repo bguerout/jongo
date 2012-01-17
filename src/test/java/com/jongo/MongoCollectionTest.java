@@ -16,14 +16,6 @@
 
 package com.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.net.UnknownHostException;
-import java.util.Iterator;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jongo.jackson.EntityProcessor;
 import com.jongo.model.Coordinate;
 import com.jongo.model.Poi;
@@ -31,6 +23,13 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.net.UnknownHostException;
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest {
 
@@ -71,10 +70,11 @@ public class MongoCollectionTest {
     public void canFindOneWithParameters() throws Exception {
         /* given */
         String id = mongoCollection.save(new Poi("999", address));
+        Query query = new Query.Builder("{_id:#}").parameters(id).build();
 
         /* when */
-        String poiId = mongoCollection.findOne("{_id:#}", new Object[] { id }, new IdDBObjectMapper());
-        Poi poi = mongoCollection.findOne("{_id:#}", new Object[] { id }, Poi.class);
+        String poiId = mongoCollection.findOne(query, new IdDBObjectMapper());
+        Poi poi = mongoCollection.findOne(query, Poi.class);
 
         /* then */
         assertThat(poiId).isEqualTo(id);
@@ -82,7 +82,24 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void shouldEmptyResultBeCorrect() throws Exception {
+    public void canFindOneWithPartialFieldsLoading() throws Exception {
+        /* given */
+        String id = mongoCollection.save(new Poi("999", address));
+        Query query = new Query.Builder("{_id:999}").fields(id).build();
+
+        /* when */
+        mongoCollection.findOne(query, new DBObjectMapper<String>() {
+            @Override
+            public String map(DBObject result) {
+                /* then */
+                assertThat(result.containsField("address")).isFalse();
+                return null;
+            }
+        });
+    }
+
+    @Test
+    public void shouldHandleEmptyResult() throws Exception {
         assertThat(mongoCollection.findOne("{_id:'invalid-id'}", Poi.class)).isNull();
         assertThat(mongoCollection.findOne("{_id:'invalid-id'}", new IdDBObjectMapper())).isNull();
 
@@ -107,12 +124,13 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void canFindEntitiesWithMapperAndParameters() throws Exception {
+    public void canFindEntitiesWithParameters() throws Exception {
         /* given */
         mongoCollection.save(new Poi(id, address));
+        Query query = new Query.Builder("{_id:#}").parameters("1").build();
 
         /* when */
-        Iterator<String> strings = mongoCollection.find("{_id:#}", new Object[] { "1" }, new IdDBObjectMapper());
+        Iterator<String> strings = mongoCollection.find(query, new IdDBObjectMapper());
 
         /* then */
         assertThat(strings.hasNext()).isTrue();
@@ -120,7 +138,24 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void canFindEntitiesUsingSubProperty() throws Exception {
+    public void canFindEntitiesWithPartialFieldsLoading() throws Exception {
+        /* given */
+        String id = mongoCollection.save(new Poi("999", address));
+        Query query = new Query.Builder("{_id:999}").fields(id).build();
+
+        /* when */
+        mongoCollection.findOne(query, new DBObjectMapper<String>() {
+            @Override
+            public String map(DBObject result) {
+                /* then */
+                assertThat(result.containsField("address")).isFalse();
+                return null;
+            }
+        });
+    }
+
+    @Test
+    public void canFindUsingSubProperty() throws Exception {
         /* given */
         mongoCollection.save(new Poi(address, lat, lng));
 

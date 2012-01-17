@@ -38,24 +38,18 @@ public class MongoCollection {
     }
 
     public <T> T findOne(String query, Class<T> clazz) {
+        return findOne(new Query(query), clazz);
+    }
+
+    public <T> T findOne(Query query, Class<T> clazz) {
         return findOne(query, entityProcessor.createEntityMapper(clazz));
     }
 
-    public <T> T findOne(String query, Object[] parameters, Class<T> clazz) {
-        return findOne(query, parameters, entityProcessor.createEntityMapper(clazz));
-    }
-
     public <T> T findOne(String query, DBObjectMapper<T> resultMapper) {
-        Query staticQuery = new StaticQuery(query);
-        return findOne(staticQuery, resultMapper);
+        return findOne(new Query(query), resultMapper);
     }
 
-    public <T> T findOne(String query, Object[] parameters, DBObjectMapper<T> resultMapper) {
-        String bindedQuery = new ParameterBinder(query).bind(parameters);
-        return findOne(new StaticQuery(bindedQuery), resultMapper);
-    }
-
-    private <T> T findOne(Query query, DBObjectMapper<T> dbObjectMapper) {
+    public <T> T findOne(Query query, DBObjectMapper<T> dbObjectMapper) {
         DBObject result = collection.findOne(query.toDBObject());
         if (result == null)
             return null;
@@ -64,32 +58,30 @@ public class MongoCollection {
     }
 
     public <T> Iterator<T> find(String query, Class<T> clazz) {
+        return find(new Query(query), clazz);
+    }
+
+    public <T> Iterator<T> find(Query query, Class<T> clazz) {
         return find(query, entityProcessor.createEntityMapper(clazz));
     }
 
     public <T> Iterator<T> find(String query, DBObjectMapper<T> dbObjectMapper) {
-        Query staticQuery = new StaticQuery(query);
-        return find(staticQuery, dbObjectMapper);
+        return find(new Query(query), dbObjectMapper);
     }
 
-    public <T> Iterator<T> find(String query, Object[] parameters, DBObjectMapper<T> dbObjectMapper) {
-        String bindedQuery = new ParameterBinder(query).bind(parameters);
-        return find(new StaticQuery(bindedQuery), dbObjectMapper);
-    }
-
-    private <T> Iterator<T> find(Query query, DBObjectMapper<T> dbObjectMapper) {
+    public <T> Iterator<T> find(Query query, DBObjectMapper<T> dbObjectMapper) {
         DBCursor cursor = collection.find(query.toDBObject());
         return new MongoIterator(cursor, dbObjectMapper);
     }
 
     public long count(String query) {
-        Query staticQuery = new StaticQuery(query);
+        Query staticQuery = new Query(query);
         return collection.count(staticQuery.toDBObject());
     }
 
     @SuppressWarnings("unchecked")
     public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
-        Query staticQuery = new StaticQuery(query);
+        Query staticQuery = new Query(query);
         DBObject ref = staticQuery.toDBObject();
         List<?> distinct = collection.distinct(key, ref);
         if (BSONPrimitives.contains(clazz))

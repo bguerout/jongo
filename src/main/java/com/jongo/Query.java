@@ -17,8 +17,66 @@
 package com.jongo;
 
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
-public interface Query {
+public class Query {
 
-    DBObject toDBObject();
+    private final String query;
+    private String fields;
+
+    public Query(String query) {
+        this.query = query;
+    }
+
+    public Query(String query, String fields) {
+        this.query = query;
+        this.fields = fields;
+    }
+
+    public DBObject toDBObject() {
+        return asDBObject(query);
+    }
+
+    private DBObject asDBObject(String json) {
+        return ((DBObject) JSON.parse(json));
+    }
+
+    public DBObject getFields() {
+        return asDBObject(fields);
+    }
+
+    public static class Builder {
+
+        private final String template;
+        private final ParameterBinder binder;
+        private Object[] parameters;
+        private String fields;
+
+        public Builder(String query) {
+            this(query, new ParameterBinder());
+        }
+
+        protected Builder(String query, ParameterBinder binder) {
+            this.template = query;
+            this.binder = binder;
+        }
+
+        public Builder parameters(Object... parameters) {
+            this.parameters = parameters;
+            return this;
+        }
+
+        public Builder fields(String fields) {
+            this.fields = fields;
+            return this;
+        }
+
+        public Query build() {
+            String query = template;
+            if (parameters != null) {
+                query = binder.bind(template, parameters);
+            }
+            return new Query(query, fields);
+        }
+    }
 }

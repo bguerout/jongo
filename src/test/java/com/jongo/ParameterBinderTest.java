@@ -16,6 +16,7 @@
 
 package com.jongo;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,33 +26,37 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ParameterBinderTest {
 
+    private ParameterBinder binder;
+
+    @Before
+    public void setUp() throws Exception {
+        binder = new ParameterBinder();
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithCharParameter() throws Exception {
         char c = '1';
-        ParameterBinder template = new ParameterBinder("{id:#}");
-        template.bind(c);
+        binder.bind("{id:#}", c);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenNotEnoughParameters() throws Exception {
-        ParameterBinder template = new ParameterBinder("{id:#,id2:#}");
-        template.bind("123");
+
+        binder.bind("{id:#,id2:#}", "123");
     }
 
     @Test
     public void canMapParameter() throws Exception {
-        ParameterBinder template = new ParameterBinder("{id:#}");
 
-        String query = template.bind("123");
+        String query = binder.bind("{id:#}", "123");
 
         assertThat(query).isEqualTo("{id:\"123\"}");
     }
 
     @Test
     public void canMapParameters() throws Exception {
-        ParameterBinder template = new ParameterBinder("{id:#, test:#}");
 
-        String query = template.bind("123", "456");
+        String query = binder.bind("{id:#, test:#}", "123", "456");
 
         assertThat(query).isEqualTo("{id:\"123\", test:\"456\"}");
     }
@@ -60,9 +65,8 @@ public class ParameterBinderTest {
     public void canMapDateParameter() throws Exception {
 
         Date epoch = new Date(0);
-        ParameterBinder template = new ParameterBinder("{mydate:#}");
 
-        String query = template.bind(epoch);
+        String query = binder.bind("{mydate:#}", epoch);
 
         assertThat(query).isEqualTo("{mydate:{ \"$date\" : \"1970-01-01T00:00:00.000Z\"}}");
     }
@@ -73,29 +77,17 @@ public class ParameterBinderTest {
         ArrayList<String> elements = new ArrayList<String>();
         elements.add("1");
         elements.add("2");
-        ParameterBinder template = new ParameterBinder("{$in:#}");
 
-        String query = template.bind(elements);
+        String query = binder.bind("{$in:#}", elements);
 
         assertThat(query).isEqualTo("{$in:[ \"1\" , \"2\"]}");
     }
 
     @Test
-    public void canHandleSingleNullParameter() throws Exception {
-
-        ParameterBinder template = new ParameterBinder("{id:#}");
-
-        String query = template.bind(null);
-
-        assertThat(query).isEqualTo("{id: null }");
-    }
-
-    @Test
     public void canHandleBooleanParameter() throws Exception {
 
-        ParameterBinder template = new ParameterBinder("{id:#}");
 
-        String query = template.bind(true);
+        String query = binder.bind("{id:#}", true);
 
         assertThat(query).isEqualTo("{id:true}");
     }
