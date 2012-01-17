@@ -18,7 +18,6 @@ package com.jongo;
 
 import com.mongodb.util.JSON;
 
-import java.util.Arrays;
 import java.util.regex.Matcher;
 
 public class ParameterBinder {
@@ -31,7 +30,7 @@ public class ParameterBinder {
     }
 
     /**
-     * TODO should we handle non primitive types -> searching by criteria
+     * TODO we should handle non primitive types to search by criteria example
      */
     public String bind(String template, Object... parameters) {
         assertThatParamsCanBeBound(template, parameters);
@@ -49,17 +48,18 @@ public class ParameterBinder {
     }
 
     private String serializeAsJson(Object parameter) {
-        return JSON.serialize(parameter);
+        try {
+            return JSON.serialize(parameter);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("Unable to bind parameter: " + parameter + " into template. " +
+                    "Parameter must be a BSON Primitive or a class supported by DBObject", e);
+        }
     }
 
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {
         int nbTokens = countTokens(template);
         if (nbTokens > parameters.length) {
             throw new IllegalArgumentException("Query has more tokens " + nbTokens + " than parameters" + parameters.length);
-        }
-        for (Object parameter : parameters) {
-            if (parameter != null && parameter.getClass().equals(Character.class))
-                throw new IllegalArgumentException("Char parameter is not allowed: " + Arrays.toString(parameters) + " in query: " + template);
         }
     }
 

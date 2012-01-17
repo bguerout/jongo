@@ -16,11 +16,13 @@
 
 package com.jongo;
 
+import com.jongo.model.Coordinate;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -74,7 +76,7 @@ public class ParameterBinderTest {
     @Test
     public void canMapListParameter() throws Exception {
 
-        ArrayList<String> elements = new ArrayList<String>();
+        List<String> elements = new ArrayList<String>();
         elements.add("1");
         elements.add("2");
 
@@ -90,6 +92,13 @@ public class ParameterBinderTest {
         String query = binder.bind("{id:#}", true);
 
         assertThat(query).isEqualTo("{id:true}");
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectNonBSONPrimitive() throws Exception {
+
+        binder.bind("{coordinate:#}", new Coordinate(0, 0));
     }
 }
 
