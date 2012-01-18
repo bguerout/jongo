@@ -30,6 +30,7 @@ import org.junit.Test;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 
+import static com.jongo.Query.query;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest {
@@ -71,7 +72,7 @@ public class MongoCollectionTest {
     public void canFindOneWithParameters() throws Exception {
         /* given */
         String id = mongoCollection.save(new Poi("999", address));
-        Query query = new Query.Builder("{_id:#}").parameters(id).build();
+        Query query = query("{_id:#}", id);
 
         /* when */
         String poiId = mongoCollection.findOne(query, new IdDBObjectMapper());
@@ -128,7 +129,7 @@ public class MongoCollectionTest {
     public void canFindEntitiesWithParameters() throws Exception {
         /* given */
         mongoCollection.save(new Poi(id, address));
-        Query query = new Query.Builder("{_id:#}").parameters("1").build();
+        Query query = query("{_id:#}", "1");
 
         /* when */
         Iterator<String> strings = mongoCollection.find(query, new IdDBObjectMapper());
@@ -159,7 +160,7 @@ public class MongoCollectionTest {
     public void canFindWithObjectId() throws Exception {
         /* given */
         String id = mongoCollection.save(new User("john"));
-        Query query = new Query.Builder("{_id:{$oid:#}}").parameters(id).build();
+        Query query = query("{_id:{$oid:#}}", id);
 
         /* when */
         User user = mongoCollection.findOne(query, User.class);

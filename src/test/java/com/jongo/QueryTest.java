@@ -19,6 +19,8 @@ package com.jongo;
 import com.mongodb.DBObject;
 import org.junit.Test;
 
+import static com.jongo.Query.Builder;
+import static com.jongo.Query.query;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,9 +29,8 @@ public class QueryTest {
 
     @Test
     public void canBuildStaticQuery() throws Exception {
-        Query.Builder builder = new Query.Builder("{'value':1}");
 
-        Query query = builder.build();
+        Query query = query("{'value':1}");
 
         DBObject dbObject = query.toDBObject();
         assertThat(dbObject.containsField("value")).isTrue();
@@ -38,9 +39,7 @@ public class QueryTest {
     @Test
     public void canBuildParameterizedQuery() throws Exception {
 
-        Query.Builder builder = new Query.Builder("{'value':#}").parameters("1");
-
-        Query query = builder.build();
+        Query query = query("{'value':#}", "1", "2");
 
         DBObject dbObject = query.toDBObject();
         assertThat(dbObject.get("value")).isEqualTo("1");
@@ -53,7 +52,7 @@ public class QueryTest {
     public void shouldFailOnInvalidParameters() throws Exception {
 
         ParameterBinder binder = mock(ParameterBinder.class);
-        Query.Builder builder = new Query.Builder("{'value':#,'value2':#}", binder).parameters("1");
+        Builder builder = new Builder("{'value':#,'value2':#}", binder).parameters("1");
         when(binder.bind("{'value':#,'value2':#}", "1")).thenThrow(new IllegalArgumentException());
 
         builder.build();
@@ -62,7 +61,7 @@ public class QueryTest {
     @Test
     public void canBuildQueryWithFields() throws Exception {
 
-        Query.Builder builder = new Query.Builder("{'value':#}").fields("{value:1}");
+        Builder builder = new Builder("{'value':#}").parameters("1").fields("{value:1}");
 
         Query query = builder.build();
 

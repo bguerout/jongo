@@ -45,6 +45,15 @@ public class Query {
         return asDBObject(fields);
     }
 
+
+    public static Query query(String query, Object... parameters) {
+        return new Builder(query).parameters(parameters).build();
+    }
+
+    public static Query query(String query) {
+        return new Builder(query).build();
+    }
+
     public static class Builder {
 
         private final String template;
