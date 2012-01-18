@@ -58,7 +58,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
     
     //Field Selection
     db.peoples.find({"name": "Joe"}, {"surname": 1})
-    mongoCollection.find(new Query.Builder({'name': 'Joe'}).fields("{'surname': 1}").build(), People.class);
+    mongoCollection.find(new Query.Builder("{'name': 'Joe'}").fields("{'surname': 1}").build(), People.class);
 ```
 
 ## Updating
