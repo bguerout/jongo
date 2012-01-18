@@ -1,9 +1,14 @@
 # Jongo
 
-<img src="https://github.com/bguerout/jongo/raw/gh-pages/jongo.png"
- alt="Jongo logo" title="Jongo" align="right" />
+<img src="https://github.com/bguerout/jongo/raw/gh-pages/jongo.png" 
+     alt="Jongo logo" 
+     title="Jongo" 
+     align="left" 
+     width="75" 
+     style="padding-right:20px;">
 
-Jongo is a tiny sugar over Mongo Java Driver :
+Jongo is a tiny sugar over Mongo Java Driver:
+
  * Writing 'find' queries as if you were in a Mongo Shell
  * Map Mongo entities to your POJO (with Jackson or a custom Mapper).
 
