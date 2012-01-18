@@ -83,7 +83,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
 
 ## Mapping
 
-To be eligible to Jackson (default) mapping, a class needs a no args constructor (even a `private` onse is enough). 
+To be eligible to Jackson (default) mapping, a class needs a no args constructor (even a `private` one is enough). 
 
 Class field `_id` can be annotated with `javax.persistence.Id` to be renamed. 
 
