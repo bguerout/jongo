@@ -94,7 +94,7 @@ Class field `_id` can be annotated with `javax.persistence.Id` to be renamed.
 
 To get the code and build from source, do the following:
 
-git clone  git://github.com/bguerout/jongo.git
-cd jongo
-mvn clean install
+1. git clone  git://github.com/bguerout/jongo.git
+2. cd jongo
+3. mvn clean install
 
