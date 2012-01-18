@@ -1,10 +1,6 @@
 # Jongo
 
-<img src="https://github.com/bguerout/jongo/raw/gh-pages/jongo.png" 
-     alt="Jongo logo" 
-     title="Jongo" 
-     align="left" 
-     width="75">
+<img src="https://github.com/bguerout/jongo/raw/gh-pages/jongo.png" alt="Jongo logo" title="Jongo" align="right" width="100">
 
 Jongo is a tiny sugar over Mongo Java Driver:
 
@@ -90,9 +86,11 @@ Jongo is a tiny sugar over Mongo Java Driver:
 To be eligible to Jackson (default) mapping, a class needs a no args constructor (even a `private` onse is enough). 
 Class field `_id` can be annotated with `javax.persistence.Id` to be renamed. 
 
-//Custom Mapping
+```java
+    //Custom Mapping
+```
+## Dev Zone
 
-----------------------------------#Dev Zone#---------------------------------------------
 To get the code and build from source, do the following:
 
 git clone  git://github.com/bguerout/jongo.git
