@@ -4,8 +4,8 @@
 
 Jongo is a tiny sugar over Mongo Java Driver:
 
-* Writing 'find' queries as if you were in a Mongo Shell
-* Map Mongo entities to your POJO (with Jackson or a custom Mapper)
+* Writing `find` queries as if you were in a Mongo Shell
+* Mapping Mongo entities to your POJO (with Jackson or a custom Mapper)
 
 ## Usage
 
@@ -84,6 +84,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
 ## Mapping
 
 To be eligible to Jackson (default) mapping, a class needs a no args constructor (even a `private` onse is enough). 
+
 Class field `_id` can be annotated with `javax.persistence.Id` to be renamed. 
 
 ```java
