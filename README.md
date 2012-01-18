@@ -1,6 +1,6 @@
 # Jongo
 
-<img src="https://github.com/bguerout/jongo/blob/gh-pages/jongo.png"
+<img src="https://github.com/bguerout/jongo/raw/gh-pages/jongo.png"
  alt="Jongo logo" title="Jongo" align="right" />
 
 Jongo is a tiny sugar over Mongo Java Driver :
@@ -21,15 +21,15 @@ Jongo is a tiny sugar over Mongo Java Driver :
 
 ```java
     //Query with parameters
-    db.peoples.find({'name': 'Joe'})
+    db.peoples.find({"name": "Joe"})
     mongoCollection.find(query("{'name': #}", "Joe"), People.class);
     
     //Query with ObjectId
-    db.peoples.find({'_id': ObjectId('47cc67093475061e3d95369d')})
+    db.peoples.find({"_id": ObjectId("47cc67093475061e3d95369d")})
     mongoCollection.find(query("{'_id': {$oid: '47cc67093475061e3d95369d'}}"), People.class);
     
     //Sorting
-    db.peoples.find({}).sort({name: 1})
+    db.peoples.find({}).sort({"name": 1})
     mongoCollection.find("{'$query':{}, '$orderby':{'name':1}}", People.class);
     
     //Limit
@@ -41,15 +41,15 @@ Jongo is a tiny sugar over Mongo Java Driver :
     Not yet implemented
     
     //Conditional Operators
-    db.peoples.find({'age' : {$lt: 3}})
+    db.peoples.find({"age" : {$lt: 3}})
     mongoCollection.find(query("{'age' : {$lt: 3}}"), People.class);
     
     //Geospacial Operators
-    db.peoples.find({'address': {'$near': [0,0], $maxDistance: 5}})
+    db.peoples.find({"address": {"$near": [0,0], $maxDistance: 5}})
     mongoCollection.find("{'address': {'$near': [0,0], $maxDistance: 5}}", People.class);
     
     //Count
-    db.peoples.count({'name': 'Joe'})
+    db.peoples.count({"name": "Joe"})
     mongoCollection.count("{'name': 'Joe'}");
     
     //Distinct
@@ -57,7 +57,7 @@ Jongo is a tiny sugar over Mongo Java Driver :
     mongoCollection.distinct("address", "", Address.class);
     
     //Field Selection
-    db.peoples.find({'name': 'Joe'}, {'surname': 1})
+    db.peoples.find({"name": "Joe"}, {"surname": 1})
     mongoCollection.find(new Query.Builder({'name': 'Joe'}).fields("{'surname': 1}").build(), People.class);
 ```
 
@@ -65,19 +65,19 @@ Jongo is a tiny sugar over Mongo Java Driver :
 
 ```java
     //Save
-    db.peoples.save({'name':'Joe', 'surname':'Joseph'})
+    db.peoples.save({"name": "Joe", "surname": "Joseph"})
     mongoCollection.save(new People("Joe", "Joseph"));
     
     //Update
-    db.peoples.update({'_id':ObjectId:("47cc67093475061e3d95369d"), 'name':'Jack'})
+    db.peoples.update({"_id":ObjectId:("47cc67093475061e3d95369d"), "name": "Jack"})
     mongoCollection.save(people.setName("Jack"));
     
     //Update Operators
-    db.people.update({'name':'Joe'}, {$inc: {'age': 1}})
+    db.people.update({"name": "Joe"}, {$inc: {"age": 1}})
     Not yet implemented
     
     //Delete
-    db.peoples.remove({'name':'Joe'})
+    db.peoples.remove({"name": "Joe"})
     Not yet implemented
 ```
 
