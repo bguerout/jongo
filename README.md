@@ -1,6 +1,6 @@
-# Jongo
+<img src="https://github.com/bguerout/jongo/raw/gh-pages/jongo.png" alt="Jongo logo" title="Jongo" align="right">
 
-<img src="https://github.com/bguerout/jongo/raw/gh-pages/jongo.png" alt="Jongo logo" title="Jongo" align="right" width="100">
+# Jongo
 
 Jongo is a tiny sugar over Mongo Java Driver:
 
