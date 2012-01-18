@@ -19,6 +19,7 @@ package com.jongo;
 import com.jongo.jackson.EntityProcessor;
 import com.jongo.model.Coordinate;
 import com.jongo.model.Poi;
+import com.jongo.model.User;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -152,6 +153,20 @@ public class MongoCollectionTest {
                 return null;
             }
         });
+    }
+
+    @Test
+    public void canFindWithObjectId() throws Exception {
+        /* given */
+        String id = mongoCollection.save(new User("john"));
+        Query query = new Query.Builder("{_id:{$oid:#}}").parameters(id).build();
+
+        /* when */
+        User user = mongoCollection.findOne(query, User.class);
+
+        /* then */
+        assertThat(user).isNotNull();
+        assertThat(user.id).isEqualTo(id);
     }
 
     @Test
