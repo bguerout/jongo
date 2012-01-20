@@ -16,28 +16,32 @@
 
 package com.jongo;
 
+import static com.jongo.Query.query;
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Iterator;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import com.jongo.jackson.EntityProcessor;
 import com.jongo.model.Coordinate;
+import com.jongo.model.Coordinate3D;
 import com.jongo.model.Poi;
 import com.jongo.model.User;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.net.UnknownHostException;
-import java.util.Iterator;
-
-import static com.jongo.Query.query;
-import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest {
 
     private MongoCollection mongoCollection;
     private String address = "22 rue des murlins", id = "1";
-    private int lat = 48, lng = 2;
+    private int lat = 48, lng = 2, alt = 7;
 
     @Before
     public void setUp() throws UnknownHostException, MongoException {
@@ -344,6 +348,14 @@ public class MongoCollectionTest {
         poi = pois.next();
         assertThat(poi.id).isEqualTo(id);
         assertThat(poi.address).isNull();
+    }
+
+    @Test
+    @Ignore
+    public void canFindInheritedEntity() throws IOException {
+        mongoCollection.save(new Poi(id, lat, lng, alt));
+        Poi poi = mongoCollection.findOne(query("{_id: #}", id), Poi.class);
+        assertThat(poi.coordinate).isInstanceOf(Coordinate3D.class);
     }
 
     @Test

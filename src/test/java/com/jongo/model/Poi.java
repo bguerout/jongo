@@ -42,6 +42,11 @@ public class Poi {
         this.coordinate = new Coordinate(lat, lng);
     }
 
+    public Poi(String id, int lat, int lng, int alt) {
+        this.id = id;
+        this.coordinate = new Coordinate3D(lat, lng, alt);
+    }
+
     public void setCoordinate(Coordinate coordinate) {
         this.coordinate = coordinate;
     }
