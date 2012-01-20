@@ -10,7 +10,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
 ## Usage
 
 ```java
-    Jongo jongo = new Jongo(new Mongo().getDB("dbname"));
+    Jongo jongo = new Jongo("dbname");
     MongoCollection mongoCollection = jongo.getCollection("collname");
     
     Iterator<People> peoples = mongoCollection.find("{}").as(People.class);
@@ -42,7 +42,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
     
     //Conditional Operators
     db.peoples.find({"age" : {$lt: 3}})
-    mongoCollection.find("{'age' : {$lt: 3}}").as(People.class);
+    mongoCollection.find("{'age': {$lt: 3}}").as(People.class);
     
     //Geospacial Operators
     db.peoples.find({"address": {"$near": [0,0], $maxDistance: 5}})
