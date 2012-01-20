@@ -61,16 +61,16 @@ Jongo is a tiny sugar over Mongo Java Driver:
     peoples.distinct("address", "", Address.class);
     
     //Field Selection
-    db.peoples.find({"name": "Joe"}, {"surname": 1})
-    peoples.find("{'name': 'Joe'}").on("{'surname': 1}").as(People.class);
+    db.peoples.find({"name": "Joe"}, {"age": 27})
+    peoples.find("{'name': 'Joe'}").on("{'age': 27}").as(People.class);
 ```
 
 ## Updating
 
 ```java
     //Save
-    db.peoples.save({"name": "Joe", "surname": "Joseph"})
-    peoples.save(new People("Joe", "Joseph"));
+    db.peoples.save({"name": "Joe", "age": 27})
+    peoples.save(new People("Joe", 27));
     
     //Update
     db.peoples.update({"_id":ObjectId:("47cc67093475061e3d95369d"), "name": "Jack"})
