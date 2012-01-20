@@ -20,7 +20,6 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 public class Query {
-
     private final String query;
     private String fields;
 

@@ -16,42 +16,40 @@
 
 package com.jongo;
 
-import java.util.Iterator;
-
+import com.jongo.Query.Builder;
 import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
-public class Queryings {
+public class FindOne {
+    private EntityProcessor processor;
+    private DBCollection collection;
 
-    EntityProcessor processor;
-    DBCollection collection;
+    private Builder queryBuilder;
 
-    Query query;
-
-    Queryings(EntityProcessor processor, DBCollection collection, String query) {
+    FindOne(EntityProcessor processor, DBCollection collection, String query) {
         this.processor = processor;
         this.collection = collection;
-        this.query = Query.query(query);
+        this.queryBuilder = new Builder(query);
     }
 
-    Queryings(EntityProcessor processor, DBCollection collection, String query, Object... parameters) {
+    FindOne(EntityProcessor processor, DBCollection collection, String query, Object... parameters) {
         this.processor = processor;
         this.collection = collection;
-        this.query = Query.query(query, parameters);
+        this.queryBuilder = new Builder(query).parameters(parameters);
     }
 
-    public Queryings on(String fields) {
-        this.query = new Query.Builder(query.getQuery()).fields(fields).build();
+    public FindOne on(String fields) {
+        this.queryBuilder.fields(fields);
         return this;
     }
 
-    public <T> Iterator<T> as(Class<T> clazz) {
+    public <T> T as(Class<T> clazz) {
         return map(processor.createEntityMapper(clazz));
     }
 
-    public <T> Iterator<T> map(DBObjectMapper<T> mapper) {
-        DBCursor cursor = collection.find(query.toDBObject());
-        return new MongoIterator<T>(cursor, mapper);
+    public <T> T map(DBObjectMapper<T> mapper) {
+        DBObject result = collection.findOne(queryBuilder.build().toDBObject());
+        return result == null ? null : mapper.map(result);
     }
 }

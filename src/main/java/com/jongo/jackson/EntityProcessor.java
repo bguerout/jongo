@@ -44,7 +44,7 @@ public class EntityProcessor {
 
     public DBObject getEntityAsDBObject(Object entity) throws IOException {
         String entityAsJson = getEntityAsJson(entity);
-        return ((DBObject) JSON.parse(entityAsJson));
+        return (DBObject) JSON.parse(entityAsJson);
     }
 
     private String getEntityAsJson(Object obj) throws IOException {

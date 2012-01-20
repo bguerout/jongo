@@ -36,20 +36,20 @@ public class MongoCollection {
         this.processor = new EntityProcessor();
     }
 
-    public Querying findOne(String query) {
-        return new Querying(processor, collection, query);
+    public FindOne findOne(String query) {
+        return new FindOne(processor, collection, query);
     }
 
-    public Querying findOne(String query, Object... parameters) {
-        return new Querying(processor, collection, query, parameters);
+    public FindOne findOne(String query, Object... parameters) {
+        return new FindOne(processor, collection, query, parameters);
     }
 
-    public Queryings find(String query) {
-        return new Queryings(processor, collection, query);
+    public Find find(String query) {
+        return new Find(processor, collection, query);
     }
 
-    public Queryings find(String query, Object... parameters) {
-        return new Queryings(processor, collection, query, parameters);
+    public Find find(String query, Object... parameters) {
+        return new Find(processor, collection, query, parameters);
     }
 
     public long count(String query) {
