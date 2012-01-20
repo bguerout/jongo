@@ -16,62 +16,40 @@
 
 package com.jongo;
 
-import com.jongo.jackson.EntityProcessor;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
+import com.jongo.jackson.EntityProcessor;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 public class MongoCollection {
 
     public static final String MONGO_ID = "_id";
     private final DBCollection collection;
-    private final EntityProcessor entityProcessor;
+    private final EntityProcessor processor;
 
-    public MongoCollection(DBCollection dbCollection, EntityProcessor entityProcessor) {
+    public MongoCollection(DBCollection dbCollection, EntityProcessor processor) {
         this.collection = dbCollection;
-        this.entityProcessor = entityProcessor;
+        this.processor = processor;
     }
 
-    public <T> T findOne(String query, Class<T> clazz) {
-        return findOne(new Query(query), clazz);
+    public Querying findOne(String query) {
+        return new Querying(processor, collection, query);
     }
 
-    public <T> T findOne(Query query, Class<T> clazz) {
-        return findOne(query, entityProcessor.createEntityMapper(clazz));
+    public Querying findOne(String query, Object... parameters) {
+        return new Querying(processor, collection, query, parameters);
     }
 
-    public <T> T findOne(String query, DBObjectMapper<T> resultMapper) {
-        return findOne(new Query(query), resultMapper);
+    public Queryings find(String query) {
+        return new Queryings(processor, collection, query);
     }
 
-    public <T> T findOne(Query query, DBObjectMapper<T> dbObjectMapper) {
-        DBObject result = collection.findOne(query.toDBObject());
-        if (result == null)
-            return null;
-        else
-            return dbObjectMapper.map(result);
-    }
-
-    public <T> Iterator<T> find(String query, Class<T> clazz) {
-        return find(new Query(query), clazz);
-    }
-
-    public <T> Iterator<T> find(Query query, Class<T> clazz) {
-        return find(query, entityProcessor.createEntityMapper(clazz));
-    }
-
-    public <T> Iterator<T> find(String query, DBObjectMapper<T> dbObjectMapper) {
-        return find(new Query(query), dbObjectMapper);
-    }
-
-    public <T> Iterator<T> find(Query query, DBObjectMapper<T> dbObjectMapper) {
-        DBCursor cursor = collection.find(query.toDBObject());
-        return new MongoIterator(cursor, dbObjectMapper);
+    public Queryings find(String query, Object... parameters) {
+        return new Queryings(processor, collection, query, parameters);
     }
 
     public long count(String query) {
@@ -87,11 +65,11 @@ public class MongoCollection {
         if (BSONPrimitives.contains(clazz))
             return (Iterator<T>) distinct.iterator();
         else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), entityProcessor.createEntityMapper(clazz));
+            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), processor.createEntityMapper(clazz));
     }
 
     public <D> String save(D document) throws IOException {
-        DBObject dbObject = entityProcessor.getEntityAsDBObject(document);
+        DBObject dbObject = processor.getEntityAsDBObject(document);
         collection.save(dbObject);
         return dbObject.get(MONGO_ID).toString();
     }

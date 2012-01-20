@@ -45,6 +45,9 @@ public class Query {
         return asDBObject(fields);
     }
 
+    public String getQuery() {
+        return query;
+    }
 
     public static Query query(String query, Object... parameters) {
         return new Builder(query).parameters(parameters).build();
