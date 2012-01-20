@@ -11,30 +11,34 @@ Jongo is a tiny sugar over Mongo Java Driver:
 
 ```java
     Jongo jongo = new Jongo("dbname");
-    MongoCollection mongoCollection = jongo.getCollection("collname");
+    peoples peoples = jongo.getCollection("collname");
     
-    Iterator<People> peoples = mongoCollection.find("{}").as(People.class);
-    People people = mongoCollection.findOne("{}").as(People.class);
+    Iterator<People> all = peoples.find("{}").as(People.class);
+    People one = peoples.findOne("{}").as(People.class);
 ```
 
 ## Querying
 
 ```java
+    //Following samples show usage 
+    //1. with Mongo Shell
+    //2. with Jongo
+    
     //Query with parameters
     db.peoples.find({"name": "Joe"})
-    mongoCollection.find("{'name': #}", "Joe").as(People.class);
+    peoples.find("{'name': #}", "Joe").as(People.class);
     
     //Query with ObjectId
     db.peoples.find({"_id": ObjectId("47cc67093475061e3d95369d")})
-    mongoCollection.find("{'_id': {$oid: '47cc67093475061e3d95369d'}}").as(People.class);
+    peoples.find("{'_id': {$oid: '47cc67093475061e3d95369d'}}").as(People.class);
     
     //Sorting
     db.peoples.find({}).sort({"name": 1})
-    mongoCollection.find("{'$query':{}, '$orderby':{'name':1}}").as(People.class);
+    peoples.find("{'$query':{}, '$orderby':{'name':1}}").as(People.class);
     
     //Limit
     db.peoples.find().limit(10)
-    mongoCollection.find("{'$query':{}, '$maxScan':2}").as(People.class);
+    peoples.find("{'$query':{}, '$maxScan':2}").as(People.class);
     
     //Skip
     db.peoples.find().skip(20)
@@ -42,23 +46,23 @@ Jongo is a tiny sugar over Mongo Java Driver:
     
     //Conditional Operators
     db.peoples.find({"age" : {$lt: 3}})
-    mongoCollection.find("{'age': {$lt: 3}}").as(People.class);
+    peoples.find("{'age': {$lt: 3}}").as(People.class);
     
     //Geospacial Operators
     db.peoples.find({"address": {"$near": [0,0], $maxDistance: 5}})
-    mongoCollection.find("{'address': {'$near': [0,0], $maxDistance: 5}}").as(People.class);
+    peoples.find("{'address': {'$near': [0,0], $maxDistance: 5}}").as(People.class);
     
     //Count
     db.peoples.count({"name": "Joe"})
-    mongoCollection.count("{'name': 'Joe'}");
+    peoples.count("{'name': 'Joe'}");
     
     //Distinct
     db.peoples.distinct("address");
-    mongoCollection.distinct("address", "", Address.class);
+    peoples.distinct("address", "", Address.class);
     
     //Field Selection
     db.peoples.find({"name": "Joe"}, {"surname": 1})
-    mongoCollection.find("{'name': 'Joe'}").on("{'surname': 1}").as(People.class);
+    peoples.find("{'name': 'Joe'}").on("{'surname': 1}").as(People.class);
 ```
 
 ## Updating
@@ -66,11 +70,11 @@ Jongo is a tiny sugar over Mongo Java Driver:
 ```java
     //Save
     db.peoples.save({"name": "Joe", "surname": "Joseph"})
-    mongoCollection.save(new People("Joe", "Joseph"));
+    peoples.save(new People("Joe", "Joseph"));
     
     //Update
     db.peoples.update({"_id":ObjectId:("47cc67093475061e3d95369d"), "name": "Jack"})
-    mongoCollection.save(people.setName("Jack"));
+    peoples.save(people.setName("Jack"));
     
     //Update Operators
     db.people.update({"name": "Joe"}, {$inc: {"age": 1}})
