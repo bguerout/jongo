@@ -18,7 +18,6 @@ package com.jongo;
 
 import java.net.UnknownHostException;
 
-import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
@@ -38,7 +37,7 @@ public class Jongo {
 
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
-        return new MongoCollection(dbCollection, new EntityProcessor());
+        return new MongoCollection(dbCollection);
     }
 
     public DB getDatabase() {

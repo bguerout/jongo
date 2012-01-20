@@ -39,7 +39,7 @@ public class EntityProcessor {
     }
 
     public <T> DBObjectMapper<T> createEntityMapper(Class<T> clazz) {
-        return new DefaultEntityMapper(clazz, objectMapper); //TODO caching created binder should be better (a map with class as key )
+        return new DefaultEntityMapper<T>(clazz, objectMapper); //TODO caching created binder should be better (a map with class as key )
     }
 
     public DBObject getEntityAsDBObject(Object entity) throws IOException {

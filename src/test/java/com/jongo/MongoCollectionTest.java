@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.jongo.jackson.EntityProcessor;
 import com.jongo.model.Coordinate;
 import com.jongo.model.Coordinate3D;
 import com.jongo.model.Poi;
@@ -49,7 +48,7 @@ public class MongoCollectionTest {
 
     private MongoCollection connect(String dbname, String colname, boolean drop) throws UnknownHostException {
         DBCollection collection = new Mongo().getDB(dbname).getCollection(colname);
-        MongoCollection col = new MongoCollection(collection, new EntityProcessor());
+        MongoCollection col = new MongoCollection(collection);
         if (drop)
             col.drop();
         return col;

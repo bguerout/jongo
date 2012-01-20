@@ -31,9 +31,9 @@ public class MongoCollection {
     private final DBCollection collection;
     private final EntityProcessor processor;
 
-    public MongoCollection(DBCollection dbCollection, EntityProcessor processor) {
+    public MongoCollection(DBCollection dbCollection) {
         this.collection = dbCollection;
-        this.processor = processor;
+        this.processor = new EntityProcessor();
     }
 
     public Querying findOne(String query) {

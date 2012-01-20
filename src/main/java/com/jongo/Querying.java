@@ -27,13 +27,13 @@ public class Querying {
 
     Query query;
 
-    public Querying(EntityProcessor processor, DBCollection collection, String query) {
+    Querying(EntityProcessor processor, DBCollection collection, String query) {
         this.processor = processor;
         this.collection = collection;
         this.query = Query.query(query);
     }
 
-    public Querying(EntityProcessor processor, DBCollection collection, String query, Object... parameters) {
+    Querying(EntityProcessor processor, DBCollection collection, String query, Object... parameters) {
         this.processor = processor;
         this.collection = collection;
         this.query = Query.query(query, parameters);
