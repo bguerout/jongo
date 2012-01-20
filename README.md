@@ -11,7 +11,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
 
 ```java
     Jongo jongo = new Jongo("dbname");
-    peoples peoples = jongo.getCollection("collname");
+    MongoCollection peoples = jongo.getCollection("peoples");
     
     Iterator<People> all = peoples.find("{}").as(People.class);
     People one = peoples.findOne("{}").as(People.class);
