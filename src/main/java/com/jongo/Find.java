@@ -16,16 +16,16 @@
 
 package com.jongo;
 
-import java.util.Iterator;
-
 import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 
-public class Find {
-    private EntityProcessor processor;
-    private DBCollection collection;
+import java.util.Iterator;
 
+public class Find {
+
+    private final EntityProcessor processor;
+    private final DBCollection collection;
     private Query query;
 
     Find(EntityProcessor processor, DBCollection collection, String query) {

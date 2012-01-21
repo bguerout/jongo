@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class BSONPrimitives
 {
-    private static Set<Class<?>> primitives;
+    private static final Set<Class<?>> primitives;
     
     static {
         primitives = new HashSet<Class<?>>();

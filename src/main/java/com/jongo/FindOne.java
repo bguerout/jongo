@@ -22,10 +22,10 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 
 public class FindOne {
-    private EntityProcessor processor;
-    private DBCollection collection;
 
-    private Builder queryBuilder;
+    private final EntityProcessor processor;
+    private final DBCollection collection;
+    private final Builder queryBuilder;
 
     FindOne(EntityProcessor processor, DBCollection collection, String query) {
         this.processor = processor;
