@@ -87,10 +87,35 @@ Jongo is a tiny sugar over Mongo Java Driver:
 
 ## Mapping
 
-To be eligible to Jackson (default) mapping, a class needs a no args constructor (even a `private` one is enough). 
+### Data Binding with Jackson
 
-Class field `_id` can be annotated with `javax.persistence.Id` to be renamed. 
+Jongo uses Jackson as a default POJO data binder.
+To be eligible to Jackson mapping, a class needs a no args constructor (even a `private` one is enough). 
 
+Class field `_id` can be annotated 
+
+with `javax.persistence.Id` 
+
+```java
+    public class User {
+        @Id
+        public String id;
+    ...
+```
+or
+`org.codehaus.jackson.annotate.JsonProperty` 
+
+```java
+    public class User {
+        @JsonProperty("_id")
+        public String id;
+    ...
+```
+
+### Custom Mapping
+
+
+Jongo
 ```java
     //Custom Mapping
 ```
