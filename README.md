@@ -89,10 +89,9 @@ Jongo is a tiny sugar over Mongo Java Driver:
 
 ### Data Binding with Jackson
 
-Jongo uses Jackson as a default POJO data binder.
-To be eligible to Jackson mapping, a class needs a no args constructor (even a `private` one is enough). 
+Jongo uses <a href="http://jackson.codehaus.org/">Jackson</a> as a default POJO data binder.
 
-Class field `_id` can be annotated 
+To be eligible to Jackson mapping, a class needs a no args constructor (even a `private` one is enough). Class field `_id` can be annotated 
 
 with `javax.persistence.Id` 
 
@@ -102,8 +101,8 @@ with `javax.persistence.Id`
         public String id;
     ...
 ```
-or
-`org.codehaus.jackson.annotate.JsonProperty` 
+
+or `org.codehaus.jackson.annotate.JsonProperty` 
 
 ```java
     public class User {
@@ -112,13 +111,33 @@ or
     ...
 ```
 
-### Custom Mapping
+### Manual Mapping
+
+Mapping can be achieved without Jackson by implementing com.jongo.DBObjectMapper
 
 
-Jongo
 ```java
-    //Custom Mapping
+    Iterator<Integer> agesOfAllJohn = collection.find("{'name':'john'}").map(new DBObjectMapper<Integer>() {
+        @Override
+        public String map(DBObject result) {
+            return result.getAge();
+        }
+    });
 ```
+
+DBObjectMapper can be easily reused across queries
+
+```java
+    public class IdMapper implements DBObjectMapper<String> {
+        @Override
+        public String map(DBObject result) {
+            return result.get(MongoCollection.MONGO_ID).toString();
+        }
+    }
+    ...
+    Iterator<String> ids = collection.find("{}").on(id).map(new IdDBObjectMapper());
+```
+
 ## Dev Zone
 
 To get the code and build from source, do the following:
