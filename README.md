@@ -135,14 +135,17 @@ DBObjectMapper can be easily reused across queries
         }
     }
     ...
-    Iterator<String> ids = collection.find("{}").on(id).map(new IdDBObjectMapper());
+    Iterator<String> ids = collection.find("{}").map(new IdMapper());
+    ...
 ```
 
 ## Dev Zone
 
 To get the code and build from source, do the following:
 
+```sh
 1. git clone  git://github.com/bguerout/jongo.git
 2. cd jongo
 3. mvn clean install
+```
 
