@@ -16,12 +16,11 @@
 
 package com.jongo;
 
+import com.mongodb.*;
+
 import java.net.UnknownHostException;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
+import static com.jongo.MongoCollection.MONGO_ID;
 
 public class Jongo {
 
@@ -42,5 +41,13 @@ public class Jongo {
 
     public DB getDatabase() {
         return database;
+    }
+
+    public static String toJson(DBObject dbObject) {
+        Object id = dbObject.get(MONGO_ID);
+        if (id != null)
+            dbObject.put(MONGO_ID, id.toString());
+
+        return dbObject.toString();
     }
 }

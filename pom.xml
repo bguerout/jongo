@@ -105,7 +105,7 @@
 
     <profiles>
         <profile>
-            <id>it</id>
+            <id>check-compatibility</id>
             <build>
                 <plugins>
                     <plugin>

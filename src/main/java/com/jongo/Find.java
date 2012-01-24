@@ -16,7 +16,6 @@
 
 package com.jongo;
 
-import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 
@@ -24,18 +23,18 @@ import java.util.Iterator;
 
 public class Find {
 
-    private final EntityProcessor processor;
     private final DBCollection collection;
+    private final Unmarshaller unmarshaller;
     private Query query;
 
-    Find(EntityProcessor processor, DBCollection collection, String query) {
-        this.processor = processor;
+    Find(Unmarshaller unmarshaller, DBCollection collection, String query) {
+        this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.query = Query.query(query);
     }
 
-    Find(EntityProcessor processor, DBCollection collection, String query, Object... parameters) {
-        this.processor = processor;
+    Find(Unmarshaller unmarshaller, DBCollection collection, String query, Object... parameters) {
+        this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.query = Query.query(query, parameters);
     }
@@ -45,12 +44,19 @@ public class Find {
         return this;
     }
 
-    public <T> Iterator<T> as(Class<T> clazz) {
-        return map(processor.createEntityMapper(clazz));
+    public <T> Iterator<T> as(final Class<T> clazz) {
+        ResultMapper<T> resultMapper = new ResultMapper<T>() {
+            @Override
+            public T map(String json) {
+                return unmarshaller.unmarshall(json, clazz);
+            }
+        };
+        return map(resultMapper);
     }
 
-    public <T> Iterator<T> map(DBObjectMapper<T> mapper) {
+    public <T> Iterator<T> map(ResultMapper<T> resultMapper) {
         DBCursor cursor = collection.find(query.toDBObject());
-        return new MongoIterator<T>(cursor, mapper);
+        return new MongoIterator<T>(cursor, resultMapper);
     }
+
 }

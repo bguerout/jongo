@@ -16,9 +16,7 @@
 
 package com.jongo;
 
-import com.jongo.jackson.DefaultEntityMapper;
-import com.jongo.jackson.EntityProcessor;
-import com.mongodb.BasicDBObject;
+import com.jongo.jackson.JacksonProcessor;
 import com.mongodb.DBCursor;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,18 +27,24 @@ import static org.mockito.Mockito.*;
 
 public class MongoIteratorTest {
 
-    private DBObjectMapper dbObjectMapper;
+    private ResultMapper<String> mapper;
 
     @Before
     public void setUp() throws Exception {
-        dbObjectMapper = new EntityProcessor().createEntityMapper(String.class);
+        mapper = new ResultMapper<String>() {
+            @Override
+            public String map(String json) {
+                return new JacksonProcessor().unmarshall(json, String.class);
+            }
+        };
     }
+
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailWhenNoMoreElements() throws Exception {
         DBCursor cursor = mock(DBCursor.class);
         when(cursor.hasNext()).thenReturn(false);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, dbObjectMapper);
+        MongoIterator<String> iterator = new MongoIterator<String>(cursor, mapper);
 
         iterator.next();
     }
@@ -48,25 +52,11 @@ public class MongoIteratorTest {
     @Test
     public void shouldCheckCursorStatusOnHasNext() {
         DBCursor cursor = mock(DBCursor.class);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, dbObjectMapper);
+        MongoIterator<String> iterator = new MongoIterator<String>(cursor, mapper);
 
         iterator.hasNext();
 
         verify(cursor).hasNext();
     }
 
-    @Test
-    public void whenIterateShouldConvertDbObjectToEntity() throws Exception {
-
-        BasicDBObject resultEntity = new BasicDBObject("test", "value");
-        DefaultEntityMapper binder = mock(DefaultEntityMapper.class);
-        DBCursor cursor = mock(DBCursor.class);
-        when(cursor.hasNext()).thenReturn(true);
-        when(cursor.next()).thenReturn(resultEntity);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, binder);
-
-        iterator.next();
-
-        verify(binder).map(resultEntity);
-    }
 }

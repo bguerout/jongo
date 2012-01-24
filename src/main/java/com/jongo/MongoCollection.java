@@ -16,40 +16,43 @@
 
 package com.jongo;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
-import com.jongo.jackson.EntityProcessor;
+import com.jongo.jackson.JacksonProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 public class MongoCollection {
 
     public static final String MONGO_ID = "_id";
     private final DBCollection collection;
-    private final EntityProcessor processor;
+    private final Marshaller marshaller;
+    private final Unmarshaller unmarshaller;
 
     public MongoCollection(DBCollection dbCollection) {
         this.collection = dbCollection;
-        this.processor = new EntityProcessor();
+        JacksonProcessor jacksonProcessor = new JacksonProcessor();
+        marshaller = jacksonProcessor;
+        unmarshaller = jacksonProcessor;
     }
 
     public FindOne findOne(String query) {
-        return new FindOne(processor, collection, query);
+        return new FindOne(unmarshaller, collection, query);
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(processor, collection, query, parameters);
+        return new FindOne(unmarshaller, collection, query, parameters);
     }
 
     public Find find(String query) {
-        return new Find(processor, collection, query);
+        return new Find(unmarshaller, collection, query);
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(processor, collection, query, parameters);
+        return new Find(unmarshaller, collection, query, parameters);
     }
 
     public long count(String query) {
@@ -58,18 +61,25 @@ public class MongoCollection {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Iterator<T> distinct(String key, String query, Class<T> clazz) {
+    public <T> Iterator<T> distinct(String key, String query, final Class<T> clazz) {
+
         Query staticQuery = new Query(query);
         DBObject ref = staticQuery.toDBObject();
         List<?> distinct = collection.distinct(key, ref);
         if (BSONPrimitives.contains(clazz))
             return (Iterator<T>) distinct.iterator();
         else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), processor.createEntityMapper(clazz));
+            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), new ResultMapper<T>() {
+                @Override
+                public T map(String json) {
+                    return unmarshaller.unmarshall(json, clazz);
+                }
+            });
     }
 
     public <D> String save(D document) throws IOException {
-        DBObject dbObject = processor.getEntityAsDBObject(document);
+        String entityAsJson = marshaller.marshall(document);
+        DBObject dbObject = (DBObject) JSON.parse(entityAsJson);
         collection.save(dbObject);
         return dbObject.get(MONGO_ID).toString();
     }

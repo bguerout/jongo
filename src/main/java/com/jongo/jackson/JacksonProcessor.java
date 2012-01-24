@@ -16,11 +16,10 @@
 
 package com.jongo.jackson;
 
-import com.jongo.DBObjectMapper;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import com.jongo.Marshaller;
+import com.jongo.Unmarshaller;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.introspect.VisibilityChecker.Std;
+import org.codehaus.jackson.map.introspect.VisibilityChecker;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,34 +29,39 @@ import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
 import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
 
-public class EntityProcessor {
+public class JacksonProcessor implements Unmarshaller, Marshaller {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper mapper;
 
-    public EntityProcessor() {
-        this.objectMapper = createMapperForNonAnnotatedBean();
+    public JacksonProcessor() {
+        this.mapper = createMapperForNonAnnotatedBean();
     }
 
-    public <T> DBObjectMapper<T> createEntityMapper(Class<T> clazz) {
-        return new DefaultEntityMapper<T>(clazz, objectMapper); //TODO caching created binder should be better (a map with class as key )
+    @Override
+    public <T> T unmarshall(String json, Class<T> clazz) {
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to unmarshall from json: " + json, e);  //TODO handle this
+        }
     }
 
-    public DBObject getEntityAsDBObject(Object entity) throws IOException {
-        String entityAsJson = getEntityAsJson(entity);
-        return (DBObject) JSON.parse(entityAsJson);
-    }
-
-    private String getEntityAsJson(Object obj) throws IOException {
-        Writer writer = new StringWriter();
-        objectMapper.writeValue(writer, obj);
-        return writer.toString();
+    @Override
+    public <T> String marshall(T obj) {
+        try {
+            Writer writer = new StringWriter();
+            mapper.writeValue(writer, obj);
+            return writer.toString();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e);  //TODO handle this
+        }
     }
 
     private ObjectMapper createMapperForNonAnnotatedBean() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
         mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
-        mapper.setVisibilityChecker(Std.defaultInstance().withFieldVisibility(ANY));
+        mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
         mapper.setPropertyNamingStrategy(new MongoPropertyNamingStrategy());
         return mapper;
     }

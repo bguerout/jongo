@@ -16,9 +16,7 @@
 
 package com.jongo;
 
-import com.mongodb.DBObject;
+public interface Marshaller {
 
-public interface DBObjectMapper<T> {
-
-    T map(DBObject result);
+    <T> String marshall(T obj);
 }

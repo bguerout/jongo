@@ -16,16 +16,6 @@
 
 package com.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Iterator;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.jongo.model.Coordinate;
 import com.jongo.model.Coordinate3D;
 import com.jongo.model.Poi;
@@ -34,6 +24,16 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import com.mongodb.util.JSON;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest {
 
@@ -62,7 +62,7 @@ public class MongoCollectionTest {
         String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        String poiId = mongoCollection.findOne(addressExists).map(new IdDBObjectMapper());
+        String poiId = mongoCollection.findOne(addressExists).map(new IdResultMapper());
         Poi poi = mongoCollection.findOne(addressExists).as(Poi.class);
 
         /* then */
@@ -76,7 +76,7 @@ public class MongoCollectionTest {
         String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        String poiId = mongoCollection.findOne("{_id:#}", id).map(new IdDBObjectMapper());
+        String poiId = mongoCollection.findOne("{_id:#}", id).map(new IdResultMapper());
         Poi poi = mongoCollection.findOne("{_id:#}", id).as(Poi.class);
 
         /* then */
@@ -90,9 +90,10 @@ public class MongoCollectionTest {
         String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        mongoCollection.findOne("{_id:999}").on(id).map(new DBObjectMapper<String>() {
+        mongoCollection.findOne("{_id:999}").on(id).map(new ResultMapper<String>() {
             @Override
-            public String map(DBObject result) {
+            public String map(String json) {
+                DBObject result = (DBObject) JSON.parse(json);
                 /* then */
                 assertThat(result.containsField("address")).isFalse();
                 return null;
@@ -103,7 +104,7 @@ public class MongoCollectionTest {
     @Test
     public void shouldHandleEmptyResult() throws Exception {
         assertThat(mongoCollection.findOne("{_id:'invalid-id'}").as(Poi.class)).isNull();
-        assertThat(mongoCollection.findOne("{_id:'invalid-id'}").map(new IdDBObjectMapper())).isNull();
+        assertThat(mongoCollection.findOne("{_id:'invalid-id'}").map(new IdResultMapper())).isNull();
 
         assertThat(mongoCollection.find("{_id:'invalid-id'}").as(Poi.class)).hasSize(0);
     }
@@ -114,7 +115,7 @@ public class MongoCollectionTest {
         mongoCollection.save(new Poi(id, address));
 
         /* when */
-        Iterator<String> strings = mongoCollection.find(addressExists).map(new IdDBObjectMapper());
+        Iterator<String> strings = mongoCollection.find(addressExists).map(new IdResultMapper());
         Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class);
 
         /* then */
@@ -131,7 +132,7 @@ public class MongoCollectionTest {
         mongoCollection.save(new Poi(id, address));
 
         /* when */
-        Iterator<String> strings = mongoCollection.find("{_id:#}", "1").map(new IdDBObjectMapper());
+        Iterator<String> strings = mongoCollection.find("{_id:#}", "1").map(new IdResultMapper());
 
         /* then */
         assertThat(strings.hasNext()).isTrue();
@@ -144,9 +145,10 @@ public class MongoCollectionTest {
         String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        mongoCollection.findOne("{_id:999}").on(id).map(new DBObjectMapper<String>() {
+        mongoCollection.findOne("{_id:999}").on(id).map(new ResultMapper<String>() {
             @Override
-            public String map(DBObject result) {
+            public String map(String json) {
+                DBObject result = (DBObject) JSON.parse(json);
                 /* then */
                 assertThat(result.containsField("address")).isFalse();
                 return null;
@@ -354,10 +356,14 @@ public class MongoCollectionTest {
         assertThat(mongoCollection.getName()).isEqualTo("poi");
     }
 
-    private static class IdDBObjectMapper implements DBObjectMapper<String> {
+
+    private static class IdResultMapper implements ResultMapper<String> {
+
         @Override
-        public String map(DBObject result) {
+        public String map(String json) {
+            DBObject result = (DBObject) JSON.parse(json);
             return result.get(MongoCollection.MONGO_ID).toString();
         }
+
     }
 }

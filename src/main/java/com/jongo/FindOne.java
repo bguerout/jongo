@@ -17,24 +17,23 @@
 package com.jongo;
 
 import com.jongo.Query.Builder;
-import com.jongo.jackson.EntityProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 
 public class FindOne {
 
-    private final EntityProcessor processor;
+    private final Unmarshaller unmarshaller;
     private final DBCollection collection;
     private final Builder queryBuilder;
 
-    FindOne(EntityProcessor processor, DBCollection collection, String query) {
-        this.processor = processor;
+    FindOne(Unmarshaller unmarshaller, DBCollection collection, String query) {
+        this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryBuilder = new Builder(query);
     }
 
-    FindOne(EntityProcessor processor, DBCollection collection, String query, Object... parameters) {
-        this.processor = processor;
+    FindOne(Unmarshaller unmarshaller, DBCollection collection, String query, Object... parameters) {
+        this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryBuilder = new Builder(query).parameters(parameters);
     }
@@ -44,12 +43,22 @@ public class FindOne {
         return this;
     }
 
-    public <T> T as(Class<T> clazz) {
-        return map(processor.createEntityMapper(clazz));
+    public <T> T as(final Class<T> clazz) {
+        return map(new ResultMapper<T>() {
+            @Override
+            public T map(String json) {
+                return unmarshaller.unmarshall(json, clazz);
+            }
+        });
     }
 
-    public <T> T map(DBObjectMapper<T> mapper) {
+    public <T> T map(ResultMapper<T> resultMapper) {
         DBObject result = collection.findOne(queryBuilder.build().toDBObject());
-        return result == null ? null : mapper.map(result);
+        if (result == null)
+            return null;
+
+        String json = Jongo.toJson(result);
+        return resultMapper.map(json);
     }
+
 }

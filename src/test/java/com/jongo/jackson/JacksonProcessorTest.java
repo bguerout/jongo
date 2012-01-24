@@ -19,22 +19,28 @@ package com.jongo.jackson;
 import com.jongo.model.Poi;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class DefaultEntityMapperTest {
+public class JacksonProcessorTest {
+
+    private JacksonProcessor processor;
+
+    @Before
+    public void setUp() throws Exception {
+        processor = new JacksonProcessor();
+    }
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
 
-        DefaultEntityMapper<Poi> binder = new DefaultEntityMapper<Poi>(Poi.class, new ObjectMapper());
         DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
 
-        Poi poi = binder.map(dbObject);
+        Poi poi = processor.unmarshall(dbObject.toString(), Poi.class);
 
         assertThat(poi.address).isEqualTo("22 rue des murlins");
     }
@@ -42,11 +48,10 @@ public class DefaultEntityMapperTest {
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
 
-        DefaultEntityMapper<Poi> binder = new DefaultEntityMapper<Poi>(Poi.class, new ObjectMapper());
         DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
         dbObject.put("coordinate", new BasicDBObject("lat", "48"));
 
-        Poi poi = binder.map(dbObject);
+        Poi poi = processor.unmarshall(dbObject.toString(), Poi.class);
 
         assertThat(poi.coordinate.lat).isEqualTo(48);
 
