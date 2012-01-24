@@ -60,11 +60,15 @@
         <url>http://github.com/bguerout/jongo</url>
     </scm>
 
+    <properties>
+        <mongo.version>2.6.5</mongo.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>[2.6.5,]</version>
+            <version>${mongo.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -97,8 +101,37 @@
             <version>1.8.5</version>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>it</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>sh</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>sh</executable>
+                                    <arguments>
+                                        <argument>src/test/sh/check-compatibility-with-mongo-drivers.sh</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
