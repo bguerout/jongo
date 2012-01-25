@@ -16,6 +16,7 @@
 
 package com.jongo;
 
+import com.jongo.marshall.Unmarshaller;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 

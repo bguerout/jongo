@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.jongo.jackson;
+package com.jongo.marshall.jackson;
 
-import com.jongo.Marshaller;
-import com.jongo.Unmarshaller;
+import com.jongo.marshall.Marshaller;
+import com.jongo.marshall.Unmarshaller;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
 

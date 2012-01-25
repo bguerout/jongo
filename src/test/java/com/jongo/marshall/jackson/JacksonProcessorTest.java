@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jongo.jackson;
+package com.jongo.marshall.jackson;
 
 import com.jongo.model.Poi;
 import com.mongodb.BasicDBObject;

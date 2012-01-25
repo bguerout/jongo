@@ -17,6 +17,7 @@
 package com.jongo;
 
 import com.jongo.Query.Builder;
+import com.jongo.marshall.Unmarshaller;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 

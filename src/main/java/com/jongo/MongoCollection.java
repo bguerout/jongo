@@ -16,7 +16,9 @@
 
 package com.jongo;
 
-import com.jongo.jackson.JacksonProcessor;
+import com.jongo.marshall.Marshaller;
+import com.jongo.marshall.Unmarshaller;
+import com.jongo.marshall.jackson.JacksonProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;

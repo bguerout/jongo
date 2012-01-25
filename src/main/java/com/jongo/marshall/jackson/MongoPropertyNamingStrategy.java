@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jongo.jackson;
+package com.jongo.marshall.jackson;
 
 import org.codehaus.jackson.map.MapperConfig;
 import org.codehaus.jackson.map.PropertyNamingStrategy;

@@ -16,7 +16,7 @@
 
 package com.jongo;
 
-import com.jongo.jackson.JacksonProcessor;
+import com.jongo.marshall.jackson.JacksonProcessor;
 import com.mongodb.DBCursor;
 import org.junit.Before;
 import org.junit.Test;
