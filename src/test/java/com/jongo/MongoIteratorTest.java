@@ -31,14 +31,8 @@ public class MongoIteratorTest {
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ResultMapper<String>() {
-            @Override
-            public String map(String json) {
-                return new JacksonProcessor().unmarshall(json, String.class);
-            }
-        };
+        mapper = ResultMapperFactory.newMapper(String.class, new JacksonProcessor());
     }
-
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailWhenNoMoreElements() throws Exception {

@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.jongo.ResultMapperFactory.newMapper;
+
 public class MongoCollection {
 
     public static final String MONGO_ID = "_id";
@@ -71,12 +73,7 @@ public class MongoCollection {
         if (BSONPrimitives.contains(clazz))
             return (Iterator<T>) distinct.iterator();
         else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), new ResultMapper<T>() {
-                @Override
-                public T map(String json) {
-                    return unmarshaller.unmarshall(json, clazz);
-                }
-            });
+            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), newMapper(clazz, unmarshaller));
     }
 
     public <D> String save(D document) throws IOException {
@@ -104,4 +101,5 @@ public class MongoCollection {
     public DBCollection getDBCollection() {
         return collection;
     }
+
 }

@@ -21,6 +21,8 @@ import com.jongo.marshall.Unmarshaller;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 
+import static com.jongo.ResultMapperFactory.newMapper;
+
 public class FindOne {
 
     private final Unmarshaller unmarshaller;
@@ -45,12 +47,7 @@ public class FindOne {
     }
 
     public <T> T as(final Class<T> clazz) {
-        return map(new ResultMapper<T>() {
-            @Override
-            public T map(String json) {
-                return unmarshaller.unmarshall(json, clazz);
-            }
-        });
+        return map(newMapper(clazz, unmarshaller));
     }
 
     public <T> T map(ResultMapper<T> resultMapper) {

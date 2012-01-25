@@ -22,6 +22,8 @@ import com.mongodb.DBCursor;
 
 import java.util.Iterator;
 
+import static com.jongo.ResultMapperFactory.newMapper;
+
 public class Find {
 
     private final DBCollection collection;
@@ -46,13 +48,7 @@ public class Find {
     }
 
     public <T> Iterator<T> as(final Class<T> clazz) {
-        ResultMapper<T> resultMapper = new ResultMapper<T>() {
-            @Override
-            public T map(String json) {
-                return unmarshaller.unmarshall(json, clazz);
-            }
-        };
-        return map(resultMapper);
+        return map(newMapper(clazz, unmarshaller));
     }
 
     public <T> Iterator<T> map(ResultMapper<T> resultMapper) {
