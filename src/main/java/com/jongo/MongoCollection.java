@@ -18,7 +18,6 @@ package com.jongo;
 
 import com.jongo.marshall.Marshaller;
 import com.jongo.marshall.Unmarshaller;
-import com.jongo.marshall.jackson.JacksonProcessor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -36,11 +35,10 @@ public class MongoCollection {
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
 
-    public MongoCollection(DBCollection dbCollection) {
+    public MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
-        JacksonProcessor jacksonProcessor = new JacksonProcessor();
-        marshaller = jacksonProcessor;
-        unmarshaller = jacksonProcessor;
+        this.marshaller = marshaller;
+        this.unmarshaller = unmarshaller;
     }
 
     public FindOne findOne(String query) {

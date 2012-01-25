@@ -16,10 +16,10 @@
 
 package com.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JongoTest {
 
@@ -27,7 +27,7 @@ public class JongoTest {
 
     @Before
     public void setUp() throws Exception {
-        jongo = new Jongo("jongo");
+        jongo = Jongo.jongo("jongo");
     }
 
     @Test
