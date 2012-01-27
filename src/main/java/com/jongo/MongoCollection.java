@@ -42,19 +42,19 @@ public class MongoCollection {
     }
 
     public FindOne findOne(String query) {
-        return new FindOne(unmarshaller, collection, query);
+        return new FindOne(unmarshaller, collection, new Query(query));
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(unmarshaller, collection, query, parameters);
+        return new FindOne(unmarshaller, collection, new Query(query, parameters));
     }
 
     public Find find(String query) {
-        return new Find(unmarshaller, collection, query);
+        return new Find(unmarshaller, collection, new Query(query));
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(unmarshaller, collection, query, parameters);
+        return new Find(unmarshaller, collection, new Query(query, parameters));
     }
 
     public long count(String query) {

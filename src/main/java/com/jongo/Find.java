@@ -29,21 +29,16 @@ public class Find {
     private final DBCollection collection;
     private final Unmarshaller unmarshaller;
     private Query query;
+    private String fields;
 
-    Find(Unmarshaller unmarshaller, DBCollection collection, String query) {
+    Find(Unmarshaller unmarshaller, DBCollection collection, Query query) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
-        this.query = Query.query(query);
-    }
-
-    Find(Unmarshaller unmarshaller, DBCollection collection, String query, Object... parameters) {
-        this.unmarshaller = unmarshaller;
-        this.collection = collection;
-        this.query = Query.query(query, parameters);
+        this.query = query;
     }
 
     public Find on(String fields) {
-        this.query = new Query.Builder(query.getQuery()).fields(fields).build();
+        this.fields = fields;
         return this;
     }
 

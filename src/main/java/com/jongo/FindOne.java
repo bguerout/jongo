@@ -16,7 +16,6 @@
 
 package com.jongo;
 
-import com.jongo.Query.Builder;
 import com.jongo.marshall.Unmarshaller;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -27,22 +26,17 @@ public class FindOne {
 
     private final Unmarshaller unmarshaller;
     private final DBCollection collection;
-    private final Builder queryBuilder;
+    private final Query query;
+    private String fields;
 
-    FindOne(Unmarshaller unmarshaller, DBCollection collection, String query) {
+    FindOne(Unmarshaller unmarshaller, DBCollection collection, Query query) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
-        this.queryBuilder = new Builder(query);
-    }
-
-    FindOne(Unmarshaller unmarshaller, DBCollection collection, String query, Object... parameters) {
-        this.unmarshaller = unmarshaller;
-        this.collection = collection;
-        this.queryBuilder = new Builder(query).parameters(parameters);
+        this.query = query;
     }
 
     public FindOne on(String fields) {
-        this.queryBuilder.fields(fields);
+        this.fields = fields;
         return this;
     }
 
@@ -51,7 +45,7 @@ public class FindOne {
     }
 
     public <T> T map(ResultMapper<T> resultMapper) {
-        DBObject result = collection.findOne(queryBuilder.build().toDBObject());
+        DBObject result = collection.findOne(query.toDBObject());
         if (result == null)
             return null;
 
