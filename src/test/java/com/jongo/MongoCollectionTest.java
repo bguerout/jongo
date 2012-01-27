@@ -91,7 +91,7 @@ public class MongoCollectionTest {
         String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        mongoCollection.findOne("{_id:999}").on(id).map(new ResultMapper<String>() {
+        mongoCollection.findOne(addressExists).on("{_id:1}").map(new ResultMapper<String>() {
             @Override
             public String map(String json) {
                 DBObject result = (DBObject) JSON.parse(json);
@@ -146,7 +146,7 @@ public class MongoCollectionTest {
         String id = mongoCollection.save(new Poi("999", address));
 
         /* when */
-        mongoCollection.findOne("{_id:999}").on(id).map(new ResultMapper<String>() {
+        mongoCollection.find(addressExists).on("{_id:1}").map(new ResultMapper<String>() {
             @Override
             public String map(String json) {
                 DBObject result = (DBObject) JSON.parse(json);

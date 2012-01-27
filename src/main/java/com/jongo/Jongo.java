@@ -23,6 +23,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.util.JSON;
 
 import java.net.UnknownHostException;
 
@@ -66,5 +67,13 @@ public class Jongo {
             dbObject.put(MONGO_ID, id.toString());
 
         return dbObject.toString();
+    }
+
+    static DBObject toDBObject(String json) {
+        try {
+            return ((DBObject) JSON.parse(json));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(json + " cannot be parsed", e);
+        }
     }
 }

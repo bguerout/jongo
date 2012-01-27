@@ -19,9 +19,11 @@ package com.jongo;
 import com.jongo.marshall.Unmarshaller;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 import java.util.Iterator;
 
+import static com.jongo.Jongo.toDBObject;
 import static com.jongo.ResultMapperFactory.newMapper;
 
 public class Find {
@@ -29,7 +31,7 @@ public class Find {
     private final DBCollection collection;
     private final Unmarshaller unmarshaller;
     private Query query;
-    private String fields;
+    private DBObject fields;
 
     Find(Unmarshaller unmarshaller, DBCollection collection, Query query) {
         this.unmarshaller = unmarshaller;
@@ -38,7 +40,7 @@ public class Find {
     }
 
     public Find on(String fields) {
-        this.fields = fields;
+        this.fields = toDBObject(fields);
         return this;
     }
 
@@ -47,7 +49,7 @@ public class Find {
     }
 
     public <T> Iterator<T> map(ResultMapper<T> resultMapper) {
-        DBCursor cursor = collection.find(query.toDBObject());
+        DBCursor cursor = collection.find(query.toDBObject(), fields);
         return new MongoIterator<T>(cursor, resultMapper);
     }
 

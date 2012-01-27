@@ -17,7 +17,6 @@
 package com.jongo;
 
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 
 public class Query {
@@ -37,7 +36,7 @@ public class Query {
         if (parameters != null) {
             boundQuery = binder.bind(query, parameters);
         }
-        return ((DBObject) JSON.parse(boundQuery));
+        return Jongo.toDBObject(boundQuery);
     }
 
     public String getQuery() {
