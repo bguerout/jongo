@@ -61,8 +61,8 @@ Jongo is a tiny sugar over Mongo Java Driver:
     peoples.distinct("address", "", Address.class);
     
     //Field Selection
-    db.peoples.find({"name": "Joe"}, {"age": 27})
-    peoples.find("{'name': 'Joe'}").on("{'age': 27}").as(People.class);
+    db.peoples.find({"name": "Joe"}, {"age": 1})
+    peoples.find("{'name': 'Joe'}").on("{'age': 1}").as(People.class);
 ```
 
 ## Updating
