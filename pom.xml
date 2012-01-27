@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.jongo</groupId>
+    <groupId>org.jongo</groupId>
     <artifactId>jongo</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -48,7 +48,7 @@
             <email>bguerout at gmail dot com</email>
         </developer>
         <developer>
-            <id>n0rad</id>
+            <id>yamsellem</id>
             <name>Yves Amsellem</name>
             <email>amsellem dot yves at gmail dot com</email>
         </developer>
