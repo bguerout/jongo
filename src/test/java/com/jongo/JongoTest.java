@@ -27,7 +27,7 @@ public class JongoTest {
 
     @Before
     public void setUp() throws Exception {
-        jongo = Jongo.jongo("jongo");
+        jongo = new Jongo("jongo");
     }
 
     @Test

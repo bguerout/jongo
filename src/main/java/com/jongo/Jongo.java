@@ -19,7 +19,10 @@ package com.jongo;
 import com.jongo.marshall.Marshaller;
 import com.jongo.marshall.Unmarshaller;
 import com.jongo.marshall.jackson.JacksonProcessor;
-import com.mongodb.*;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 
 import java.net.UnknownHostException;
 
@@ -31,47 +34,21 @@ public class Jongo {
     private Marshaller marshaller;
     private Unmarshaller unmarshaller;
 
-    private Jongo(DB database, Marshaller marshaller, Unmarshaller unmarshaller) {
+    public Jongo(DB database, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.database = database;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
     }
-    
-    public static Jongo jongo(String dbname) throws UnknownHostException {
-        return new Builder(dbname).build();
+
+    public Jongo(DB database) {
+        this.database = database;
+        JacksonProcessor jacksonProcessor = new JacksonProcessor();
+        this.marshaller = jacksonProcessor;
+        this.unmarshaller = jacksonProcessor;
     }
 
-    public static class Builder {
-        private final DB database;
-
-        private Marshaller marshaller;
-        private Unmarshaller unmarshaller;
-
-        public Builder(DB database) {
-            this.database = database;
-
-            JacksonProcessor jacksonProcessor = new JacksonProcessor();
-            marshaller = jacksonProcessor;
-            unmarshaller = jacksonProcessor;
-        }
-
-        public Builder(String dbname) throws UnknownHostException {
-            this(new Mongo().getDB(dbname));
-        }
-
-        public Builder marshaller(Marshaller marshaller) {
-            this.marshaller = marshaller;
-            return this;
-        }
-
-        public Builder unmarshaller(Unmarshaller unmarshaller) {
-            this.unmarshaller = unmarshaller;
-            return this;
-        }
-
-        public Jongo build() {
-            return new Jongo(database, marshaller, unmarshaller);
-        }
+    public Jongo(String dbname) throws UnknownHostException {
+        this(new Mongo().getDB(dbname));
     }
 
     public MongoCollection getCollection(String name) {
