@@ -16,16 +16,16 @@
 
 package org.jongo;
 
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.jongo.Jongo.toDBObject;
 import static org.jongo.ResultMapperFactory.newMapper;
 
 public class MongoCollection {
@@ -76,7 +76,7 @@ public class MongoCollection {
 
     public <D> String save(D document) throws IOException {
         String entityAsJson = marshaller.marshall(document);
-        DBObject dbObject = (DBObject) JSON.parse(entityAsJson);
+        DBObject dbObject = toDBObject(entityAsJson);
         collection.save(dbObject);
         return dbObject.get(MONGO_ID).toString();
     }
@@ -84,7 +84,7 @@ public class MongoCollection {
     @Deprecated
     // TODO use save or generic method
     public void index(String query) {
-        DBObject dbObject = ((DBObject) JSON.parse(query));
+        DBObject dbObject = toDBObject(query);
         collection.insert(dbObject); // TODO don't save id
     }
 
@@ -100,4 +100,11 @@ public class MongoCollection {
         return collection;
     }
 
+    public void update(String query, String modifier) {
+        collection.update(toDBObject(query), toDBObject(modifier), false, true);
+    }
+
+    public void remove(String query) {
+        collection.remove(toDBObject(query));
+    }
 }

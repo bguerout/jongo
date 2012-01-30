@@ -16,14 +16,14 @@
 
 package org.jongo;
 
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.model.Coordinate3D;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.Coordinate;
+import org.jongo.model.Coordinate3D;
 import org.jongo.model.Poi;
 import org.jongo.model.User;
 import org.junit.Before;
@@ -342,6 +342,35 @@ public class MongoCollectionTest {
         poi = pois.next();
         assertThat(poi.id).isEqualTo(id);
         assertThat(poi.address).isNull();
+    }
+
+
+    @Test
+    public void canUpdateQuery() throws Exception {
+        /* given */
+        mongoCollection.save(new Poi(address));
+        mongoCollection.save(new Poi("9 rue des innocents"));
+
+        /* when */
+        mongoCollection.update("{address:'9 rue des innocents'}", "{$unset:{address:1}}");
+
+        /* then */
+        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class);
+        assertThat(pois).hasSize(1);
+    }
+
+    @Test
+    public void canRemoveQuery() throws Exception {
+        /* given */
+        mongoCollection.save(new Poi(address));
+        mongoCollection.save(new Poi("9 rue des innocents"));
+
+        /* when */
+        mongoCollection.remove("{address:'9 rue des innocents'}");
+
+        /* then */
+        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class);
+        assertThat(pois).hasSize(1);
     }
 
     @Test
