@@ -81,11 +81,8 @@ public class MongoCollection {
         return dbObject.get(MONGO_ID).toString();
     }
 
-    @Deprecated
-    // TODO use save or generic method
-    public void index(String query) {
-        DBObject dbObject = toDBObject(query);
-        collection.insert(dbObject); // TODO don't save id
+    public void ensureIndex(String index) {
+        collection.ensureIndex(toDBObject(index));
     }
 
     public void drop() {

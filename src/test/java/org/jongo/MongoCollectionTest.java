@@ -16,43 +16,36 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.model.Coordinate;
 import org.jongo.model.Coordinate3D;
 import org.jongo.model.Poi;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.TestUtil.createEmptyCollection;
+import static org.jongo.TestUtil.dropCollection;
 
 public class MongoCollectionTest {
 
     private MongoCollection mongoCollection;
     private String address = "22 rue des murlins", id = "1";
     private int lat = 48, lng = 2, alt = 7;
+    String addressExists = "{address:{$exists:true}}";
 
     @Before
-    public void setUp() throws UnknownHostException, MongoException {
-        mongoCollection = connect("jongo", "poi", true);
+    public void setUp() throws Exception {
+        mongoCollection = createEmptyCollection("jongo", "users");
     }
 
-    private MongoCollection connect(String dbname, String colname, boolean drop) throws UnknownHostException {
-        DBCollection collection = new Mongo().getDB(dbname).getCollection(colname);
-        MongoCollection col = new MongoCollection(collection, new JacksonProcessor(), new JacksonProcessor());
-        if (drop)
-            col.drop();
-        return col;
+    @After
+    public void tearDown() throws Exception {
+        dropCollection("jongo", "users");
     }
-
-    String addressExists = "{address:{$exists:true}}";
 
 
     @Test
@@ -110,8 +103,7 @@ public class MongoCollectionTest {
         mongoCollection.save(new Poi(address, 1, 1));
         mongoCollection.save(new Poi(address, 4, 4));
 
-        MongoCollection indexes = connect("jongo", "system.indexes", false);
-        indexes.index("{'name': 'coordinate' , 'ns' : 'jongo.poi' , 'key' : { 'coordinate' : '2d'}}");
+        mongoCollection.ensureIndex("{ 'coordinate' : '2d'}");
 
         /* then */
         assertThat(mongoCollection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Poi.class)).hasSize(1);
@@ -120,74 +112,6 @@ public class MongoCollectionTest {
         assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Poi.class)).hasSize(1);
     }
 
-    @Test
-    public void canFilterDistinctStringEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi("23 rue des murlins"));
-
-        /* when */
-        Iterator<String> addresses = mongoCollection.distinct("address", "", String.class);
-
-        /* then */
-        assertThat(addresses.next()).isEqualTo(address);
-        assertThat(addresses.next()).isEqualTo("23 rue des murlins");
-        assertThat(addresses.hasNext()).isFalse();
-    }
-
-    @Test
-    public void canFilterDistinctIntegerEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address, lat, lng));
-        mongoCollection.save(new Poi(address, lat, lng));
-        mongoCollection.save(new Poi(address, 4, 1));
-
-        /* when */
-        Iterator<Integer> addresses = mongoCollection.distinct("coordinate.lat", "", Integer.class);
-
-        /* then */
-        assertThat(addresses.next()).isEqualTo(lat);
-        assertThat(addresses.next()).isEqualTo(4);
-        assertThat(addresses.hasNext()).isFalse();
-    }
-
-    @Test
-    public void canFilterDistinctEntitiesOnTypedProperty() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address, lat, lng));
-        mongoCollection.save(new Poi(address, lat, lng));
-        mongoCollection.save(new Poi(address, 4, 1));
-
-        /* when */
-        Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", "", Coordinate.class);
-
-        /* then */
-        Coordinate first = coordinates.next();
-        assertThat(first.lat).isEqualTo(lat);
-        assertThat(first.lng).isEqualTo(lng);
-        Coordinate second = coordinates.next();
-        assertThat(second.lat).isEqualTo(4);
-        assertThat(second.lng).isEqualTo(1);
-        assertThat(coordinates.hasNext()).isFalse();
-    }
-
-    @Test
-    public void canFilterDistinctEntitiesWithQuery() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address, lat, lng));
-        mongoCollection.save(new Poi(address, lat, lng));
-        mongoCollection.save(new Poi(null, 4, 1));
-
-        /* when */
-        Iterator<Coordinate> coordinates = mongoCollection.distinct("coordinate", addressExists, Coordinate.class);
-
-        /* then */
-        Coordinate first = coordinates.next();
-        assertThat(first.lat).isEqualTo(lat);
-        assertThat(first.lng).isEqualTo(lng);
-        assertThat(coordinates.hasNext()).isFalse();
-    }
 
     @Test
     public void canCountEntities() throws Exception {
@@ -257,7 +181,7 @@ public class MongoCollectionTest {
 
     @Test
     public void canGetCollectionName() throws Exception {
-        assertThat(mongoCollection.getName()).isEqualTo("poi");
+        assertThat(mongoCollection.getName()).isEqualTo("users");
     }
 
 

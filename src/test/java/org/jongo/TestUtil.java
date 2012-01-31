@@ -25,10 +25,14 @@ import java.net.UnknownHostException;
 public class TestUtil {
 
     public static MongoCollection createEmptyCollection(String dbname, String collectionName) throws UnknownHostException {
-        DBCollection collection = new Mongo().getDB(dbname).getCollection(collectionName);
-        MongoCollection col = new MongoCollection(collection, new JacksonProcessor(), new JacksonProcessor());
+        MongoCollection col = getCollection(dbname, collectionName);
         col.drop();
         return col;
+    }
+
+    public static MongoCollection getCollection(String dbname, String collectionName) throws UnknownHostException {
+        DBCollection collection = new Mongo().getDB(dbname).getCollection(collectionName);
+        return new MongoCollection(collection, new JacksonProcessor(), new JacksonProcessor());
     }
 
     public static void dropCollection(String dbname, String collectionName) throws UnknownHostException {
