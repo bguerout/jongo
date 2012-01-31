@@ -16,30 +16,5 @@
 
 package org.jongo.model;
 
-import org.bson.types.ObjectId;
-
-import javax.persistence.Id;
-
-public class User {
-
-    @Id
-    public ObjectId id;
-    private String name;
-    private String address;
-
-    public User(String name) {
-        this.name = name;
-    }
-
-    public User(String name, String address) {
-        this.name = name;
-        this.address = address;
-    }
-
-    public User() {
-    }
-
-    public String getName() {
-        return name;
-    }
+public class Address {
 }

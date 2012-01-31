@@ -14,32 +14,17 @@
  * limitations under the License.
  */
 
-package org.jongo.model;
+package org.jongo;
 
-import org.bson.types.ObjectId;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
-import javax.persistence.Id;
+public class IdResultMapper implements ResultMapper<String> {
 
-public class User {
-
-    @Id
-    public ObjectId id;
-    private String name;
-    private String address;
-
-    public User(String name) {
-        this.name = name;
+    @Override
+    public String map(String json) {
+        DBObject result = (DBObject) JSON.parse(json);
+        return result.get(MongoCollection.MONGO_ID).toString();
     }
 
-    public User(String name, String address) {
-        this.name = name;
-        this.address = address;
-    }
-
-    public User() {
-    }
-
-    public String getName() {
-        return name;
-    }
 }

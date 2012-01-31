@@ -17,15 +17,12 @@
 package org.jongo;
 
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import com.mongodb.util.JSON;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Coordinate3D;
 import org.jongo.model.Poi;
-import org.jongo.model.User;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -57,129 +54,6 @@ public class MongoCollectionTest {
 
     String addressExists = "{address:{$exists:true}}";
 
-    @Test
-    public void canFindOne() throws Exception {
-        /* given */
-        String id = mongoCollection.save(new Poi("999", address));
-
-        /* when */
-        String poiId = mongoCollection.findOne(addressExists).map(new IdResultMapper());
-        Poi poi = mongoCollection.findOne(addressExists).as(Poi.class);
-
-        /* then */
-        assertThat(poiId).isEqualTo(id);
-        assertThat(poi.id).isEqualTo(id);
-    }
-
-    @Test
-    public void canFindOneWithParameters() throws Exception {
-        /* given */
-        String id = mongoCollection.save(new Poi("999", address));
-
-        /* when */
-        String poiId = mongoCollection.findOne("{_id:#}", id).map(new IdResultMapper());
-        Poi poi = mongoCollection.findOne("{_id:#}", id).as(Poi.class);
-
-        /* then */
-        assertThat(poiId).isEqualTo(id);
-        assertThat(poi.id).isEqualTo(id);
-    }
-
-    @Test
-    public void canFindOneWithPartialFieldsLoading() throws Exception {
-        /* given */
-        String id = mongoCollection.save(new Poi("999", address));
-
-        /* when */
-        mongoCollection.findOne(addressExists).on("{_id:1}").map(new ResultMapper<String>() {
-            @Override
-            public String map(String json) {
-                DBObject result = (DBObject) JSON.parse(json);
-                /* then */
-                assertThat(result.containsField("address")).isFalse();
-                return null;
-            }
-        });
-    }
-
-    @Test
-    public void shouldHandleEmptyResult() throws Exception {
-        assertThat(mongoCollection.findOne("{_id:'invalid-id'}").as(Poi.class)).isNull();
-        assertThat(mongoCollection.findOne("{_id:'invalid-id'}").map(new IdResultMapper())).isNull();
-
-        assertThat(mongoCollection.find("{_id:'invalid-id'}").as(Poi.class)).hasSize(0);
-    }
-
-    @Test
-    public void canFindEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(id, address));
-
-        /* when */
-        Iterator<String> strings = mongoCollection.find(addressExists).map(new IdResultMapper());
-        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class);
-
-        /* then */
-        assertThat(strings.next()).isEqualTo(id);
-        assertThat(pois.next().id).isEqualTo(id);
-
-        assertThat(strings.hasNext()).isFalse();
-        assertThat(pois.hasNext()).isFalse();
-    }
-
-    @Test
-    public void canFindEntitiesWithParameters() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(id, address));
-
-        /* when */
-        Iterator<String> strings = mongoCollection.find("{_id:#}", "1").map(new IdResultMapper());
-
-        /* then */
-        assertThat(strings.hasNext()).isTrue();
-        assertThat(strings.next()).isEqualTo(id);
-    }
-
-    @Test
-    public void canFindEntitiesWithPartialFieldsLoading() throws Exception {
-        /* given */
-        String id = mongoCollection.save(new Poi("999", address));
-
-        /* when */
-        mongoCollection.find(addressExists).on("{_id:1}").map(new ResultMapper<String>() {
-            @Override
-            public String map(String json) {
-                DBObject result = (DBObject) JSON.parse(json);
-                /* then */
-                assertThat(result.containsField("address")).isFalse();
-                return null;
-            }
-        });
-    }
-
-    @Test
-    public void canFindWithObjectId() throws Exception {
-        /* given */
-        String id = mongoCollection.save(new User("john"));
-        User user = mongoCollection.findOne("{_id:{$oid:#}}", id).as(User.class);
-
-        /* then */
-        assertThat(user).isNotNull();
-        assertThat(user.id).isEqualTo(id);
-    }
-
-    @Test
-    public void canFindUsingSubProperty() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address, lat, lng));
-
-        /* when */
-        Iterator<Poi> results = mongoCollection.find("{'coordinate.lat':48}").as(Poi.class);
-
-        /* then */
-        assertThat(results.next().coordinate.lat).isEqualTo(lat);
-        assertThat(results.hasNext()).isFalse();
-    }
 
     @Test
     public void canSortEntities() throws Exception {
@@ -387,13 +261,4 @@ public class MongoCollectionTest {
     }
 
 
-    private static class IdResultMapper implements ResultMapper<String> {
-
-        @Override
-        public String map(String json) {
-            DBObject result = (DBObject) JSON.parse(json);
-            return result.get(MongoCollection.MONGO_ID).toString();
-        }
-
-    }
 }
