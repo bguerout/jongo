@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.util;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.jongo.MongoCollection;
+import org.jongo.ResultMapper;
 
 public class IdResultMapper implements ResultMapper<String> {
 

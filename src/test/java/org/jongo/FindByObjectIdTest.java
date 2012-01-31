@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package org.jongo.find;
+package org.jongo;
 
-import org.jongo.IdResultMapper;
-import org.jongo.MongoCollection;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
@@ -26,10 +24,10 @@ import org.junit.Test;
 import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.TestUtil.createEmptyCollection;
-import static org.jongo.TestUtil.dropCollection;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
 
-public class ResultMappingTest {
+public class FindByObjectIdTest {
 
     private MongoCollection collection;
     private User user;
@@ -46,32 +44,28 @@ public class ResultMappingTest {
     }
 
     @Test
-    public void canFind() throws Exception {
-        /* given */
-        String id = collection.save(user);
-        String id2 = collection.save(new User("Smith", "23 Wall Street Avenue"));
-        String id3 = collection.save(new User("Peter", "24 Wall Street Avenue"));
-
-        /* when */
-        Iterator<String> userIds = collection.find("{}").map(new IdResultMapper());
-
-        /* then */
-        assertThat(userIds.next()).isEqualTo(id);
-        assertThat(userIds.next()).isEqualTo(id2);
-        assertThat(userIds.next()).isEqualTo(id3);
-        assertThat(userIds.hasNext()).isFalse();
-    }
-
-    @Test
     public void canFindOne() throws Exception {
         /* given */
         String id = collection.save(user);
 
-        /* when */
-        String userId = collection.findOne("{}").map(new IdResultMapper());
+
+        User foundUser = collection.findOne("{_id:{$oid:#}}", id).as(User.class);
 
         /* then */
-        assertThat(userId).isEqualTo(id);
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.id).isEqualTo(id);
+    }
 
+    @Test
+    public void canFind() throws Exception {
+        /* given */
+        String id = collection.save(user);
+
+
+        Iterator<User> users = collection.find("{_id:{$oid:#}}", id).as(User.class);
+
+        /* then */
+        assertThat(users).isNotNull();
+        assertThat(users.next().id).isEqualTo(id);
     }
 }

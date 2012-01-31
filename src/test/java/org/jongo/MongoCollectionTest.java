@@ -27,8 +27,8 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.TestUtil.createEmptyCollection;
-import static org.jongo.TestUtil.dropCollection;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
 
 public class MongoCollectionTest {
 

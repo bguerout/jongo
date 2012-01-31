@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.util;
 
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
 
 import java.net.UnknownHostException;

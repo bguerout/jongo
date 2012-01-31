@@ -58,20 +58,11 @@ public class MongoCollection {
     }
 
     public long count(String query) {
-        Query staticQuery = new Query(query);
-        return collection.count(staticQuery.toDBObject());
+        return collection.count(new Query(query).toDBObject());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> Iterator<T> distinct(String key, String query, final Class<T> clazz) {
-
-        Query staticQuery = new Query(query);
-        DBObject ref = staticQuery.toDBObject();
-        List<?> distinct = collection.distinct(key, ref);
-        if (BSONPrimitives.contains(clazz))
-            return (Iterator<T>) distinct.iterator();
-        else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), newMapper(clazz, unmarshaller));
+    public void update(String query, String modifier) {
+        collection.update(toDBObject(query), toDBObject(modifier), false, true);
     }
 
     public <D> String save(D document) throws IOException {
@@ -81,12 +72,27 @@ public class MongoCollection {
         return dbObject.get(MONGO_ID).toString();
     }
 
-    public void ensureIndex(String index) {
-        collection.ensureIndex(toDBObject(index));
+    public void remove(String query) {
+        collection.remove(toDBObject(query));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Iterator<T> distinct(String key, String query, final Class<T> clazz) {
+        Query staticQuery = new Query(query);
+        DBObject ref = staticQuery.toDBObject();
+        List<?> distinct = collection.distinct(key, ref);
+        if (BSONPrimitives.contains(clazz))
+            return (Iterator<T>) distinct.iterator();
+        else
+            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), newMapper(clazz, unmarshaller));
     }
 
     public void drop() {
         collection.drop();
+    }
+
+    public void ensureIndex(String index) {
+        collection.ensureIndex(toDBObject(index));
     }
 
     public String getName() {
@@ -97,11 +103,4 @@ public class MongoCollection {
         return collection;
     }
 
-    public void update(String query, String modifier) {
-        collection.update(toDBObject(query), toDBObject(modifier), false, true);
-    }
-
-    public void remove(String query) {
-        collection.remove(toDBObject(query));
-    }
 }

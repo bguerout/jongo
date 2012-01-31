@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package org.jongo.find;
+package org.jongo;
 
-import org.fest.assertions.Assertions;
-import org.jongo.IdResultMapper;
-import org.jongo.MongoCollection;
+import org.jongo.model.Poi;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.TestUtil.createEmptyCollection;
-import static org.jongo.TestUtil.dropCollection;
+import java.util.Iterator;
 
-public class FindOneTest {
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
+public class FindTest {
 
     private MongoCollection collection;
     private User user;
@@ -44,36 +44,51 @@ public class FindOneTest {
         dropCollection("jongo", "users");
     }
 
+
     @Test
-    public void canFindOne() throws Exception {
+    public void canFind() throws Exception {
         /* given */
         String id = collection.save(user);
 
         /* when */
-        User user = collection.findOne("{name:'John'}").as(User.class);
+        Iterator<User> users = collection.find("{address:{$exists:true}}").as(User.class);
 
         /* then */
-        assertThat(user.id).isEqualTo(id);
+        assertThat(users.next().id).isEqualTo(id);
+        assertThat(users.hasNext()).isFalse();
     }
 
     @Test
-    public void canFindOneWithEmptyQuery() throws Exception {
+    public void canFindWithEmptySelector() throws Exception {
         /* given */
         String id = collection.save(user);
+        String id2 = collection.save(new User("Smith", "23 Wall Street Avenue"));
+        String id3 = collection.save(new User("Peter", "24 Wall Street Avenue"));
 
         /* when */
-        User user = collection.findOne("{}").as(User.class);
+        Iterator<User> users = collection.find("{}").as(User.class);
 
         /* then */
+        User user = users.next();
         assertThat(user.id).isEqualTo(id);
+        assertThat(user.getName()).isEqualTo("John");
+        assertThat(users.next().id).isEqualTo(id2);
+        assertThat(users.next().id).isEqualTo(id3);
+        assertThat(users.hasNext()).isFalse();
     }
 
 
     @Test
-    public void whenNoResultShouldReturnNull() throws Exception {
-        assertThat(collection.findOne("{_id:'invalid-id'}").as(Object.class)).isNull();
-        Assertions.assertThat(collection.findOne("{_id:'invalid-id'}").map(new IdResultMapper())).isNull();
-        assertThat(collection.find("{_id:'invalid-id'}").as(Object.class)).hasSize(0);
+    public void canFindUsingSubProperty() throws Exception {
+        /* given */
+        collection.save(new Poi("21 Jump Street", 2, 31));
+
+        /* when */
+        Iterator<Poi> results = collection.find("{'coordinate.lat':2}").as(Poi.class);
+
+        /* then */
+        assertThat(results.next().coordinate.lat).isEqualTo(2);
+        assertThat(results.hasNext()).isFalse();
     }
 
 }

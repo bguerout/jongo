@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package org.jongo.find;
+package org.jongo;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-import org.jongo.MongoCollection;
-import org.jongo.ResultMapper;
+import org.jongo.util.IdResultMapper;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.TestUtil.createEmptyCollection;
-import static org.jongo.TestUtil.dropCollection;
+import java.util.Iterator;
 
-public class PartialFieldLoadingTest {
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
+public class FindAndMapTest {
 
     private MongoCollection collection;
     private User user;
@@ -49,9 +48,17 @@ public class PartialFieldLoadingTest {
     public void canFind() throws Exception {
         /* given */
         String id = collection.save(user);
+        String id2 = collection.save(new User("Smith", "23 Wall Street Avenue"));
+        String id3 = collection.save(new User("Peter", "24 Wall Street Avenue"));
 
         /* when */
-        collection.find("{name:'John'}").on("{name:1}").map(new AssertionResultMapper());
+        Iterator<String> userIds = collection.find("{}").map(new IdResultMapper());
+
+        /* then */
+        assertThat(userIds.next()).isEqualTo(id);
+        assertThat(userIds.next()).isEqualTo(id2);
+        assertThat(userIds.next()).isEqualTo(id3);
+        assertThat(userIds.hasNext()).isFalse();
     }
 
     @Test
@@ -60,19 +67,10 @@ public class PartialFieldLoadingTest {
         String id = collection.save(user);
 
         /* when */
-        Boolean result = collection.findOne("{name:'John'}").on("{name:1}").map(new AssertionResultMapper());
+        String userId = collection.findOne("{}").map(new IdResultMapper());
 
-        assertThat(result).isTrue();
-    }
+        /* then */
+        assertThat(userId).isEqualTo(id);
 
-
-    private static class AssertionResultMapper implements ResultMapper<Boolean> {
-        @Override
-        public Boolean map(String json) {
-            DBObject result = (DBObject) JSON.parse(json);
-            assertThat(result.containsField("address")).isFalse();
-            assertThat(result.containsField("name")).isTrue();
-            return true;
-        }
     }
 }

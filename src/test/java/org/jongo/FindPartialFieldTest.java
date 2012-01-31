@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package org.jongo.find;
+package org.jongo;
 
-import org.jongo.MongoCollection;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Iterator;
-
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.TestUtil.createEmptyCollection;
-import static org.jongo.TestUtil.dropCollection;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
 
-public class ByObjectIdTest {
+public class FindPartialFieldTest {
 
     private MongoCollection collection;
     private User user;
@@ -45,28 +44,33 @@ public class ByObjectIdTest {
     }
 
     @Test
-    public void canFindOne() throws Exception {
-        /* given */
-        String id = collection.save(user);
-
-
-        User foundUser = collection.findOne("{_id:{$oid:#}}", id).as(User.class);
-
-        /* then */
-        assertThat(foundUser).isNotNull();
-        assertThat(foundUser.id).isEqualTo(id);
-    }
-
-    @Test
     public void canFind() throws Exception {
         /* given */
         String id = collection.save(user);
 
+        /* when */
+        collection.find("{name:'John'}").on("{name:1}").map(new AssertionResultMapper());
+    }
 
-        Iterator<User> users = collection.find("{_id:{$oid:#}}", id).as(User.class);
+    @Test
+    public void canFindOne() throws Exception {
+        /* given */
+        String id = collection.save(user);
 
-        /* then */
-        assertThat(users).isNotNull();
-        assertThat(users.next().id).isEqualTo(id);
+        /* when */
+        Boolean result = collection.findOne("{name:'John'}").on("{name:1}").map(new AssertionResultMapper());
+
+        assertThat(result).isTrue();
+    }
+
+
+    private static class AssertionResultMapper implements ResultMapper<Boolean> {
+        @Override
+        public Boolean map(String json) {
+            DBObject result = (DBObject) JSON.parse(json);
+            assertThat(result.containsField("address")).isFalse();
+            assertThat(result.containsField("name")).isTrue();
+            return true;
+        }
     }
 }
