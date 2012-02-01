@@ -17,6 +17,31 @@ Jongo is a tiny sugar over Mongo Java Driver:
     People one = peoples.findOne("{}").as(People.class);
 ```
 
+## Use it in your Maven project
+
+```xml
+<project>
+...
+<repositories>
+   <repository>
+        <id>oss-sonatype</id>
+        <name>OSS Sonatype Repository</name>
+        <url>http://oss.sonatype.org/content/groups/public</url>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+...
+<dependencies>
+    <dependency>
+        <groupId>org.jongo</groupId>
+        <artifactId>jongo</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+...
+</project>
+```
+
 ## Querying
 
 ```java
