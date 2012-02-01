@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 
@@ -43,6 +44,10 @@ public class MongoCollection {
 
     public FindOne findOne(String query) {
         return new FindOne(unmarshaller, collection, new Query(query));
+    }
+
+    public FindOne findOne(ObjectId id) {
+        return new FindOne(unmarshaller, collection, new Query("{_id:#}", id));
     }
 
     public FindOne findOne(String query, Object... parameters) {

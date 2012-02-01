@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class ParameterBinderTest {
     }
 
     @Test
-    public void canMapDateParameter() throws Exception {
+    public void canMapDate() throws Exception {
 
         Date epoch = new Date(0);
 
@@ -74,7 +75,7 @@ public class ParameterBinderTest {
     }
 
     @Test
-    public void canMapListParameter() throws Exception {
+    public void canMapList() throws Exception {
 
         List<String> elements = new ArrayList<String>();
         elements.add("1");
@@ -86,14 +87,20 @@ public class ParameterBinderTest {
     }
 
     @Test
-    public void canHandleBooleanParameter() throws Exception {
-
+    public void canHandleBoolean() throws Exception {
 
         String query = binder.bind("{id:#}", true);
 
         assertThat(query).isEqualTo("{id:true}");
     }
 
+    @Test
+    public void canHandleObjectId() throws Exception {
+
+        String query = binder.bind("{_id:#}", new ObjectId("47cc67093475061e3d95369d"));
+
+        assertThat(query).isEqualTo("{_id:{ \"$oid\" : \"47cc67093475061e3d95369d\"}}");
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldRejectNonBSONPrimitive() throws Exception {

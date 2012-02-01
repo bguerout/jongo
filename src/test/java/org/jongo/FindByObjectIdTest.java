@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import org.bson.types.ObjectId;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
@@ -41,6 +42,20 @@ public class FindByObjectIdTest {
     @After
     public void tearDown() throws Exception {
         dropCollection("jongo", "users");
+    }
+
+    @Test
+    public void canFindOneWithObjectId() throws Exception {
+        /* given */
+        String id = collection.save(user);
+
+
+        ObjectId objectId = new ObjectId(id);
+        User foundUser = collection.findOne(objectId).as(User.class);
+
+        /* then */
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.id).isEqualTo(id);
     }
 
     @Test
