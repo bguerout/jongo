@@ -59,8 +59,8 @@ To be able to resolve dependency, you have to add OSS repository into your setti
     peoples.find("{'name': #}", "Joe").as(People.class);
     
     //Query with ObjectId
-    db.peoples.find(ObjectId("47cc67093475061e3d95369d"))
-    peoples.find(new ObjectId("47cc67093475061e3d95369d").as(People.class);
+    db.peoples.findOne(ObjectId("47cc67093475061e3d95369d"))
+    peoples.findOne(new ObjectId("47cc67093475061e3d95369d").as(People.class);
     
     //Sorting
     db.peoples.find({}).sort({"name": 1})
