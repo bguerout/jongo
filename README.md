@@ -17,36 +17,6 @@ Jongo is a tiny sugar over Mongo Java Driver:
     People one = peoples.findOne("{}").as(People.class);
 ```
 
-## Use it in your Maven project
-
-Declare Jongo dependency as follows into you pom.xml
-
-```xml
-<dependency>
-    <groupId>org.jongo</groupId>
-    <artifactId>jongo</artifactId>
-    <version>0.1-SNAPSHOT</version>
-</dependency>
-```
-
-Jongo is deployed into OSS Sonatype (Maven repository hosting service for open source projects).
-To be able to resolve dependency, you have to add OSS repository into your settings.xml.
-
-```xml
-<settings>
-...
-<repositories>
-   <repository>
-        <id>oss-sonatype</id>
-        <name>OSS Sonatype Repository</name>
-        <url>http://oss.sonatype.org/content/groups/public</url>
-        <snapshots><enabled>true</enabled></snapshots>
-    </repository>
-</repositories>
-...
-</settings>
-```
-
 ## Querying
 
 ```java
@@ -171,7 +141,38 @@ ResultMapper can be easily reused across queries
     ...
 ```
 
-## Dev Zone
+
+## Use it into your Maven project
+
+Declare Jongo dependency as follows into you pom.xml
+
+```xml
+<dependency>
+    <groupId>org.jongo</groupId>
+    <artifactId>jongo</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
+
+Jongo is deployed into OSS Sonatype (Maven repository hosting service for open source projects).
+To be able to resolve dependency, you have to add OSS repository into your settings.xml.
+
+```xml
+<settings>
+...
+<repositories>
+   <repository>
+        <id>oss-sonatype</id>
+        <name>OSS Sonatype Repository</name>
+        <url>http://oss.sonatype.org/content/groups/public</url>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+...
+</settings>
+```
+
+## Dev zone
 
 To get the code and build from source, do the following:
 
