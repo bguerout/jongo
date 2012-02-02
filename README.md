@@ -19,8 +19,21 @@ Jongo is a tiny sugar over Mongo Java Driver:
 
 ## Use it in your Maven project
 
+Declare Jongo dependency as follows into you pom.xml
+
 ```xml
-<project>
+<dependency>
+    <groupId>org.jongo</groupId>
+    <artifactId>jongo</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
+
+Jongo is deployed into OSS Sonatype (Maven repository hosting service for open source projects).
+To be able to resolve dependency, you have to add OSS repository into your settings.xml.
+
+```xml
+<settings>
 ...
 <repositories>
    <repository>
@@ -31,15 +44,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
     </repository>
 </repositories>
 ...
-<dependencies>
-    <dependency>
-        <groupId>org.jongo</groupId>
-        <artifactId>jongo</artifactId>
-        <version>0.1-SNAPSHOT</version>
-    </dependency>
-</dependencies>
-...
-</project>
+</settings>
 ```
 
 ## Querying
@@ -54,8 +59,8 @@ Jongo is a tiny sugar over Mongo Java Driver:
     peoples.find("{'name': #}", "Joe").as(People.class);
     
     //Query with ObjectId
-    db.peoples.find({"_id": ObjectId("47cc67093475061e3d95369d")})
-    peoples.find("{'_id': {$oid: '47cc67093475061e3d95369d'}}").as(People.class);
+    db.peoples.find(ObjectId("47cc67093475061e3d95369d"))
+    peoples.find(new ObjectId("47cc67093475061e3d95369d").as(People.class);
     
     //Sorting
     db.peoples.find({}).sort({"name": 1})
@@ -138,14 +143,15 @@ or `org.codehaus.jackson.annotate.JsonProperty`
 
 ### Manual Mapping
 
-Mapping can be achieved without Jackson by implementing com.jongo.DBObjectMapper
+Mapping can be achieved without Jackson by implementing org.jongo.ResultMapper
 
 
 ```java
-    Iterator<Integer> agesOfAllJohn = collection.find("{'name':'john'}").map(new DBObjectMapper<Integer>() {
+    Iterator<Integer> agesOfAllJohn = collection.find("{'name':'john'}").map(new ResultMapper<Integer>() {
         @Override
-        public String map(DBObject result) {
-            return result.getAge();
+        public String map(String json) {
+            DBObject result = (DBObject) JSON.parse(json);
+            return result.get("age");
         }
     });
 ```
@@ -153,10 +159,11 @@ Mapping can be achieved without Jackson by implementing com.jongo.DBObjectMapper
 DBObjectMapper can be easily reused across queries
 
 ```java
-    public class IdMapper implements DBObjectMapper<String> {
+    public class IdMapper implements ResultMapper<String> {
         @Override
-        public String map(DBObject result) {
-            return result.get(MongoCollection.MONGO_ID).toString();
+        public String map(String json) {
+            DBObject result = (DBObject) JSON.parse(json);
+            return result.get("_id").toString();
         }
     }
     ...
