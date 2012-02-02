@@ -156,7 +156,7 @@ Mapping can be achieved without Jackson by implementing org.jongo.ResultMapper
     });
 ```
 
-DBObjectMapper can be easily reused across queries
+ResultMapper can be easily reused across queries
 
 ```java
     public class IdMapper implements ResultMapper<String> {
