@@ -30,7 +30,7 @@ Jongo is a tiny sugar over Mongo Java Driver:
     
     //Query with ObjectId
     db.peoples.findOne(ObjectId("47cc67093475061e3d95369d"))
-    peoples.findOne(new ObjectId("47cc67093475061e3d95369d").as(People.class);
+    peoples.findOne(new ObjectId("47cc67093475061e3d95369d")).as(People.class);
     
     //Sorting
     db.peoples.find({}).sort({"name": 1})
