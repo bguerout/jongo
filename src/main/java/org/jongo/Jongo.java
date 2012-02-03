@@ -16,16 +16,13 @@
 
 package org.jongo;
 
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JacksonProcessor;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.util.JSON;
-
-import java.net.UnknownHostException;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.JacksonProcessor;
 
 public class Jongo {
 
@@ -44,10 +41,6 @@ public class Jongo {
         JacksonProcessor jacksonProcessor = new JacksonProcessor();
         this.marshaller = jacksonProcessor;
         this.unmarshaller = jacksonProcessor;
-    }
-
-    public Jongo(String dbname) throws UnknownHostException {
-        this(new Mongo().getDB(dbname));
     }
 
     public MongoCollection getCollection(String name) {

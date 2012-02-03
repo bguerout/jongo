@@ -16,8 +16,10 @@
 
 package org.jongo.util;
 
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import com.mongodb.MongoURI;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
 
@@ -32,11 +34,29 @@ public class TestUtil {
     }
 
     public static MongoCollection getCollection(String dbname, String collectionName) throws UnknownHostException {
-        DBCollection collection = new Mongo().getDB(dbname).getCollection(collectionName);
+        DBCollection collection = getTestDatabase(dbname).getCollection(collectionName);
         return new MongoCollection(collection, new JacksonProcessor(), new JacksonProcessor());
     }
 
+    public static DB getTestDatabase(String dbname) throws UnknownHostException {
+
+        String mongoHQUri = System.getProperty("jongo.mongohq.uri");
+        if (mongoHQUri != null) {
+            return getDBFromMongoHQ(mongoHQUri);
+        }
+        return new Mongo("127.0.0.1").getDB(dbname);
+    }
+
+    private static DB getDBFromMongoHQ(String mongoHQUri) throws UnknownHostException {
+
+        MongoURI mongoURI = new MongoURI(mongoHQUri);
+        DB db = mongoURI.connectDB();
+        db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
+        return db;
+
+    }
+
     public static void dropCollection(String dbname, String collectionName) throws UnknownHostException {
-        new Mongo().getDB(dbname).getCollection(collectionName).drop();
+        getTestDatabase(dbname).getCollection(collectionName).drop();
     }
 }

@@ -16,12 +16,11 @@
 
 package org.jongo;
 
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.getTestDatabase;
 
 public class JongoTest {
 
@@ -29,7 +28,7 @@ public class JongoTest {
 
     @Before
     public void setUp() throws Exception {
-        jongo = new Jongo("jongo");
+        jongo = new Jongo(getTestDatabase("jongo"));
     }
 
     @Test
