@@ -34,13 +34,13 @@ public class FindOneTest {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("jongo", "users");
+        collection = createEmptyCollection("users");
         user = new User("John", "22 Wall Street Avenue");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("jongo", "users");
+        dropCollection("users");
     }
 
     @Test

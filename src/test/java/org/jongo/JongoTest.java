@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.getTestDatabase;
+import static org.jongo.util.TestUtil.getDatabase;
 
 public class JongoTest {
 
@@ -28,7 +28,7 @@ public class JongoTest {
 
     @Before
     public void setUp() throws Exception {
-        jongo = new Jongo(getTestDatabase("jongo"));
+        jongo = new Jongo(getDatabase());
     }
 
     @Test

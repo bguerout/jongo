@@ -39,12 +39,12 @@ public class MongoCollectionTest {
 
     @Before
     public void setUp() throws Exception {
-        mongoCollection = createEmptyCollection("jongo", "users");
+        mongoCollection = createEmptyCollection("users");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("jongo", "users");
+        dropCollection("users");
     }
 
 

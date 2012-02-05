@@ -18,8 +18,6 @@ package org.jongo.util;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
-import com.mongodb.MongoURI;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
 
@@ -27,36 +25,27 @@ import java.net.UnknownHostException;
 
 public class TestUtil {
 
-    public static MongoCollection createEmptyCollection(String dbname, String collectionName) throws UnknownHostException {
-        MongoCollection col = getCollection(dbname, collectionName);
+    private static Database database = new Database();
+
+    public static MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
+        MongoCollection col = getCollection(collectionName);
         col.drop();
         return col;
     }
 
-    public static MongoCollection getCollection(String dbname, String collectionName) throws UnknownHostException {
-        DBCollection collection = getTestDatabase(dbname).getCollection(collectionName);
+    public static MongoCollection getCollection(String collectionName) throws UnknownHostException {
+        DBCollection collection = getDatabase().getCollection(collectionName);
         return new MongoCollection(collection, new JacksonProcessor(), new JacksonProcessor());
     }
 
-    public static DB getTestDatabase(String dbname) throws UnknownHostException {
+    public static DB getDatabase() throws UnknownHostException {
 
-        String mongoHQUri = System.getProperty("jongo.mongohq.uri");
-        if (mongoHQUri != null) {
-            return getDBFromMongoHQ(mongoHQUri);
-        }
-        return new Mongo("127.0.0.1").getDB(dbname);
+        return database.get();
     }
 
-    private static DB getDBFromMongoHQ(String mongoHQUri) throws UnknownHostException {
 
-        MongoURI mongoURI = new MongoURI(mongoHQUri);
-        DB db = mongoURI.connectDB();
-        db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
-        return db;
-
+    public static void dropCollection(String collectionName) throws UnknownHostException {
+        getDatabase().getCollection(collectionName).drop();
     }
 
-    public static void dropCollection(String dbname, String collectionName) throws UnknownHostException {
-        getTestDatabase(dbname).getCollection(collectionName).drop();
-    }
 }
