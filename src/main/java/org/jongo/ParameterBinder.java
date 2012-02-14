@@ -58,8 +58,9 @@ public class ParameterBinder {
 
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {
         int nbTokens = countTokens(template);
-        if (nbTokens > parameters.length) {
-            throw new IllegalArgumentException("Query has more tokens " + nbTokens + " than parameters" + parameters.length);
+        if (nbTokens != parameters.length) {
+            throw new IllegalArgumentException("Tokens and parameters numbers mismatch " +
+                    "[query: " + template + " / tokens:" + nbTokens + " / parameters:[" + parameters.length + "]");
         }
     }
 

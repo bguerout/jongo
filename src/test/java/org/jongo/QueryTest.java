@@ -17,7 +17,6 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
-import org.jongo.Query;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -36,10 +35,10 @@ public class QueryTest {
     @Test
     public void canBuildParameterizedQuery() throws Exception {
 
-        Query query = new Query("{'value':#}", "1", "2");
+        Query query = new Query("{'value':#}", "1");
 
         DBObject dbObject = query.toDBObject();
         assertThat(dbObject.get("value")).isEqualTo("1");
-    }
 
+    }
 }

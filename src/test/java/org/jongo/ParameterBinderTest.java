@@ -48,6 +48,12 @@ public class ParameterBinderTest {
         binder.bind("{id:#,id2:#}", "123");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenNotTooManyParameters() throws Exception {
+
+        binder.bind("{id:#}", 123, 456);
+    }
+
     @Test
     public void canMapParameter() throws Exception {
 
