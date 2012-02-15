@@ -47,24 +47,6 @@ public class MongoCollectionTest {
         dropCollection("users");
     }
 
-
-    @Test
-    public void canSortEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi("23 rue des murlins"));
-        mongoCollection.save(new Poi("21 rue des murlins"));
-        mongoCollection.save(new Poi("22 rue des murlins"));
-
-        /* when */
-        Iterator<Poi> results = mongoCollection.find("{'$query':{}, '$orderby':{'address':1}}").as(Poi.class);
-
-        /* then */
-        assertThat(results.next().address).isEqualTo("21 rue des murlins");
-        assertThat(results.next().address).isEqualTo("22 rue des murlins");
-        assertThat(results.next().address).isEqualTo("23 rue des murlins");
-        assertThat(results.hasNext()).isFalse();
-    }
-
     @Test
     public void canUseConditionnalOperator() throws Exception {
         /* given */

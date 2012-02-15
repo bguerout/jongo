@@ -33,6 +33,7 @@ public class Find {
     private Query query;
     private DBObject fields;
     private Integer limit, skip;
+    private DBObject sort;
 
     Find(Unmarshaller unmarshaller, DBCollection collection, Query query) {
         this.unmarshaller = unmarshaller;
@@ -51,11 +52,18 @@ public class Find {
 
     public <T> Iterator<T> map(ResultMapper<T> resultMapper) {
         DBCursor cursor = collection.find(query.toDBObject(), fields);
+        addOptionsOn(cursor);
+        return new MongoIterator<T>(cursor, resultMapper);
+    }
+
+    private void addOptionsOn(DBCursor cursor) {
         if (limit != null)
             cursor.limit(limit);
         if (skip != null)
             cursor.skip(skip);
-        return new MongoIterator<T>(cursor, resultMapper);
+        if (sort != null) {
+            cursor.sort(sort);
+        }
     }
 
     public Find limit(int limit) {
@@ -65,6 +73,11 @@ public class Find {
 
     public Find skip(int skip) {
         this.skip = skip;
+        return this;
+    }
+
+    public Find sort(String sort) {
+        this.sort = toDBObject(sort);
         return this;
     }
 }
