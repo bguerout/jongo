@@ -107,5 +107,4 @@ public class MongoCollection {
     public DBCollection getDBCollection() {
         return collection;
     }
-
 }

@@ -66,20 +66,6 @@ public class MongoCollectionTest {
     }
 
     @Test
-    public void canLimitEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi(address));
-
-        /* when */
-        Iterator<Poi> results = mongoCollection.find("{'$query':{}, '$maxScan':2}").as(Poi.class);
-
-        /* then */
-        assertThat(results).hasSize(2);
-    }
-
-    @Test
     public void canUseConditionnalOperator() throws Exception {
         /* given */
         mongoCollection.save(new Poi(address, 1, 1));

@@ -16,10 +16,10 @@
 
 package org.jongo;
 
-import org.jongo.marshall.Unmarshaller;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.jongo.marshall.Unmarshaller;
 
 import java.util.Iterator;
 
@@ -32,6 +32,7 @@ public class Find {
     private final Unmarshaller unmarshaller;
     private Query query;
     private DBObject fields;
+    private Integer limit, skip;
 
     Find(Unmarshaller unmarshaller, DBCollection collection, Query query) {
         this.unmarshaller = unmarshaller;
@@ -50,7 +51,20 @@ public class Find {
 
     public <T> Iterator<T> map(ResultMapper<T> resultMapper) {
         DBCursor cursor = collection.find(query.toDBObject(), fields);
+        if (limit != null)
+            cursor.limit(limit);
+        if (skip != null)
+            cursor.skip(skip);
         return new MongoIterator<T>(cursor, resultMapper);
     }
 
+    public Find limit(int limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public Find skip(int skip) {
+        this.skip = skip;
+        return this;
+    }
 }
