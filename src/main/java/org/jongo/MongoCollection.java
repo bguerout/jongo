@@ -66,6 +66,10 @@ public class MongoCollection {
         return collection.count(new Query(query).toDBObject());
     }
 
+    public long count(String query, Object... parameters) {
+        return collection.count(new Query(query, parameters).toDBObject());
+    }
+
     public void update(String query, String modifier) {
         collection.update(toDBObject(query), toDBObject(modifier), false, true);
     }
@@ -83,8 +87,7 @@ public class MongoCollection {
 
     @SuppressWarnings("unchecked")
     public <T> Iterator<T> distinct(String key, String query, final Class<T> clazz) {
-        Query staticQuery = new Query(query);
-        DBObject ref = staticQuery.toDBObject();
+        DBObject ref = new Query(query).toDBObject();
         List<?> distinct = collection.distinct(key, ref);
         if (BSONPrimitives.contains(clazz))
             return (Iterator<T>) distinct.iterator();

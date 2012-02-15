@@ -81,16 +81,7 @@ public class MongoCollectionTest {
     }
 
 
-    @Test
-    public void canCountEntities() throws Exception {
-        /* given */
-        mongoCollection.save(new Poi(address, lat, lng));
-        mongoCollection.save(new Poi(null, 4, 1));
 
-        /* then */
-        assertThat(mongoCollection.count(addressExists)).isEqualTo(1);
-        assertThat(mongoCollection.count("{'coordinate.lat': {$exists:true}}")).isEqualTo(2);
-    }
 
     @Test
     public void canUpdateEntity() throws Exception {
