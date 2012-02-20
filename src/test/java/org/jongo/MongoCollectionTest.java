@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 import org.bson.types.ObjectId;
 import org.jongo.model.Animal;
-import org.jongo.model.Dog;
+import org.jongo.model.Fox;
 import org.jongo.model.Poi;
 import org.junit.After;
 import org.junit.Before;
@@ -129,9 +129,9 @@ public class MongoCollectionTest {
 
     @Test
     public void canFindInheritedEntity() throws IOException {
-        String dogId = mongoCollection.save(new Dog("blanc"));
+        String dogId = mongoCollection.save(new Fox("fantastic", "roux"));
         Animal animal = mongoCollection.findOne(new ObjectId(dogId)).as(Animal.class);
-        assertThat(animal).isInstanceOf(Dog.class);
+        assertThat(animal).isInstanceOf(Fox.class);
     }
 
     @Test

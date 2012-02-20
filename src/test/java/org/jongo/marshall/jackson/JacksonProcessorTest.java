@@ -20,8 +20,9 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.jongo.model.Dog;
+import org.jongo.model.Fox;
 import org.jongo.model.Poi;
+import org.jongo.model.User;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,8 +37,11 @@ public class JacksonProcessorTest {
 
     @Test
     public void canConvertEntityToJson() {
-        String json = processor.marshall(new Dog("blanc"));
-        assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Dog','color':'blanc'}"));
+        String json = processor.marshall(new Fox("fantastic", "roux"));
+        assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
+
+        User user = processor.unmarshall(json, User.class);
+        assertThat(user.getName()).isEqualTo("fantastic");
     }
 
     @Test
