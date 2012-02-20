@@ -49,7 +49,7 @@ public class FindPartialFieldTest {
         String id = collection.save(user);
 
         /* when */
-        collection.find("{name:'John'}").on("{name:1}").map(new AssertionResultMapper());
+        collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class FindPartialFieldTest {
         String id = collection.save(user);
 
         /* when */
-        Boolean result = collection.findOne("{name:'John'}").on("{name:1}").map(new AssertionResultMapper());
+        Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());
 
         assertThat(result).isTrue();
     }

@@ -36,7 +36,7 @@ public class FindOne {
         this.query = query;
     }
 
-    public FindOne on(String fields) {
+    public FindOne fields(String fields) {
         this.fields = toDBObject(fields);
         return this;
     }

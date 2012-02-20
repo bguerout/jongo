@@ -41,7 +41,7 @@ public class Find {
         this.query = query;
     }
 
-    public Find on(String fields) {
+    public Find fields(String fields) {
         this.fields = toDBObject(fields);
         return this;
     }
