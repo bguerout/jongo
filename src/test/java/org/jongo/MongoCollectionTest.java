@@ -16,19 +16,20 @@
 
 package org.jongo;
 
-import org.jongo.model.Coordinate3D;
-import org.jongo.model.Poi;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
+import org.bson.types.ObjectId;
+import org.jongo.model.Animal;
+import org.jongo.model.Dog;
+import org.jongo.model.Poi;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MongoCollectionTest {
 
@@ -80,9 +81,6 @@ public class MongoCollectionTest {
         assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Poi.class)).hasSize(1);
     }
 
-
-
-
     @Test
     public void canUpdateEntity() throws Exception {
         /* given */
@@ -100,7 +98,6 @@ public class MongoCollectionTest {
         assertThat(poi.id).isEqualTo(id);
         assertThat(poi.address).isNull();
     }
-
 
     @Test
     public void canUpdateQuery() throws Exception {
@@ -131,17 +128,15 @@ public class MongoCollectionTest {
     }
 
     @Test
-    @Ignore
     public void canFindInheritedEntity() throws IOException {
-        mongoCollection.save(new Poi(id, lat, lng, alt));
-        Poi poi = mongoCollection.findOne("{_id: #}", id).as(Poi.class);
-        assertThat(poi.coordinate).isInstanceOf(Coordinate3D.class);
+        String dogId = mongoCollection.save(new Dog("blanc"));
+        Animal animal = mongoCollection.findOne(new ObjectId(dogId)).as(Animal.class);
+        assertThat(animal).isInstanceOf(Dog.class);
     }
 
     @Test
     public void canGetCollectionName() throws Exception {
         assertThat(mongoCollection.getName()).isEqualTo("users");
     }
-
 
 }

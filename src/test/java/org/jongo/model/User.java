@@ -17,12 +17,11 @@
 package org.jongo.model;
 
 import org.bson.types.ObjectId;
-
-import javax.persistence.Id;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 public class User {
 
-    @Id
+    @JsonProperty("_id")
     public ObjectId id;
     private String name;
     private String address;

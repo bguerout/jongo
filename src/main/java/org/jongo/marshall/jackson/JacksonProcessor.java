@@ -62,7 +62,6 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
         mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
         mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
-        mapper.setPropertyNamingStrategy(new MongoPropertyNamingStrategy());
         return mapper;
     }
 }

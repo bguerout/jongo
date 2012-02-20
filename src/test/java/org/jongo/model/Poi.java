@@ -16,11 +16,11 @@
 
 package org.jongo.model;
 
-import javax.persistence.Id;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 public class Poi {
 
-    @Id
+    @JsonProperty("_id")
     public String id;
     public String address;
     public Coordinate coordinate;
@@ -40,11 +40,6 @@ public class Poi {
     public Poi(String address, int lat, int lng) {
         this.address = address;
         this.coordinate = new Coordinate(lat, lng);
-    }
-
-    public Poi(String id, int lat, int lng, int alt) {
-        this.id = id;
-        this.coordinate = new Coordinate3D(lat, lng, alt);
     }
 
     public void setCoordinate(Coordinate coordinate) {

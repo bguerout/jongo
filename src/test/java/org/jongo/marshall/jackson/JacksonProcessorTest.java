@@ -16,15 +16,14 @@
 
 package org.jongo.marshall.jackson;
 
-import org.jongo.model.Poi;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import org.junit.Before;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.IOException;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.jongo.model.Dog;
+import org.jongo.model.Poi;
+import org.junit.Before;
+import org.junit.Test;
 
 public class JacksonProcessorTest {
 
@@ -36,24 +35,31 @@ public class JacksonProcessorTest {
     }
 
     @Test
+    public void canConvertEntityToJson() {
+        String json = processor.marshall(new Dog("blanc"));
+        assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Dog','color':'blanc'}"));
+    }
+
+    @Test
     public void canConvertJsonToEntity() throws IOException {
+        String json = jsonify("{'address': '22 rue des murlins'}");
 
-        DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
+        Poi poi = processor.unmarshall(json, Poi.class);
 
-        Poi poi = processor.unmarshall(dbObject.toString(), Poi.class);
-
+        assertThat(poi.address).isEqualTo("22 rue des murlins");
         assertThat(poi.address).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
+        String json = jsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
 
-        DBObject dbObject = new BasicDBObject("address", "22 rue des murlins");
-        dbObject.put("coordinate", new BasicDBObject("lat", "48"));
-
-        Poi poi = processor.unmarshall(dbObject.toString(), Poi.class);
+        Poi poi = processor.unmarshall(json, Poi.class);
 
         assertThat(poi.coordinate.lat).isEqualTo(48);
+    }
 
+    private String jsonify(String json) {
+        return json.replace("'", "\"");
     }
 }
