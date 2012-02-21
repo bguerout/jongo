@@ -16,15 +16,14 @@
 
 package org.jongo;
 
+import static org.jongo.Jongo.toDBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
+
+import org.jongo.marshall.Unmarshaller;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import org.jongo.marshall.Unmarshaller;
-
-import java.util.Iterator;
-
-import static org.jongo.Jongo.toDBObject;
-import static org.jongo.ResultMapperFactory.newMapper;
 
 public class Find {
 
@@ -46,11 +45,11 @@ public class Find {
         return this;
     }
 
-    public <T> Iterator<T> as(final Class<T> clazz) {
+    public <T> Iterable<T> as(final Class<T> clazz) {
         return map(newMapper(clazz, unmarshaller));
     }
 
-    public <T> Iterator<T> map(ResultMapper<T> resultMapper) {
+    public <T> Iterable<T> map(ResultMapper<T> resultMapper) {
         DBCursor cursor = collection.find(query.toDBObject(), fields);
         addOptionsOn(cursor);
         return new MongoIterator<T>(cursor, resultMapper);

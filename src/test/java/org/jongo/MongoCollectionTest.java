@@ -85,13 +85,13 @@ public class MongoCollectionTest {
     public void canUpdateEntity() throws Exception {
         /* given */
         mongoCollection.save(new Poi(id, address));
-        Iterator<Poi> pois = mongoCollection.find("{_id: '1'}").as(Poi.class);
+        Iterator<Poi> pois = mongoCollection.find("{_id: '1'}").as(Poi.class).iterator();
         Poi poi = pois.next();
         poi.address = null;
         mongoCollection.save(poi);
 
         /* when */
-        pois = mongoCollection.find("{_id: '1'}").as(Poi.class);
+        pois = mongoCollection.find("{_id: '1'}").as(Poi.class).iterator();
 
         /* then */
         poi = pois.next();
@@ -109,7 +109,7 @@ public class MongoCollectionTest {
         mongoCollection.update("{address:'9 rue des innocents'}", "{$unset:{address:1}}");
 
         /* then */
-        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class);
+        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class).iterator();
         assertThat(pois).hasSize(1);
     }
 
@@ -123,7 +123,7 @@ public class MongoCollectionTest {
         mongoCollection.remove("{address:'9 rue des innocents'}");
 
         /* then */
-        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class);
+        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class).iterator();
         assertThat(pois).hasSize(1);
     }
 

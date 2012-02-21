@@ -16,17 +16,17 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
+import java.util.Iterator;
+
 import org.jongo.model.Poi;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
 
 public class FindSkipSortLimitTest {
 
@@ -52,7 +52,7 @@ public class FindSkipSortLimitTest {
         collection.save(user);
 
         /* when */
-        Iterator<User> results = collection.find("{}").limit(2).as(User.class);
+        Iterable<User> results = collection.find("{}").limit(2).as(User.class);
 
         /* then */
         assertThat(results).hasSize(2);
@@ -66,7 +66,7 @@ public class FindSkipSortLimitTest {
         collection.save(user);
 
         /* when */
-        Iterator<User> results = collection.find("{}").skip(2).as(User.class);
+        Iterable<User> results = collection.find("{}").skip(2).as(User.class);
 
         /* then */
         assertThat(results).hasSize(1);
@@ -80,7 +80,7 @@ public class FindSkipSortLimitTest {
         collection.save(new User("John", "21"));
 
         /* when */
-        Iterator<Poi> results = collection.find("{}").sort("{'address':1}").as(Poi.class);
+        Iterator<Poi> results = collection.find("{}").sort("{'address':1}").as(Poi.class).iterator();
 
         /* then */
         assertThat(results.next().address).isEqualTo("21");

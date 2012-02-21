@@ -16,17 +16,17 @@
 
 package org.jongo;
 
-import org.jongo.util.IdResultMapper;
-import org.jongo.model.User;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Iterator;
-
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.TestUtil.createEmptyCollection;
 import static org.jongo.util.TestUtil.dropCollection;
+
+import java.util.Iterator;
+
+import org.jongo.model.User;
+import org.jongo.util.IdResultMapper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FindAndMapTest {
 
@@ -52,7 +52,7 @@ public class FindAndMapTest {
         String id3 = collection.save(new User("Peter", "24 Wall Street Avenue"));
 
         /* when */
-        Iterator<String> userIds = collection.find("{}").map(new IdResultMapper());
+        Iterator<String> userIds = collection.find("{}").map(new IdResultMapper()).iterator();
 
         /* then */
         assertThat(userIds.next()).isEqualTo(id);

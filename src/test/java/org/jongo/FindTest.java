@@ -16,17 +16,17 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
+import java.util.Iterator;
+
 import org.jongo.model.Poi;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
 
 public class FindTest {
 
@@ -44,14 +44,13 @@ public class FindTest {
         dropCollection("users");
     }
 
-
     @Test
     public void canFind() throws Exception {
         /* given */
         String id = collection.save(user);
 
         /* when */
-        Iterator<User> users = collection.find("{address:{$exists:true}}").as(User.class);
+        Iterator<User> users = collection.find("{address:{$exists:true}}").as(User.class).iterator();
 
         /* then */
         assertThat(users.next().id).isEqualTo(id);
@@ -66,7 +65,7 @@ public class FindTest {
         String id3 = collection.save(new User("Peter", "24 Wall Street Avenue"));
 
         /* when */
-        Iterator<User> users = collection.find("{}").as(User.class);
+        Iterator<User> users = collection.find("{}").as(User.class).iterator();
 
         /* then */
         User user = users.next();
@@ -77,14 +76,13 @@ public class FindTest {
         assertThat(users.hasNext()).isFalse();
     }
 
-
     @Test
     public void canFindUsingSubProperty() throws Exception {
         /* given */
         collection.save(new Poi("21 Jump Street", 2, 31));
 
         /* when */
-        Iterator<Poi> results = collection.find("{'coordinate.lat':2}").as(Poi.class);
+        Iterator<Poi> results = collection.find("{'coordinate.lat':2}").as(Poi.class).iterator();
 
         /* then */
         assertThat(results.next().coordinate.lat).isEqualTo(2);

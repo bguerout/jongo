@@ -16,12 +16,12 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class MongoIterator<E> implements Iterator<E> {
+import com.mongodb.DBObject;
+
+public class MongoIterator<E> implements Iterator<E>, Iterable<E> {
 
     private final Iterator<DBObject> cursor;
     private final ResultMapper<E> resultMapper;
@@ -46,5 +46,10 @@ public class MongoIterator<E> implements Iterator<E> {
 
     public void remove() {
         throw new UnsupportedOperationException("remove() method is not supported");
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return this;
     }
 }

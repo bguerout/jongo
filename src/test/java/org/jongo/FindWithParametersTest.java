@@ -16,16 +16,16 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
+import java.util.Iterator;
+
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
 
 public class FindWithParametersTest {
 
@@ -62,7 +62,7 @@ public class FindWithParametersTest {
 
         /* when */
         String john = "John";
-        Iterator<User> users = collection.find("{name:#}", john).as(User.class);
+        Iterator<User> users = collection.find("{name:#}", john).as(User.class).iterator();
 
         /* then */
         assertThat(users.next().id).isEqualTo(id);

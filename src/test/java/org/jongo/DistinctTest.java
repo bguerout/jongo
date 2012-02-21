@@ -16,6 +16,12 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
+import java.util.Iterator;
+
 import org.jongo.model.Coordinate;
 import org.jongo.model.Poi;
 import org.jongo.model.User;
@@ -23,14 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-
 public class DistinctTest {
-
 
     private MongoCollection collection;
     private String wallStreetAvenue;
@@ -46,7 +45,6 @@ public class DistinctTest {
         dropCollection("users");
     }
 
-
     @Test
     public void distinctOnStringEntities() throws Exception {
         /* given */
@@ -55,7 +53,7 @@ public class DistinctTest {
         collection.save(new User("Peter", "24 Wall Street Avenue"));
 
         /* when */
-        Iterator<String> addresses = collection.distinct("address", "", String.class);
+        Iterator<String> addresses = collection.distinct("address", "", String.class).iterator();
 
         /* then */
         assertThat(addresses.next()).isEqualTo(wallStreetAvenue);
@@ -71,7 +69,7 @@ public class DistinctTest {
         collection.save(new Poi(wallStreetAvenue, 125, 72));
 
         /* when */
-        Iterator<Integer> addresses = collection.distinct("coordinate.lat", "", Integer.class);
+        Iterator<Integer> addresses = collection.distinct("coordinate.lat", "", Integer.class).iterator();
 
         /* then */
         assertThat(addresses.next()).isEqualTo(1);
@@ -87,7 +85,7 @@ public class DistinctTest {
         collection.save(new Poi(wallStreetAvenue, 125, 72));
 
         /* when */
-        Iterator<Coordinate> coordinates = collection.distinct("coordinate", "", Coordinate.class);
+        Iterator<Coordinate> coordinates = collection.distinct("coordinate", "", Coordinate.class).iterator();
 
         /* then */
         Coordinate first = coordinates.next();
@@ -108,7 +106,7 @@ public class DistinctTest {
         collection.save(new Poi(emptyAddress, 125, 72));
 
         /* when */
-        Iterator<Coordinate> coordinates = collection.distinct("coordinate", "{address:{$exists:true}}", Coordinate.class);
+        Iterator<Coordinate> coordinates = collection.distinct("coordinate", "{address:{$exists:true}}", Coordinate.class).iterator();
 
         /* then */
         Coordinate first = coordinates.next();

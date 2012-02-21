@@ -16,17 +16,17 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
+import java.util.Iterator;
+
 import org.bson.types.ObjectId;
 import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
 
 public class FindByObjectIdTest {
 
@@ -49,7 +49,6 @@ public class FindByObjectIdTest {
         /* given */
         String id = collection.save(user);
 
-
         ObjectId objectId = new ObjectId(id);
         User foundUser = collection.findOne(objectId).as(User.class);
 
@@ -63,7 +62,6 @@ public class FindByObjectIdTest {
         /* given */
         String id = collection.save(user);
 
-
         User foundUser = collection.findOne("{_id:{$oid:#}}", id).as(User.class);
 
         /* then */
@@ -76,8 +74,7 @@ public class FindByObjectIdTest {
         /* given */
         String id = collection.save(user);
 
-
-        Iterator<User> users = collection.find("{_id:{$oid:#}}", id).as(User.class);
+        Iterator<User> users = collection.find("{_id:{$oid:#}}", id).as(User.class).iterator();
 
         /* then */
         assertThat(users).isNotNull();
