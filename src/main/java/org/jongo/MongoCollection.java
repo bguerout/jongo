@@ -16,19 +16,18 @@
 
 package org.jongo;
 
-import static org.jongo.Jongo.toDBObject;
-import static org.jongo.ResultMapperFactory.newMapper;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import static org.jongo.Jongo.toDBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 public class MongoCollection {
 

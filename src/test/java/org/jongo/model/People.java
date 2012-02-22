@@ -16,30 +16,53 @@
 
 package org.jongo.model;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class Poi {
+public class People {
 
     @JsonProperty("_id")
-    public String id;
-    public String address;
-    public Coordinate coordinate;
+    private ObjectId id;
+    private String name;
+    private String address;
+    private Coordinate coordinate;
 
-    Poi() {
+    public People(String name) {
+        this.name = name;
     }
 
-    public Poi(String address) {
+    public People(String name, String address) {
+        this.name = name;
         this.address = address;
     }
 
-    public Poi(String id, String address) {
-        this.id = id;
+    public People(String name, Coordinate coordinate) {
+        this.name = name;
+        this.coordinate = coordinate;
+    }
+
+
+    public People() {
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
         this.address = address;
     }
 
-    public Poi(String address, int lat, int lng) {
-        this.address = address;
-        this.coordinate = new Coordinate(lat, lng);
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
     public void setCoordinate(Coordinate coordinate) {

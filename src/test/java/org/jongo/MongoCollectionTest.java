@@ -16,20 +16,18 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
+import org.bson.types.ObjectId;
+import org.jongo.model.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.bson.types.ObjectId;
-import org.jongo.model.Animal;
-import org.jongo.model.Fox;
-import org.jongo.model.Poi;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
 
 public class MongoCollectionTest {
 
@@ -51,86 +49,88 @@ public class MongoCollectionTest {
     @Test
     public void canUseConditionnalOperator() throws Exception {
         /* given */
-        mongoCollection.save(new Poi(address, 1, 1));
-        mongoCollection.save(new Poi(address, 2, 1));
-        mongoCollection.save(new Poi(address, 3, 1));
+        mongoCollection.save(new Coordinate(1, 1));
+        mongoCollection.save(new Coordinate(2, 1));
+        mongoCollection.save(new Coordinate(3, 1));
 
         /* then */
-        assertThat(mongoCollection.find("{coordinate.lat: {$gt: 2}}").as(Poi.class)).hasSize(1);
-        assertThat(mongoCollection.find("{coordinate.lat: {$lt: 2}}").as(Poi.class)).hasSize(1);
-        assertThat(mongoCollection.find("{coordinate.lat: {$gte: 2}}").as(Poi.class)).hasSize(2);
-        assertThat(mongoCollection.find("{coordinate.lat: {$lte: 2}}").as(Poi.class)).hasSize(2);
-        assertThat(mongoCollection.find("{coordinate.lat: {$gt: 1, $lt: 3}}").as(Poi.class)).hasSize(1);
+        assertThat(mongoCollection.find("{lat: {$gt: 2}}").as(Coordinate.class)).hasSize(1);
+        assertThat(mongoCollection.find("{lat: {$lt: 2}}").as(Coordinate.class)).hasSize(1);
+        assertThat(mongoCollection.find("{lat: {$gte: 2}}").as(Coordinate.class)).hasSize(2);
+        assertThat(mongoCollection.find("{lat: {$lte: 2}}").as(Coordinate.class)).hasSize(2);
+        assertThat(mongoCollection.find("{lat: {$gt: 1, $lt: 3}}").as(Coordinate.class)).hasSize(1);
 
-        assertThat(mongoCollection.find("{coordinate.lat: {$ne: 2}}").as(Poi.class)).hasSize(2);
-        assertThat(mongoCollection.find("{coordinate.lat: {$in: [1,2,3]}}").as(Poi.class)).hasSize(3);
+        assertThat(mongoCollection.find("{lat: {$ne: 2}}").as(Coordinate.class)).hasSize(2);
+        assertThat(mongoCollection.find("{lat: {$in: [1,2,3]}}").as(Coordinate.class)).hasSize(3);
     }
 
     @Test
     public void canUseGeospacial() throws Exception {
         /* given */
-        mongoCollection.save(new Poi(address, 1, 1));
-        mongoCollection.save(new Poi(address, 4, 4));
+        mongoCollection.save(new People("John", new Coordinate(1, 1)));
+        mongoCollection.save(new People("Peter", new Coordinate(4, 4)));
 
         mongoCollection.ensureIndex("{ 'coordinate' : '2d'}");
 
         /* then */
-        assertThat(mongoCollection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Poi.class)).hasSize(1);
-        assertThat(mongoCollection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Poi.class)).hasSize(2);
-        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Poi.class)).hasSize(1);
-        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Poi.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(People.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(People.class)).hasSize(2);
+        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(People.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(People.class)).hasSize(1);
     }
 
     @Test
     public void canUpdateEntity() throws Exception {
         /* given */
-        mongoCollection.save(new Poi(id, address));
-        Iterator<Poi> pois = mongoCollection.find("{_id: '1'}").as(Poi.class).iterator();
-        Poi poi = pois.next();
-        poi.address = null;
-        mongoCollection.save(poi);
+        String id = mongoCollection.save(new People("John", "21 Jump Street"));
+        Iterator<People> peoples = mongoCollection.find("{name: 'John'}").as(People.class).iterator();
+        People people = peoples.next();
+        people.setAddress("new address");
+        mongoCollection.save(people);
 
         /* when */
-        pois = mongoCollection.find("{_id: '1'}").as(Poi.class).iterator();
+        peoples = mongoCollection.find("{name: 'John'}").as(People.class).iterator();
 
         /* then */
-        poi = pois.next();
-        assertThat(poi.id).isEqualTo(id);
-        assertThat(poi.address).isNull();
+        people = peoples.next();
+        assertThat(people.getId()).isEqualTo(new ObjectId(id));
+        assertThat(people.getAddress()).isEqualTo("new address");
     }
 
     @Test
     public void canUpdateQuery() throws Exception {
         /* given */
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi("9 rue des innocents"));
+        mongoCollection.save(new People("John"));
+        mongoCollection.save(new People("Peter"));
 
         /* when */
-        mongoCollection.update("{address:'9 rue des innocents'}", "{$unset:{address:1}}");
+        mongoCollection.update("{name:'John'}", "{$unset:{name:1}}");
 
         /* then */
-        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class).iterator();
-        assertThat(pois).hasSize(1);
+        Iterator<People> peoples = mongoCollection.find("{name:{$exists:true}}").as(People.class).iterator();
+        assertThat(peoples).hasSize(1);
     }
 
     @Test
     public void canRemoveQuery() throws Exception {
         /* given */
-        mongoCollection.save(new Poi(address));
-        mongoCollection.save(new Poi("9 rue des innocents"));
+        mongoCollection.save(new People("John"));
+        mongoCollection.save(new People("Peter"));
 
         /* when */
-        mongoCollection.remove("{address:'9 rue des innocents'}");
+        mongoCollection.remove("{name:'John'}");
 
         /* then */
-        Iterator<Poi> pois = mongoCollection.find(addressExists).as(Poi.class).iterator();
-        assertThat(pois).hasSize(1);
+        Iterable<People> peoples = mongoCollection.find("{}").as(People.class);
+        assertThat(peoples).hasSize(1);
     }
 
     @Test
     public void canFindInheritedEntity() throws IOException {
-        String dogId = mongoCollection.save(new Fox("fantastic", "roux"));
-        Animal animal = mongoCollection.findOne(new ObjectId(dogId)).as(Animal.class);
+        mongoCollection.save(new Fox("fantastic", "roux"));
+
+        Animal animal = mongoCollection.findOne("{name:'fantastic'}").as(Animal.class);
+
         assertThat(animal).isInstanceOf(Fox.class);
     }
 
@@ -138,5 +138,4 @@ public class MongoCollectionTest {
     public void canGetCollectionName() throws Exception {
         assertThat(mongoCollection.getName()).isEqualTo("users");
     }
-
 }

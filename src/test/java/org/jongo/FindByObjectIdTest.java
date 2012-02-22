@@ -16,27 +16,27 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-
-import java.util.Iterator;
-
 import org.bson.types.ObjectId;
-import org.jongo.model.User;
+import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
 public class FindByObjectIdTest {
 
     private MongoCollection collection;
-    private User user;
+    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
+        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -47,37 +47,37 @@ public class FindByObjectIdTest {
     @Test
     public void canFindOneWithObjectId() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
         ObjectId objectId = new ObjectId(id);
-        User foundUser = collection.findOne(objectId).as(User.class);
+        People foundPeople = collection.findOne(objectId).as(People.class);
 
         /* then */
-        assertThat(foundUser).isNotNull();
-        assertThat(foundUser.id).isEqualTo(id);
+        assertThat(foundPeople).isNotNull();
+        assertThat(foundPeople.getId()).isEqualTo(id);
     }
 
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
-        User foundUser = collection.findOne("{_id:{$oid:#}}", id).as(User.class);
+        People foundPeople = collection.findOne("{_id:{$oid:#}}", id).as(People.class);
 
         /* then */
-        assertThat(foundUser).isNotNull();
-        assertThat(foundUser.id).isEqualTo(id);
+        assertThat(foundPeople).isNotNull();
+        assertThat(foundPeople.getId()).isEqualTo(id);
     }
 
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
-        Iterator<User> users = collection.find("{_id:{$oid:#}}", id).as(User.class).iterator();
+        Iterator<People> users = collection.find("{_id:{$oid:#}}", id).as(People.class).iterator();
 
         /* then */
         assertThat(users).isNotNull();
-        assertThat(users.next().id).isEqualTo(id);
+        assertThat(users.next().getId()).isEqualTo(id);
     }
 }

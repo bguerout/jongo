@@ -16,26 +16,26 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-
-import java.util.Iterator;
-
-import org.jongo.model.User;
+import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
 public class FindWithParametersTest {
 
     private MongoCollection collection;
-    private User user;
+    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
+        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -46,26 +46,26 @@ public class FindWithParametersTest {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(this.people);
 
         /* when */
-        User user = collection.findOne("{name:#}", "John").as(User.class);
+        People people = collection.findOne("{name:#}", "John").as(People.class);
 
         /* then */
-        assertThat(user.id).isEqualTo(id);
+        assertThat(people.getId()).isEqualTo(id);
     }
 
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
         /* when */
         String john = "John";
-        Iterator<User> users = collection.find("{name:#}", john).as(User.class).iterator();
+        Iterator<People> users = collection.find("{name:#}", john).as(People.class).iterator();
 
         /* then */
-        assertThat(users.next().id).isEqualTo(id);
+        assertThat(users.next().getId()).isEqualTo(id);
         assertThat(users.hasNext()).isFalse();
     }
 }

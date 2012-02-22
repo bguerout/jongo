@@ -16,10 +16,12 @@
 
 package org.jongo.marshall.jackson;
 
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
+import org.codehaus.jackson.map.module.SimpleModule;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -62,6 +64,11 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
         mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_DEFAULT));
         mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
+
+        SimpleModule module = new SimpleModule("jongoModule", new Version(1, 0, 0, null));
+        module.addSerializer(new ObjectIdSerializer());
+        mapper.registerModule(module);
+
         return mapper;
     }
 }

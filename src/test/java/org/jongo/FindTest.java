@@ -16,27 +16,27 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-
-import java.util.Iterator;
-
-import org.jongo.model.Poi;
-import org.jongo.model.User;
+import org.jongo.model.Coordinate;
+import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
 public class FindTest {
 
     private MongoCollection collection;
-    private User user;
+    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
+        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -47,45 +47,45 @@ public class FindTest {
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
         /* when */
-        Iterator<User> users = collection.find("{address:{$exists:true}}").as(User.class).iterator();
+        Iterator<People> users = collection.find("{address:{$exists:true}}").as(People.class).iterator();
 
         /* then */
-        assertThat(users.next().id).isEqualTo(id);
+        assertThat(users.next().getId()).isEqualTo(id);
         assertThat(users.hasNext()).isFalse();
     }
 
     @Test
     public void canFindWithEmptySelector() throws Exception {
         /* given */
-        String id = collection.save(user);
-        String id2 = collection.save(new User("Smith", "23 Wall Street Avenue"));
-        String id3 = collection.save(new User("Peter", "24 Wall Street Avenue"));
+        String id = collection.save(this.people);
+        String id2 = collection.save(new People("Smith", "23 Wall Street Avenue"));
+        String id3 = collection.save(new People("Peter", "24 Wall Street Avenue"));
 
         /* when */
-        Iterator<User> users = collection.find("{}").as(User.class).iterator();
+        Iterator<People> users = collection.find("{}").as(People.class).iterator();
 
         /* then */
-        User user = users.next();
-        assertThat(user.id).isEqualTo(id);
-        assertThat(user.getName()).isEqualTo("John");
-        assertThat(users.next().id).isEqualTo(id2);
-        assertThat(users.next().id).isEqualTo(id3);
+        People people = users.next();
+        assertThat(people.getId()).isEqualTo(id);
+        assertThat(people.getName()).isEqualTo("John");
+        assertThat(users.next().getId()).isEqualTo(id2);
+        assertThat(users.next().getId()).isEqualTo(id3);
         assertThat(users.hasNext()).isFalse();
     }
 
     @Test
     public void canFindUsingSubProperty() throws Exception {
         /* given */
-        collection.save(new Poi("21 Jump Street", 2, 31));
+        collection.save(new People("John", new Coordinate(2, 31)));
 
         /* when */
-        Iterator<Poi> results = collection.find("{'coordinate.lat':2}").as(Poi.class).iterator();
+        Iterator<People> results = collection.find("{'coordinate.lat':2}").as(People.class).iterator();
 
         /* then */
-        assertThat(results.next().coordinate.lat).isEqualTo(2);
+        assertThat(results.next().getCoordinate().lat).isEqualTo(2);
         assertThat(results.hasNext()).isFalse();
     }
 

@@ -16,15 +16,14 @@
 
 package org.jongo.marshall.jackson;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.jongo.model.Fox;
+import org.jongo.model.People;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 
-import org.jongo.model.Fox;
-import org.jongo.model.Poi;
-import org.jongo.model.User;
-import org.junit.Before;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JacksonProcessorTest {
 
@@ -40,27 +39,26 @@ public class JacksonProcessorTest {
         String json = processor.marshall(new Fox("fantastic", "roux"));
         assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
 
-        User user = processor.unmarshall(json, User.class);
-        assertThat(user.getName()).isEqualTo("fantastic");
+        People people = processor.unmarshall(json, People.class);
+        assertThat(people.getName()).isEqualTo("fantastic");
     }
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
         String json = jsonify("{'address': '22 rue des murlins'}");
 
-        Poi poi = processor.unmarshall(json, Poi.class);
+        People people = processor.unmarshall(json, People.class);
 
-        assertThat(poi.address).isEqualTo("22 rue des murlins");
-        assertThat(poi.address).isEqualTo("22 rue des murlins");
+        assertThat(people.getAddress()).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
         String json = jsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
 
-        Poi poi = processor.unmarshall(json, Poi.class);
+        People people = processor.unmarshall(json, People.class);
 
-        assertThat(poi.coordinate.lat).isEqualTo(48);
+        assertThat(people.getCoordinate().lat).isEqualTo(48);
     }
 
     private String jsonify(String json) {

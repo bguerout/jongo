@@ -22,7 +22,7 @@ import static org.jongo.util.TestUtil.dropCollection;
 
 import java.util.Iterator;
 
-import org.jongo.model.User;
+import org.jongo.model.People;
 import org.jongo.util.IdResultMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -31,12 +31,12 @@ import org.junit.Test;
 public class FindAndMapTest {
 
     private MongoCollection collection;
-    private User user;
+    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
+        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -47,9 +47,9 @@ public class FindAndMapTest {
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(user);
-        String id2 = collection.save(new User("Smith", "23 Wall Street Avenue"));
-        String id3 = collection.save(new User("Peter", "24 Wall Street Avenue"));
+        String id = collection.save(people);
+        String id2 = collection.save(new People("Smith", "23 Wall Street Avenue"));
+        String id3 = collection.save(new People("Peter", "24 Wall Street Avenue"));
 
         /* when */
         Iterator<String> userIds = collection.find("{}").map(new IdResultMapper()).iterator();
@@ -64,7 +64,7 @@ public class FindAndMapTest {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
         /* when */
         String userId = collection.findOne("{}").map(new IdResultMapper());

@@ -18,7 +18,7 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import org.jongo.model.User;
+import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,12 +30,12 @@ import static org.jongo.util.TestUtil.dropCollection;
 public class FindPartialFieldTest {
 
     private MongoCollection collection;
-    private User user;
+    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
+        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -46,7 +46,7 @@ public class FindPartialFieldTest {
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
         /* when */
         collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());
@@ -55,7 +55,7 @@ public class FindPartialFieldTest {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(people);
 
         /* when */
         Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());

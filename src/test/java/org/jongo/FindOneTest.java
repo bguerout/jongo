@@ -17,8 +17,8 @@
 package org.jongo;
 
 import org.fest.assertions.Assertions;
+import org.jongo.model.People;
 import org.jongo.util.IdResultMapper;
-import org.jongo.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,12 +30,10 @@ import static org.jongo.util.TestUtil.dropCollection;
 public class FindOneTest {
 
     private MongoCollection collection;
-    private User user;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -46,25 +44,25 @@ public class FindOneTest {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(new People("John", "22 Wall Street Avenue"));
 
         /* when */
-        User user = collection.findOne("{name:'John'}").as(User.class);
+        People people = collection.findOne("{name:'John'}").as(People.class);
 
         /* then */
-        assertThat(user.id).isEqualTo(id);
+        assertThat(people.getId()).isEqualTo(id);
     }
 
     @Test
     public void canFindOneWithEmptyQuery() throws Exception {
         /* given */
-        String id = collection.save(user);
+        String id = collection.save(new People("John", "22 Wall Street Avenue"));
 
         /* when */
-        User user = collection.findOne("{}").as(User.class);
+        People people = collection.findOne("{}").as(People.class);
 
         /* then */
-        assertThat(user.id).isEqualTo(id);
+        assertThat(people.getId()).isEqualTo(id);
     }
 
 

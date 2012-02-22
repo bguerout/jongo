@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import org.jongo.model.User;
+import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,12 +28,12 @@ import static org.jongo.util.TestUtil.dropCollection;
 public class CountTest {
 
     private MongoCollection collection;
-    private User user;
+    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
+        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -44,8 +44,8 @@ public class CountTest {
     @Test
     public void canCount() throws Exception {
         /* given */
-        collection.save(user);
-        collection.save(user);
+        collection.save(people);
+        collection.save(people);
 
         /* then */
         assertThat(collection.count("{name:{$exists:true}}")).isEqualTo(2);
@@ -54,8 +54,8 @@ public class CountTest {
     @Test
     public void canCountWithParameters() throws Exception {
         /* given */
-        collection.save(user);
-        collection.save(new User("Peter", "22 Wall Street Avenue"));
+        collection.save(people);
+        collection.save(new People("Peter", "22 Wall Street Avenue"));
 
         /* then */
         assertThat(collection.count("{name:#}", "Peter")).isEqualTo(1);

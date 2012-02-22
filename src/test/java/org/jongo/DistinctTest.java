@@ -16,18 +16,17 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-
-import java.util.Iterator;
-
 import org.jongo.model.Coordinate;
-import org.jongo.model.Poi;
-import org.jongo.model.User;
+import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
 
 public class DistinctTest {
 
@@ -48,9 +47,9 @@ public class DistinctTest {
     @Test
     public void distinctOnStringEntities() throws Exception {
         /* given */
-        collection.save(new User("John", wallStreetAvenue));
-        collection.save(new User("Smith", wallStreetAvenue));
-        collection.save(new User("Peter", "24 Wall Street Avenue"));
+        collection.save(new People("John", wallStreetAvenue));
+        collection.save(new People("Smith", wallStreetAvenue));
+        collection.save(new People("Peter", "24 Wall Street Avenue"));
 
         /* when */
         Iterator<String> addresses = collection.distinct("address", "", String.class).iterator();
@@ -64,9 +63,9 @@ public class DistinctTest {
     @Test
     public void distinctOnIntegerEntities() throws Exception {
         /* given */
-        collection.save(new Poi(wallStreetAvenue, 1, 2));
-        collection.save(new Poi(wallStreetAvenue, 1, 2));
-        collection.save(new Poi(wallStreetAvenue, 125, 72));
+        collection.save(new People("John", new Coordinate(1, 2)));
+        collection.save(new People("Peter", new Coordinate(1, 2)));
+        collection.save(new People("Paul", new Coordinate(125, 72)));
 
         /* when */
         Iterator<Integer> addresses = collection.distinct("coordinate.lat", "", Integer.class).iterator();
@@ -80,9 +79,9 @@ public class DistinctTest {
     @Test
     public void distinctOnTypedProperty() throws Exception {
         /* given */
-        collection.save(new Poi(wallStreetAvenue, 1, 2));
-        collection.save(new Poi(wallStreetAvenue, 1, 2));
-        collection.save(new Poi(wallStreetAvenue, 125, 72));
+        collection.save(new People("John", new Coordinate(1, 2)));
+        collection.save(new People("Peter", new Coordinate(1, 2)));
+        collection.save(new People("Paul", new Coordinate(125, 72)));
 
         /* when */
         Iterator<Coordinate> coordinates = collection.distinct("coordinate", "", Coordinate.class).iterator();
@@ -100,13 +99,13 @@ public class DistinctTest {
     @Test
     public void distinctWithQuery() throws Exception {
         /* given */
-        collection.save(new Poi(wallStreetAvenue, 1, 2));
-        collection.save(new Poi(wallStreetAvenue, 1, 2));
-        String emptyAddress = null;
-        collection.save(new Poi(emptyAddress, 125, 72));
+        collection.save(new People("John", new Coordinate(1, 2)));
+        collection.save(new People("Peter", new Coordinate(1, 2)));
+        String emptyName = null;
+        collection.save(new People(emptyName, new Coordinate(125, 72)));
 
         /* when */
-        Iterator<Coordinate> coordinates = collection.distinct("coordinate", "{address:{$exists:true}}", Coordinate.class).iterator();
+        Iterator<Coordinate> coordinates = collection.distinct("coordinate", "{name:{$exists:true}}", Coordinate.class).iterator();
 
         /* then */
         Coordinate first = coordinates.next();

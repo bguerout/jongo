@@ -16,27 +16,26 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-
-import java.util.Iterator;
-
-import org.jongo.model.Poi;
-import org.jongo.model.User;
+import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
 public class FindSkipSortLimitTest {
 
     private MongoCollection collection;
-    private User user;
+    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        user = new User("John", "22 Wall Street Avenue");
+        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -47,12 +46,12 @@ public class FindSkipSortLimitTest {
     @Test
     public void canLimit() throws Exception {
         /* given */
-        collection.save(user);
-        collection.save(user);
-        collection.save(user);
+        collection.save(people);
+        collection.save(people);
+        collection.save(people);
 
         /* when */
-        Iterable<User> results = collection.find("{}").limit(2).as(User.class);
+        Iterable<People> results = collection.find("{}").limit(2).as(People.class);
 
         /* then */
         assertThat(results).hasSize(2);
@@ -61,12 +60,12 @@ public class FindSkipSortLimitTest {
     @Test
     public void canSkip() throws Exception {
         /* given */
-        collection.save(user);
-        collection.save(user);
-        collection.save(user);
+        collection.save(people);
+        collection.save(people);
+        collection.save(people);
 
         /* when */
-        Iterable<User> results = collection.find("{}").skip(2).as(User.class);
+        Iterable<People> results = collection.find("{}").skip(2).as(People.class);
 
         /* then */
         assertThat(results).hasSize(1);
@@ -75,17 +74,17 @@ public class FindSkipSortLimitTest {
     @Test
     public void canSort() throws Exception {
         /* given */
-        collection.save(new User("John", "22"));
-        collection.save(new User("John", "23"));
-        collection.save(new User("John", "21"));
+        collection.save(new People("John", "23 Wall Street Av."));
+        collection.save(new People("John", "21 Wall Street Av."));
+        collection.save(new People("John", "22 Wall Street Av."));
 
         /* when */
-        Iterator<Poi> results = collection.find("{}").sort("{'address':1}").as(Poi.class).iterator();
+        Iterator<People> results = collection.find("{}").sort("{'address':1}").as(People.class).iterator();
 
         /* then */
-        assertThat(results.next().address).isEqualTo("21");
-        assertThat(results.next().address).isEqualTo("22");
-        assertThat(results.next().address).isEqualTo("23");
+        assertThat(results.next().getAddress()).isEqualTo("21 Wall Street Av.");
+        assertThat(results.next().getAddress()).isEqualTo("22 Wall Street Av.");
+        assertThat(results.next().getAddress()).isEqualTo("23 Wall Street Av.");
         assertThat(results.hasNext()).isFalse();
     }
 }
