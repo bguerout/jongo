@@ -32,9 +32,6 @@ import static org.jongo.util.TestUtil.dropCollection;
 public class MongoCollectionTest {
 
     private MongoCollection mongoCollection;
-    private String address = "22 rue des murlins", id = "1";
-    private int lat = 48, lng = 2, alt = 7;
-    String addressExists = "{address:{$exists:true}}";
 
     @Before
     public void setUp() throws Exception {
