@@ -57,7 +57,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Follow<b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="https://github.com/bguerout/jongo" target="_blank">on github</a></li>
+                <li><a href="https://github.com/bguerout/jongo" target="_blank">code on github</a></li>
                 <li><a href="https://twitter.com/#!/bguerout" target="_blank">@bguerout</a></li>
                 <li><a href="https://twitter.com/#!/amsellemyves" target="_blank">@amsellemyves</a></li>
               </ul>
@@ -82,7 +82,7 @@
 
             <div class="row">
                 <div class="span12 pitch">
-                    Using Mongo with it's Java driver can be <strong>tricky</strong><br>Jongo makes it <strong>easy</strong>
+                    Using Mongo with it's Java driver can be <strong>tricky</strong><br>Jongo makes it way <strong>easy</strong>
                 </div>
             </div>
 
@@ -109,11 +109,11 @@
 	<div class="row">
 		<div class="span9">
 		   <pre class="prettyprint">
-Mongo mongo = new Mongo(...);
+Mongo mongo = new Mongo("localhost" , 27017);
 Jongo jongo = new Jongo(mongo.getDB("dbname"));
 MongoCollection peoples = jongo.getCollection("peoples");
 
-Iterator&lt;People&gt; all = peoples.find("{}").as(People.class);
+Iterable&lt;People&gt; all = peoples.find("{}").as(People.class);
 People one = peoples.findOne("{}").as(People.class);</pre>
 		</div>
 	</div>
@@ -126,13 +126,13 @@ People one = peoples.findOne("{}").as(People.class);</pre>
 	<div class="row">
 		<div class="span9">
 			<p>
-			By default, Jongo uses Jackson to (un)marshall objects: a no-arg constructor, even private, is enought to write an object into Mongo and read from it.
+			By default, Jongo uses Jackson to (un)marshall objects: <strong>a no-arg constructor, even private</strong>, is enought to write an object into Mongo and read from it.
 			</p>
 			<p>
-			Note that every Mongo document have an _id field. Defining this field Java side can be done two ways: the object field can be named _id or annotated with <code>@JsonProperty("_id")</code>. The object type can be ObjectId – it will be generated Mongo side – or any Java type, other than arrays, so long as it is unique.
+			Note that every Mongo document have an <code>_id</code> field. Defining this field Java side can be done two ways: the object field can be named <code>_id</code> or annotated with <code>@JsonProperty("_id")</code>. The object type can be <code>ObjectId</code> – it will be generated Mongo side – or any Java type, other than array, so long as it is unique.
 			</p>
 			<p>
-			Careful, saving a document without _id will generate an ObjectId typed field, even if the Java object define another type for it. So, not choosing ObjectId for _id field involves always to set it before persisting.
+			Careful, saving a document without <code>_id</code> will generate an <code>ObjectId</code> typed field, even if the Java object define another type for it. So, not choosing <code>ObjectId</code> for _id field involves always to set it before persisting.
 			</p>
 		</div>
 	</div>
@@ -154,7 +154,7 @@ public class People {
 		<div class="span3">
 <pre class="prettyprint">
 public class People {
-    // generate it!
+    // you must generate it!
     private String _id; 
 }</pre>
 		</div>
@@ -162,25 +162,26 @@ public class People {
 	<div class="row">
 		<div class="span9">
 			<p>
-			As expected with Jackson, fields are automaticaly mapped to their equivalent json properties (and complex types mapped as sub-properties). No extra annotations needed. For fine grained control over (un)marshalling, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a> or use <a href="#">your own (un)marshaller</a>.
+			As expected with Jackson, fields are automaticaly mapped to their equivalent json properties (<i>and complex types mapped as sub-properties</i>). No extra annotations needed. For fine grained control over (un)marshalling, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a> or use <a href="#">your own (un)marshaller</a>.
 			</p>
 			<h3>Handling polymorphism</h3>
 			<p>
-			To handle polymorphism of Java objects, a field containing the class name must be set into the Mongo document. One can persist a Fox (sub-class of Animal) and manipulate it as an Animal. This feature is provided out-of-the-box by Jackson. Using another (un)marshaller implies extra work.
+			To handle polymorphism of Java objects, a field containing the class name must be set into the Mongo document. One can persist a <code>Fox</code> (<i>sub-class of <code>Animal</code></i>) and manipulate it as an <code>Animal</code>. This feature is provided out-of-the-box by Jackson. Using another (un)marshaller implies extra work.
 			</p>
-		</div>
-	</div>
-	<div class="row">
-		<div class="span9">
+
 <pre class="prettyprint">
 @JsonTypeInfo(use = Id.CLASS, include = As.PROPERTY, property = "_class")
 public class Animal {
     String gender;
-}
+}</pre>
 
+<pre class="prettyprint">
 public class Fox extends Animal {
     boolean wild;
 }</pre>
+			<p>
+			Using a singular <i>reserved</i> name, like <code>_class</code>, for this field is a good idea.
+			</p>
 		</div>
 	</div>
 </section>
@@ -195,79 +196,82 @@ public class Fox extends Animal {
 
 			<h3>Find and FindOne</h3>
 			<p>
-			Query syntax is almost the same as in Mongo Shell. A simple copy/paste of json queries from shell to
-			Jongo would work. Don't forget to escape strings with single quotes <code>"{name: 'John'}"</code>.
+			Query syntax is almost the same as in Mongo shell: copy/paste, it just works. 
+			<br>Strings have to be escaped with single quotes <code>"{name: 'John'}"</code>, numbers don't <code>"{age: 18}"</code>. 
 			</p>
 		
-			<pre class="prettyprint">
-Iterator&lt;People&gt; all = peoples.find("{name: 'John'}").as(People.class);
+<pre class="prettyprint">Iterable&lt;People&gt; all = peoples.find("{name: 'John'}").as(People.class);</pre>
+<pre class="prettyprint">
+People john = peoples.findOne("{name: 'John'}").as(People.class);
+People john = peoples.findOne(new ObjectId("4c...e")).as(People.class);</pre>
 
-People john = peoples.findOne("{name: 'John'}").as(People.class);</pre>
+			<p>
+			Field names only need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
+			</p>
 
 			<h3>Query with parameters</h3>
 			<p>
-			Find queries can become dynamic with template and parameters.
-			<br>Simply add anchors '#' as follow <code>peoples.find("{'age': #}", "param1")...;</code>. Query will
-			be handle as a template and Jongo will try to bind parameters.
-			<br>Parameters can be BSON Primitives or Object supported by DBObject.
+			Queries can be templated: add anchors <code>#</code> as follow <code>peoples.find("{name: #, age: #}", 'John', 18)</code><br>
+			Binded parameters can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON Primitives</a> or any complex type made of those.
 			</p>
 
-			<pre class="prettyprint">
-peoples.find("{'name': #, 'age': #}", "Joe", 18)...; //-> will produce {name: "John", age: 18}
+<pre class="prettyprint">peoples.find("{name: #, age: #}", 'John', 18); //-> will produce {name: 'John', age: 18}</pre>
 
-List&lt;String&gt; ages = Lists.newArrayList(22,63);
-peoples.find("{'age': {$in:#}}", ages)...; //-> will produce {age: {$in:[22,63]}}</pre>
+<pre class="prettyprint">
+List&lt;String&gt; ages = Lists.newArrayList(22, 63);
+peoples.find("{age: {$in:#}}", ages); //-> will produce {age: {$in:[22,63]}}</pre>
 
-			<h3>Query Options</h3>
-			<h4>Field Selection</h4>
+			<h3>Query options</h3>
+			<h4>Field selection</h4>
 
 			<p>
-				Field Selection aka. partial loading is not exactly the same as in Mongo Shell:
-				Jongo exposes a fluent method called 'fields' instead of an optional parameter.
-				<br>A json selector must be provided: <code>{'field':1}</code> to include it,
-				<code>{'field':0}</code> to exclude it.
+			Field selection aka. partial loading is not written as in Mongo shell:
+			Jongo exposes a <code>fields(...)</code> method. A json selector must be provided: <code>{field: 1}</code> to include it, <code>{field: 0}</code> to exclude it.
 			</p>
-			<pre class="prettyprint">peoples.find("{}").fields("{'lastname':1, 'address':1}").as(User.class);</pre>
+			<pre class="prettyprint">peoples.find("{}").fields("{lastname: 1, address: 1}").as(User.class);</pre>
 
 			<h4>Sorting</h4>
 
-			<p>Allows documents to be sorted in ascending or descending order
-				<br>A json selector must be provided: <code>{'field':1}</code> for ascending,
-				<code>{'field':-1}</code> for descending.
+			<p>Documents can be sorted in ascending or descending order using a json selector: <code>{field: 1}</code> for ascending, <code>{field: -1}</code> for descending.
 			</p>
 			<pre class="prettyprint">
-peoples.find("{}").sort("{'firstname':1}").as(User.class);
-peoples.find("{}").sort("{'lasttname':-1}").as(User.class);</pre>
+peoples.find("{}").sort("{firstname: 1}").as(User.class);
+peoples.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
 
 			<h4>Skip and Limit</h4>
 
-			<p>Behaviour is the same as in Java Driver <a href="http://api.mongodb.org/java/2.7.2/com/mongodb/DBCursor.html">DBCursor</a></p>
-			<pre class="prettyprint">
-peoples.find("{}").skip(20).as(User.class);
-peoples.find("{}").limit(10).as(User.class);</pre>
+			<p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html">DBCursor</a>.
+			</p>
+			<pre class="prettyprint">peoples.find("{}").skip(20).as(User.class);</pre>
+			<pre class="prettyprint">peoples.find("{}").limit(10).as(User.class);</pre>
 
 			<h4>Distinct</h4>
 
-			<p>Behaviour is the same as in Java Driver <a href="http://api.mongodb.org/java/2.7.2/com/mongodb/DBCollection.html#distinct(java.lang.String)">DBCollection</a>
+			<p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#distinct(java.lang.String)">DBCollection.distinct(...)</a>.
 			</p>
-			<pre class="prettyprint">peoples.distinct("field");</pre>
+			<pre class="prettyprint">peoples.distinct("address", "", Address.class);</pre>
+			<pre class="prettyprint">peoples.distinct("address", "{name: 'John'}", Address.class);</pre>
 
-			<h3>Query Examples</h3>
-            
-			<h4>Conditional Operators</h4>
-            <pre class="prettyprint">peoples.find("{'age': {$lt: 3}}").as(People.class);</pre>
-            
-			<h4>Geospacial Operators</h4>
-            <pre class="prettyprint">peoples.find("{'address': {'$near': [0,0], $maxDistance: 5}}").as(House.class);</pre>
+			<h4>Count</h4>
 
-            <h4>Using Query Syntax</h4>
-			<p>Java driver is adding some syntactic sugar to be able to create real BSON query <a
-					href="http://www.mongodb.org/display/DOCS/Mongo+Query+Language">http://www.mongodb.org/display/DOCS/Mongo+Query+Language</a>
-				<br> Nevertheless with Jongo you can express you query in standard query syntax.
+			<p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(...)</a>.
+			</p>
+			<pre class="prettyprint">peoples.count("{name: 'John'}");</pre>
+
+			<h3>Advanced query</h3>
+            <h4>Geospacial indexing</h4>
+
+            <p>Using <a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing" target="_blank">Mongo geospacial capacities</a> requires an index and some BSON operators.</p>
+<pre class="prettyprint">
+peoples.ensureIndex("{address: '2d'}");
+peoples.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</pre>
+
+            <h4>Complete query syntax</h4>
+			<p>Mongo uses a <a href="http://www.mongodb.org/display/DOCS/Mongo+Query+Language">behind the scenes syntactic sugar</a> for methods like <code>sort(...)</code>, <code>limit(...)</code> and others. The complete expression can also be used in Jongo.
 			</p>
              <pre class="prettyprint">
-peoples.find("{'$query':{}, '$maxScan':2}").as(People.class);
-peoples.find("{'$query':{}, '$orderby':{'name':1}}").as(People.class);</pre>
+peoples.find("{$query: {}, $maxScan: 2}").as(People.class);
+peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
 		</div>
     </div>
 </section>
@@ -282,20 +286,19 @@ peoples.find("{'$query':{}, '$orderby':{'name':1}}").as(People.class);</pre>
         <div class="span9">
             <h3>Save</h3>
 
-            <p>Simply pass your POJO to the save method, built-in Jackson marshaller will be used to convert your object into json.</p>
-            <pre class="prettyprint">
-People joe = new People("Joe", 27)
-peoples.save(joe);</pre>
+            <p>Simply pass an object to the <code>save(...)</code> method, built-in Jackson marshaller will be used to convert it to json. <a href="#mapping">Object mapping section</a> defines what objects have to look like.
+            </p>
+            <pre class="prettyprint">peoples.save(new People("Joe", 27));</pre>
 
             <h3>Update</h3>
 
             <p>In early version of Jongo 'upsert' is not available and update is always in 'multi' mode.</p>
-            <pre class="prettyprint">peoples.update("{'name': 'Joe'}", "{'$inc': {'age': 1}}")</pre>
+            <pre class="prettyprint">peoples.update("{name: 'Joe'}", "{$inc: {age: 1}}");</pre>
 
             <h3>Remove</h3>
 
-            <p>Removes work as if you were in Mongo Shell.</p>
-            <pre class="prettyprint">peoples.remove("{'name': 'Joe'}");</pre>
+            <p>Remove works as if you were in Mongo shell.</p>
+            <pre class="prettyprint">peoples.remove("{name: 'Joe'}");</pre>
         </div>
     </div>
 </section>
@@ -306,44 +309,40 @@ peoples.save(joe);</pre>
 	</div>
 	<div class="row">
 		<div class="span9">
-			<h3>Mapping Results</h3>
-
+			<h3>Using a custom result mapper</h3>
 			<p>
-				You don't need anymore to manipulate DBObject or DBCursor as queries results.
-				Jongo provides two way to bind result into your Java objects.
+			If one prefers to manually map objects (<i>ie. without a (un)marshaller</i>), he can implements
+			<code>ResultMapper</code>. Each result entity will be passed to the inherited <code>map(String json)</code> method.
 			</p>
 			
-			<h4>Using Jackson mapping</h4>
+<pre class="prettyprint">
+Iterable&lt;Integer&gt; ages = col.find("{'name':'John'}").map(
+    new ResultMapper&lt;Integer&gt;() {
+        @Override
+        public String map(String json) {
+            DBObject result = (DBObject) JSON.parse(json);
+            return result.get("age");
+        }
+    }
+);</pre>
 
-			<p>Jongo comes with a built-in Jackson marshaller and unmarshaller to provide out-of-the-box POJO
-				data binding capabilities.
+			<h3>Using a custom (un)marshaller</h3>
+			<p>
+			Instead of Jackson, one can provide his own implementation of <code>Marshaller</code> and <code>Unmarshaller</code>.
 			</p>
-			<pre class="prettyprint">peoples.find("{'name': 'John'}").as(People.class);// 'as' method uses Jackson</pre>
-			<p>To be eligible to Jackson mapping, a class needs a no args constructor (even a private one is
-				enough). Class field '_id' can be annotated with :</p>
-			<pre class="prettyprint">public class User {
-@org.codehaus.jackson.annotate.JsonProperty("_id")
-public String id;
-...</pre>
 
-			<h4>Using custom result mapper</h4>
+<pre class="prettyprint">
+Marshaller marshaller = new Marshaller() {
+    @Override
+    &lt;T&gt; String marshall(T obj) { ... }
+};
+Unmarshaller unmarshaller = new Unmarshaller() {
+    @Override
+    &lt;T&gt; T unmarshall(String json, Class&lt;T&gt; clazz) { ... }
+};
+Jongo jongo = new Jongo(mongo.getDB("dbname"), marshaller, unmarshaller);
+</pre>
 
-			<p>If you prefer to map your objects manually (ie. without Jackson), you can implement
-				org.jongo.ResultMapper. <br>Each entity result will be passed to <code>'map(String json)'</code>
-				method.</p>
-			<pre class="prettyprint">peoples.find("{'name': 'John'}").with(new ResultMapper(){...});</pre>
-
-			<p>With ResultMapper you can, for example, obtain ages of all users named John without the need of
-				creating People instance</p>
-
-			<pre class="prettyprint">
-Iterator&lt;Integer&gt; ages = col.find("{'name':'John'}").map(new ResultMapper&lt;Integer&gt;() {
-	@Override
-	public String map(String json) {
-	DBObject result = (DBObject) JSON.parse(json);
-	return result.get("age");
-}
-});</pre>
 
 		</div>
 	</div>
