@@ -1,5 +1,5 @@
 .idea/
-node_modules/
-dist/
 target/
+node_modules/
+gh-pages/
 *.iml

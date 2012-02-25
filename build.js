@@ -22,7 +22,7 @@ var util = require('util')
 var wrench = require('wrench');
 
 
-var outputFolder = path.resolve("./dist");
+var outputFolder = path.resolve("./gh-pages");
 
 task('init', [], function (params) {
     var exists = path.existsSync(outputFolder);
@@ -39,11 +39,11 @@ task('lessify', ['init'], function (params) {
 
     var cssFile = path.join(outputFolder, "assets/css/jongo.css");
 
-    fs.readFile('./assets/boostrap/jongo.less', 'utf-8', function (err, data) {
+    fs.readFile('./assets/bootstrap/jongo.less', 'utf-8', function (err, data) {
         if (err) throw err;
 
         var parser = new (less.Parser)({
-            paths:['./assets/boostrap'],
+            paths:['./assets/bootstrap'],
             optimization:true,
             filename:'style.less'
         });
@@ -57,7 +57,7 @@ task('lessify', ['init'], function (params) {
     });
 });
 
-task('transform', ['lessify'], function (params) {
+task('transform', ['init','lessify'], function (params) {
     var source = fs.readFileSync("index.html", "utf8");
     var htmlFile = path.join(outputFolder, "index.html");
     jsdom.env({
@@ -72,11 +72,9 @@ task('transform', ['lessify'], function (params) {
     });
 });
 
-task('resources', ['init'], function (params) {
+task('gh-pages', ['init','transform'], function (params) {
+
     wrench.copyDirSyncRecursive('assets/img', path.join(outputFolder, "assets/img"));
     wrench.copyDirSyncRecursive('assets/js', path.join(outputFolder, "assets/js"));
     wrench.copyDirSyncRecursive('assets/css', path.join(outputFolder, "assets/css"));
-});
-
-task('dist', ['resources', 'transform'], function (params) {
 });
