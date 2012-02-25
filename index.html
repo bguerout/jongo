@@ -109,7 +109,7 @@
 	<div class="row">
 		<div class="span9">
 		   <pre class="prettyprint">
-Mongo mongo = new Mongo("localhost" , 27017);
+Mongo mongo = new Mongo("127.0.0.1" , 27017);
 Jongo jongo = new Jongo(mongo.getDB("dbname"));
 MongoCollection peoples = jongo.getCollection("peoples");
 
