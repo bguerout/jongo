@@ -48,7 +48,6 @@ public class MongoIterator<E> implements Iterator<E>, Iterable<E> {
         throw new UnsupportedOperationException("remove() method is not supported");
     }
 
-    @Override
     public Iterator<E> iterator() {
         return this;
     }

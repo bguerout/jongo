@@ -16,20 +16,20 @@
 
 package org.jongo.marshall.jackson;
 
+import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
+import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-
-import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
-import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_DEFAULT;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -39,23 +39,25 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         this.mapper = createMapperForNonAnnotatedBean();
     }
 
-    @Override
     public <T> T unmarshall(String json, Class<T> clazz) {
         try {
             return mapper.readValue(json, clazz);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to unmarshall from json: " + json, e);  //TODO handle this
+            throw new IllegalArgumentException("Unable to unmarshall from json: " + json, e); // TODO
+                                                                                              // handle
+                                                                                              // this
         }
     }
 
-    @Override
     public <T> String marshall(T obj) {
         try {
             Writer writer = new StringWriter();
             mapper.writeValue(writer, obj);
             return writer.toString();
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e);  //TODO handle this
+            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e); // TODO
+                                                                                           // handle
+                                                                                           // this
         }
     }
 

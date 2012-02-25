@@ -16,17 +16,16 @@
 
 package org.jongo.util;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.jongo.MongoCollection;
 import org.jongo.ResultMapper;
 
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 public class IdResultMapper implements ResultMapper<String> {
 
-    @Override
     public String map(String json) {
         DBObject result = (DBObject) JSON.parse(json);
         return result.get(MongoCollection.MONGO_ID).toString();
     }
-
 }

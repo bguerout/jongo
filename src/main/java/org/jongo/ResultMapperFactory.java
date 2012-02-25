@@ -22,7 +22,6 @@ public class ResultMapperFactory {
 
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
         return new ResultMapper<T>() {
-            @Override
             public T map(String json) {
                 return unmarshaller.unmarshall(json, clazz);
             }

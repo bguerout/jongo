@@ -16,18 +16,19 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
+import static org.jongo.Jongo.toDBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.jongo.Jongo.toDBObject;
-import static org.jongo.ResultMapperFactory.newMapper;
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 public class MongoCollection {
 
@@ -91,7 +92,6 @@ public class MongoCollection {
         final List<?> distinct = collection.distinct(key, ref);
         if (BSONPrimitives.contains(clazz))
             return new Iterable<T>() {
-                @Override
                 public Iterator<T> iterator() {
                     return (Iterator<T>) distinct.iterator();
                 }

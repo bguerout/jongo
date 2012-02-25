@@ -16,16 +16,17 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.TestUtil.createEmptyCollection;
+import static org.jongo.util.TestUtil.dropCollection;
+
 import org.jongo.model.People;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 public class FindPartialFieldTest {
 
@@ -63,9 +64,7 @@ public class FindPartialFieldTest {
         assertThat(result).isTrue();
     }
 
-
     private static class AssertionResultMapper implements ResultMapper<Boolean> {
-        @Override
         public Boolean map(String json) {
             DBObject result = (DBObject) JSON.parse(json);
             assertThat(result.containsField("address")).isFalse();
