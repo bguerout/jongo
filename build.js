@@ -23,19 +23,25 @@ var wrench = require('wrench');
 
 
 var outputFolder = path.resolve("./gh-pages");
+var scriptFile = path.resolve("./apply.sh");
 
-task('init', [], function (params) {
-    var exists = path.existsSync(outputFolder);
-    if (exists) {
+desc("Prepare environment")
+task('prepare', [], function (params) {
+    if (path.existsSync(outputFolder)) {
         console.log("Deleting folder: " + outputFolder);
         wrench.rmdirSyncRecursive(outputFolder);
+    }
+    if (path.existsSync(scriptFile)) {
+
+        fs.unlinkSync(scriptFile)
     }
     wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/css"));
     wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/img"));
     wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/js"));
 });
 
-task('lessify', ['init'], function (params) {
+desc("Compile less file into a css file")
+task('lessify', ['prepare'], function (params) {
 
     var cssFile = path.join(outputFolder, "assets/css/jongo.css");
 
@@ -57,7 +63,8 @@ task('lessify', ['init'], function (params) {
     });
 });
 
-task('transform', ['init','lessify'], function (params) {
+desc("Update index.html with prod-ready resources")
+task('weave-html', ['prepare'], function (params) {
     var source = fs.readFileSync("index.html", "utf8");
     var htmlFile = path.join(outputFolder, "index.html");
     jsdom.env({
@@ -72,9 +79,21 @@ task('transform', ['init','lessify'], function (params) {
     });
 });
 
-task('gh-pages', ['init','transform'], function (params) {
+desc("Create Jongo site")
+task('gh-pages', ['lessify', 'weave-html'], function (params) {
 
     wrench.copyDirSyncRecursive('assets/img', path.join(outputFolder, "assets/img"));
     wrench.copyDirSyncRecursive('assets/js', path.join(outputFolder, "assets/js"));
     wrench.copyDirSyncRecursive('assets/css', path.join(outputFolder, "assets/css"));
+
+    fs.writeFileSync(scriptFile,
+        '#!/bin/bash \n ' +
+            'echo This script must on gh-pages branch \n ' +
+            'git rm -r --ignore-unmatch * \n ' +
+            'mv gh-pages/* ./ \n ' +
+            'rm -rf gh-pages/ \n ' +
+            'rm apply.sh \n ' +
+            'git add .',
+        "UTF-8");
+    fs.chmodSync(scriptFile, 0777);
 });
