@@ -1,28 +1,11 @@
-﻿<!DOCTYPE html>
-<!--
-  ~ Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
 
-<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Jongo</title>
 
     <link href="assets/img/jongo.ico" rel="shortcut icon">
-    <link href="assets/boostrap/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
-    <link href="assets/css/prettify.css" type="text/css" rel="stylesheet"/>
+    
+    <link href="assets/css/prettify.css" type="text/css" rel="stylesheet">
 
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -30,11 +13,11 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
     <![endif]-->
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="http://lesscss.googlecode.com/files/less-1.2.1.min.js" data-env="dev"></script>
+    
 	<script type="text/javascript" src="assets/js/prettify.js"></script>
-    <script type="text/javascript" src="assets/boostrap/js/bootstrap-dropdown.js"></script>
+    <script type="text/javascript" src="assets/js/bootstrap-dropdown.js"></script>
 
-</head>
+<link href="assets/css/jongo.css" type="text/css" rel="stylesheet"></head>
 
 <body onload="prettyPrint()">
 
@@ -215,11 +198,11 @@ People john = peoples.findOne(new ObjectId("4c...e")).as(People.class);</pre>
 			Binded parameters can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON Primitives</a> or any complex type made of those.
 			</p>
 
-<pre class="prettyprint">peoples.find("{name: #, age: #}", 'John', 18); //-> will produce {name: 'John', age: 18}</pre>
+<pre class="prettyprint">peoples.find("{name: #, age: #}", 'John', 18); //- will produce {name: 'John', age: 18}</pre>
 
 <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
-peoples.find("{age: {$in:#}}", ages); //-> will produce {age: {$in:[22,63]}}</pre>
+peoples.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre>
 
 			<h3>Query options</h3>
 			<h4>Field selection</h4>
@@ -303,7 +286,7 @@ peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
     </div>
 </section>
 
-<section id="advanced"  class="offset1">
+<section id="advanced" class="offset1">
 	<div class="page-header">
 		<h1>Advanced</h1>
 	</div>
@@ -395,4 +378,4 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), marshaller, unmarshaller);
 
 
 </body>
-</html>
+<script class="jsdom" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
