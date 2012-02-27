@@ -1,3 +1,4 @@
+
 <head>
     <meta charset="utf-8">
     <title>Jongo</title>
@@ -15,6 +16,10 @@
     
 	<script type="text/javascript" src="assets/js/prettify.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap-dropdown.js"></script>
+
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta charset="utf-8">
 
 <link href="assets/css/jongo.css" type="text/css" rel="stylesheet"></head>
 
@@ -36,7 +41,7 @@
             <li><a href="#updating">Updating</a></li>
             <li><a href="#performance">Performance</a></li>
             <li><a href="#advanced">Advanced</a></li>
-            <li><a href="#maven">Maven</a></li>
+			<li><a href="#maven">Maven</a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Follow<b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -73,7 +78,7 @@
                 <div class="span9 offset2">
 					<span class="label">Shell</span>
                     <pre class="prettyprint maincode">db.peoples.find({"age": {$gt: 18}});</pre>
-					
+
 					<span class="label label-warning">Java Driver</span>
                     <pre class="prettyprint maincode">peoples.find(new BasicDBObject("age",new BasicDBObject("$gt", 18)));</pre>
 
