@@ -1,4 +1,3 @@
-
 <head>
     <meta charset="utf-8">
     <title>Jongo</title>
@@ -120,7 +119,7 @@ People one = peoples.findOne("{}").as(People.class);</pre>
 			Note that every Mongo document have an <code>_id</code> field. Defining this field Java side can be done two ways: the object field can be named <code>_id</code> or annotated with <code>@JsonProperty("_id")</code>. The object type can be <code>ObjectId</code> – it will be generated Mongo side – or any Java type, other than array, so long as it is unique.
 			</p>
 			<p>
-			Careful, saving a document without <code>_id</code> will generate an <code>ObjectId</code> typed field, even if the Java object define another type for it. So, not choosing <code>ObjectId</code> for _id field involves always to set it before persisting.
+			Careful, saving a document without <code>_id</code> will generate an <code>ObjectId</code> typed field, even if the Java object define another type for it. So, not choosing <code>ObjectId</code> for <code>_id</code> field involves always to set it before persisting.
 			</p>
 		</div>
 	</div>
@@ -150,7 +149,7 @@ public class People {
 	<div class="row">
 		<div class="span9">
 			<p>
-			As expected with Jackson, fields are automaticaly mapped to their equivalent json properties (<i>and complex types mapped as sub-properties</i>). No extra annotations needed. For fine grained control over (un)marshalling, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a> or use <a href="#">your own (un)marshaller</a>.
+			As expected with Jackson, fields are automaticaly mapped to their equivalent json properties (<i>and complex types mapped as sub-properties</i>). No extra annotations needed. For fine grained control over (un)marshalling, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a> or use <a href="#advanced">your own (un)marshaller</a>.
 			</p>
 			<h3>Handling polymorphism</h3>
 			<p>
@@ -199,11 +198,11 @@ People john = peoples.findOne(new ObjectId("4c...e")).as(People.class);</pre>
 
 			<h3>Query with parameters</h3>
 			<p>
-			Queries can be templated: add anchors <code>#</code> as follow <code>peoples.find("{name: #, age: #}", 'John', 18)</code><br>
+			Queries can be templated: add anchors <code>#</code> as follow <code>peoples.find("{name: #, age: #}", "John", 18)</code><br>
 			Binded parameters can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON Primitives</a> or any complex type made of those.
 			</p>
 
-<pre class="prettyprint">peoples.find("{name: #, age: #}", 'John', 18); //- will produce {name: 'John', age: 18}</pre>
+<pre class="prettyprint">peoples.find("{name: #, age: #}", "John", 18); //- will produce {name: 'John', age: 18}</pre>
 
 <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
