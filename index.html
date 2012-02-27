@@ -34,6 +34,10 @@
 	<script type="text/javascript" src="assets/js/prettify.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap-dropdown.js"></script>
 
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta charset="utf-8">
+
 </head>
 
 <body onload="prettyPrint()">
@@ -52,6 +56,7 @@
 			<li><a href="#mapping">Mapping</a></li>
             <li><a href="#querying">Querying</a></li>
             <li><a href="#updating">Updating</a></li>
+            <li><a href="#performance">Performance</a></li>
             <li><a href="#advanced">Advanced</a></li>
 			<li><a href="#maven">Maven</a></li>
             <li class="dropdown">
@@ -90,7 +95,7 @@
                 <div class="span9 offset2">
 					<span class="label">Shell</span>
                     <pre class="prettyprint maincode">db.peoples.find({"age": {$gt: 18}});</pre>
-					
+
 					<span class="label label-warning">Java Driver</span>
                     <pre class="prettyprint maincode">peoples.find(new BasicDBObject("age",new BasicDBObject("$gt", 18)));</pre>
 
@@ -299,6 +304,19 @@ peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
 
             <p>Remove works as if you were in Mongo shell.</p>
             <pre class="prettyprint">peoples.remove("{name: 'Joe'}");</pre>
+        </div>
+    </div>
+</section>
+
+<section id="performance" class="offset1">
+    <div class="page-header">
+        <h1>Performance</h1>
+    </div>
+
+    <div class="row">
+        <div class="span9">
+            <p>Jongo is lighting fast. Not because it is made of ancient wood and magic stones, but because it binds Jackson — the fastest Java json (un)marshalling library — to Mongo Java driver with the slightest glue code possible.</p>
+            <p>Jongo's performance is currently under our microscope and we already noticed some great improvements over our main competitor: Morphia. Keep tuned.</p>
         </div>
     </div>
 </section>
