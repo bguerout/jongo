@@ -23,7 +23,7 @@ var wrench = require('wrench');
 
 
 var outputFolder = path.resolve("./gh-pages");
-var scriptFile = path.resolve("./apply.sh");
+var scriptFile = path.resolve("./apply_changes.sh");
 
 desc("Prepare environment")
 task('prepare', [], function (params) {
@@ -96,4 +96,9 @@ task('gh-pages', ['lessify', 'weave-html'], function (params) {
             'git add .',
         "UTF-8");
     fs.chmodSync(scriptFile, 0777);
+});
+
+
+task('default', ['gh-pages'], function (params) {
+
 });
