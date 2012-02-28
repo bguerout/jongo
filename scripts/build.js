@@ -92,7 +92,7 @@ task('gh-pages', ['lessify', 'weave-html'], function (params) {
             'git rm -r --ignore-unmatch * \n ' +
             'mv gh-pages/* ./ \n ' +
             'rm -rf gh-pages/ \n ' +
-            'rm apply.sh \n ' +
+            'rm ' + scriptFile + '\n ' +
             'git add .',
         "UTF-8");
     fs.chmodSync(scriptFile, 0777);
