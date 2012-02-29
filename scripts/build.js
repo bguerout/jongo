@@ -25,24 +25,21 @@ var wrench = require('wrench');
 var outputFolder = path.resolve("./gh-pages");
 var scriptFile = path.resolve("./apply_changes.sh");
 
-desc("Prepare environment")
 task('prepare', [], function (params) {
     if (path.existsSync(outputFolder)) {
         console.log("Deleting folder: " + outputFolder);
         wrench.rmdirSyncRecursive(outputFolder);
     }
     if (path.existsSync(scriptFile)) {
-
         fs.unlinkSync(scriptFile)
     }
-    wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/css"));
-    wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/img"));
-    wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/js"));
+    wrench.mkdirSyncRecursive(outputFolder);
 });
 
 desc("Compile less file into a css file")
 task('lessify', ['prepare'], function (params) {
 
+    wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/css"));
     var cssFile = path.join(outputFolder, "assets/css/jongo.css");
 
     fs.readFile('./assets/bootstrap/jongo.less', 'utf-8', function (err, data) {
@@ -65,8 +62,10 @@ task('lessify', ['prepare'], function (params) {
 
 desc("Update index.html with prod-ready resources")
 task('weave-html', ['prepare'], function (params) {
+
     var source = fs.readFileSync("index.html", "utf8");
     var htmlFile = path.join(outputFolder, "index.html");
+
     jsdom.env({
         html:source,
         scripts:['http://code.jquery.com/jquery-1.7.1.min.js'],
@@ -79,26 +78,14 @@ task('weave-html', ['prepare'], function (params) {
     });
 });
 
-desc("Create Jongo site")
-task('gh-pages', ['lessify', 'weave-html'], function (params) {
+task('package', ['prepare', 'lessify', 'weave-html'], function (params) {
 
     wrench.copyDirSyncRecursive('assets/img', path.join(outputFolder, "assets/img"));
     wrench.copyDirSyncRecursive('assets/js', path.join(outputFolder, "assets/js"));
     wrench.copyDirSyncRecursive('assets/css', path.join(outputFolder, "assets/css"));
-
-    fs.writeFileSync(scriptFile,
-        '#!/bin/bash \n ' +
-            'echo This script must on gh-pages branch \n ' +
-            'git rm -r --ignore-unmatch * \n ' +
-            'mv gh-pages/* ./ \n ' +
-            'rm -rf gh-pages/ \n ' +
-            'rm ' + scriptFile + '\n ' +
-            'git add .',
-        "UTF-8");
-    fs.chmodSync(scriptFile, 0777);
 });
 
-
-task('default', ['gh-pages'], function (params) {
-
+desc("Create Jongo site")
+task('default', ['package'], function (params) {
 });
+
