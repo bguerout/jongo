@@ -610,7 +610,7 @@ a.thumbnail:hover{border-color:#0088cc;-webkit-box-shadow:0 1px 4px rgba(0, 105,
 .invisible{visibility:hidden;}
 body{padding-top:70px;padding-bottom:40px;background:#F3F4EB;}
 .sidebar-nav{padding:9px 0;}
-.navbar .brand{background:url(../img/jongo20x24.png) no-repeat left;padding-left:30px;}
+.navbar .brand{background:url(../img/jongo_small.png) no-repeat left;padding-left:30px;}
 #overview h1{margin-bottom:10px;text-align:center;font-size:75px;}
 #overview .intro{margin-bottom:30px;}#overview .intro pre.prettyprint.maincode{font-size:16px;background-color:#F3F4EB;border:0px;}
 #overview .intro div.row{padding:15px 0px 15px 0px;}
