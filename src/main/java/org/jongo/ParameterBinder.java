@@ -26,12 +26,13 @@ public class ParameterBinder {
     private final String token;
 
     public ParameterBinder() {
-        this.token = DEFAULT_TOKEN;
+        this(DEFAULT_TOKEN);
     }
 
-    /**
-     * TODO we should handle non primitive types to search by criteria example
-     */
+    public ParameterBinder(String token) {
+        this.token = token;
+    }
+
     public String bind(String template, Object... parameters) {
         assertThatParamsCanBeBound(template, parameters);
         return generateQueryFromTemplate(template, parameters);
@@ -42,7 +43,7 @@ public class ParameterBinder {
         int paramIndex = 0;
         while (query.contains(token)) {
             String paramAsJson = serializeAsJson(parameters[paramIndex++]);
-            query = query.replaceFirst("#", getMatcherWithEscapedDollar(paramAsJson));
+            query = query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
         }
         return query;
     }
@@ -59,6 +60,7 @@ public class ParameterBinder {
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {
         int nbTokens = countTokens(template);
         if (nbTokens != parameters.length) {
+            //TODO improve exception message
             throw new IllegalArgumentException("Tokens and parameters numbers mismatch " +
                     "[query: " + template + " / tokens:" + nbTokens + " / parameters:[" + parameters.length + "]");
         }

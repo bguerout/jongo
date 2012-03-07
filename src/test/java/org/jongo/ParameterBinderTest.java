@@ -63,6 +63,14 @@ public class ParameterBinderTest {
     }
 
     @Test
+    public void canMapParameterWithCustomToken() throws Exception {
+
+        String query = new ParameterBinder("@").bind("{id:@}", "123");
+
+        assertThat(query).isEqualTo("{id:\"123\"}");
+    }
+
+    @Test
     public void canMapParameters() throws Exception {
 
         String query = binder.bind("{id:#, test:#}", "123", "456");
