@@ -22,13 +22,12 @@ import com.mongodb.DBObject;
 public class Query {
 
     private final String query;
-    private final ParameterBinder binder;
+    private static final ParameterBinder binder = new ParameterBinder();
     private Object[] parameters;
 
     public Query(String query, Object... parameters) {
         this.query = query;
         this.parameters = parameters;
-        this.binder = new ParameterBinder();
     }
 
     public DBObject toDBObject() {
@@ -37,9 +36,5 @@ public class Query {
             boundQuery = binder.bind(query, parameters);
         }
         return Jongo.toDBObject(boundQuery);
-    }
-
-    public String getQuery() {
-        return query;
     }
 }

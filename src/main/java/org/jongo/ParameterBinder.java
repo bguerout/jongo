@@ -19,11 +19,13 @@ package org.jongo;
 import com.mongodb.util.JSON;
 
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ParameterBinder {
 
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
+    private final Pattern pattern;
 
     public ParameterBinder() {
         this(DEFAULT_TOKEN);
@@ -31,6 +33,7 @@ public class ParameterBinder {
 
     public ParameterBinder(String token) {
         this.token = token;
+        this.pattern = Pattern.compile(token);
     }
 
     public String bind(String template, Object... parameters) {
@@ -74,6 +77,6 @@ public class ParameterBinder {
     }
 
     private int countTokens(String template) {
-        return template.split(token).length - 1;
+        return pattern.split(template, 0).length - 1;
     }
 }
