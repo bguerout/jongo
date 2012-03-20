@@ -30,12 +30,6 @@ public class Jongo {
     private Marshaller marshaller;
     private Unmarshaller unmarshaller;
 
-    public Jongo(DB database, Marshaller marshaller, Unmarshaller unmarshaller) {
-        this.database = database;
-        this.marshaller = marshaller;
-        this.unmarshaller = unmarshaller;
-    }
-
     public Jongo(DB database) {
         this.database = database;
         JacksonProcessor jacksonProcessor = new JacksonProcessor();
