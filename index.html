@@ -441,21 +441,6 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), marshaller, unmarshaller);
     &lt;version&gt;0.1&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 
-            <h5>To be able to resolve snapshot dependency, you have to add OSS repository into your settings.xml</h5>
-
-			<pre class="prettyprint linenums">
-&lt;settings&gt;
-...
-&lt;repositories&gt;
-   &lt;repository&gt;
-        &lt;id&gt;oss-sonatype&lt;/id&gt;
-        &lt;name&gt;OSS Sonatype Repository&lt;/name&gt;
-        &lt;url&gt;http://oss.sonatype.org/content/groups/public&lt;/url&gt;
-        &lt;snapshots&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;/snapshots&gt;
-    &lt;/repository&gt;
-&lt;/repositories&gt;
-...
-&lt;/settings&gt;</pre>
         </div>
     </div>
 </section>
