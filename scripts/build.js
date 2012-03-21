@@ -22,7 +22,7 @@ var util = require('util')
 var wrench = require('wrench');
 
 
-var outputFolder = path.resolve("./gh-pages");
+var outputFolder = path.resolve("./release-site");
 var scriptFile = path.resolve("./apply_changes.sh");
 
 task('prepare', [], function (params) {
