@@ -29,7 +29,7 @@ public class Find {
 
     private final DBCollection collection;
     private final Unmarshaller unmarshaller;
-    private Query query;
+    private final Query query;
     private DBObject fields;
     private Integer limit, skip;
     private DBObject sort;

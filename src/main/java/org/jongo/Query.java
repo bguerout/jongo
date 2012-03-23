@@ -23,7 +23,7 @@ public class Query {
 
     private final String query;
     private static final ParameterBinder binder = new ParameterBinder();
-    private Object[] parameters;
+    private final Object[] parameters;
 
     public Query(String query, Object... parameters) {
         this.query = query;

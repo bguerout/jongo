@@ -27,8 +27,8 @@ import org.jongo.marshall.jackson.JacksonProcessor;
 public class Jongo {
 
     private final DB database;
-    private Marshaller marshaller;
-    private Unmarshaller unmarshaller;
+    private final Marshaller marshaller;
+    private final Unmarshaller unmarshaller;
 
     public Jongo(DB database) {
         this.database = database;
