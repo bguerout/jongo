@@ -78,7 +78,12 @@ task('weave-html', ['prepare'], function (params) {
     });
 });
 
-task('package', ['prepare', 'lessify', 'weave-html'], function (params) {
+task('dns', ['prepare'], function (params) {
+    var cnameFile = path.join(outputFolder, "CNAME");
+    fs.writeFileSync(cnameFile, "jongo.org");
+});
+
+task('package', ['prepare', 'lessify', 'weave-html', 'dns'], function (params) {
 
     wrench.copyDirSyncRecursive('assets/img', path.join(outputFolder, "assets/img"));
     wrench.copyDirSyncRecursive('assets/js', path.join(outputFolder, "assets/js"));
