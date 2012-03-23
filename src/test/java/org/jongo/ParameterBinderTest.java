@@ -109,6 +109,15 @@ public class ParameterBinderTest {
     }
 
     @Test
+    public void shouldEscapeJsonAsString() throws Exception {
+
+        String query = binder.bind("{value:#}", "{injection:true}");
+
+        assertThat(query).isEqualTo("{value:\"{injection:true}\"}");
+    }
+
+
+    @Test
     public void canHandleObjectId() throws Exception {
 
         String query = binder.bind("{_id:#}", new ObjectId("47cc67093475061e3d95369d"));
