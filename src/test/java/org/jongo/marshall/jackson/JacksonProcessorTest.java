@@ -16,6 +16,7 @@
 
 package org.jongo.marshall.jackson;
 
+import org.codehaus.jackson.annotate.JsonAnySetter;
 import org.jongo.model.Fox;
 import org.jongo.model.People;
 import org.junit.Before;
@@ -61,7 +62,28 @@ public class JacksonProcessorTest {
         assertThat(people.getCoordinate().lat).isEqualTo(48);
     }
 
+    @Test
+    public void hasAFallbackToEnsureBackwardCompatibility() throws IOException {
+
+        String json = jsonify("{'address': '22 rue des murlins', 'oldAddress': '22-rue-des-murlins'}");
+
+        BackwardPeople backwardPeople = processor.unmarshall(json, BackwardPeople.class);
+
+        assertThat(backwardPeople.getAddress()).isEqualTo("22-rue-des-murlins");
+    }
+
     private String jsonify(String json) {
         return json.replace("'", "\"");
+    }
+
+
+    static class BackwardPeople extends People {
+
+        @JsonAnySetter
+        public void fallbackForBackwardCompatibility(String name, Object value) {
+            if ("oldAddress".equals(name)) {
+                setAddress((String) value);
+            }
+        }
     }
 }
