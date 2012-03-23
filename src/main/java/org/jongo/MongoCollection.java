@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
@@ -71,19 +72,19 @@ public class MongoCollection {
         return collection.count(new Query(query, parameters).toDBObject());
     }
 
-    public void update(String query, String modifier) {
-        collection.update(toDBObject(query), toDBObject(modifier), false, true);
+    public WriteResult update(String query, String modifier) {
+        return collection.update(toDBObject(query), toDBObject(modifier), false, true);
     }
 
-    public <D> String save(D document) throws IOException {
+    public <D> String save(D document) {
         String entityAsJson = marshaller.marshall(document);
         DBObject dbObject = toDBObject(entityAsJson);
         collection.save(dbObject);
         return dbObject.get(MONGO_ID).toString();
     }
 
-    public void remove(String query) {
-        collection.remove(toDBObject(query));
+    public WriteResult remove(String query) {
+        return collection.remove(toDBObject(query));
     }
 
     @SuppressWarnings("unchecked")

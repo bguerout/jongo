@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.model.*;
 import org.junit.After;
@@ -101,11 +102,12 @@ public class MongoCollectionTest {
         mongoCollection.save(new People("Peter"));
 
         /* when */
-        mongoCollection.update("{name:'John'}", "{$unset:{name:1}}");
+        WriteResult writeResult = mongoCollection.update("{name:'John'}", "{$unset:{name:1}}");
 
         /* then */
         Iterator<People> peoples = mongoCollection.find("{name:{$exists:true}}").as(People.class).iterator();
         assertThat(peoples).hasSize(1);
+        assertThat(writeResult).isNotNull();
     }
 
     @Test
@@ -115,11 +117,12 @@ public class MongoCollectionTest {
         mongoCollection.save(new People("Peter"));
 
         /* when */
-        mongoCollection.remove("{name:'John'}");
+        WriteResult writeResult = mongoCollection.remove("{name:'John'}");
 
         /* then */
         Iterable<People> peoples = mongoCollection.find("{}").as(People.class);
         assertThat(peoples).hasSize(1);
+        assertThat(writeResult).isNotNull();
     }
 
     @Test
