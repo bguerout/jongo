@@ -25,6 +25,7 @@ var wrench = require('wrench');
 var outputFolder = path.resolve("./release-site");
 var scriptFile = path.resolve("./apply_changes.sh");
 
+
 task('prepare', [], function (params) {
     if (path.existsSync(outputFolder)) {
         console.log("Deleting folder: " + outputFolder);
@@ -71,8 +72,20 @@ task('weave-html', ['prepare'], function (params) {
         scripts:['http://code.jquery.com/jquery-1.7.1.min.js'],
         done:function (errors, window) {
             var $ = window.$;
+
+            //remove dev resources
             $('*[data-env="dev"]').remove();
+
+            //Add compiles LESS CSS
             $('head').append('<link href="assets/css/jongo.css" type="text/css" rel="stylesheet"/>');
+
+            //Add Google analytics : cannot use JQuery, cause it calls evalScript method on append
+            var gaScript = fs.readFileSync("scripts/google-analytics.js", "utf8");
+            var script = window.document.createElement("script");
+            script.type = "text/javascript";
+            window.document.getElementsByTagName("head")[0].appendChild(script);
+            script.text = gaScript;
+
             fs.writeFileSync(htmlFile, $("html").html(), "utf8");
         }
     });
