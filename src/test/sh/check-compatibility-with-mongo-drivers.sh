@@ -14,7 +14,7 @@ for version in $VERSIONS
 do
     if [ "$version" \> $LAST_UNSUPPORTED_VERSION ];
     then
-      mvn -l $OUTPUT_DIR/build-$version.log verify -Dmongo.version=$version -Pmongohq;
+      mvn -l $OUTPUT_DIR/build-$version.log verify -Dmongo.version=$version -Pmongohq
 
       if [ "$?" -ne "0" ];
       then
