@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -37,7 +38,7 @@
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 
@@ -72,6 +73,7 @@
 
     <properties>
         <mongo.version>2.6.5</mongo.version>
+        <check.compatibility.args>-Pnone</check.compatibility.args>
     </properties>
 
     <dependencies>
@@ -227,6 +229,7 @@
                                     <executable>sh</executable>
                                     <arguments>
                                         <argument>src/test/sh/check-compatibility-with-mongo-drivers.sh</argument>
+                                        <argument>${check.compatibility.args}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -237,6 +240,9 @@
         </profile>
         <profile>
             <id>mongohq</id>
+            <properties>
+                <check.compatibility.args>-Pmongohq -Djongo.mongohq.uri=${jongo.mongohq.uri}</check.compatibility.args>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
