@@ -21,10 +21,8 @@ var path = require('path');
 var util = require('util')
 var wrench = require('wrench');
 
-
-var outputFolder = path.resolve("./release-site");
+var outputFolder = path.resolve("./generated-site");
 var scriptFile = path.resolve("./apply_changes.sh");
-
 
 task('prepare', [], function (params) {
     if (path.existsSync(outputFolder)) {
