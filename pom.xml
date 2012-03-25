@@ -220,7 +220,7 @@
                         <inherited>false</inherited>
                         <executions>
                             <execution>
-                                <id>sh</id>
+                                <id>check-compatibility-script</id>
                                 <phase>integration-test</phase>
                                 <goals>
                                     <goal>exec</goal>
