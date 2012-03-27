@@ -6,7 +6,7 @@ NEXUS_URL="http://repository.sonatype.org/service/local/data_index?g=org.mongodb
 LAST_UNSUPPORTED_VERSION="2.6.4"
 OPTS=$1
 
-echo "Executing tests with mongo-java-driver dependencies available on Nexus http://repository.sonatype.org since $LAST_UNSUPPORTED_VERSION"
+echo "Executing tests with mongo-java-driver[$LAST_UNSUPPORTED_VERSION+] dependencies available on Nexus http://repository.sonatype.org"
 
 mkdir -p $OUTPUT_DIR;
 VERSIONS=`curl -so $MONGO_ARTIFACTS_FILE $NEXUS_URL &&  grep -e "version" $MONGO_ARTIFACTS_FILE | sed 's/<version>//g' | sed 's/<\/version>//g' | tr -s " " | sort -u`;

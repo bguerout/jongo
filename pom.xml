@@ -74,6 +74,7 @@
     <properties>
         <mongo.version>2.7.3</mongo.version>
         <check.compatibility.args>-Pnone</check.compatibility.args>
+        <maven-release-plugin.version>2.2.1</maven-release-plugin.version>
     </properties>
 
     <dependencies>
@@ -164,6 +165,15 @@
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>2.4</version>
             </plugin>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-release-plugin</artifactId>
+              <version>${maven-release-plugin.version}</version>
+              <configuration>
+                  <releaseProfiles>check-compatibility</releaseProfiles>
+                  <goals>site deploy</goals>
+              </configuration>
+          </plugin>
         </plugins>
     </build>
 
@@ -204,15 +214,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>2.7.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.2.2</version>
-                <configuration>
-                    <releaseProfiles>mongohq,check-compatibility,release</releaseProfiles>
-                    <goals>site deploy</goals>
-                </configuration>
             </plugin>
         </plugins>
     </reporting>
@@ -269,6 +270,22 @@
                 </plugins>
             </build>
         </profile>
+      <profile>
+          <id>cloudbees</id>
+          <build>
+              <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${maven-release-plugin.version}</version>
+                    <configuration>
+                      <arguments>-s /private/jongo/cloudbees-settings.xml</arguments>
+                      <releaseProfiles>mongohq,check-compatibility</releaseProfiles>
+                    </configuration>
+                </plugin>
+              </plugins>
+          </build>
+      </profile>
     </profiles>
 
 </project>
