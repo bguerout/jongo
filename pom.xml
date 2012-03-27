@@ -291,8 +291,8 @@
                   <goal>enforce</goal>
                 </goals>
                 <configuration>
+                  <fail>true</fail>
                   <rules>
-                    <fail>true</fail>
                     <requireProperty>
                       <property>jongo.mongohq.uri</property>
                       <message>'mongohq' profile require 'jongo.mongohq.uri' property to be defined.</message>
