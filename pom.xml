@@ -74,7 +74,6 @@
   <properties>
     <mongo.version>2.7.3</mongo.version>
     <check.compatibility.args>-Pnone</check.compatibility.args>
-    <maven-release-plugin.version>2.2.1</maven-release-plugin.version>
   </properties>
 
   <dependencies>
@@ -168,14 +167,29 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>${maven-release-plugin.version}</version>
         <configuration>
           <releaseProfiles>check-compatibility</releaseProfiles>
           <goals>site deploy</goals>
         </configuration>
       </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>1.0.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
+
 
   <reporting>
     <plugins>
@@ -267,21 +281,66 @@
               </systemProperties>
             </configuration>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-mongohq-property</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <fail>true</fail>
+                    <requireProperty>
+                      <property>jongo.mongohq.uri</property>
+                      <message>'mongohq' profile require 'jongo.mongohq.uri' property to be defined.</message>
+                    </requireProperty>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
     <profile>
       <id>cloudbees</id>
+      <properties>
+        <cloudbees.settings.file>/private/jongo/cloudbees-settings.xml</cloudbees.settings.file>
+      </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>${maven-release-plugin.version}</version>
             <configuration>
-              <arguments>-s /private/jongo/cloudbees-settings.xml</arguments>
+              <arguments>-s ${cloudbees.settings.file}</arguments>
               <releaseProfiles>mongohq,check-compatibility</releaseProfiles>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-files-exist</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <fail>true</fail>
+                  <rules>
+                    <requireFilesExist>
+                      <files>
+                        <file>${cloudbees.settings.file}</file>
+                      </files>
+                    </requireFilesExist>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
