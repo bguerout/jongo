@@ -16,20 +16,19 @@
 
 package org.jongo;
 
-import static org.jongo.Jongo.toDBObject;
-import static org.jongo.ResultMapperFactory.newMapper;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.jongo.Jongo.toDBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 public class MongoCollection {
 
@@ -77,9 +76,13 @@ public class MongoCollection {
     }
 
     public <D> String save(D document) {
+        return save(document, collection.getWriteConcern());
+    }
+
+    public <D> String save(D document, WriteConcern concern) {
         String entityAsJson = marshaller.marshall(document);
         DBObject dbObject = toDBObject(entityAsJson);
-        collection.save(dbObject);
+        collection.save(dbObject, concern);
         return dbObject.get(MONGO_ID).toString();
     }
 
