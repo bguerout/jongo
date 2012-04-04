@@ -86,6 +86,14 @@ public class MongoCollection {
         return dbObject.get(MONGO_ID).toString();
     }
 
+    public WriteResult insert(String query) {
+        return collection.save(new Query(query).toDBObject());
+    }
+
+    public WriteResult insert(String query, Object... parameters) {
+        return collection.save(new Query(query, parameters).toDBObject());
+    }
+
     public WriteResult remove(String query) {
         return collection.remove(toDBObject(query));
     }
