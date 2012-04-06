@@ -35,8 +35,13 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectMapper mapper;
 
+    public JacksonProcessor(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
     public JacksonProcessor() {
-        this.mapper = createMapperForNonAnnotatedBean();
+       this(createDefaultMapper());
+
     }
 
     public <T> T unmarshall(String json, Class<T> clazz) {
@@ -57,7 +62,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         }
     }
 
-    private ObjectMapper createMapperForNonAnnotatedBean() {
+    static ObjectMapper createDefaultMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
         mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_NULL));
