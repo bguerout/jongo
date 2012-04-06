@@ -16,13 +16,12 @@
 
 package org.jongo;
 
-import static org.jongo.Jongo.toDBObject;
-import static org.jongo.ResultMapperFactory.newMapper;
-
-import org.jongo.marshall.Unmarshaller;
-
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import org.jongo.marshall.Unmarshaller;
+
+import static org.jongo.Jongo.toDBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 public class FindOne {
 
@@ -51,8 +50,7 @@ public class FindOne {
         if (result == null)
             return null;
 
-        String json = Jongo.toJson(result);
-        return resultMapper.map(json);
+        return resultMapper.map(result);
     }
 
 }

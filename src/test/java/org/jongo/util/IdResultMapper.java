@@ -24,8 +24,7 @@ import com.mongodb.util.JSON;
 
 public class IdResultMapper implements ResultMapper<String> {
 
-    public String map(String json) {
-        DBObject result = (DBObject) JSON.parse(json);
-        return result.get(MongoCollection.MONGO_ID).toString();
+    public String map(DBObject dbObject) {
+        return dbObject.get(MongoCollection.MONGO_ID).toString();
     }
 }

@@ -16,6 +16,8 @@
 
 package org.jongo;
 
+import com.mongodb.DBObject;
+
 public interface ResultMapper<T> {
-    T map(String json);
+    T map(DBObject json);
 }

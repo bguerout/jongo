@@ -63,10 +63,9 @@ public class FindPartialFieldTest extends JongoTestCase {
     }
 
     private static class AssertionResultMapper implements ResultMapper<Boolean> {
-        public Boolean map(String json) {
-            DBObject result = (DBObject) JSON.parse(json);
-            assertThat(result.containsField("address")).isFalse();
-            assertThat(result.containsField("name")).isTrue();
+        public Boolean map(DBObject dbObject) {
+            assertThat(dbObject.containsField("address")).isFalse();
+            assertThat(dbObject.containsField("name")).isTrue();
             return true;
         }
     }

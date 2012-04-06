@@ -40,8 +40,7 @@ public class MongoIterator<E> implements Iterator<E>, Iterable<E> {
             throw new NoSuchElementException();
 
         DBObject dbObject = cursor.next();
-        String json = Jongo.toJson(dbObject);
-        return resultMapper.map(json);
+        return resultMapper.map(dbObject);
     }
 
     public void remove() {
