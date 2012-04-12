@@ -24,6 +24,10 @@ git checkout site
 
 #Run jake on site branch
 node $NODE_PATH/jake/bin/cli.js -f scripts/generate-site.js
+if [ $? -ne 0 ] ; then
+ echo "Jake script has failed"
+ exit 1
+fi
 
 #Trash current files and apply new sources contained in gh-pages folder
 git checkout -b gh-pages origin/gh-pages
