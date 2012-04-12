@@ -1,8 +1,17 @@
 #!/bin/sh
 echo This script must on gh-pages branch
 
-#Install node and modules
-source /private/jongo/install-node.sh	
+#Clean
+rm -rf jongo/ node*
+
+#Install node
+source /private/jongo/install-node.sh
+if [ $? -ne 0 ] ; then
+ echo "Unable to install node"
+ exit 1
+fi
+
+#Download node dependencies
 npm install express@2.5.8 jake@0.2.18 jsdom@0.2.12 less@1.2.2 wrench@1.3.7
 export NODE_PATH=$PWD/node_modules
 

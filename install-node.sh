@@ -4,53 +4,34 @@
 
 NODE_VERSION=v0.6.9
 NODE_DIST_FILE='/private/jongo/nodejs-0.6.9-cloudbees.zip'
-NODE_SOURCE_DIR='build/node'
-NODE_INSTALL_DIR=$NODE_SOURCE_DIR'/installed'
+NODE_SOURCE_DIR='node'
 
-# Plumbing...
-exist_directory() {
-    [ -d $1 ];
-}
-clone_node_from_github() {
+if [ -f $NODE_DIST_FILE ]
+then
+    echo "Unpacking nodejs $NODE_DIST_FILE archive"
+    unzip $NODE_DIST_FILE
+else
+    echo "Building nodejs from sources"
     git clone https://github.com/joyent/node.git $NODE_SOURCE_DIR
     cd $NODE_SOURCE_DIR
     git checkout $NODE_VERSION
-}
-install_node() {
-    mkdir -p $NODE_INSTALL_DIR
-    PREFIX=$PWD/$NODE_INSTALL_DIR
-    pushd $NODE_SOURCE_DIR
-    ./configure --prefix=$PREFIX
+    ./configure --prefix='installed'
     make install
-    popd
-}
-is_command_in_path() {
-    command -v $1 > /dev/null;
-}
-add_node_to_path() {
-    export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
-}
-install_npm() {
-    curl http://npmjs.org/install.sh | clean=yes sh
-}
-
-# [ Start! ]
-if [ ! -d $NODE_INSTALL_DIR/bin ]
-then
-    if [ -f $NODE_DIST_FILE ]
-    then
-     echo "Get nodejs $NODE_VERSION from $NODE_DIST_FILE archive"
-     mkdir -p $NODE_INSTALL_DIR
-     unzip -vd $NODE_INSTALL_DIR $NODE_DIST_FILE
-    else
-     echo "Build nodejs from sources"
-     clone_node_from_github
-     install_node
-     install_npm
-    fi
+    rm -rvf out/
+    zip -r nodejs.zip $NODE_SOURCE_DIR
+    cd ..
 fi
+export PATH=$PWD/$NODE_SOURCE_DIR/installed/bin:${PATH}
+echo "nodejs $NODE_VERSION has been installed."
 
-add_node_to_path
+echo "Installing npm"
+cd $NODE_SOURCE_DIR
+curl http://npmjs.org/install.sh | clean=yes sh
+cd ..
+echo "npm has been installed."
+
+
+#Assertions
 node --version
 npm --version
 
