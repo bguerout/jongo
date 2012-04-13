@@ -2,8 +2,8 @@
 
 #https://raw.github.com/gtramontina/cloudbees-node
 
-NODE_VERSION=v0.6.9
-NODE_DIST_FILE='/private/jongo/nodejs-0.6.9-cloudbees.zip'
+NODE_VERSION=v0.6.15
+NODE_DIST_FILE='/private/jongo/nodejs-0.6.15-cloudbees.zip'
 NODE_SOURCE_DIR='node'
 
 if [ -f $NODE_DIST_FILE ]
@@ -18,7 +18,7 @@ else
     ./configure --prefix='installed'
     make install
     rm -rvf out/
-    zip -r nodejs.zip $NODE_SOURCE_DIR
+    zip -r nodejs-$NODE_VERSION.zip $NODE_SOURCE_DIR
     cd ..
 fi
 export PATH=$PWD/$NODE_SOURCE_DIR/installed/bin:${PATH}

@@ -29,6 +29,6 @@ if [ $? -ne 0 ] ; then
  exit 1
 fi
 
-#Trash current files and apply new sources contained in gh-pages folder
+#Trash current files and apply new sources
 git checkout -b gh-pages origin/gh-pages
 git rm -r --ignore-unmatch * && mv generated-site/* ./ && rm -rf generated-site/ && git add ./ && git status && git commit -m "$COMMIT_MESSAGE" && git push
