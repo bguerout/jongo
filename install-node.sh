@@ -13,26 +13,25 @@ then
 else
     echo "Building nodejs from sources"
     git clone https://github.com/joyent/node.git $NODE_SOURCE_DIR
-    cd $NODE_SOURCE_DIR
+    pushd $NODE_SOURCE_DIR
     git checkout $NODE_VERSION
     ./configure --prefix='installed'
     make install
-    rm -rvf out/
-    zip -r nodejs-$NODE_VERSION.zip $NODE_SOURCE_DIR
-    cd ..
+    rm -rf out/
+    popd
 fi
+
+zip -r nodejs-$NODE_VERSION.zip $NODE_SOURCE_DIR
 export PATH=$PWD/$NODE_SOURCE_DIR/installed/bin:${PATH}
 echo "nodejs $NODE_VERSION has been installed."
 
 echo "Installing npm"
-cd $NODE_SOURCE_DIR
+pushd $NODE_SOURCE_DIR
 curl http://npmjs.org/install.sh | clean=yes sh
-cd ..
+popd
 echo "npm has been installed."
-
 
 #Assertions
 node --version
 npm --version
-
 
