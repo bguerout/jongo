@@ -609,6 +609,9 @@ a.thumbnail:hover{border-color:#0088cc;-webkit-box-shadow:0 1px 4px rgba(0, 105,
 .show{display:block;}
 .invisible{visibility:hidden;}
 body{padding-top:70px;padding-bottom:40px;background:#F3F4EB;}
+h2{line-height:27px;font-size:18px;}h2 small{font-size:14px;}
+h3{line-height:18px;font-size:14px;}h3 small{font-size:12px;}
+h4{font-size:13px;}
 .sidebar-nav{padding:9px 0;}
 .navbar .brand{background:url(../img/jongo_small.png) no-repeat left;padding-left:30px;}
 #overview h1{margin-bottom:10px;text-align:center;font-size:75px;}

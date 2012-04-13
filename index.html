@@ -1,3 +1,4 @@
+
 <!--
   ~ Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
   ~
@@ -13,12 +14,12 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <head>
     <meta charset="utf-8">
     <title>Jongo {mongo-java-driver: 'with ease'}</title>
 
     <link href="assets/img/jongo_favicon.png" rel="shortcut icon">
+    
     <link href="assets/css/prettify.css" type="text/css" rel="stylesheet">
 
 
@@ -30,11 +31,12 @@
     
     <script type="text/javascript" src="assets/js/prettify.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap-dropdown.js"></script>
+    <script type="text/javascript" src="assets/js/jongo.js"></script>
 
     <meta http-equiv="cache-control" content="no-cache">
     <meta http-equiv="pragma" content="no-cache">
     <meta charset="utf-8">
-    <meta name="description=" content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)">
+    <meta name="description" content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)">
 
 <link href="assets/css/jongo.css" type="text/css" rel="stylesheet"><script type="text/javascript">var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-30202616-1']);
@@ -50,7 +52,7 @@ _gaq.push(['_trackPageview']);
 })();
 </script></head>
 
-<body onload="prettyPrint()">
+<body>
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -192,7 +194,7 @@ public class People {
                 documentation</a> or use <a href="#advanced">your own (un)marshaller</a>.
             </p>
 
-            <h3>Handling polymorphism</h3>
+            <h2>Handling polymorphism</h2>
 
             <p>
                 To handle polymorphism of Java objects, a field containing the class name must be set into the Mongo
@@ -226,7 +228,7 @@ public class Fox extends Animal {
     <div class="row">
         <div class="span9">
 
-            <h3>Find and FindOne</h3>
+            <h2>Find and FindOne</h2>
 
             <p>
                 Query syntax is almost the same as in Mongo shell: copy/paste, it just works.
@@ -243,7 +245,7 @@ People john = peoples.findOne(new ObjectId("4c...e")).as(People.class);</pre>
                 Field names only need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
             </p>
 
-            <h3>Query with parameters</h3>
+            <h2>Query with parameters</h2>
 
             <p>
                 Queries can be templated: add anchors <code>#</code> as follow <code>peoples.find("{name: #, age: #}",
@@ -258,8 +260,8 @@ People john = peoples.findOne(new ObjectId("4c...e")).as(People.class);</pre>
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
 peoples.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre>
 
-            <h3>Query options</h3>
-            <h4>Field selection</h4>
+            <h2>Query options</h2>
+            <h3>Field selection</h3>
 
             <p>
                 Field selection aka. partial loading is not written as in Mongo shell:
@@ -268,7 +270,7 @@ peoples.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre
             </p>
             <pre class="prettyprint">peoples.find("{}").fields("{lastname: 1, address: 1}").as(User.class);</pre>
 
-            <h4>Sorting</h4>
+            <h3>Sorting</h3>
 
             <p>Documents can be sorted in ascending or descending order using a json selector: <code>{field: 1}</code>
                 for ascending, <code>{field: -1}</code> for descending.
@@ -277,28 +279,28 @@ peoples.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre
 peoples.find("{}").sort("{firstname: 1}").as(User.class);
 peoples.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
 
-            <h4>Skip and Limit</h4>
+            <h3>Skip and Limit</h3>
 
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html">DBCursor</a>.
             </p>
             <pre class="prettyprint">peoples.find("{}").skip(20).as(User.class);</pre>
             <pre class="prettyprint">peoples.find("{}").limit(10).as(User.class);</pre>
 
-            <h4>Distinct</h4>
+            <h3>Distinct</h3>
 
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#distinct(java.lang.String)">DBCollection.distinct(...)</a>.
             </p>
             <pre class="prettyprint">peoples.distinct("address", "", Address.class);</pre>
             <pre class="prettyprint">peoples.distinct("address", "{name: 'John'}", Address.class);</pre>
 
-            <h4>Count</h4>
+            <h3>Count</h3>
 
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(...)</a>.
             </p>
             <pre class="prettyprint">peoples.count("{name: 'John'}");</pre>
 
-            <h3>Advanced query</h3>
-            <h4>Geospacial indexing</h4>
+            <h2>Advanced query</h2>
+            <h3>Geospacial indexing</h3>
 
             <p>Using <a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing" target="_blank">Mongo geospacial
                 capacities</a> requires an index and some BSON operators.</p>
@@ -306,7 +308,7 @@ peoples.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
 peoples.ensureIndex("{address: '2d'}");
 peoples.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</pre>
 
-            <h4>Complete query syntax</h4>
+            <h3>Complete query syntax</h3>
 
             <p>Mongo uses a <a href="http://www.mongodb.org/display/DOCS/Mongo+Query+Language">behind the scenes
                 syntactic sugar</a> for methods like <code>sort(...)</code>, <code>limit(...)</code> and others. The
@@ -327,7 +329,7 @@ peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
 
     <div class="row">
         <div class="span9">
-            <h3>Save</h3>
+            <h2>Save</h2>
 
             <p>Simply pass an object to the <code>save(...)</code> method, built-in Jackson marshaller will be used to
                 convert it to json. <a href="#mapping">Object mapping section</a> defines what objects have to look
@@ -335,12 +337,12 @@ peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
             </p>
             <pre class="prettyprint">peoples.save(new People("Joe", 27));</pre>
 
-            <h3>Update</h3>
+            <h2>Update</h2>
 
             <p>In early version of Jongo 'upsert' is not available and update is always in 'multi' mode.</p>
             <pre class="prettyprint">peoples.update("{name: 'Joe'}", "{$inc: {age: 1}}");</pre>
 
-            <h3>Remove</h3>
+            <h2>Remove</h2>
 
             <p>Remove works as if you were in Mongo shell.</p>
             <pre class="prettyprint">peoples.remove("{name: 'Joe'}");</pre>
@@ -371,7 +373,7 @@ peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
     </div>
     <div class="row">
         <div class="span9">
-            <h3>Using a custom result mapper</h3>
+            <h2>Using a custom result mapper</h2>
 
             <p>
                 If one prefers to manually map objects (<i>ie. without a (un)marshaller</i>), he can implements
@@ -390,7 +392,7 @@ Iterable&lt;Integer&gt; ages = col.find("{'name':'John'}").map(
     }
 );</pre>
 
-            <h3>Using a custom (un)marshaller</h3>
+            <h2>Using a custom (un)marshaller</h2>
 
             <p>
                 Instead of Jackson, one can provide his own implementation of <code>Marshaller</code> and <code>Unmarshaller</code>.
