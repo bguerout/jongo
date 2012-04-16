@@ -37,6 +37,12 @@ public class Jongo {
         this.unmarshaller = jacksonProcessor;
     }
 
+    public Jongo(DB database, Marshaller marshaller, Unmarshaller unmarshaller) {
+        this.database = database;
+        this.marshaller = marshaller;
+        this.unmarshaller = unmarshaller;
+    }
+
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
         return new MongoCollection(dbCollection, marshaller, unmarshaller);
