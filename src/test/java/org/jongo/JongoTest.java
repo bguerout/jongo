@@ -16,28 +16,23 @@
 
 package org.jongo;
 
-import org.junit.Before;
+import com.mongodb.DB;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.getDatabase;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class JongoTest {
 
-    private Jongo jongo;
-
-    @Before
-    public void setUp() throws Exception {
-        jongo = new Jongo(getDatabase());
-    }
 
     @Test
     public void canObtainACollection() throws Exception {
 
-        MongoCollection collection = jongo.getCollection("collection-name");
+        DB db = mock(DB.class);
+        Jongo jongo = new Jongo(db);
 
-        assertThat(collection).isNotNull();
-        assertThat(collection.getName()).isEqualTo("collection-name");
-        assertThat(collection.getDBCollection().getFullName()).isEqualTo("jongo.collection-name");
+        jongo.getCollection("collection-name");
+
+        verify(db).getCollection("collection-name");
     }
 }

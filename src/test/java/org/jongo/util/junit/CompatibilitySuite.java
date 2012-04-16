@@ -1,0 +1,95 @@
+package org.jongo.util.junit;
+
+import org.jongo.util.JongoTestCase;
+import org.jongo.util.TestContext;
+import org.junit.internal.builders.JUnit4Builder;
+import org.junit.runner.Description;
+import org.junit.runner.Runner;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Suite;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.RunnerBuilder;
+import org.junit.runners.model.TestClass;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CompatibilitySuite extends Suite {
+
+    private static final String SCANNED_PACKAGE = "org.jongo";
+    private static final Class<JongoTestCase> PARENT_CLASS = JongoTestCase.class;
+
+    private final List<Runner> runners = new ArrayList<Runner>();
+    private final ContextRunnerBuilder builder;
+
+    public CompatibilitySuite(Class<?> clazz) throws Throwable {
+        super(clazz, new Class<?>[]{});
+        builder = new ContextRunnerBuilder(getParameter(getTestClass()));
+        Class<?>[] suiteClasses = ClasspathClassesFinder.getSuiteClasses(SCANNED_PACKAGE);
+        runners.addAll(builder.runners(clazz, suiteClasses));
+    }
+
+    @Override
+    protected List<Runner> getChildren() {
+        return runners;
+    }
+
+    /**
+     * @see Parameterized
+     */
+    @SuppressWarnings("unchecked")
+    private TestContext getParameter(TestClass klass) throws Throwable {
+        return (TestContext) getParametersMethod(klass).invokeExplosively(null);
+    }
+
+    /**
+     * @see Parameterized
+     */
+    private FrameworkMethod getParametersMethod(TestClass testClass) throws Exception {
+        List<FrameworkMethod> methods = testClass.getAnnotatedMethods(Parameterized.Parameters.class);
+        for (FrameworkMethod each : methods) {
+            int modifiers = each.getMethod().getModifiers();
+            if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
+                return each;
+        }
+        throw new Exception("No public static parameters method on class " + testClass.getName());
+    }
+
+    private static class ContextRunnerBuilder extends JUnit4Builder {
+
+        private TestContext testContext;
+
+        public ContextRunnerBuilder(TestContext testContext) {
+            this.testContext = testContext;
+        }
+
+        @Override
+        public Runner runnerForClass(Class<?> testClass) throws Throwable {
+            return new ContextJUnit4ClassRunner(testClass, testContext);
+        }
+    }
+
+    private static class ContextJUnit4ClassRunner extends BlockJUnit4ClassRunner {
+
+        private TestContext testContext;
+
+        public ContextJUnit4ClassRunner(Class<?> aClass, TestContext testContext) throws InitializationError {
+            super(aClass);
+            this.testContext = testContext;
+        }
+
+        @Override
+        protected Object createTest() throws Exception {
+            Class<?> javaClass = getTestClass().getJavaClass();
+            if (javaClass.isAssignableFrom(PARENT_CLASS)) {
+                Constructor<?> constructor = getTestClass().getOnlyConstructor();
+                return constructor.newInstance(testContext);
+            }
+            return super.createTest();
+        }
+    }
+}

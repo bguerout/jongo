@@ -16,19 +16,18 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-
-import java.util.Iterator;
-
 import org.jongo.model.People;
 import org.jongo.util.IdResultMapper;
+import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FindAndMapTest {
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
+
+public class FindAndMapTest extends JongoTestCase {
 
     private MongoCollection collection;
     private People people;

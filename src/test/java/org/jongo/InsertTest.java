@@ -16,20 +16,15 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
 import org.jongo.model.People;
+import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
-public class InsertTest {
+public class InsertTest extends JongoTestCase {
 
     private MongoCollection collection;
     private People people;

@@ -18,7 +18,11 @@ package org.jongo;
 
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
-import org.jongo.model.*;
+import org.jongo.model.Animal;
+import org.jongo.model.Coordinate;
+import org.jongo.model.Fox;
+import org.jongo.model.People;
+import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +31,8 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
 
-public class MongoCollectionTest {
+public class MongoCollectionTest extends JongoTestCase {
 
     private MongoCollection mongoCollection;
 

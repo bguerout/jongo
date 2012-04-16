@@ -19,15 +19,14 @@ package org.jongo;
 import org.fest.assertions.Assertions;
 import org.jongo.model.People;
 import org.jongo.util.IdResultMapper;
+import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.TestUtil.createEmptyCollection;
-import static org.jongo.util.TestUtil.dropCollection;
 
-public class FindOneTest {
+public class FindOneTest extends JongoTestCase {
 
     private MongoCollection collection;
 
