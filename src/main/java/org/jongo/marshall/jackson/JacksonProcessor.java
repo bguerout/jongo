@@ -16,20 +16,20 @@
 
 package org.jongo.marshall.jackson;
 
-import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
-import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_NULL;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
+import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_NULL;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -40,7 +40,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
     }
 
     public JacksonProcessor() {
-       this(createDefaultMapper());
+        this(createMinimalMapper());
 
     }
 
@@ -62,7 +62,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         }
     }
 
-    static ObjectMapper createDefaultMapper() {
+    public static ObjectMapper createMinimalMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
         mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_NULL));
@@ -74,4 +74,5 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
         return mapper;
     }
+
 }

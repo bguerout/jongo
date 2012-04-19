@@ -52,7 +52,7 @@ public class Jongo {
         return database;
     }
 
-    static String toJson(DBObject dbObject) {
+    public static String toJson(DBObject dbObject) {
         Object id = dbObject.get(MongoCollection.MONGO_ID);
         if (id != null)
             dbObject.put(MongoCollection.MONGO_ID, id.toString());
@@ -60,7 +60,7 @@ public class Jongo {
         return dbObject.toString();
     }
 
-    static DBObject toDBObject(String json) {
+    public static DBObject toDBObject(String json) {
         try {
             return ((DBObject) JSON.parse(json));
         } catch (Exception e) {

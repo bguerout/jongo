@@ -27,13 +27,15 @@ public abstract class JongoTestCase {
     }
 
     protected MongoCollection getCollection(String collectionName) throws UnknownHostException {
-        DB db = testContext.getDB();
-        DBCollection collection = db.getCollection(collectionName);
+        DBCollection collection = getDB().getCollection(collectionName);
         return new MongoCollection(collection, testContext.getMarshaller(), testContext.getUnmarshaller());
     }
 
     protected void dropCollection(String collectionName) throws UnknownHostException {
-        DB db = testContext.getDB();
-        db.getCollection(collectionName).drop();
+        getDB().getCollection(collectionName).drop();
+    }
+
+    protected DB getDB() throws UnknownHostException {
+        return testContext.getDB();
     }
 }
