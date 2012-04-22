@@ -1,4 +1,4 @@
-package org.jongo.spike;
+package org.jongo.spike.dbref;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
@@ -7,15 +7,12 @@ import com.mongodb.util.JSON;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.ResultMapper;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.spike.dbref.DBRefDeserializer;
-import org.jongo.spike.dbref.Reference;
-import org.jongo.spike.dbref.ReferenceDeserializer;
+import org.jongo.spike.dbref.jackson.*;
 import org.jongo.util.DBObjectResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -88,14 +85,18 @@ public class DBRefSpikeTest extends JongoTestCase {
     @Test
     public void referenceShouldBeMarshalledWithJackson() throws Exception {
 
-        Buddy buddy = new Buddy("Abby", new Buddy("John", null));
+        Buddy peter = new Buddy("Peter", null);
+        Buddy buddy = new Buddy("Abby", peter);
+        MongoCollection buddies = getCollectionWithCustomMapper();
+        final String peterId = buddies.save(peter);
+        peter.id = new ObjectId(peterId);
 
-        collection.save(buddy);
+        buddies.save(buddy);
 
-        collection.findOne("{name : 'Abby'}").map(new ResultMapper<DBObject>() {
+        buddies.findOne("{name : 'Abby'}").map(new ResultMapper<DBObject>() {
             public DBObject map(DBObject result) {
                 assertThat(result.get("friend")).isInstanceOf(DBRef.class);
-                assertThat(((DBRef) result.get("friend")).getId()).isEqualTo(johnId);
+                assertThat(((DBRef) result.get("friend")).getId()).isEqualTo(peterId);
                 return result;
             }
         });
@@ -119,20 +120,19 @@ public class DBRefSpikeTest extends JongoTestCase {
     private SimpleModule createDBRefModule(DB database, ObjectMapper mapper) {
         SimpleModule module = new SimpleModule("dbRefModule", new Version(1, 0, 0, null));
         module.addDeserializer(Reference.class, new ReferenceDeserializer(mapper, database));
+
+        ReferenceSerializer serializer = new ReferenceSerializer();
+        serializer.registerReferenceLink(Buddy.class, new ReferenceLink<Buddy>() {
+            public String getReferenceCollectionName(Buddy buddy) {
+                return "buddies";
+            }
+
+            public String getId(Buddy buddy) {
+                return buddy.id.toString();
+            }
+        });
+        module.addSerializer(Reference.class, serializer);
         return module;
     }
 
-    private static class Buddy {
-        String name;
-        @JsonDeserialize(using = DBRefDeserializer.class)
-        Buddy friend;
-
-        private Buddy(String name, Buddy friend) {
-            this.friend = friend;
-            this.name = name;
-        }
-
-        private Buddy() {
-        }
-    }
 }

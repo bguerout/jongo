@@ -1,4 +1,4 @@
-package org.jongo.spike.dbref;
+package org.jongo.spike.dbref.jackson;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.*;

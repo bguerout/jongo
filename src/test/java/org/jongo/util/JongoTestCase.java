@@ -1,7 +1,7 @@
 package org.jongo.util;
 
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
 
@@ -27,8 +27,11 @@ public abstract class JongoTestCase {
     }
 
     protected MongoCollection getCollection(String collectionName) throws UnknownHostException {
-        DBCollection collection = getDB().getCollection(collectionName);
-        return new MongoCollection(collection, testContext.getMarshaller(), testContext.getUnmarshaller());
+        return createJongoUsingContext().getCollection(collectionName);
+    }
+
+    private Jongo createJongoUsingContext() throws UnknownHostException {
+        return new Jongo(getDB(), testContext.getMarshaller(), testContext.getUnmarshaller());
     }
 
     protected void dropCollection(String collectionName) throws UnknownHostException {

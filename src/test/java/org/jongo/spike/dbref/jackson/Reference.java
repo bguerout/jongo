@@ -1,4 +1,4 @@
-package org.jongo.spike.dbref;
+package org.jongo.spike.dbref.jackson;
 
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
@@ -12,7 +12,7 @@ public class Reference {
     private final DBRef dbRef;
     private final ObjectMapper mapper;
 
-    Reference(DBRef dbRef, ObjectMapper mapper) {
+    public Reference(DBRef dbRef, ObjectMapper mapper) {
         this.dbRef = dbRef;
         this.mapper = mapper;
     }

@@ -2,21 +2,13 @@ package org.jongo.spike.dbref;
 
 import com.mongodb.DB;
 import com.mongodb.DBRef;
-import com.mongodb.util.JSON;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.deser.StdDeserializationContext;
 import org.codehaus.jackson.map.module.SimpleModule;
-import org.fest.assertions.Assertions;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.spike.dbref.jackson.Reference;
+import org.jongo.spike.dbref.jackson.ReferenceDeserializer;
 import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -24,7 +16,7 @@ import static org.mockito.Mockito.mock;
 public class ReferenceDeserializerTest {
 
     @Test
-    public void shouldDeserializeBSONDBref() throws Exception {
+    public void shouldDeserializeBSONDBRef() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
         DB db = mock(DB.class);

@@ -3,6 +3,7 @@ package org.jongo.spike.dbref;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.jongo.spike.dbref.jackson.Reference;
 import org.junit.Before;
 import org.junit.Test;
 
