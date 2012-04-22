@@ -26,7 +26,7 @@ public class ReferenceSerializer extends JsonSerializer<Object> {
         jgen.writeRawValue(json);
     }
 
-    private String getId(Object value, ReferenceLink link) {
+    private <T> String getId(T value, ReferenceLink<T> link) {
 
         String id = link.getId(value);
         if (id == null) {
@@ -35,7 +35,7 @@ public class ReferenceSerializer extends JsonSerializer<Object> {
         return id;
     }
 
-    public void registerReferenceLink(Class<?> typeClass, ReferenceLink<?> link) {
+    public <T> void registerReferenceLink(Class<T> typeClass, ReferenceLink<T> link) {
         referenceLinks.put(typeClass, link);
     }
 
