@@ -113,21 +113,6 @@ public class MongoCollectionTest extends JongoTestCase {
     }
 
     @Test
-    public void canRemoveQuery() throws Exception {
-        /* given */
-        mongoCollection.save(new People("John"));
-        mongoCollection.save(new People("Peter"));
-
-        /* when */
-        WriteResult writeResult = mongoCollection.remove("{name:'John'}");
-
-        /* then */
-        Iterable<People> peoples = mongoCollection.find("{}").as(People.class);
-        assertThat(peoples).hasSize(1);
-        assertThat(writeResult).isNotNull();
-    }
-
-    @Test
     public void canFindInheritedEntity() throws IOException {
         mongoCollection.save(new Fox("fantastic", "roux"));
 

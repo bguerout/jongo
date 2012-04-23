@@ -98,6 +98,14 @@ public class MongoCollection {
         return collection.remove(toDBObject(query));
     }
 
+    public WriteResult remove(String query, Object... parameters) {
+        return collection.remove(new Query(query, parameters).toDBObject());
+    }
+
+    public WriteResult remove(ObjectId id) {
+        return remove("{_id:#}", id);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> Iterable<T> distinct(String key, String query, final Class<T> clazz) {
         DBObject ref = new Query(query).toDBObject();
@@ -127,4 +135,5 @@ public class MongoCollection {
     public DBCollection getDBCollection() {
         return collection;
     }
+
 }
