@@ -21,7 +21,7 @@ else
     popd
 fi
 
-zip -r nodejs-$NODE_VERSION.zip $NODE_SOURCE_DIR
+zip -r nodejs-$NODE_VERSION-cloudbees.zip $NODE_SOURCE_DIR
 export PATH=$PWD/$NODE_SOURCE_DIR/installed/bin:${PATH}
 echo "nodejs $NODE_VERSION has been installed."
 
