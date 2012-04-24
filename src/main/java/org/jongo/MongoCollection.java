@@ -63,6 +63,10 @@ public class MongoCollection {
         return new Find(unmarshaller, collection, new Query(query, parameters));
     }
 
+    public long count() {
+        return collection.count();
+    }
+
     public long count(String query) {
         return collection.count(new Query(query).toDBObject());
     }

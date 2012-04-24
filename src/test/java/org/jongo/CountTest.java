@@ -47,6 +47,16 @@ public class CountTest extends JongoTestCase{
         collection.save(people);
 
         /* then */
+        assertThat(collection.count()).isEqualTo(2);
+    }
+
+    @Test
+    public void canCountWithQuery() throws Exception {
+        /* given */
+        collection.save(people);
+        collection.save(people);
+
+        /* then */
         assertThat(collection.count("{name:{$exists:true}}")).isEqualTo(2);
     }
 
