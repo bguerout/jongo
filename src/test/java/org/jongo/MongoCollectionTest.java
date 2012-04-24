@@ -80,7 +80,7 @@ public class MongoCollectionTest extends JongoTestCase {
     }
 
     @Test
-    public void canUpdateEntity() throws Exception {
+    public void canModifyAlreadySavedEntity() throws Exception {
         /* given */
         String id = mongoCollection.save(new People("John", "21 Jump Street"));
         Iterator<People> peoples = mongoCollection.find("{name: 'John'}").as(People.class).iterator();
@@ -95,21 +95,6 @@ public class MongoCollectionTest extends JongoTestCase {
         people = peoples.next();
         assertThat(people.getId()).isEqualTo(new ObjectId(id));
         assertThat(people.getAddress()).isEqualTo("new address");
-    }
-
-    @Test
-    public void canUpdateQuery() throws Exception {
-        /* given */
-        mongoCollection.save(new People("John"));
-        mongoCollection.save(new People("Peter"));
-
-        /* when */
-        WriteResult writeResult = mongoCollection.update("{name:'John'}", "{$unset:{name:1}}");
-
-        /* then */
-        Iterator<People> peoples = mongoCollection.find("{name:{$exists:true}}").as(People.class).iterator();
-        assertThat(peoples).hasSize(1);
-        assertThat(writeResult).isNotNull();
     }
 
     @Test
