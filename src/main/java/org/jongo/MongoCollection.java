@@ -76,7 +76,23 @@ public class MongoCollection {
     }
 
     public WriteResult update(String query, String modifier) {
-        return collection.update(toDBObject(query), toDBObject(modifier), false, true);
+        return update(query, modifier, collection.getWriteConcern());
+    }
+
+    public WriteResult update(String query, String modifier, WriteConcern concern) {
+        return update(query, modifier, false, true, concern);
+    }
+
+    public WriteResult upsert(String query, String modifier) {
+        return upsert(query, modifier, collection.getWriteConcern());
+    }
+
+    public WriteResult upsert(String query, String modifier, WriteConcern concern) {
+        return update(query, modifier, true, false, concern);
+    }
+
+    private WriteResult update(String query, String modifier, boolean upsert, boolean multi, WriteConcern concern) {
+        return collection.update(toDBObject(query), toDBObject(modifier), upsert, multi, concern);
     }
 
     public <D> String save(D document) {
