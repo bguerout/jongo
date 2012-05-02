@@ -16,6 +16,7 @@
 
 package org.jongo.marshall.jackson;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
@@ -70,6 +71,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
         SimpleModule module = new SimpleModule("jongoModule", new Version(1, 0, 0, null));
         module.addSerializer(new ObjectIdSerializer());
+        module.addDeserializer(ObjectId.class, new ObjectIdDeserializer());
         mapper.registerModule(module);
 
         return mapper;
