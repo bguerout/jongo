@@ -17,6 +17,7 @@
 package org.jongo;
 
 import com.mongodb.WriteConcern;
+import org.bson.types.ObjectId;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -24,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 public class SaveTest extends JongoTestCase {
@@ -46,19 +47,63 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSavePOJO() throws Exception {
         /* given */
-        collection.save(people);
+        String id = collection.save(people);
 
         assertThat(collection.count("{}")).isEqualTo(1);
+        assertThat(id).isNotNull();
     }
 
     @Test
     public void canSaveWithWriteConcern() throws Exception {
 
-        WriteConcern writeConcern = mock(WriteConcern.class);
+        WriteConcern writeConcern = spy(WriteConcern.SAFE);
 
         collection.save(people, writeConcern);
 
         verify(writeConcern).callGetLastError();
+    }
+
+    @Test
+    public void canSavedAnObjectWithAnObjectId() throws Exception {
+
+        ObjectId id = new ObjectId();
+        People john = new People(id, "John");
+
+        String savedId = collection.save(john);
+
+        assertThat(savedId).isEqualTo(id.toString());
+    }
+
+    @Test
+    public void canModifyAlreadySavedEntity() throws Exception {
+        /* given */
+        String idAsString = collection.save(new People("John", "21 Jump Street"));
+        ObjectId id = new ObjectId(idAsString);
+        People people = collection.findOne(id).as(People.class);
+        people.setAddress("new address");
+
+        /* when */
+        collection.save(people);
+
+        /* then */
+        people = collection.findOne(id).as(People.class);
+        assertThat(people.getId()).isEqualTo(id);
+        assertThat(people.getAddress()).isEqualTo("new address");
+    }
+
+
+    @Test
+    public void canSaveAnObjectWithAnObjectId() throws Exception {
+
+        People john = new People(new ObjectId("47cc67093475061e3d95369d"), "John");
+
+        String id = collection.save(john);
+
+        People result = collection.findOne(new ObjectId(id)).as(People.class);
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo("47cc67093475061e3d95369d");
+
+
     }
 
 

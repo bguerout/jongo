@@ -16,8 +16,6 @@
 
 package org.jongo;
 
-import com.mongodb.WriteResult;
-import org.bson.types.ObjectId;
 import org.jongo.model.Animal;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Fox;
@@ -28,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -77,24 +74,6 @@ public class MongoCollectionTest extends JongoTestCase {
         assertThat(mongoCollection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(People.class)).hasSize(2);
         assertThat(mongoCollection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(People.class)).hasSize(1);
         assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(People.class)).hasSize(1);
-    }
-
-    @Test
-    public void canModifyAlreadySavedEntity() throws Exception {
-        /* given */
-        String id = mongoCollection.save(new People("John", "21 Jump Street"));
-        Iterator<People> peoples = mongoCollection.find("{name: 'John'}").as(People.class).iterator();
-        People people = peoples.next();
-        people.setAddress("new address");
-        mongoCollection.save(people);
-
-        /* when */
-        peoples = mongoCollection.find("{name: 'John'}").as(People.class).iterator();
-
-        /* then */
-        people = peoples.next();
-        assertThat(people.getId()).isEqualTo(new ObjectId(id));
-        assertThat(people.getAddress()).isEqualTo("new address");
     }
 
     @Test

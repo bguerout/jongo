@@ -31,6 +31,11 @@ public class People {
         this.name = name;
     }
 
+    public People(ObjectId id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public People(String name, String address) {
         this.name = name;
         this.address = address;

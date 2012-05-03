@@ -48,6 +48,9 @@ public class MongoCollection {
     }
 
     public FindOne findOne(ObjectId id) {
+        if(id==null){
+            throw new IllegalArgumentException("Object id must not be null");
+        }
         return new FindOne(unmarshaller, collection, new Query("{_id:#}", id));
     }
 

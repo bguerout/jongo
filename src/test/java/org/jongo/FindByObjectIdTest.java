@@ -43,6 +43,11 @@ public class FindByObjectIdTest extends JongoTestCase {
         dropCollection("users");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectNullObjectId() throws Exception {
+        collection.findOne((ObjectId)null);
+    }
+
     @Test
     public void canFindOneWithObjectId() throws Exception {
         /* given */
