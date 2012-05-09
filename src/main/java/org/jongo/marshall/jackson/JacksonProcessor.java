@@ -49,7 +49,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         try {
             return mapper.readValue(json, clazz);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to unmarshall from json: " + json, e); // TODO handle this
+            throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e); // TODO handle this
         }
     }
 
