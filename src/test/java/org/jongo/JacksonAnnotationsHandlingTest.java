@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class IdHandlingTest extends JongoTestCase {
+public class JacksonAnnotationsHandlingTest extends JongoTestCase {
 
     private MongoCollection collection;
 
