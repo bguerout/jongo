@@ -17,28 +17,54 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
+import org.jongo.marshall.MongoDriverMarshaller;
+import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.model.Coordinate;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryTest {
 
+    private ParameterBinder binder;
+
+    @Before
+    public void setUp() throws Exception {
+        binder = new ParameterBinder(new MongoDriverMarshaller());
+    }
+
     @Test
     public void canBuildStaticQuery() throws Exception {
 
-        Query query = new Query("{'value':1}");
+        Query query = new Query("{'value':1}", binder);
 
         DBObject dbObject = query.toDBObject();
+
         assertThat(dbObject.containsField("value")).isTrue();
     }
 
     @Test
-    public void canBuildParameterizedQuery() throws Exception {
+    public void canBuildParameterizedQueryWithBsonPrimitive() throws Exception {
 
-        Query query = new Query("{'value':#}", "1");
+        Query query = new Query("{'value':#}", binder, "1");
 
         DBObject dbObject = query.toDBObject();
-        assertThat(dbObject.get("value")).isEqualTo("1");
 
+        assertThat(dbObject.get("value")).isEqualTo("1");
+    }
+
+    @Test
+    public void canBuildParameterizedQueryWithComplexType() throws Exception {
+
+        ParameterBinder jacksonBinder = new ParameterBinder(new JacksonProcessor());
+        Query query = new Query("{'value':#}", jacksonBinder, new Coordinate(1, 1));
+
+        DBObject dbObject = query.toDBObject();
+
+        Object value = dbObject.get("value");
+        assertThat(value).isInstanceOf(DBObject.class);
+        assertThat(((DBObject) value).get("lat")).isEqualTo(1);
+        assertThat(((DBObject) value).get("lng")).isEqualTo(1);
     }
 }

@@ -17,7 +17,8 @@
 package org.jongo;
 
 import org.bson.types.ObjectId;
-import org.jongo.model.Coordinate;
+import org.jongo.marshall.MongoDriverMarshaller;
+import org.jongo.marshall.Marshaller;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +27,10 @@ import java.util.Date;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ParameterBinderTest {
 
@@ -33,12 +38,13 @@ public class ParameterBinderTest {
 
     @Before
     public void setUp() throws Exception {
-        binder = new ParameterBinder();
+        binder = new ParameterBinder(new MongoDriverMarshaller());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithCharParameter() throws Exception {
         char c = '1';
+
         binder.bind("{id:#}", c);
     }
 
@@ -65,7 +71,7 @@ public class ParameterBinderTest {
     @Test
     public void canMapParameterWithCustomToken() throws Exception {
 
-        String query = new ParameterBinder("@").bind("{id:@}", "123");
+        String query = new ParameterBinder(new MongoDriverMarshaller(), "@").bind("{id:@}", "123");
 
         assertThat(query).isEqualTo("{id:\"123\"}");
     }
@@ -125,11 +131,22 @@ public class ParameterBinderTest {
         assertThat(query).isEqualTo("{_id:{ \"$oid\" : \"47cc67093475061e3d95369d\"}}");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldRejectNonBSONPrimitive() throws Exception {
 
-        binder.bind("{coordinate:#}", new Coordinate(0, 0));
+    @Test
+    public void shouldDelegateMarshalling() throws Exception {
+
+        Marshaller marshaller = mock(Marshaller.class);
+        binder = new ParameterBinder(marshaller);
+
+        when(marshaller.marshall(any())).thenReturn("{}");
+
+        Object param = new Object();
+        binder.bind("{coordinate:#}", param);
+
+        verify(marshaller).marshall(param);
     }
+
+
 }
 
 

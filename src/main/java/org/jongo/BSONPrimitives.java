@@ -16,30 +16,47 @@
 
 package org.jongo;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import com.mongodb.DBObject;
+import com.mongodb.DBRefBase;
+import org.bson.types.*;
 
-public class BSONPrimitives
-{
-    private static final Set<Class<?>> primitives;
-    
+import java.util.*;
+import java.util.regex.Pattern;
+
+public class BSONPrimitives {
+    public static final Set<Class<?>> primitives;
+
     static {
         primitives = new HashSet<Class<?>>();
         primitives.add(String.class);
-        primitives.add(Integer.class);
-        primitives.add(int.class);
-        primitives.add(Double.class);
-        primitives.add(double.class);
-        primitives.add(Long.class);
-        primitives.add(long.class);
+        primitives.add(Number.class);
         primitives.add(Boolean.class);
-        primitives.add(boolean.class);
         primitives.add(Date.class);
+        primitives.add(Iterable.class);
+        primitives.add(ObjectId.class);
+        primitives.add(DBObject.class);
+        primitives.add(Map.class);
+        primitives.add(DBRefBase.class);
+        primitives.add(Pattern.class);
+        primitives.add(BSONTimestamp.class);
+        primitives.add(UUID.class);
+        primitives.add(CodeWScope.class);
+        primitives.add(Code.class);
+        primitives.add(MinKey.class);
+        primitives.add(MaxKey.class);
+        primitives.add(byte[].class);
+        primitives.add(Binary.class);
     }
-    
-    public static <T> boolean contains(Class<T> clazz)
-    {
-        return primitives.contains(clazz);
+
+    public static <T> boolean contains(Class<T> clazz) {
+        if(primitives.contains(clazz))
+            return true;
+
+        for (Class<?> primitive : primitives) {
+            if ( primitive.isAssignableFrom(clazz)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

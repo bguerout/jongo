@@ -36,34 +36,36 @@ public class MongoCollection {
     private final DBCollection collection;
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
+    private final QueryFactory queryFactory;
 
     public MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
+        this.queryFactory = new QueryFactory(marshaller);
     }
 
     public FindOne findOne(String query) {
-        return new FindOne(unmarshaller, collection, new Query(query));
+        return new FindOne(unmarshaller, collection, queryFactory.createQuery(query));
     }
 
     public FindOne findOne(ObjectId id) {
-        if(id==null){
+        if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
-        return new FindOne(unmarshaller, collection, new Query("{_id:#}", id));
+        return new FindOne(unmarshaller, collection, queryFactory.createQuery("{_id:#}", id));
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(unmarshaller, collection, new Query(query, parameters));
+        return new FindOne(unmarshaller, collection, queryFactory.createQuery(query, parameters));
     }
 
     public Find find(String query) {
-        return new Find(unmarshaller, collection, new Query(query));
+        return new Find(unmarshaller, collection, queryFactory.createQuery(query));
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(unmarshaller, collection, new Query(query, parameters));
+        return new Find(unmarshaller, collection, queryFactory.createQuery(query, parameters));
     }
 
     public long count() {
@@ -71,11 +73,11 @@ public class MongoCollection {
     }
 
     public long count(String query) {
-        return collection.count(new Query(query).toDBObject());
+        return collection.count(queryFactory.createQuery(query).toDBObject());
     }
 
     public long count(String query, Object... parameters) {
-        return collection.count(new Query(query, parameters).toDBObject());
+        return collection.count(queryFactory.createQuery(query, parameters).toDBObject());
     }
 
     public WriteResult update(String query, String modifier) {
@@ -110,11 +112,11 @@ public class MongoCollection {
     }
 
     public WriteResult insert(String query) {
-        return collection.save(new Query(query).toDBObject());
+        return collection.save(queryFactory.createQuery(query).toDBObject());
     }
 
     public WriteResult insert(String query, Object... parameters) {
-        return collection.save(new Query(query, parameters).toDBObject());
+        return collection.save(queryFactory.createQuery(query, parameters).toDBObject());
     }
 
     public WriteResult remove(String query) {
@@ -122,7 +124,7 @@ public class MongoCollection {
     }
 
     public WriteResult remove(String query, Object... parameters) {
-        return collection.remove(new Query(query, parameters).toDBObject());
+        return collection.remove(queryFactory.createQuery(query, parameters).toDBObject());
     }
 
     public WriteResult remove(ObjectId id) {
@@ -131,7 +133,7 @@ public class MongoCollection {
 
     @SuppressWarnings("unchecked")
     public <T> Iterable<T> distinct(String key, String query, final Class<T> clazz) {
-        DBObject ref = new Query(query).toDBObject();
+        DBObject ref = queryFactory.createQuery(query).toDBObject();
         final List<?> distinct = collection.distinct(key, ref);
         if (BSONPrimitives.contains(clazz))
             return new Iterable<T>() {

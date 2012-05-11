@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.marshall;
 
-import com.mongodb.DBObject;
+public class BSONMarshaller implements Marshaller {
 
+    private final static MongoDriverMarshaller DRIVER_MARSHALLER = new MongoDriverMarshaller();
+    private final Marshaller pojoMarshaller;
 
-public class Query {
-
-    private final ParameterBinder binder;
-    private final String query;
-    private final Object[] parameters;
-
-    Query(String query, ParameterBinder binder, Object... parameters) {
-        this.query = query;
-        this.binder = binder;
-        this.parameters = parameters;
+    public BSONMarshaller(Marshaller pojoMarshaller) {
+        this.pojoMarshaller = pojoMarshaller;
     }
 
-    public DBObject toDBObject() {
-        String boundQuery = query;
-        if (parameters != null) {
-            boundQuery = binder.bind(query, parameters);
-        }
-        return Jongo.toDBObject(boundQuery);
+    public <T> String marshall(T obj) {
+
+        if (DRIVER_MARSHALLER.supports(obj))
+            return DRIVER_MARSHALLER.marshall(obj);
+
+        return pojoMarshaller.marshall(obj);
     }
 
 }

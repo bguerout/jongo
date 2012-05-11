@@ -1,22 +1,6 @@
-/*
- * Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.jongo;
 
-import com.mongodb.util.JSON;
+import org.jongo.marshall.Marshaller;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,12 +10,14 @@ public class ParameterBinder {
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
     private final Pattern pattern;
+    private final Marshaller marshaller;
 
-    public ParameterBinder() {
-        this(DEFAULT_TOKEN);
+    public ParameterBinder(Marshaller marshaller) {
+        this(marshaller, DEFAULT_TOKEN);
     }
 
-    public ParameterBinder(String token) {
+    public ParameterBinder(Marshaller marshaller, String token) {
+        this.marshaller = marshaller;
         this.token = token;
         this.pattern = Pattern.compile(token);
     }
@@ -45,19 +31,16 @@ public class ParameterBinder {
         String query = template;
         int paramIndex = 0;
         while (query.contains(token)) {
-            String paramAsJson = serializeAsJson(parameters[paramIndex++]);
-            query = query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
+            Object parameter = parameters[paramIndex++];
+            try {
+                String paramAsJson = marshaller.marshall(parameter);
+                query = query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
+
+            } catch (RuntimeException e) {
+                throw new IllegalArgumentException("Unable to bind parameter: " + parameter + " into query template: " + template, e);
+            }
         }
         return query;
-    }
-
-    private String serializeAsJson(Object parameter) {
-        try {
-            return JSON.serialize(parameter);
-        } catch (RuntimeException e) {
-            throw new IllegalArgumentException("Unable to bind parameter: " + parameter + " into template. " +
-                    "Parameter must be a BSON Primitive or a class supported by DBObject", e);
-        }
     }
 
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {
