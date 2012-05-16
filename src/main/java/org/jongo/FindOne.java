@@ -30,7 +30,7 @@ public class FindOne {
     private final Query query;
     private DBObject fields;
 
-    FindOne(Unmarshaller unmarshaller, DBCollection collection, Query query) {
+    FindOne(DBCollection collection, Query query, Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.query = query;

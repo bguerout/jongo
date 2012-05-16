@@ -16,12 +16,12 @@
 
 package org.jongo;
 
+import com.mongodb.DBObject;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import com.mongodb.DBObject;
-
-public class MongoIterator<E> implements Iterator<E>, Iterable<E> {
+class MongoIterator<E> implements Iterator<E>, Iterable<E> {
 
     private final Iterator<DBObject> cursor;
     private final ResultMapper<E> resultMapper;

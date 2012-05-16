@@ -2,7 +2,7 @@ package org.jongo;
 
 import org.jongo.marshall.NativeMarshaller;
 
-public class QueryFactory {
+ class QueryFactory {
 
     private final ParameterBinder binder;
 

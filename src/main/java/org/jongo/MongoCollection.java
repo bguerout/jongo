@@ -38,7 +38,7 @@ public class MongoCollection {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
 
-    public MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
+     MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
@@ -46,26 +46,26 @@ public class MongoCollection {
     }
 
     public FindOne findOne(String query) {
-        return new FindOne(unmarshaller, collection, queryFactory.createQuery(query));
+        return new FindOne(collection, queryFactory.createQuery(query), unmarshaller);
     }
 
     public FindOne findOne(ObjectId id) {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
-        return new FindOne(unmarshaller, collection, queryFactory.createQuery("{_id:#}", id));
+        return new FindOne(collection, queryFactory.createQuery("{_id:#}", id), unmarshaller);
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(unmarshaller, collection, queryFactory.createQuery(query, parameters));
+        return new FindOne(collection, queryFactory.createQuery(query, parameters), unmarshaller);
     }
 
     public Find find(String query) {
-        return new Find(unmarshaller, collection, queryFactory.createQuery(query));
+        return new Find(collection, queryFactory.createQuery(query), unmarshaller);
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(unmarshaller, collection, queryFactory.createQuery(query, parameters));
+        return new Find(collection, queryFactory.createQuery(query, parameters), unmarshaller);
     }
 
     public long count() {

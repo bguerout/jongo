@@ -16,14 +16,13 @@
 
 package org.jongo;
 
-import static org.jongo.Jongo.toDBObject;
-import static org.jongo.ResultMapperFactory.newMapper;
-
-import org.jongo.marshall.Unmarshaller;
-
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.jongo.marshall.Unmarshaller;
+
+import static org.jongo.Jongo.toDBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 public class Find {
 
@@ -34,7 +33,7 @@ public class Find {
     private Integer limit, skip;
     private DBObject sort;
 
-    Find(Unmarshaller unmarshaller, DBCollection collection, Query query) {
+    Find(DBCollection collection, Query query, Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.query = query;

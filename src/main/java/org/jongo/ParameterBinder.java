@@ -5,7 +5,7 @@ import org.jongo.marshall.Marshaller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParameterBinder {
+ class ParameterBinder {
 
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
