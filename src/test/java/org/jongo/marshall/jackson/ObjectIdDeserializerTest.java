@@ -2,16 +2,12 @@ package org.jongo.marshall.jackson;
 
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
-import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 

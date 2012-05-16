@@ -19,7 +19,7 @@ package org.jongo;
 import com.mongodb.DBObject;
 
 
- class ParameterizedQuery implements Query {
+class ParameterizedQuery implements Query {
 
     private final ParameterBinder binder;
     private final String query;

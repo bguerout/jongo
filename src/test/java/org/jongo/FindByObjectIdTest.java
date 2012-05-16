@@ -45,7 +45,7 @@ public class FindByObjectIdTest extends JongoTestCase {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldRejectNullObjectId() throws Exception {
-        collection.findOne((ObjectId)null);
+        collection.findOne((ObjectId) null);
     }
 
     @Test

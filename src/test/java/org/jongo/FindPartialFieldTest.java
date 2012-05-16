@@ -17,7 +17,6 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;

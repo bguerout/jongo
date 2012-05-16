@@ -3,14 +3,12 @@ package org.jongo.util.junit;
 import org.jongo.util.JongoTestCase;
 import org.jongo.util.TestContext;
 import org.junit.internal.builders.JUnit4Builder;
-import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.RunnerBuilder;
 import org.junit.runners.model.TestClass;
 
 import java.lang.reflect.Constructor;

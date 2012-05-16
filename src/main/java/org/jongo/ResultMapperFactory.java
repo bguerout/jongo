@@ -19,7 +19,7 @@ package org.jongo;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 
- class ResultMapperFactory {
+class ResultMapperFactory {
 
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
         return new ResultMapper<T>() {

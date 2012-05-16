@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class CountTest extends JongoTestCase{
+public class CountTest extends JongoTestCase {
 
     private MongoCollection collection;
     private People people;

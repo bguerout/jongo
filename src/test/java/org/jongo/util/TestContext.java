@@ -33,7 +33,7 @@ public class TestContext {
         return marshaller;
     }
 
-    public DB getDB()  {
+    public DB getDB() {
         return db;
     }
 

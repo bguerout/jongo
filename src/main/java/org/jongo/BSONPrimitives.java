@@ -49,11 +49,11 @@ public class BSONPrimitives {
     }
 
     public static <T> boolean contains(Class<T> clazz) {
-        if(primitives.contains(clazz))
+        if (primitives.contains(clazz))
             return true;
 
         for (Class<?> primitive : primitives) {
-            if ( primitive.isAssignableFrom(clazz)) {
+            if (primitive.isAssignableFrom(clazz)) {
                 return true;
             }
         }

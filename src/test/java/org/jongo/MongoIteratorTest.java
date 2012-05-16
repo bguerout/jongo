@@ -16,11 +16,8 @@
 
 package org.jongo;
 
-import org.jongo.ResultMapperFactory;
-import org.jongo.marshall.jackson.JacksonProcessor;
 import com.mongodb.DBCursor;
-import org.jongo.MongoIterator;
-import org.jongo.ResultMapper;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -30,7 +30,7 @@ import java.util.List;
 import static org.jongo.Jongo.toDBObject;
 import static org.jongo.ResultMapperFactory.newMapper;
 
- class DefaultMongoCollection implements MongoCollection {
+class DefaultMongoCollection implements MongoCollection {
 
     public static final String MONGO_ID = "_id";
     private final DBCollection collection;
@@ -38,7 +38,7 @@ import static org.jongo.ResultMapperFactory.newMapper;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
 
-     DefaultMongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
+    DefaultMongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;

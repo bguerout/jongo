@@ -60,7 +60,7 @@ public class NativeMarshallerTest {
     @Test
     public void canHandleBoolean() throws Exception {
 
-        String query =marshaller.marshall(true);
+        String query = marshaller.marshall(true);
 
         assertThat(query).isEqualTo("true");
     }
