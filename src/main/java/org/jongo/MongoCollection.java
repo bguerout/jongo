@@ -42,7 +42,7 @@ public class MongoCollection {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
-        this.queryFactory = new QueryFactory(marshaller);
+        this.queryFactory = new QueryFactory();
     }
 
     public FindOne findOne(String query) {

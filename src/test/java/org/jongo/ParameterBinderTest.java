@@ -16,36 +16,33 @@
 
 package org.jongo;
 
-import org.bson.types.ObjectId;
-import org.jongo.marshall.MongoDriverMarshaller;
 import org.jongo.marshall.Marshaller;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ParameterBinderTest {
 
     private ParameterBinder binder;
+    private Marshaller marshaller;
 
     @Before
     public void setUp() throws Exception {
-        binder = new ParameterBinder(new MongoDriverMarshaller());
+        marshaller = mock(Marshaller.class);
+        binder = new ParameterBinder(marshaller);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWithCharParameter() throws Exception {
+    public void shouldFailWithInvalidParameter() throws Exception {
+
         char c = '1';
+        when(marshaller.marshall(c)).thenThrow(new RuntimeException());
 
         binder.bind("{id:#}", c);
+
+        verify(marshaller.marshall(c));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -61,91 +58,36 @@ public class ParameterBinderTest {
     }
 
     @Test
-    public void canMapParameter() throws Exception {
+    public void shouldBindOneParameter() throws Exception {
+
+        when(marshaller.marshall("123")).thenReturn("123");
 
         String query = binder.bind("{id:#}", "123");
 
-        assertThat(query).isEqualTo("{id:\"123\"}");
+        assertThat(query).isEqualTo("{id:123}");
     }
 
     @Test
-    public void canMapParameterWithCustomToken() throws Exception {
+    public void shouldBindManyParameters() throws Exception {
 
-        String query = new ParameterBinder(new MongoDriverMarshaller(), "@").bind("{id:@}", "123");
-
-        assertThat(query).isEqualTo("{id:\"123\"}");
-    }
-
-    @Test
-    public void canMapParameters() throws Exception {
+        when(marshaller.marshall("123")).thenReturn("123");
+        when(marshaller.marshall("456")).thenReturn("456");
 
         String query = binder.bind("{id:#, test:#}", "123", "456");
 
-        assertThat(query).isEqualTo("{id:\"123\", test:\"456\"}");
+        assertThat(query).isEqualTo("{id:123, test:456}");
     }
 
     @Test
-    public void canMapDate() throws Exception {
+    public void shouldBindParameterWithCustomToken() throws Exception {
 
-        Date epoch = new Date(0);
+        ParameterBinder binderWithToken = new ParameterBinder(marshaller, "@");
+        when(marshaller.marshall("123")).thenReturn("123");
 
-        String query = binder.bind("{mydate:#}", epoch);
+        String query = binderWithToken.bind("{id:@}", "123");
 
-        assertThat(query).isEqualTo("{mydate:{ \"$date\" : \"1970-01-01T00:00:00.000Z\"}}");
+        assertThat(query).isEqualTo("{id:123}");
     }
-
-    @Test
-    public void canMapList() throws Exception {
-
-        List<String> elements = new ArrayList<String>();
-        elements.add("1");
-        elements.add("2");
-
-        String query = binder.bind("{$in:#}", elements);
-
-        assertThat(query).isEqualTo("{$in:[ \"1\" , \"2\"]}");
-    }
-
-    @Test
-    public void canHandleBoolean() throws Exception {
-
-        String query = binder.bind("{id:#}", true);
-
-        assertThat(query).isEqualTo("{id:true}");
-    }
-
-    @Test
-    public void shouldEscapeJsonAsString() throws Exception {
-
-        String query = binder.bind("{value:#}", "{injection:true}");
-
-        assertThat(query).isEqualTo("{value:\"{injection:true}\"}");
-    }
-
-
-    @Test
-    public void canHandleObjectId() throws Exception {
-
-        String query = binder.bind("{_id:#}", new ObjectId("47cc67093475061e3d95369d"));
-
-        assertThat(query).isEqualTo("{_id:{ \"$oid\" : \"47cc67093475061e3d95369d\"}}");
-    }
-
-
-    @Test
-    public void shouldDelegateMarshalling() throws Exception {
-
-        Marshaller marshaller = mock(Marshaller.class);
-        binder = new ParameterBinder(marshaller);
-
-        when(marshaller.marshall(any())).thenReturn("{}");
-
-        Object param = new Object();
-        binder.bind("{coordinate:#}", param);
-
-        verify(marshaller).marshall(param);
-    }
-
 
 }
 

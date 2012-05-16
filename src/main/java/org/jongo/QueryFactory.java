@@ -1,21 +1,20 @@
 package org.jongo;
 
-import org.jongo.marshall.BSONMarshaller;
-import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.NativeMarshaller;
 
 public class QueryFactory {
 
     private final ParameterBinder binder;
 
-    public QueryFactory(Marshaller marshaller) {
-        this.binder = new ParameterBinder(new BSONMarshaller(marshaller));
+    public QueryFactory() {
+        this.binder = new ParameterBinder(new NativeMarshaller());
     }
 
     public Query createQuery(String query) {
-        return new Query(query, binder);
+        return new Query(binder, query);
     }
 
     public Query createQuery(String query, Object... parameters) {
-        return new Query(query, binder, parameters);
+        return new Query(binder, query, parameters);
     }
 }

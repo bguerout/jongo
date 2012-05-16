@@ -17,13 +17,11 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
-import org.jongo.marshall.MongoDriverMarshaller;
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.model.Coordinate;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class QueryTest {
 
@@ -31,40 +29,32 @@ public class QueryTest {
 
     @Before
     public void setUp() throws Exception {
-        binder = new ParameterBinder(new MongoDriverMarshaller());
+        binder = mock(ParameterBinder.class);
     }
 
     @Test
-    public void canBuildStaticQuery() throws Exception {
+    public void shouldConvertToDBObject() throws Exception {
 
-        Query query = new Query("{'value':1}", binder);
+        Query query = new Query(binder, "{'value':1}");
 
         DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.containsField("value")).isTrue();
+        assertThat(dbObject.get("value")).isEqualTo(1);
+        verify(binder, never()).bind(anyString(), anyVararg());
     }
 
     @Test
-    public void canBuildParameterizedQueryWithBsonPrimitive() throws Exception {
+    public void shouldBindParamsAndConvertToDBObject() throws Exception {
 
-        Query query = new Query("{'value':#}", binder, "1");
-
-        DBObject dbObject = query.toDBObject();
-
-        assertThat(dbObject.get("value")).isEqualTo("1");
-    }
-
-    @Test
-    public void canBuildParameterizedQueryWithComplexType() throws Exception {
-
-        ParameterBinder jacksonBinder = new ParameterBinder(new JacksonProcessor());
-        Query query = new Query("{'value':#}", jacksonBinder, new Coordinate(1, 1));
+        Query query = new Query(binder, "{'value':#}", "2");
+        when(binder.bind("{'value':#}", "2")).thenReturn("{'value':2}");
 
         DBObject dbObject = query.toDBObject();
 
-        Object value = dbObject.get("value");
-        assertThat(value).isInstanceOf(DBObject.class);
-        assertThat(((DBObject) value).get("lat")).isEqualTo(1);
-        assertThat(((DBObject) value).get("lng")).isEqualTo(1);
+        verify(binder).bind("{'value':#}", "2");
+        assertThat(dbObject.containsField("value")).isTrue();
+        assertThat(dbObject.get("value")).isEqualTo(2);
     }
+
 }

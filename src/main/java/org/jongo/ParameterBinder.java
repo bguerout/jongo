@@ -32,21 +32,24 @@ public class ParameterBinder {
         int paramIndex = 0;
         while (query.contains(token)) {
             Object parameter = parameters[paramIndex++];
-            try {
-                String paramAsJson = marshaller.marshall(parameter);
-                query = query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
-
-            } catch (RuntimeException e) {
-                throw new IllegalArgumentException("Unable to bind parameter: " + parameter + " into query template: " + template, e);
-            }
+            query = bindParamIntoQuery(query, parameter);
         }
         return query;
+    }
+
+    private String bindParamIntoQuery(String query, Object parameter) {
+        try {
+            String paramAsJson = marshaller.marshall(parameter);
+            return query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
+
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("Unable to bind parameter: " + parameter + " into query: " + query, e);
+        }
     }
 
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {
         int nbTokens = countTokens(template);
         if (nbTokens != parameters.length) {
-            //TODO improve exception message
             throw new IllegalArgumentException("Tokens and parameters numbers mismatch " +
                     "[query: " + template + " / tokens:" + nbTokens + " / parameters:[" + parameters.length + "]");
         }

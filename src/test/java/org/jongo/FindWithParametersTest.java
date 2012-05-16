@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import org.jongo.model.Coordinate;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -29,12 +30,10 @@ import static org.fest.assertions.Assertions.assertThat;
 public class FindWithParametersTest extends JongoTestCase {
 
     private MongoCollection collection;
-    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -45,19 +44,19 @@ public class FindWithParametersTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(this.people);
+        String id = collection.save(new People("John", new Coordinate(1, 1)));
 
         /* when */
-        People people = collection.findOne("{name:#}", "John").as(People.class);
+        People result = collection.findOne("{name:#}", "John").as(People.class);
 
         /* then */
-        assertThat(people.getId()).isEqualTo(id);
+        assertThat(result.getId()).isEqualTo(id);
     }
 
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(people);
+        String id = collection.save(new People("John", new Coordinate(1, 1)));
 
         /* when */
         String john = "John";
@@ -67,4 +66,6 @@ public class FindWithParametersTest extends JongoTestCase {
         assertThat(users.next().getId()).isEqualTo(id);
         assertThat(users.hasNext()).isFalse();
     }
+
 }
+

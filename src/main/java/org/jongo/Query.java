@@ -25,7 +25,7 @@ public class Query {
     private final String query;
     private final Object[] parameters;
 
-    Query(String query, ParameterBinder binder, Object... parameters) {
+    Query(ParameterBinder binder, String query, Object... parameters) {
         this.query = query;
         this.binder = binder;
         this.parameters = parameters;
@@ -33,7 +33,7 @@ public class Query {
 
     public DBObject toDBObject() {
         String boundQuery = query;
-        if (parameters != null) {
+        if (parameters.length != 0) {
             boundQuery = binder.bind(query, parameters);
         }
         return Jongo.toDBObject(boundQuery);
