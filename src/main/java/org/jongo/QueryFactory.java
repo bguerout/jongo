@@ -11,10 +11,10 @@ import org.jongo.marshall.NativeMarshaller;
     }
 
     public Query createQuery(String query) {
-        return new Query(binder, query);
+        return new ParameterizedQuery(binder, query);
     }
 
     public Query createQuery(String query, Object... parameters) {
-        return new Query(binder, query, parameters);
+        return new ParameterizedQuery(binder, query, parameters);
     }
 }

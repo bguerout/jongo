@@ -35,7 +35,7 @@ public class QueryTest {
     @Test
     public void shouldConvertToDBObject() throws Exception {
 
-        Query query = new Query(binder, "{'value':1}");
+        Query query = new ParameterizedQuery(binder, "{'value':1}");
 
         DBObject dbObject = query.toDBObject();
 
@@ -47,7 +47,7 @@ public class QueryTest {
     @Test
     public void shouldBindParamsAndConvertToDBObject() throws Exception {
 
-        Query query = new Query(binder, "{'value':#}", "2");
+        Query query = new ParameterizedQuery(binder, "{'value':#}", "2");
         when(binder.bind("{'value':#}", "2")).thenReturn("{'value':2}");
 
         DBObject dbObject = query.toDBObject();
