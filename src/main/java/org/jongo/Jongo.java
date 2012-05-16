@@ -45,7 +45,7 @@ public class Jongo {
 
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
-        return new MongoCollection(dbCollection, marshaller, unmarshaller);
+        return new DefaultMongoCollection(dbCollection, marshaller, unmarshaller);
     }
 
     public DB getDatabase() {
@@ -53,9 +53,9 @@ public class Jongo {
     }
 
     public static String toJson(DBObject dbObject) {
-        Object id = dbObject.get(MongoCollection.MONGO_ID);
+        Object id = dbObject.get(DefaultMongoCollection.MONGO_ID);
         if (id != null)
-            dbObject.put(MongoCollection.MONGO_ID, id.toString());
+            dbObject.put(DefaultMongoCollection.MONGO_ID, id.toString());
 
         return dbObject.toString();
     }
