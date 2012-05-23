@@ -25,7 +25,7 @@ import org.codehaus.jackson.map.JsonDeserializer;
 
 import java.io.IOException;
 
-public class ObjectIdDeserializer extends JsonDeserializer<ObjectId> {
+class ObjectIdDeserializer extends JsonDeserializer<ObjectId> {
 
     @Override
     public ObjectId deserialize(JsonParser jp, DeserializationContext context) throws IOException, JsonProcessingException {
