@@ -24,11 +24,7 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 
-import java.util.Iterator;
-import java.util.List;
-
 import static org.jongo.Jongo.toDBObject;
-import static org.jongo.ResultMapperFactory.newMapper;
 
 class DefaultMongoCollection implements MongoCollection {
 
@@ -133,16 +129,8 @@ class DefaultMongoCollection implements MongoCollection {
 
     @SuppressWarnings("unchecked")
     public <T> Iterable<T> distinct(String key, String query, final Class<T> clazz) {
-        DBObject ref = queryFactory.createQuery(query).toDBObject();
-        final List<?> distinct = collection.distinct(key, ref);
-        if (BSONPrimitives.contains(clazz))
-            return new Iterable<T>() {
-                public Iterator<T> iterator() {
-                    return (Iterator<T>) distinct.iterator();
-                }
-            };
-        else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), newMapper(clazz, unmarshaller));
+        Distinct distinct = new Distinct(collection, unmarshaller, key, queryFactory.createQuery(query));
+        return distinct.as(clazz);
     }
 
     public void drop() {
