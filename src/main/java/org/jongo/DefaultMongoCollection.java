@@ -28,7 +28,6 @@ import static org.jongo.Jongo.toDBObject;
 
 class DefaultMongoCollection implements MongoCollection {
 
-    public static final String MONGO_ID = "_id";
     private final DBCollection collection;
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
@@ -42,26 +41,26 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public FindOne findOne(String query) {
-        return new FindOne(collection, queryFactory.createQuery(query), unmarshaller);
+        return new FindOne(collection, createQuery(query), unmarshaller);
     }
 
     public FindOne findOne(ObjectId id) {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
-        return new FindOne(collection, queryFactory.createQuery("{_id:#}", id), unmarshaller);
+        return new FindOne(collection, createQuery("{_id:#}", id), unmarshaller);
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(collection, queryFactory.createQuery(query, parameters), unmarshaller);
+        return new FindOne(collection, createQuery(query, parameters), unmarshaller);
     }
 
     public Find find(String query) {
-        return new Find(collection, queryFactory.createQuery(query), unmarshaller);
+        return new Find(collection, createQuery(query), unmarshaller);
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(collection, queryFactory.createQuery(query, parameters), unmarshaller);
+        return new Find(collection, createQuery(query, parameters), unmarshaller);
     }
 
     public long count() {
@@ -69,11 +68,11 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public long count(String query) {
-        return collection.count(queryFactory.createQuery(query).toDBObject());
+        return collection.count(createQuery(query).toDBObject());
     }
 
     public long count(String query, Object... parameters) {
-        return collection.count(queryFactory.createQuery(query, parameters).toDBObject());
+        return collection.count(createQuery(query, parameters).toDBObject());
     }
 
     public WriteResult update(String query, String modifier) {
@@ -104,15 +103,15 @@ class DefaultMongoCollection implements MongoCollection {
         String entityAsJson = marshaller.marshall(document);
         DBObject dbObject = toDBObject(entityAsJson);
         collection.save(dbObject, concern);
-        return dbObject.get(MONGO_ID).toString();
+        return dbObject.get(Jongo.MONGO_ID).toString();
     }
 
     public WriteResult insert(String query) {
-        return collection.save(queryFactory.createQuery(query).toDBObject());
+        return collection.save(createQuery(query).toDBObject());
     }
 
     public WriteResult insert(String query, Object... parameters) {
-        return collection.save(queryFactory.createQuery(query, parameters).toDBObject());
+        return collection.save(createQuery(query, parameters).toDBObject());
     }
 
     public WriteResult remove(String query) {
@@ -120,7 +119,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public WriteResult remove(String query, Object... parameters) {
-        return collection.remove(queryFactory.createQuery(query, parameters).toDBObject());
+        return collection.remove(createQuery(query, parameters).toDBObject());
     }
 
     public WriteResult remove(ObjectId id) {
@@ -129,8 +128,7 @@ class DefaultMongoCollection implements MongoCollection {
 
     @SuppressWarnings("unchecked")
     public <T> Iterable<T> distinct(String key, String query, final Class<T> clazz) {
-        Distinct distinct = new Distinct(collection, unmarshaller, key, queryFactory.createQuery(query));
-        return distinct.as(clazz);
+        return new Distinct(collection, unmarshaller, key, createQuery(query)).as(clazz);
     }
 
     public void drop() {
@@ -147,6 +145,14 @@ class DefaultMongoCollection implements MongoCollection {
 
     public DBCollection getDBCollection() {
         return collection;
+    }
+
+    private Query createQuery(String query) {
+        return queryFactory.createQuery(query);
+    }
+
+    private Query createQuery(String query, Object... parameters) {
+        return queryFactory.createQuery(query, parameters);
     }
 
 }

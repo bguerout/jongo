@@ -26,6 +26,8 @@ import org.jongo.marshall.jackson.JacksonProcessor;
 
 public class Jongo {
 
+    static final String MONGO_ID = "_id";
+
     private final DB database;
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
@@ -53,9 +55,9 @@ public class Jongo {
     }
 
     public static String toJson(DBObject dbObject) {
-        Object id = dbObject.get(DefaultMongoCollection.MONGO_ID);
+        Object id = dbObject.get(MONGO_ID);
         if (id != null)
-            dbObject.put(DefaultMongoCollection.MONGO_ID, id.toString());
+            dbObject.put(MONGO_ID, id.toString());
 
         return dbObject.toString();
     }
