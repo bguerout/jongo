@@ -28,11 +28,11 @@ class ParameterBinder {
     private final Pattern pattern;
     private final Marshaller marshaller;
 
-    public ParameterBinder(Marshaller marshaller) {
+    ParameterBinder(Marshaller marshaller) {
         this(marshaller, DEFAULT_TOKEN);
     }
 
-    public ParameterBinder(Marshaller marshaller, String token) {
+    ParameterBinder(Marshaller marshaller, String token) {
         this.marshaller = marshaller;
         this.token = token;
         this.pattern = Pattern.compile(token);

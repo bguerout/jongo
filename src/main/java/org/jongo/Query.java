@@ -18,6 +18,6 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 
-public interface Query {
+interface Query {
     DBObject toDBObject();
 }

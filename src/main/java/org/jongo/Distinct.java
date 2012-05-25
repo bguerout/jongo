@@ -25,7 +25,7 @@ import java.util.List;
 
 import static org.jongo.ResultMapperFactory.newMapper;
 
-public class Distinct {
+class Distinct {
 
     private final DBCollection collection;
     private String key;
