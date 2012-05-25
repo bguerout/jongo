@@ -22,9 +22,10 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 
 public interface MongoCollection {
-    FindOne findOne(String query);
 
     FindOne findOne(ObjectId id);
+
+    FindOne findOne(String query);
 
     FindOne findOne(String query, Object... parameters);
 
@@ -54,11 +55,11 @@ public interface MongoCollection {
 
     WriteResult insert(String query, Object... parameters);
 
+    WriteResult remove(ObjectId id);
+
     WriteResult remove(String query);
 
     WriteResult remove(String query, Object... parameters);
-
-    WriteResult remove(ObjectId id);
 
     @SuppressWarnings("unchecked")
     <T> Iterable<T> distinct(String key, String query, Class<T> clazz);
