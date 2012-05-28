@@ -16,7 +16,7 @@
 
 package org.jongo.query;
 
-public class QueryFactory {
+public final class QueryFactory {
 
     private final ParameterBinder binder;
 

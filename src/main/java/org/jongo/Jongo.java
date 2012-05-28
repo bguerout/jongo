@@ -24,7 +24,7 @@ import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonProcessor;
 
-public class Jongo {
+public final class Jongo {
 
     static final String MONGO_ID = "_id";
 

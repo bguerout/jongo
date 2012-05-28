@@ -32,7 +32,7 @@ import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
 import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_NULL;
 
-public class JacksonProcessor implements Unmarshaller, Marshaller {
+public final class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectMapper mapper;
 
