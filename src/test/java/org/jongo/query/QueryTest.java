@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.query;
 
 import com.mongodb.DBObject;
+import org.jongo.query.ParameterBinder;
+import org.jongo.query.ParameterizedQuery;
+import org.jongo.query.Query;
 import org.junit.Before;
 import org.junit.Test;
 

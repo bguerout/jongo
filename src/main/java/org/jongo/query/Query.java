@@ -14,29 +14,10 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.query;
 
 import com.mongodb.DBObject;
 
-
-class ParameterizedQuery implements Query {
-
-    private final ParameterBinder binder;
-    private final String query;
-    private final Object[] parameters;
-
-    ParameterizedQuery(ParameterBinder binder, String query, Object... parameters) {
-        this.query = query;
-        this.binder = binder;
-        this.parameters = parameters;
-    }
-
-    public DBObject toDBObject() {
-        String boundQuery = query;
-        if (parameters.length != 0) {
-            boundQuery = binder.bind(query, parameters);
-        }
-        return Jongo.toDBObject(boundQuery);
-    }
-
+public interface Query {
+    DBObject toDBObject();
 }

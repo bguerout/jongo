@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.query;
 
 import com.mongodb.util.JSON;
+import org.jongo.marshall.Marshaller;
 
-public class NativeMarshaller implements Marshaller {
+class NativeMarshaller implements Marshaller {
 
     public <T> String marshall(T obj) {
         return JSON.serialize(obj);

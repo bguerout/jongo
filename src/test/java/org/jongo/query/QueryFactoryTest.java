@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.query;
 
 import com.mongodb.DBObject;
+import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
+import org.junit.Test;
 
-interface Query {
-    DBObject toDBObject();
+import static org.fest.assertions.Assertions.assertThat;
+
+public class QueryFactoryTest {
+
+    @Test
+    public void shouldCreateBindableQuery() throws Exception {
+
+        Query query = new QueryFactory().createQuery("{value:#}", 1);
+
+        DBObject dbObject = query.toDBObject();
+
+        assertThat(dbObject.get("value")).isEqualTo(1);
+
+    }
 }

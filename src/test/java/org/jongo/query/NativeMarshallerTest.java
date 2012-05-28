@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.query;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;

@@ -20,6 +20,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.Query;
 
 import static org.jongo.Jongo.toDBObject;
 import static org.jongo.ResultMapperFactory.newMapper;

@@ -19,6 +19,7 @@ package org.jongo;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.Query;
 
 import java.util.Iterator;
 import java.util.List;

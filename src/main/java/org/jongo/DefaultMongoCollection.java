@@ -23,6 +23,8 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
 
 import static org.jongo.Jongo.toDBObject;
 

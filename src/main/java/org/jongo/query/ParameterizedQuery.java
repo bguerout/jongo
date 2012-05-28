@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.query;
 
-import org.jongo.marshall.NativeMarshaller;
+import com.mongodb.DBObject;
+import org.jongo.Jongo;
 
-class QueryFactory {
+
+class ParameterizedQuery implements Query {
 
     private final ParameterBinder binder;
+    private final String query;
+    private final Object[] parameters;
 
-    public QueryFactory() {
-        this.binder = new ParameterBinder(new NativeMarshaller());
+    ParameterizedQuery(ParameterBinder binder, String query, Object... parameters) {
+        this.query = query;
+        this.binder = binder;
+        this.parameters = parameters;
     }
 
-    public Query createQuery(String query) {
-        return new ParameterizedQuery(binder, query);
+    public DBObject toDBObject() {
+        String boundQuery = query;
+        if (parameters.length != 0) {
+            boundQuery = binder.bind(query, parameters);
+        }
+        return Jongo.toDBObject(boundQuery);
     }
 
-    public Query createQuery(String query, Object... parameters) {
-        return new ParameterizedQuery(binder, query, parameters);
-    }
 }

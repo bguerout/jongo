@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.query;
 
 import org.jongo.marshall.Marshaller;
+import org.jongo.query.ParameterBinder;
 import org.junit.Before;
 import org.junit.Test;
 
