@@ -26,7 +26,6 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.Jongo.toDBObject;
 
 class DefaultMongoCollection implements MongoCollection {
 
@@ -94,7 +93,9 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     private WriteResult update(String query, String modifier, boolean upsert, boolean multi, WriteConcern concern) {
-        return collection.update(toDBObject(query), toDBObject(modifier), upsert, multi, concern);
+        DBObject dbQuery = createQuery(query).toDBObject();
+        DBObject dbModifier = createQuery(modifier).toDBObject();
+        return collection.update(dbQuery, dbModifier, upsert, multi, concern);
     }
 
     public <D> String save(D document) {
@@ -103,21 +104,24 @@ class DefaultMongoCollection implements MongoCollection {
 
     public <D> String save(D document, WriteConcern concern) {
         String entityAsJson = marshaller.marshall(document);
-        DBObject dbObject = toDBObject(entityAsJson);
+        DBObject dbObject = Jongo.toDBObject(entityAsJson);
         collection.save(dbObject, concern);
         return dbObject.get(Jongo.MONGO_ID).toString();
     }
 
     public WriteResult insert(String query) {
-        return collection.save(createQuery(query).toDBObject());
+        DBObject dbQuery = createQuery(query).toDBObject();
+        return collection.save(dbQuery);
     }
 
     public WriteResult insert(String query, Object... parameters) {
-        return collection.save(createQuery(query, parameters).toDBObject());
+        DBObject dbQuery = createQuery(query, parameters).toDBObject();
+        return collection.save(dbQuery);
     }
 
     public WriteResult remove(String query) {
-        return collection.remove(toDBObject(query));
+        DBObject dbQuery = createQuery(query).toDBObject();
+        return collection.remove(dbQuery);
     }
 
     public WriteResult remove(String query, Object... parameters) {
@@ -138,7 +142,8 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public void ensureIndex(String index) {
-        collection.ensureIndex(toDBObject(index));
+        DBObject dbIndex = createQuery(index).toDBObject();
+        collection.ensureIndex(dbIndex);
     }
 
     public String getName() {
@@ -156,5 +161,6 @@ class DefaultMongoCollection implements MongoCollection {
     private Query createQuery(String query, Object... parameters) {
         return queryFactory.createQuery(query, parameters);
     }
+
 
 }
