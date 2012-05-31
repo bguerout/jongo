@@ -103,10 +103,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public <D> String save(D document, WriteConcern concern) {
-        String entityAsJson = marshaller.marshall(document);
-        DBObject dbObject = Jongo.toDBObject(entityAsJson);
-        collection.save(dbObject, concern);
-        return dbObject.get(Jongo.MONGO_ID).toString();
+        return new Save(collection, marshaller).execute(document, concern);
     }
 
     public WriteResult insert(String query) {
