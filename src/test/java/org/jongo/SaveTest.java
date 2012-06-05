@@ -19,6 +19,7 @@ package org.jongo;
 import com.mongodb.WriteConcern;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -51,6 +52,17 @@ public class SaveTest extends JongoTestCase {
 
         assertThat(collection.count("{}")).isEqualTo(1);
         assertThat(id).isNotNull();
+    }
+
+    @Test
+    public void whenNoSpecifyShouldSaveWithCollectionWriteConcern() throws Exception {
+
+        collection.getDBCollection().setWriteConcern(WriteConcern.JOURNAL_SAFE);
+        WriteConcern writeConcern = spy(collection.getDBCollection().getWriteConcern());
+
+        collection.save(people, writeConcern);
+
+        verify(writeConcern).callGetLastError();
     }
 
     @Test
@@ -109,8 +121,8 @@ public class SaveTest extends JongoTestCase {
 
         Marshaller marshaller = mock(Marshaller.class);
         when(marshaller.marshall(anyObject())).thenReturn("invalid");
-        Save save = new Save(collection.getDBCollection(), marshaller);
+        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
 
-        save.execute(new Object(), WriteConcern.NORMAL);
+        save.execute();
     }
 }

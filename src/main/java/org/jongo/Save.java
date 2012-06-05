@@ -22,19 +22,28 @@ import com.mongodb.WriteConcern;
 import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 
-class Save {
+class Save<D> {
 
     private static final String MONGO_DOCUMENT_ID_NAME = "_id";
 
     private final Marshaller marshaller;
     private final DBCollection collection;
+    private final D document;
+    private WriteConcern concern;
 
-    Save(DBCollection collection, Marshaller marshaller) {
+    Save(DBCollection collection, Marshaller marshaller, D document) {
         this.marshaller = marshaller;
         this.collection = collection;
+        this.document = document;
+        this.concern = collection.getWriteConcern();
     }
 
-    public <D> String execute(D document, WriteConcern concern) {
+    public Save withConcern(WriteConcern concern) {
+        this.concern = concern;
+        return this;
+    }
+
+    public <D> String execute() {
 
         String documentAsJson = marshaller.marshall(document);
         DBObject dbObject = convertToJson(documentAsJson);

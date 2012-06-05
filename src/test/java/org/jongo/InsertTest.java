@@ -27,12 +27,10 @@ import static org.fest.assertions.Assertions.assertThat;
 public class InsertTest extends JongoTestCase {
 
     private MongoCollection collection;
-    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After

@@ -20,11 +20,17 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import com.mongodb.util.JSON;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
+
+import java.util.Iterator;
+import java.util.List;
+
+import static org.jongo.ResultMapperFactory.newMapper;
 
 
 class DefaultMongoCollection implements MongoCollection {
@@ -41,15 +47,15 @@ class DefaultMongoCollection implements MongoCollection {
         this.queryFactory = new QueryFactory();
     }
 
-    public FindOne findOne(String query) {
-        return new FindOne(collection, unmarshaller, query);
-    }
-
     public FindOne findOne(ObjectId id) {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
         return new FindOne(collection, unmarshaller, "{_id:#}", id);
+    }
+
+    public FindOne findOne(String query) {
+        return new FindOne(collection, unmarshaller, query);
     }
 
     public FindOne findOne(String query, Object... parameters) {
@@ -100,16 +106,15 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public <D> String save(D document) {
-        return save(document, collection.getWriteConcern());
+        return new Save(collection, marshaller, document).execute();
     }
 
     public <D> String save(D document, WriteConcern concern) {
-        return new Save(collection, marshaller).execute(document, concern);
+        return new Save(collection, marshaller, document).withConcern(concern).execute();
     }
 
     public WriteResult insert(String query) {
-        DBObject dbQuery = createQuery(query).toDBObject();
-        return collection.save(dbQuery);
+        return insert(query, new Object[0]);
     }
 
     public WriteResult insert(String query, Object... parameters) {
@@ -118,8 +123,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public WriteResult remove(String query) {
-        DBObject dbQuery = createQuery(query).toDBObject();
-        return collection.remove(dbQuery);
+        return remove(query, new Object[0]);
     }
 
     public WriteResult remove(String query, Object... parameters) {
@@ -132,7 +136,16 @@ class DefaultMongoCollection implements MongoCollection {
 
     @SuppressWarnings("unchecked")
     public <T> Iterable<T> distinct(String key, String query, final Class<T> clazz) {
-        return new Distinct(collection, unmarshaller, key, createQuery(query)).as(clazz);
+        DBObject ref = createQuery(query).toDBObject();
+        final List<?> distinct = collection.distinct(key, ref);
+        if (BSONPrimitives.contains(clazz))
+            return new Iterable<T>() {
+                public Iterator<T> iterator() {
+                    return (Iterator<T>) distinct.iterator();
+                }
+            };
+        else
+            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), newMapper(clazz, unmarshaller));
     }
 
     public void drop() {
@@ -152,13 +165,15 @@ class DefaultMongoCollection implements MongoCollection {
         return collection;
     }
 
-    private Query createQuery(String query) {
-        return queryFactory.createQuery(query);
-    }
-
     private Query createQuery(String query, Object... parameters) {
         return queryFactory.createQuery(query, parameters);
     }
 
-
+    private DBObject convertToJson(String json) {
+        try {
+            return ((DBObject) JSON.parse(json));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to save document, marshalled json cannot be parsed: " + json, e);
+        }
+    }
 }
