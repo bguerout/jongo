@@ -21,27 +21,29 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
 
-import static org.jongo.Jongo.toDBObject;
 import static org.jongo.ResultMapperFactory.newMapper;
 
 public class Find {
 
     private final DBCollection collection;
     private final Unmarshaller unmarshaller;
+    private final QueryFactory queryFactory;
     private final Query query;
-    private DBObject fields;
+    private Query fields;
     private Integer limit, skip;
-    private DBObject sort;
+    private Query sort;
 
-    Find(DBCollection collection, Query query, Unmarshaller unmarshaller) {
+    Find(DBCollection collection, Unmarshaller unmarshaller, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
-        this.query = query;
+        this.queryFactory = new QueryFactory();
+        this.query = queryFactory.createQuery(query, parameters);
     }
 
     public Find fields(String fields) {
-        this.fields = toDBObject(fields);
+        this.fields = queryFactory.createQuery(fields);
         return this;
     }
 
@@ -50,7 +52,7 @@ public class Find {
     }
 
     public <T> Iterable<T> map(ResultMapper<T> resultMapper) {
-        DBCursor cursor = collection.find(query.toDBObject(), fields);
+        DBCursor cursor = collection.find(query.toDBObject(), getFieldsAsDBObject());
         addOptionsOn(cursor);
         return new MongoIterator<T>(cursor, resultMapper);
     }
@@ -61,7 +63,7 @@ public class Find {
         if (skip != null)
             cursor.skip(skip);
         if (sort != null) {
-            cursor.sort(sort);
+            cursor.sort(sort.toDBObject());
         }
     }
 
@@ -76,7 +78,11 @@ public class Find {
     }
 
     public Find sort(String sort) {
-        this.sort = toDBObject(sort);
+        this.sort = queryFactory.createQuery(sort);
         return this;
+    }
+
+    private DBObject getFieldsAsDBObject() {
+        return fields == null ? null : fields.toDBObject();
     }
 }

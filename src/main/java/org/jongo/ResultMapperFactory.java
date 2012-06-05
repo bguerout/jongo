@@ -21,10 +21,11 @@ import org.jongo.marshall.Unmarshaller;
 
 class ResultMapperFactory {
 
+
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
         return new ResultMapper<T>() {
             public T map(DBObject dbobject) {
-                return unmarshaller.unmarshall(Jongo.toJson(dbobject), clazz);
+                return unmarshaller.unmarshall(dbobject.toString(), clazz);
             }
         };
     }

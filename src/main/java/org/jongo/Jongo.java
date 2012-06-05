@@ -18,15 +18,11 @@ package org.jongo;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonProcessor;
 
 public final class Jongo {
-
-    static final String MONGO_ID = "_id";
 
     private final DB database;
     private final Marshaller marshaller;
@@ -52,21 +48,5 @@ public final class Jongo {
 
     public DB getDatabase() {
         return database;
-    }
-
-    public static String toJson(DBObject dbObject) {
-        Object id = dbObject.get(MONGO_ID);
-        if (id != null)
-            dbObject.put(MONGO_ID, id.toString());
-
-        return dbObject.toString();
-    }
-
-    public static DBObject toDBObject(String json) {
-        try {
-            return ((DBObject) JSON.parse(json));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(json + " cannot be parsed", e);
-        }
     }
 }

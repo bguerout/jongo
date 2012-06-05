@@ -17,17 +17,18 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import org.jongo.Jongo;
 
 class StaticQuery implements Query {
 
     private final String query;
+    private final DBObjectConverter dbObjectConverter;
 
     StaticQuery(String query) {
         this.query = query;
+        dbObjectConverter = new DBObjectConverter();
     }
 
     public DBObject toDBObject() {
-        return Jongo.toDBObject(query);
+        return dbObjectConverter.fromString(query);
     }
 }

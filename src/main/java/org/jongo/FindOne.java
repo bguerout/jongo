@@ -20,8 +20,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
 
-import static org.jongo.Jongo.toDBObject;
 import static org.jongo.ResultMapperFactory.newMapper;
 
 public class FindOne {
@@ -29,16 +29,18 @@ public class FindOne {
     private final Unmarshaller unmarshaller;
     private final DBCollection collection;
     private final Query query;
-    private DBObject fields;
+    private Query fields;
+    private final QueryFactory queryFactory;
 
-    FindOne(DBCollection collection, Query query, Unmarshaller unmarshaller) {
+    FindOne(DBCollection collection, Unmarshaller unmarshaller, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
-        this.query = query;
+        this.queryFactory = new QueryFactory();
+        this.query = queryFactory.createQuery(query, parameters);
     }
 
     public FindOne fields(String fields) {
-        this.fields = toDBObject(fields);
+        this.fields = queryFactory.createQuery(fields);
         return this;
     }
 
@@ -47,11 +49,15 @@ public class FindOne {
     }
 
     public <T> T map(ResultMapper<T> resultMapper) {
-        DBObject result = collection.findOne(query.toDBObject(), fields);
+        DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject());
         if (result == null)
             return null;
 
         return resultMapper.map(result);
+    }
+
+    private DBObject getFieldsAsDBObject() {
+        return fields == null ? null : fields.toDBObject();
     }
 
 }

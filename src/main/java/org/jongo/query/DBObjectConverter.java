@@ -17,28 +17,15 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
+class DBObjectConverter {
 
-class ParameterizedQuery implements Query {
-
-    private final ParameterBinder binder;
-    private final String query;
-    private final Object[] parameters;
-    private final DBObjectConverter dbObjectConverter;
-
-    ParameterizedQuery(ParameterBinder binder, String query, Object... parameters) {
-        this.query = query;
-        this.binder = binder;
-        this.parameters = parameters;
-        dbObjectConverter = new DBObjectConverter();
-    }
-
-    public DBObject toDBObject() {
-        String boundQuery = query;
-        if (parameters.length != 0) {
-            boundQuery = binder.bind(query, parameters);
+    public DBObject fromString(String json) {
+        try {
+            return ((DBObject) JSON.parse(json));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(json + " cannot be parsed", e);
         }
-        return dbObjectConverter.fromString(boundQuery);
     }
-
 }

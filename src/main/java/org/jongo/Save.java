@@ -19,22 +19,36 @@ package org.jongo;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
+import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 
-public class Save {
+class Save {
+
+    private static final String MONGO_DOCUMENT_ID_NAME = "_id";
 
     private final Marshaller marshaller;
     private final DBCollection collection;
 
-    public Save(DBCollection collection, Marshaller marshaller) {
+    Save(DBCollection collection, Marshaller marshaller) {
         this.marshaller = marshaller;
         this.collection = collection;
     }
 
     public <D> String execute(D document, WriteConcern concern) {
-        String entityAsJson = marshaller.marshall(document);
-        DBObject dbObject = Jongo.toDBObject(entityAsJson);
+
+        String documentAsJson = marshaller.marshall(document);
+        DBObject dbObject = convertToJson(documentAsJson);
+
         collection.save(dbObject, concern);
-        return dbObject.get(Jongo.MONGO_ID).toString();
+
+        return dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
+    }
+
+    protected DBObject convertToJson(String json) {
+        try {
+            return ((DBObject) JSON.parse(json));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to save document, marshalled json cannot be parsed: " + json, e);
+        }
     }
 }

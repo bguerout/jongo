@@ -24,11 +24,13 @@ public final class QueryFactory {
         this.binder = new ParameterBinder(new NativeMarshaller());
     }
 
-    public Query createQuery(String query) {
-        return new StaticQuery(query);
-    }
-
     public Query createQuery(String query, Object... parameters) {
+
+        if (parameters.length == 0) {
+            return new StaticQuery(query);
+        }
+
         return new ParameterizedQuery(binder, query, parameters);
     }
+
 }

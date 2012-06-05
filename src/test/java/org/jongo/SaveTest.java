@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.WriteConcern;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -25,8 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class SaveTest extends JongoTestCase {
 
@@ -102,9 +102,15 @@ public class SaveTest extends JongoTestCase {
         People result = collection.findOne(new ObjectId(id)).as(People.class);
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo("47cc67093475061e3d95369d");
-
-
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenMarshalledJsonIsInvalid() throws Exception {
 
+        Marshaller marshaller = mock(Marshaller.class);
+        when(marshaller.marshall(anyObject())).thenReturn("invalid");
+        Save save = new Save(collection.getDBCollection(), marshaller);
+
+        save.execute(new Object(), WriteConcern.NORMAL);
+    }
 }

@@ -42,26 +42,26 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public FindOne findOne(String query) {
-        return new FindOne(collection, createQuery(query), unmarshaller);
+        return new FindOne(collection, unmarshaller, query);
     }
 
     public FindOne findOne(ObjectId id) {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
-        return new FindOne(collection, createQuery("{_id:#}", id), unmarshaller);
+        return new FindOne(collection, unmarshaller, "{_id:#}", id);
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(collection, createQuery(query, parameters), unmarshaller);
+        return new FindOne(collection, unmarshaller, query, parameters);
     }
 
     public Find find(String query) {
-        return new Find(collection, createQuery(query), unmarshaller);
+        return new Find(collection, unmarshaller, query);
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(collection, createQuery(query, parameters), unmarshaller);
+        return new Find(collection, unmarshaller, query, parameters);
     }
 
     public long count() {
@@ -73,7 +73,8 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public long count(String query, Object... parameters) {
-        return collection.count(createQuery(query, parameters).toDBObject());
+        DBObject dbQuery = createQuery(query, parameters).toDBObject();
+        return collection.count(dbQuery);
     }
 
     public WriteResult update(String query, String modifier) {

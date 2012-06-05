@@ -17,8 +17,6 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import org.jongo.query.Query;
-import org.jongo.query.QueryFactory;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -33,6 +31,14 @@ public class QueryFactoryTest {
         DBObject dbObject = query.toDBObject();
 
         assertThat(dbObject.get("value")).isEqualTo(1);
+        assertThat(query).isInstanceOf(ParameterizedQuery.class);
+    }
 
+    @Test
+    public void shouldCreateStaticQuery() throws Exception {
+
+        Query query = new QueryFactory().createQuery("{value:1}");
+
+        assertThat(query).isInstanceOf(StaticQuery.class);
     }
 }
