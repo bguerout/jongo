@@ -19,11 +19,11 @@ package org.jongo;
 import com.mongodb.WriteConcern;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -55,6 +55,7 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
+    @Ignore
     public void whenNoSpecifyShouldSaveWithCollectionWriteConcern() throws Exception {
 
         collection.getDBCollection().setWriteConcern(WriteConcern.JOURNAL_SAFE);
@@ -66,6 +67,7 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
+    @Ignore
     public void canSaveWithWriteConcern() throws Exception {
 
         WriteConcern writeConcern = spy(WriteConcern.SAFE);

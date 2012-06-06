@@ -104,7 +104,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public <D> String save(D document, WriteConcern concern) {
-        return new Save(collection, marshaller, document).withConcern(concern).execute();
+        return new Save(collection, marshaller, document).concern(concern).execute();
     }
 
     public WriteResult insert(String query) {

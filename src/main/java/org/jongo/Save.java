@@ -38,7 +38,7 @@ class Save<D> {
         this.concern = collection.getWriteConcern();
     }
 
-    public Save withConcern(WriteConcern concern) {
+    public Save concern(WriteConcern concern) {
         this.concern = concern;
         return this;
     }
