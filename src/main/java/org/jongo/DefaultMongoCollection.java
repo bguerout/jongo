@@ -84,25 +84,19 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public WriteResult update(String query, String modifier) {
-        return update(query, modifier, collection.getWriteConcern());
+        return new Update(collection, query).multi().with(modifier);
     }
 
     public WriteResult update(String query, String modifier, WriteConcern concern) {
-        return update(query, modifier, false, true, concern);
+        return new Update(collection, query).multi().concern(concern).with(modifier);
     }
 
     public WriteResult upsert(String query, String modifier) {
-        return upsert(query, modifier, collection.getWriteConcern());
+        return new Update(collection, query).upsert().with(modifier);
     }
 
     public WriteResult upsert(String query, String modifier, WriteConcern concern) {
-        return update(query, modifier, true, false, concern);
-    }
-
-    private WriteResult update(String query, String modifier, boolean upsert, boolean multi, WriteConcern concern) {
-        DBObject dbQuery = createQuery(query).toDBObject();
-        DBObject dbModifier = createQuery(modifier).toDBObject();
-        return collection.update(dbQuery, dbModifier, upsert, multi, concern);
+        return new Update(collection, query).upsert().concern(concern).with(modifier);
     }
 
     public <D> String save(D document) {

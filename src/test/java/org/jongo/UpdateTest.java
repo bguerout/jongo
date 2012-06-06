@@ -45,7 +45,7 @@ public class UpdateTest extends JongoTestCase {
     }
 
     @Test
-    public void canUpdate() throws Exception {
+    public void canUpdateMulti() throws Exception {
         /* given */
         collection.save(new People("John"));
         collection.save(new People("John"));
@@ -56,24 +56,23 @@ public class UpdateTest extends JongoTestCase {
         /* then */
         Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
         assertThat(peoples).hasSize(0);
-        assertThat(writeResult).isNotNull();
+        assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
 
     @Test
-    public void canUpdateWithWriteConcern() throws Exception {
+    public void canUpdateMultiWithWriteConcern() throws Exception {
         /* given */
         collection.save(new People("John"));
         collection.save(new People("John"));
-        WriteConcern writeConcern = spy(WriteConcern.SAFE);
 
         /* when */
-        WriteResult writeResult = collection.update("{name:'John'}", "{$unset:{name:1}}", writeConcern);
+        WriteResult writeResult = collection.update("{name:'John'}", "{$unset:{name:1}}", WriteConcern.SAFE);
 
         /* then */
         Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
         assertThat(peoples).hasSize(0);
-        assertThat(writeResult).isNotNull();
-        verify(writeConcern).callGetLastError();
+        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
+
     }
 
     @Test
