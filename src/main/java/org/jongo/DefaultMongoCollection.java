@@ -83,20 +83,13 @@ class DefaultMongoCollection implements MongoCollection {
         return collection.count(dbQuery);
     }
 
+    public Update update(String query) {
+        return new Update(collection, query);
+    }
+
+    @Deprecated
     public WriteResult update(String query, String modifier) {
         return new Update(collection, query).multi().with(modifier);
-    }
-
-    public WriteResult update(String query, String modifier, WriteConcern concern) {
-        return new Update(collection, query).multi().concern(concern).with(modifier);
-    }
-
-    public WriteResult upsert(String query, String modifier) {
-        return new Update(collection, query).upsert().with(modifier);
-    }
-
-    public WriteResult upsert(String query, String modifier, WriteConcern concern) {
-        return new Update(collection, query).upsert().concern(concern).with(modifier);
     }
 
     public <D> String save(D document) {

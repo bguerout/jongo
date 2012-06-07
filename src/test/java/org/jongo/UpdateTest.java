@@ -27,8 +27,6 @@ import org.junit.Test;
 import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 public class UpdateTest extends JongoTestCase {
 
@@ -45,13 +43,28 @@ public class UpdateTest extends JongoTestCase {
     }
 
     @Test
-    public void canUpdateMulti() throws Exception {
+    @Deprecated
+    public void canUpdateMultiDeprecated() throws Exception {
         /* given */
         collection.save(new People("John"));
         collection.save(new People("John"));
 
         /* when */
         WriteResult writeResult = collection.update("{name:'John'}", "{$unset:{name:1}}");
+
+        /* then */
+        Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
+        assertThat(peoples).hasSize(0);
+    }
+
+    @Test
+    public void canUpdateMulti() throws Exception {
+        /* given */
+        collection.save(new People("John"));
+        collection.save(new People("John"));
+
+        /* when */
+        WriteResult writeResult = collection.update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
         Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
@@ -66,7 +79,7 @@ public class UpdateTest extends JongoTestCase {
         collection.save(new People("John"));
 
         /* when */
-        WriteResult writeResult = collection.update("{name:'John'}", "{$unset:{name:1}}", WriteConcern.SAFE);
+        WriteResult writeResult = collection.update("{name:'John'}").multi().concern(WriteConcern.SAFE).with("{$unset:{name:1}}");
 
         /* then */
         Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
@@ -79,7 +92,7 @@ public class UpdateTest extends JongoTestCase {
     public void canUpsert() throws Exception {
 
         /* when */
-        WriteResult writeResult = collection.upsert("{}", "{$set:{name:'John'}}");
+        WriteResult writeResult = collection.update("{}").upsert().with("{$set:{name:'John'}}");
 
         /* then */
         People john = collection.findOne("{name:'John'}").as(People.class);
@@ -90,15 +103,13 @@ public class UpdateTest extends JongoTestCase {
     @Test
     public void canUpsertWithWriteConcern() throws Exception {
 
-        WriteConcern writeConcern = spy(WriteConcern.SAFE);
-
         /* when */
-        WriteResult writeResult = collection.upsert("{}", "{$set:{name:'John'}}", writeConcern);
+        WriteResult writeResult = collection.update("{}").upsert().concern(WriteConcern.SAFE).with("{$set:{name:'John'}}");
 
         /* then */
         People john = collection.findOne("{name:'John'}").as(People.class);
         assertThat(john.getName()).isEqualTo("John");
         assertThat(writeResult).isNotNull();
-        verify(writeConcern).callGetLastError();
+        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
 }

@@ -23,7 +23,7 @@ import com.mongodb.WriteResult;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-public class Update {
+public final class Update {
 
     private final DBCollection collection;
     private final Query query;

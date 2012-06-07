@@ -39,13 +39,10 @@ public interface MongoCollection {
 
     long count(String query, Object... parameters);
 
+    Update update(String query);
+
+    @Deprecated
     WriteResult update(String query, String modifier);
-
-    WriteResult update(String query, String modifier, WriteConcern concern);
-
-    WriteResult upsert(String query, String modifier);
-
-    WriteResult upsert(String query, String modifier, WriteConcern concern);
 
     <D> String save(D document);
 
