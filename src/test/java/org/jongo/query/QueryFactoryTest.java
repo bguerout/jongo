@@ -16,17 +16,26 @@
 
 package org.jongo.query;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryFactoryTest {
 
+    private QueryFactory queryFactory;
+
+    @Before
+    public void setUp() throws Exception {
+        queryFactory = new QueryFactory();
+    }
+
     @Test
     public void shouldCreateBindableQuery() throws Exception {
 
-        Query query = new QueryFactory().createQuery("{value:#}", 1);
+        Query query = queryFactory.createQuery("{value:#}", 1);
 
         DBObject dbObject = query.toDBObject();
 
@@ -37,8 +46,17 @@ public class QueryFactoryTest {
     @Test
     public void shouldCreateStaticQuery() throws Exception {
 
-        Query query = new QueryFactory().createQuery("{value:1}");
+        Query query = queryFactory.createQuery("{value:1}");
 
         assertThat(query).isInstanceOf(StaticQuery.class);
+    }
+
+    @Test
+    public void shouldCreateAnEmptyQuery() throws Exception {
+
+        Query query = queryFactory.createEmptyQuery();
+
+        assertThat(query).isInstanceOf(StaticQuery.class);
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject());
     }
 }

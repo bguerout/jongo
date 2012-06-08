@@ -33,4 +33,8 @@ public final class QueryFactory {
         return new ParameterizedQuery(binder, query, parameters);
     }
 
+    public Query createEmptyQuery() {
+        return new StaticQuery("{}");
+    }
+
 }
