@@ -23,23 +23,23 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.util.JSON;
 
-class Save<D> {
+class Save {
 
     private static final String MONGO_DOCUMENT_ID_NAME = "_id";
 
     private final Marshaller marshaller;
     private final DBCollection collection;
-    private final D document;
+    private final Object document;
     private WriteConcern concern;
 
-    Save(DBCollection collection, Marshaller marshaller, D document) {
+    Save(DBCollection collection, Marshaller marshaller, Object document) {
         this.marshaller = marshaller;
         this.collection = collection;
         this.document = document;
         this.concern = collection.getWriteConcern();
     }
 
-    public Save<D> concern(WriteConcern concern) {
+    public Save concern(WriteConcern concern) {
         this.concern = concern;
         return this;
     }

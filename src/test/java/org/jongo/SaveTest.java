@@ -16,13 +16,7 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.mongodb.WriteConcern;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.model.People;
@@ -32,7 +26,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mongodb.WriteConcern;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.*;
 
 public class SaveTest extends JongoTestCase {
 
@@ -127,7 +123,7 @@ public class SaveTest extends JongoTestCase {
 
         Marshaller marshaller = mock(Marshaller.class);
         when(marshaller.marshall(anyObject())).thenReturn("invalid");
-        Save<Object> save = new Save<Object>(collection.getDBCollection(), marshaller, new Object());
+        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
 
         save.execute();
     }
