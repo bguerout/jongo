@@ -18,6 +18,10 @@ package org.jongo.query;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.jongo.query.QueryFactory;
+import org.jongo.query.ParameterizedQuery;
+import org.jongo.query.Query;
+import org.jongo.query.StaticQuery;
 import org.junit.Before;
 import org.junit.Test;
 
