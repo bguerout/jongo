@@ -16,11 +16,10 @@
 
 package org.jongo;
 
-import org.bson.types.ObjectId;
-
 import com.mongodb.DBCollection;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
 
 public interface MongoCollection {
 
@@ -59,7 +58,7 @@ public interface MongoCollection {
 
     WriteResult remove(String query, Object... parameters);
 
-    <T> Iterable<T> distinct(String key, String query, Class<T> clazz);
+    Distinct distinct(String key);
 
     void drop();
 

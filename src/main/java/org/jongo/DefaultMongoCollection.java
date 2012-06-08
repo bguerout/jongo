@@ -16,21 +16,16 @@
 
 package org.jongo;
 
-import static org.jongo.ResultMapperFactory.newMapper;
-
-import java.util.Iterator;
-import java.util.List;
-
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 
 class DefaultMongoCollection implements MongoCollection {
 
@@ -92,11 +87,11 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public <D> String save(D document) {
-        return new Save<D>(collection, marshaller, document).execute();
+        return new Save(collection, marshaller, document).execute();
     }
 
     public <D> String save(D document, WriteConcern concern) {
-        return new Save<D>(collection, marshaller, document).concern(concern).execute();
+        return new Save(collection, marshaller, document).concern(concern).execute();
     }
 
     public WriteResult insert(String query) {
@@ -108,6 +103,10 @@ class DefaultMongoCollection implements MongoCollection {
         return collection.save(dbQuery);
     }
 
+    public WriteResult remove(ObjectId id) {
+        return remove("{_id:#}", id);
+    }
+
     public WriteResult remove(String query) {
         return remove(query, new Object[0]);
     }
@@ -116,22 +115,8 @@ class DefaultMongoCollection implements MongoCollection {
         return collection.remove(createQuery(query, parameters).toDBObject());
     }
 
-    public WriteResult remove(ObjectId id) {
-        return remove("{_id:#}", id);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> Iterable<T> distinct(String key, String query, final Class<T> clazz) {
-        DBObject ref = createQuery(query).toDBObject();
-        final List<?> distinct = collection.distinct(key, ref);
-        if (BSONPrimitives.contains(clazz))
-            return new Iterable<T>() {
-                public Iterator<T> iterator() {
-                    return (Iterator<T>) distinct.iterator();
-                }
-            };
-        else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), newMapper(clazz, unmarshaller));
+    public Distinct distinct(String key) {
+        return new Distinct(collection, unmarshaller, key);
     }
 
     public void drop() {
