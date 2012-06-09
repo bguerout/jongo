@@ -16,16 +16,21 @@
 
 package org.jongo.spike.dbref.jackson;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.*;
-
 import java.io.IOException;
 
-public class DBRefDeserializer extends JsonDeserializer<Object> implements ContextualDeserializer {
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.BeanProperty;
+import org.codehaus.jackson.map.ContextualDeserializer;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.JsonMappingException;
+
+public class DBRefDeserializer extends JsonDeserializer<Object> implements ContextualDeserializer<Object> {
 
     private final Class<?> rawClass;
 
-    //Jackson's constructor
+    // Jackson's constructor
     public DBRefDeserializer() {
         this(Object.class);
     }
@@ -40,7 +45,7 @@ public class DBRefDeserializer extends JsonDeserializer<Object> implements Conte
         return reference.as(rawClass);
     }
 
-    public JsonDeserializer createContextual(DeserializationConfig config, BeanProperty property) throws JsonMappingException {
+    public JsonDeserializer<Object> createContextual(DeserializationConfig config, BeanProperty property) throws JsonMappingException {
         Class<?> propertyClass = property.getType().getRawClass();
         return new DBRefDeserializer(propertyClass);
     }

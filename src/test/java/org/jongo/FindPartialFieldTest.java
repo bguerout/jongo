@@ -16,14 +16,15 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.DBObject;
 
 public class FindPartialFieldTest extends JongoTestCase {
 
@@ -44,7 +45,7 @@ public class FindPartialFieldTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(people);
+        collection.save(people);
 
         /* when */
         collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());
@@ -53,7 +54,7 @@ public class FindPartialFieldTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(people);
+        collection.save(people);
 
         /* when */
         Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());

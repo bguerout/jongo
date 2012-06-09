@@ -16,17 +16,16 @@
 
 package org.jongo;
 
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 public class UpdateTest extends JongoTestCase {
 
@@ -50,10 +49,10 @@ public class UpdateTest extends JongoTestCase {
         collection.save(new People("John"));
 
         /* when */
-        WriteResult writeResult = collection.update("{name:'John'}", "{$unset:{name:1}}");
+        collection.update("{name:'John'}", "{$unset:{name:1}}");
 
         /* then */
-        Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
+        Iterable<People> peoples = collection.find("{name:{$exists:true}}").as(People.class);
         assertThat(peoples).hasSize(0);
     }
 
@@ -67,7 +66,7 @@ public class UpdateTest extends JongoTestCase {
         WriteResult writeResult = collection.update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
-        Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
+        Iterable<People> peoples = collection.find("{name:{$exists:true}}").as(People.class);
         assertThat(peoples).hasSize(0);
         assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
@@ -82,7 +81,7 @@ public class UpdateTest extends JongoTestCase {
         WriteResult writeResult = collection.update("{name:'John'}").multi().concern(WriteConcern.SAFE).with("{$unset:{name:1}}");
 
         /* then */
-        Iterator<People> peoples = collection.find("{name:{$exists:true}}").as(People.class).iterator();
+        Iterable<People> peoples = collection.find("{name:{$exists:true}}").as(People.class);
         assertThat(peoples).hasSize(0);
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
 

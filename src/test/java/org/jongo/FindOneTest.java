@@ -16,15 +16,14 @@
 
 package org.jongo;
 
-import org.fest.assertions.Assertions;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.jongo.model.People;
 import org.jongo.util.IdResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class FindOneTest extends JongoTestCase {
 
@@ -64,11 +63,10 @@ public class FindOneTest extends JongoTestCase {
         assertThat(people.getId()).isEqualTo(id);
     }
 
-
     @Test
     public void whenNoResultShouldReturnNull() throws Exception {
         assertThat(collection.findOne("{_id:'invalid-id'}").as(Object.class)).isNull();
-        Assertions.assertThat(collection.findOne("{_id:'invalid-id'}").map(new IdResultMapper())).isNull();
+        assertThat(collection.findOne("{_id:'invalid-id'}").map(new IdResultMapper())).isNull();
         assertThat(collection.find("{_id:'invalid-id'}").as(Object.class)).hasSize(0);
     }
 

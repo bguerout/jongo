@@ -16,7 +16,13 @@
 
 package org.jongo;
 
-import com.mongodb.WriteConcern;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.model.People;
@@ -26,8 +32,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import com.mongodb.WriteConcern;
 
 public class SaveTest extends JongoTestCase {
 
@@ -105,7 +110,6 @@ public class SaveTest extends JongoTestCase {
         assertThat(people.getAddress()).isEqualTo("new address");
     }
 
-
     @Test
     public void canSaveAnObjectWithAnObjectId() throws Exception {
 
@@ -123,7 +127,7 @@ public class SaveTest extends JongoTestCase {
 
         Marshaller marshaller = mock(Marshaller.class);
         when(marshaller.marshall(anyObject())).thenReturn("invalid");
-        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
+        Save<Object> save = new Save<Object>(collection.getDBCollection(), marshaller, new Object());
 
         save.execute();
     }

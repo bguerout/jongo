@@ -16,22 +16,21 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
-import com.mongodb.util.JSON;
+import static org.jongo.ResultMapperFactory.newMapper;
+
+import java.util.Iterator;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import java.util.Iterator;
-import java.util.List;
-
-import static org.jongo.ResultMapperFactory.newMapper;
-
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 class DefaultMongoCollection implements MongoCollection {
 
@@ -93,11 +92,11 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public <D> String save(D document) {
-        return new Save(collection, marshaller, document).execute();
+        return new Save<D>(collection, marshaller, document).execute();
     }
 
     public <D> String save(D document, WriteConcern concern) {
-        return new Save(collection, marshaller, document).concern(concern).execute();
+        return new Save<D>(collection, marshaller, document).concern(concern).execute();
     }
 
     public WriteResult insert(String query) {
@@ -154,13 +153,5 @@ class DefaultMongoCollection implements MongoCollection {
 
     private Query createQuery(String query, Object... parameters) {
         return queryFactory.createQuery(query, parameters);
-    }
-
-    private DBObject convertToJson(String json) {
-        try {
-            return ((DBObject) JSON.parse(json));
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to save document, marshalled json cannot be parsed: " + json, e);
-        }
     }
 }

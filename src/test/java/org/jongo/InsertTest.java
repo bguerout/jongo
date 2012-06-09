@@ -16,13 +16,12 @@
 
 package org.jongo;
 
-import org.jongo.model.People;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class InsertTest extends JongoTestCase {
 
@@ -53,6 +52,5 @@ public class InsertTest extends JongoTestCase {
 
         assertThat(collection.count("{name : 'Abby'}")).isEqualTo(1);
     }
-
 
 }

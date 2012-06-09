@@ -16,13 +16,13 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.bson.types.ObjectId;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class JacksonAnnotationsHandlingTest extends JongoTestCase {
 
@@ -41,14 +41,14 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
     @Test
     public void canHandleObjectIdNotAnnotated() throws Exception {
 
-        //given
+        // given
         POJONotAnnotated pojo = new POJONotAnnotated();
         pojo._id = new ObjectId("4f92d1ae44ae2dac4527d49b");
 
-        //when
+        // when
         String id = collection.save(pojo);
 
-        //then
+        // then
         POJONotAnnotated result = collection.findOne("{}").as(POJONotAnnotated.class);
         assertThat(result._id).isEqualTo(id);
     }
@@ -56,31 +56,30 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
     @Test
     public void canHandleStringIdNotAnnotated() throws Exception {
 
-        //given
+        // given
         StringNotAnnotated pojo = new StringNotAnnotated();
         pojo._id = 1500L;
 
-        //when
-        String id = collection.save(pojo);
+        // when
+        collection.save(pojo);
 
-        //then
+        // then
         StringNotAnnotated result = collection.findOne("{}").as(StringNotAnnotated.class);
         assertThat(result._id).isEqualTo(1500L);
     }
 
-
     @Test
     public void canInjectObjectIdIntoAMisspelledGetter() throws Exception {
 
-        //given
+        // given
         POJOWithMisspelledGetter pojo = new POJOWithMisspelledGetter();
         ObjectId id = new ObjectId("4f92d1ae44ae2dac4527d49b");
         pojo.setAnotherName(id);
 
-        //when
+        // when
         collection.save(pojo);
 
-        //then
+        // then
         POJOWithMisspelledGetter result = collection.findOne("{}").as(POJOWithMisspelledGetter.class);
         assertThat(result.getAnotherName()).isEqualTo(id);
         assertThat(result._id).isEqualTo(id);

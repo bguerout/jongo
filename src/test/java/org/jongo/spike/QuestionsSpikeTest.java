@@ -16,9 +16,11 @@
 
 package org.jongo.spike;
 
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
-import org.bson.types.ObjectId;
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.People;
@@ -27,10 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
 
 public class QuestionsSpikeTest extends JongoTestCase {
 
@@ -47,23 +47,22 @@ public class QuestionsSpikeTest extends JongoTestCase {
     }
 
     @Test
-    //http://stackoverflow.com/questions/10444038/mongo-db-query-in-java/10445169#10445169
+    // http://stackoverflow.com/questions/10444038/mongo-db-query-in-java/10445169#10445169
     public void complexQueryWithDriverAndJongo() throws Exception {
 
         List<String> keys = new ArrayList<String>();
         collection.findOne("{$or:[{key1: {$in:[764]}},{key2:{$in:[#]}}, {$and:[{key3:3},{key4:67}]}]}", keys).as(People.class);
 
-        DBObject query = QueryBuilder.start().or(
-                QueryBuilder.start("key1").in(764).get(),
-                QueryBuilder.start("key2").in(keys).get(),
-                QueryBuilder.start().and("key3").is(3).and("key4").is(64).get()
-        ).get();
+        DBObject query = QueryBuilder
+                .start()
+                .or(QueryBuilder.start("key1").in(764).get(), QueryBuilder.start("key2").in(keys).get(),
+                        QueryBuilder.start().and("key3").is(3).and("key4").is(64).get()).get();
 
         getDB().getCollection("users").find(query);
     }
 
     @Test
-    //https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
+    // https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
     public void pushANonBSONObject() throws Exception {
         Peoples peoples = new Peoples();
         peoples.add(new People("john"));
@@ -77,7 +76,6 @@ public class QuestionsSpikeTest extends JongoTestCase {
     }
 
     private static class Peoples {
-        private ObjectId _id;
         private List<People> peoples = new ArrayList<People>();
 
         public void add(People buddy) {

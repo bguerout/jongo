@@ -16,6 +16,11 @@
 
 package org.jongo.util.junit;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jongo.util.JongoTestCase;
 import org.jongo.util.TestContext;
 import org.junit.internal.builders.JUnit4Builder;
@@ -27,11 +32,6 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
 public class CompatibilitySuite extends Suite {
 
     private static final String SCANNED_PACKAGE = "org.jongo";
@@ -41,7 +41,7 @@ public class CompatibilitySuite extends Suite {
     private final ContextRunnerBuilder builder;
 
     public CompatibilitySuite(Class<?> clazz) throws Throwable {
-        super(clazz, new Class<?>[]{});
+        super(clazz, new Class<?>[] {});
         builder = new ContextRunnerBuilder(getParameter(getTestClass()));
         Class<?>[] suiteClasses = ClasspathClassesFinder.getSuiteClasses(SCANNED_PACKAGE);
         runners.addAll(builder.runners(clazz, suiteClasses));
@@ -55,7 +55,6 @@ public class CompatibilitySuite extends Suite {
     /**
      * @see Parameterized
      */
-    @SuppressWarnings("unchecked")
     private TestContext getParameter(TestClass klass) throws Throwable {
         return (TestContext) getParametersMethod(klass).invokeExplosively(null);
     }

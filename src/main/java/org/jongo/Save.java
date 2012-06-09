@@ -16,11 +16,12 @@
 
 package org.jongo;
 
+import org.jongo.marshall.Marshaller;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.util.JSON;
-import org.jongo.marshall.Marshaller;
 
 class Save<D> {
 
@@ -38,12 +39,12 @@ class Save<D> {
         this.concern = collection.getWriteConcern();
     }
 
-    public Save concern(WriteConcern concern) {
+    public Save<D> concern(WriteConcern concern) {
         this.concern = concern;
         return this;
     }
 
-    public <D> String execute() {
+    public String execute() {
 
         String documentAsJson = marshaller.marshall(document);
         DBObject dbObject = convertToJson(documentAsJson);

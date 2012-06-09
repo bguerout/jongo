@@ -16,12 +16,11 @@
 
 package org.jongo.query;
 
-import com.mongodb.DBObject;
-import org.junit.Before;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import com.mongodb.DBObject;
 
 public class StaticQueryTest {
 
