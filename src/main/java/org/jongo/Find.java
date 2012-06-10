@@ -25,7 +25,7 @@ import org.jongo.query.QueryFactory;
 
 import static org.jongo.ResultMapperFactory.newMapper;
 
-public class Find {
+public final class Find {
 
     private final DBCollection collection;
     private final Unmarshaller unmarshaller;

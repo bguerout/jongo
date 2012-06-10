@@ -23,36 +23,37 @@ import org.bson.types.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class BSONPrimitives {
-    public static final Set<Class<?>> primitives;
+class BSONPrimitives {
+
+    private static final Set<Class<?>> PRIMITIVES;
 
     static {
-        primitives = new HashSet<Class<?>>();
-        primitives.add(String.class);
-        primitives.add(Number.class);
-        primitives.add(Boolean.class);
-        primitives.add(Date.class);
-        primitives.add(Iterable.class);
-        primitives.add(ObjectId.class);
-        primitives.add(DBObject.class);
-        primitives.add(Map.class);
-        primitives.add(DBRefBase.class);
-        primitives.add(Pattern.class);
-        primitives.add(BSONTimestamp.class);
-        primitives.add(UUID.class);
-        primitives.add(CodeWScope.class);
-        primitives.add(Code.class);
-        primitives.add(MinKey.class);
-        primitives.add(MaxKey.class);
-        primitives.add(byte[].class);
-        primitives.add(Binary.class);
+        PRIMITIVES = new HashSet<Class<?>>();
+        PRIMITIVES.add(String.class);
+        PRIMITIVES.add(Number.class);
+        PRIMITIVES.add(Boolean.class);
+        PRIMITIVES.add(Date.class);
+        PRIMITIVES.add(Iterable.class);
+        PRIMITIVES.add(ObjectId.class);
+        PRIMITIVES.add(DBObject.class);
+        PRIMITIVES.add(Map.class);
+        PRIMITIVES.add(DBRefBase.class);
+        PRIMITIVES.add(Pattern.class);
+        PRIMITIVES.add(BSONTimestamp.class);
+        PRIMITIVES.add(UUID.class);
+        PRIMITIVES.add(CodeWScope.class);
+        PRIMITIVES.add(Code.class);
+        PRIMITIVES.add(MinKey.class);
+        PRIMITIVES.add(MaxKey.class);
+        PRIMITIVES.add(byte[].class);
+        PRIMITIVES.add(Binary.class);
     }
 
-    public static <T> boolean contains(Class<T> clazz) {
-        if (primitives.contains(clazz))
+    static <T> boolean contains(Class<T> clazz) {
+        if (PRIMITIVES.contains(clazz))
             return true;
 
-        for (Class<?> primitive : primitives) {
+        for (Class<?> primitive : PRIMITIVES) {
             if (primitive.isAssignableFrom(clazz)) {
                 return true;
             }
