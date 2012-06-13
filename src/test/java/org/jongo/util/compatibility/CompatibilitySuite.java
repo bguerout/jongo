@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package org.jongo.util.junit;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
+package org.jongo.util.compatibility;
 
 import org.jongo.util.JongoTestCase;
-import org.jongo.util.TestContext;
 import org.junit.internal.builders.JUnit4Builder;
 import org.junit.runner.Runner;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -31,6 +25,10 @@ import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
+
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompatibilitySuite extends Suite {
 
@@ -41,7 +39,7 @@ public class CompatibilitySuite extends Suite {
     private final ContextRunnerBuilder builder;
 
     public CompatibilitySuite(Class<?> clazz) throws Throwable {
-        super(clazz, new Class<?>[] {});
+        super(clazz, new Class<?>[]{});
         builder = new ContextRunnerBuilder(getParameter(getTestClass()));
         Class<?>[] suiteClasses = ClasspathClassesFinder.getSuiteClasses(SCANNED_PACKAGE);
         runners.addAll(builder.runners(clazz, suiteClasses));
@@ -97,12 +95,12 @@ public class CompatibilitySuite extends Suite {
 
         @Override
         protected Object createTest() throws Exception {
-            Class<?> javaClass = getTestClass().getJavaClass();
-            if (javaClass.isAssignableFrom(PARENT_CLASS)) {
-                Constructor<?> constructor = getTestClass().getOnlyConstructor();
-                return constructor.newInstance(testContext);
+            Object test = super.createTest();
+            if (PARENT_CLASS.isAssignableFrom(getTestClass().getJavaClass())) {
+                JongoTestCase jongoTestCase = (JongoTestCase) test;
+                jongoTestCase.setJongoWithTestContext(testContext);
             }
-            return super.createTest();
+            return test;
         }
     }
 }

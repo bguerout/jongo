@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.util;
+package org.jongo.util.compatibility;
 
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;

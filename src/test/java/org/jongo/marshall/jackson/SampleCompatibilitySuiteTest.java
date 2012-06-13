@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.marshall.jackson;
 
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.util.TestContext;
+import org.jongo.util.compatibility.TestContext;
 
 import static org.junit.runners.Parameterized.Parameters;
 

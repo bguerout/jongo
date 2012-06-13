@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.util.junit;
+package org.jongo.util.compatibility;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -35,7 +35,7 @@ import java.util.List;
  * @version 1.0
  * @date 16/02/2011
  */
-public final class ClasspathClassesFinder {
+final class ClasspathClassesFinder {
 
     public static final Class<? extends Annotation> IGNORE_ANNOTATION = null;
 

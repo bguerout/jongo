@@ -22,6 +22,7 @@ import com.mongodb.MongoURI;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.util.compatibility.TestContext;
 
 import java.net.UnknownHostException;
 
@@ -29,22 +30,14 @@ public abstract class JongoTestCase {
 
     public static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
 
-    private TestContext testContext;
-    private DB db;
-
-    public JongoTestCase(TestContext testContext) {
-        this.testContext = testContext;
-        db = resolveDB();
-    }
+    private Jongo jongo;
 
     public JongoTestCase() {
         JacksonProcessor processor = new JacksonProcessor();
-        this.testContext = new TestContext(processor, processor);
-        this.db = resolveDB();
+        this.jongo = new Jongo(resolveDB(), processor, processor);
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
-        Jongo jongo = new Jongo(db, testContext.getMarshaller(), testContext.getUnmarshaller());
         MongoCollection col = jongo.getCollection(collectionName);
         col.drop();
         return col;
@@ -55,10 +48,10 @@ public abstract class JongoTestCase {
     }
 
     protected DB getDB() throws UnknownHostException {
-        return db;
+        return jongo.getDatabase();
     }
 
-    private DB resolveDB() {
+    private static DB resolveDB() {
         try {
 
             if (mustRunTestsAgainstMongoHQ()) {
@@ -71,19 +64,24 @@ public abstract class JongoTestCase {
         }
     }
 
-    private boolean mustRunTestsAgainstMongoHQ() {
+    private static boolean mustRunTestsAgainstMongoHQ() {
         return System.getProperty(MONGOHQ_FLAG) != null;
     }
 
-    private DB getDBFromMongoHQ() throws UnknownHostException {
-        String mongoHQUri = System.getProperty(MONGOHQ_FLAG);
-        MongoURI mongoURI = new MongoURI(mongoHQUri);
+    private static DB getDBFromMongoHQ() throws UnknownHostException {
+        String uri = System.getProperty(MONGOHQ_FLAG);
+        MongoURI mongoURI = new MongoURI(uri);
         DB db = mongoURI.connectDB();
         db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
         return db;
     }
 
-    private DB getLocalDB() throws UnknownHostException {
+    private static DB getLocalDB() throws UnknownHostException {
         return new Mongo("127.0.0.1").getDB("jongo");
     }
+
+    public void setJongoWithTestContext(TestContext context) {
+        this.jongo = new Jongo(resolveDB(), context.getMarshaller(), context.getUnmarshaller());
+    }
+
 }
