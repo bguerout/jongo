@@ -36,7 +36,6 @@ class Save {
         this.marshaller = marshaller;
         this.collection = collection;
         this.document = document;
-        this.concern = collection.getWriteConcern();
     }
 
     public Save concern(WriteConcern concern) {
@@ -49,9 +48,13 @@ class Save {
         String documentAsJson = marshaller.marshall(document);
         DBObject dbObject = convertToJson(documentAsJson);
 
-        collection.save(dbObject, concern);
+        collection.save(dbObject, determineWriteConcern());
 
         return dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
+    }
+
+    private WriteConcern determineWriteConcern() {
+        return concern == null ? collection.getWriteConcern() : concern;
     }
 
     protected DBObject convertToJson(String json) {
