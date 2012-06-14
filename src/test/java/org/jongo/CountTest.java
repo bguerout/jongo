@@ -17,30 +17,17 @@
 package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.JongoTest.collection;
+import static org.jongo.JongoTest.newPeople;
 
 import org.jongo.model.People;
-import org.jongo.util.JongoTestCase;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-public class CountTest extends JongoTestCase {
+public class CountTest {
 
-    private MongoCollection collection;
-
-    @Before
-    public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dropCollection("users");
-    }
-
-    public People newPeople() {
-        return new People("John", "22 Wall Street Avenue");
-    }
+    @Rule
+    public JongoTest jongo = JongoTest.collection("users");
 
     @Test
     public void canCount() throws Exception {

@@ -16,30 +16,20 @@
 
 package org.jongo;
 
-import org.jongo.model.Coordinate;
-import org.jongo.model.People;
-import org.jongo.util.JongoTestCase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.JongoTest.collection;
 
 import java.util.Iterator;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.jongo.model.Coordinate;
+import org.jongo.model.People;
+import org.junit.Rule;
+import org.junit.Test;
 
-public class FindWithParametersTest extends JongoTestCase {
+public class FindWithParametersTest {
 
-    private MongoCollection collection;
-
-    @Before
-    public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dropCollection("users");
-    }
+    @Rule
+    public JongoTest jongo = JongoTest.collection("users");
 
     @Test
     public void canFindOne() throws Exception {
@@ -68,4 +58,3 @@ public class FindWithParametersTest extends JongoTestCase {
     }
 
 }
-

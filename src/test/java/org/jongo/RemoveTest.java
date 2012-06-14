@@ -16,30 +16,20 @@
 
 package org.jongo;
 
-import com.mongodb.WriteResult;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.JongoTest.collection;
+
 import org.bson.types.ObjectId;
 import org.jongo.model.People;
-import org.jongo.util.JongoTestCase;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.WriteResult;
 
-public class RemoveTest extends JongoTestCase {
+public class RemoveTest {
 
-
-    private MongoCollection collection;
-
-    @Before
-    public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dropCollection("users");
-    }
+    @Rule
+    public JongoTest jongo = JongoTest.collection("users");
 
     @Test
     public void canRemoveASpecificDocument() throws Exception {

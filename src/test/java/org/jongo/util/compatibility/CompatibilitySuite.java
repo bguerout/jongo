@@ -16,38 +16,61 @@
 
 package org.jongo.util.compatibility;
 
-import org.jongo.util.JongoTestCase;
-import org.junit.internal.builders.JUnit4Builder;
-import org.junit.runner.Runner;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Suite;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.TestClass;
+import static java.lang.Thread.currentThread;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jongo.JongoTest;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+import org.junit.internal.builders.JUnit4Builder;
+import org.junit.runner.Runner;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Suite;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.TestClass;
+
 public class CompatibilitySuite extends Suite {
 
     private static final String SCANNED_PACKAGE = "org.jongo";
-    private static final Class<JongoTestCase> PARENT_CLASS = JongoTestCase.class;
 
     private final List<Runner> runners = new ArrayList<Runner>();
-    private final ContextRunnerBuilder builder;
 
-    public CompatibilitySuite(Class<?> clazz) throws Throwable {
-        super(clazz, new Class<?>[]{});
-        builder = new ContextRunnerBuilder(getParameter(getTestClass()));
-        Class<?>[] suiteClasses = ClasspathClassesFinder.getSuiteClasses(SCANNED_PACKAGE);
-        runners.addAll(builder.runners(clazz, suiteClasses));
+    public CompatibilitySuite(Class<?> suite) throws Throwable {
+        super(suite, new Class<?>[] {});
+
+        TestContext parameter = getParameter(getTestClass());
+        Class<?> tests[] = prepareMarshallingStrategy(parameter.getMarshaller(), parameter.getUnmarshaller());
+        runners.addAll(new JUnit4Builder().runners(suite, tests));
     }
 
     @Override
     protected List<Runner> getChildren() {
         return runners;
+    }
+
+    /**
+     * Marshalling strategy updating
+     */
+    private Class<?>[] prepareMarshallingStrategy(Marshaller marshaller, Unmarshaller unmarshaller) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+            ClassNotFoundException {
+        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+        Class<?>[] suiteClasses = getSuiteClasses(SCANNED_PACKAGE);
+        for (Class<?> suiteClass : suiteClasses) {
+            if (suiteClass.equals(JongoTest.class)) {
+                Method method = suiteClass.getMethod("prepareMarshallingStrategy", Marshaller.class, Unmarshaller.class);
+                method.invoke(null, marshaller, unmarshaller);
+                break;
+            } else {
+                classes.add(suiteClass);
+            }
+        }
+        return classes.toArray(new Class[0]);
     }
 
     /**
@@ -70,37 +93,19 @@ public class CompatibilitySuite extends Suite {
         throw new Exception("No public static parameters method on class " + testClass.getName());
     }
 
-    private static class ContextRunnerBuilder extends JUnit4Builder {
-
-        private TestContext testContext;
-
-        public ContextRunnerBuilder(TestContext testContext) {
-            this.testContext = testContext;
-        }
-
-        @Override
-        public Runner runnerForClass(Class<?> testClass) throws Throwable {
-            return new ContextJUnit4ClassRunner(testClass, testContext);
-        }
-    }
-
-    private static class ContextJUnit4ClassRunner extends BlockJUnit4ClassRunner {
-
-        private TestContext testContext;
-
-        public ContextJUnit4ClassRunner(Class<?> aClass, TestContext testContext) throws InitializationError {
-            super(aClass);
-            this.testContext = testContext;
-        }
-
-        @Override
-        protected Object createTest() throws Exception {
-            Object test = super.createTest();
-            if (PARENT_CLASS.isAssignableFrom(getTestClass().getJavaClass())) {
-                JongoTestCase jongoTestCase = (JongoTestCase) test;
-                jongoTestCase.prepareMarshallingStrategy(testContext.getMarshaller(), testContext.getUnmarshaller());
+    /**
+     * Package introspection
+     */
+    public Class<?>[] getSuiteClasses(String scannedPackage) throws ClassNotFoundException {
+        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+        File directory = new File(currentThread().getContextClassLoader().getResource(scannedPackage.replace('.', '/')).getFile());
+        if (directory.exists()) {
+            String[] files = directory.list();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].endsWith("Test.class"))
+                    classes.add(Class.forName(scannedPackage + '.' + files[i].substring(0, files[i].length() - 6)));
             }
-            return test;
         }
+        return classes.toArray(new Class[classes.size()]);
     }
 }

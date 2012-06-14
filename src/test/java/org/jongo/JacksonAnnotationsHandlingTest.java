@@ -17,26 +17,16 @@
 package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.JongoTest.collection;
 
 import org.bson.types.ObjectId;
-import org.jongo.util.JongoTestCase;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-public class JacksonAnnotationsHandlingTest extends JongoTestCase {
+public class JacksonAnnotationsHandlingTest {
 
-    private MongoCollection collection;
-
-    @Before
-    public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        collection.drop();
-    }
+    @Rule
+    public JongoTest jongo = JongoTest.collection("users");
 
     @Test
     public void canHandleObjectIdNotAnnotated() throws Exception {

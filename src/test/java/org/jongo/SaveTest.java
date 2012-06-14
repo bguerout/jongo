@@ -16,40 +16,33 @@
 
 package org.jongo;
 
-import com.mongodb.WriteConcern;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.JongoTest.collection;
+import static org.jongo.JongoTest.newPeople;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.model.People;
-import org.jongo.util.JongoTestCase;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import com.mongodb.WriteConcern;
 
-public class SaveTest extends JongoTestCase {
+public class SaveTest {
 
-    private MongoCollection collection;
-    private People people;
-
-    @Before
-    public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dropCollection("users");
-    }
+    @Rule
+    public JongoTest jongo = JongoTest.collection("users");
 
     @Test
     public void canSavePOJO() throws Exception {
         /* given */
-        String id = collection.save(people);
+        String id = collection.save(newPeople());
 
         assertThat(collection.count("{}")).isEqualTo(1);
         assertThat(id).isNotNull();
@@ -62,7 +55,7 @@ public class SaveTest extends JongoTestCase {
         collection.getDBCollection().setWriteConcern(WriteConcern.JOURNAL_SAFE);
         WriteConcern writeConcern = spy(collection.getDBCollection().getWriteConcern());
 
-        collection.save(people, writeConcern);
+        collection.save(newPeople(), writeConcern);
 
         verify(writeConcern).callGetLastError();
     }
@@ -73,7 +66,7 @@ public class SaveTest extends JongoTestCase {
 
         WriteConcern writeConcern = spy(WriteConcern.SAFE);
 
-        collection.save(people, writeConcern);
+        collection.save(newPeople(), writeConcern);
 
         verify(writeConcern).callGetLastError();
     }

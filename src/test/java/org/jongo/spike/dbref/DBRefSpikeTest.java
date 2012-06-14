@@ -17,11 +17,13 @@
 package org.jongo.spike.dbref;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.JongoTest.collection;
 
 import java.net.UnknownHostException;
 
 import org.bson.types.ObjectId;
 import org.jongo.Jongo;
+import org.jongo.JongoTest;
 import org.jongo.MongoCollection;
 import org.jongo.ResultMapper;
 import org.jongo.marshall.jackson.JacksonProcessor;
@@ -30,9 +32,8 @@ import org.jongo.spike.dbref.jackson.ReferenceDeserializer;
 import org.jongo.spike.dbref.jackson.ReferenceLink;
 import org.jongo.spike.dbref.jackson.ReferenceSerializer;
 import org.jongo.util.DBObjectResultMapper;
-import org.jongo.util.JongoTestCase;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.Version;
@@ -43,22 +44,18 @@ import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import com.mongodb.util.JSON;
 
-public class DBRefSpikeTest extends JongoTestCase {
+public class DBRefSpikeTest {
 
-    private MongoCollection collection;
+    @Rule
+    public JongoTest jongo = JongoTest.collection("buddies");
+
     private ObjectId johnId;
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("buddies");
         Buddy john = new Buddy();
         john.name = "John";
         johnId = new ObjectId(collection.save(john));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dropCollection("buddies");
     }
 
     @Test
@@ -69,7 +66,6 @@ public class DBRefSpikeTest extends JongoTestCase {
 
     @Test
     public void referenceShouldBeInserted() throws Exception {
-
         collection.insert("{name : 'Abby', friend: { $ref : 'buddies', $id : # }}", johnId);
 
         DBObject abby = collection.findOne("{name : 'Abby'}").map(new DBObjectResultMapper());
@@ -80,7 +76,6 @@ public class DBRefSpikeTest extends JongoTestCase {
 
     @Test
     public void referenceShouldBeFetcheableWithMapper() throws Exception {
-
         collection.insert("{name : 'Abby', friend: { $ref : 'buddies', $id : # }}", johnId);
         DBObject abby = collection.findOne("{name : 'Abby'}").map(new DBObjectResultMapper());
 
@@ -92,7 +87,6 @@ public class DBRefSpikeTest extends JongoTestCase {
 
     @Test
     public void referenceShouldBeUnmarshalledWithJackson() throws Exception {
-
         MongoCollection buddies = getCollectionWithCustomMapper();
         buddies.insert("{name : 'Abby', friend: { $ref : 'buddies', $id : # }}", johnId);
 
@@ -123,7 +117,7 @@ public class DBRefSpikeTest extends JongoTestCase {
     }
 
     private MongoCollection getCollectionWithCustomMapper() throws UnknownHostException {
-        DB db = getDatabase();
+        DB db = jongo.getDatabase();
         ObjectMapper mapper = createMapper(db);
         JacksonProcessor processor = new JacksonProcessor(mapper);
         Jongo jongo = new Jongo(db, processor, processor);

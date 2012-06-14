@@ -16,32 +16,22 @@
 
 package org.jongo;
 
-import org.jongo.model.Coordinate;
-import org.jongo.model.People;
-import org.jongo.util.JongoTestCase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.JongoTest.collection;
 
 import java.util.Iterator;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.jongo.model.Coordinate;
+import org.jongo.model.People;
+import org.junit.Rule;
+import org.junit.Test;
 
-public class DistinctTest extends JongoTestCase {
+public class DistinctTest {
 
-    private MongoCollection collection;
-    private String wallStreetAvenue;
+    @Rule
+    public JongoTest jongo = JongoTest.collection("users");
 
-    @Before
-    public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
-        wallStreetAvenue = "22 Wall Street Avenue";
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dropCollection("users");
-    }
+    private String wallStreetAvenue = "22 Wall Street Avenue";
 
     @Test
     public void distinctOnStringEntities() throws Exception {
