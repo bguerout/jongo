@@ -21,8 +21,9 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoURI;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.util.compatibility.TestContext;
 
 import java.net.UnknownHostException;
 
@@ -34,7 +35,7 @@ public abstract class JongoTestCase {
 
     public JongoTestCase() {
         JacksonProcessor processor = new JacksonProcessor();
-        this.jongo = new Jongo(resolveDB(), processor, processor);
+        this.jongo = new Jongo(findDatabase(), processor, processor);
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
@@ -44,14 +45,14 @@ public abstract class JongoTestCase {
     }
 
     protected void dropCollection(String collectionName) throws UnknownHostException {
-        getDB().getCollection(collectionName).drop();
+        getDatabase().getCollection(collectionName).drop();
     }
 
-    protected DB getDB() throws UnknownHostException {
+    protected DB getDatabase() throws UnknownHostException {
         return jongo.getDatabase();
     }
 
-    private static DB resolveDB() {
+    private static DB findDatabase() {
         try {
 
             if (mustRunTestsAgainstMongoHQ()) {
@@ -80,8 +81,8 @@ public abstract class JongoTestCase {
         return new Mongo("127.0.0.1").getDB("jongo");
     }
 
-    public void setJongoWithTestContext(TestContext context) {
-        this.jongo = new Jongo(resolveDB(), context.getMarshaller(), context.getUnmarshaller());
+    public void prepareMarshallingStrategy(Marshaller marshaller, Unmarshaller unmarshaller) {
+        this.jongo = new Jongo(findDatabase(), marshaller, unmarshaller);
     }
 
 }

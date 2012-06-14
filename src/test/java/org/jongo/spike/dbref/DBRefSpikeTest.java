@@ -122,7 +122,7 @@ public class DBRefSpikeTest extends JongoTestCase {
     }
 
     private MongoCollection getCollectionWithCustomMapper() throws UnknownHostException {
-        DB db = getDB();
+        DB db = getDatabase();
         ObjectMapper mapper = createMapper(db);
         JacksonProcessor processor = new JacksonProcessor(mapper);
         Jongo jongo = new Jongo(db, processor, processor);

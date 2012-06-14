@@ -16,11 +16,8 @@
 
 package org.jongo.spike;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.People;
@@ -29,8 +26,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class QuestionsSpikeTest extends JongoTestCase {
 
@@ -58,7 +57,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
                 .or(QueryBuilder.start("key1").in(764).get(), QueryBuilder.start("key2").in(keys).get(),
                         QueryBuilder.start().and("key3").is(3).and("key4").is(64).get()).get();
 
-        getDB().getCollection("users").find(query);
+        getDatabase().getCollection("users").find(query);
     }
 
     @Test
