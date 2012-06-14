@@ -16,16 +16,17 @@
 
 package org.jongo.marshall.jackson;
 
+import static org.fest.assertions.Assertions.assertThat;
 import junit.framework.Assert;
+
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class ObjectIdDeserializerTest {
 
@@ -34,7 +35,7 @@ public class ObjectIdDeserializerTest {
     @Before
     public void setUp() throws Exception {
         mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule("ObjectIdDeserializer", new Version(1, 0, 0, null));
+        SimpleModule module = new SimpleModule("ObjectIdDeserializer", new Version(1, 0, 0, null, null, null));
         module.addDeserializer(ObjectId.class, new ObjectIdDeserializer());
         mapper.registerModule(module);
     }

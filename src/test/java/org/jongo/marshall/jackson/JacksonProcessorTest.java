@@ -16,15 +16,16 @@
 
 package org.jongo.marshall.jackson;
 
-import org.codehaus.jackson.annotate.JsonAnySetter;
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.io.IOException;
+
 import org.jongo.model.Fox;
 import org.jongo.model.People;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
-import static org.fest.assertions.Assertions.assertThat;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 public class JacksonProcessorTest {
 
@@ -75,7 +76,6 @@ public class JacksonProcessorTest {
     private String jsonify(String json) {
         return json.replace("'", "\"");
     }
-
 
     static class BackwardPeople extends People {
 

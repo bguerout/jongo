@@ -16,11 +16,11 @@
 
 package org.jongo.spike.dbref.jackson;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import java.io.IOException;
 
 public class Reference {
 

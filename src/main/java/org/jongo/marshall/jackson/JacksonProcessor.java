@@ -16,21 +16,22 @@
 
 package org.jongo.marshall.jackson;
 
-import org.bson.types.ObjectId;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.introspect.VisibilityChecker;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility.ANY;
-import static org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_NULL;
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public final class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -49,7 +50,9 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
         try {
             return mapper.readValue(json, clazz);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e); // TODO handle this
+            throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e); // TODO
+                                                                                                               // handle
+                                                                                                               // this
         }
     }
 
@@ -59,18 +62,20 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
             mapper.writeValue(writer, obj);
             return writer.toString();
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e); // TODO handle this
+            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e); // TODO
+                                                                                           // handle
+                                                                                           // this
         }
     }
 
     public static ObjectMapper createMinimalMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setDeserializationConfig(mapper.getDeserializationConfig().without(FAIL_ON_UNKNOWN_PROPERTIES));
-        mapper.setSerializationConfig(mapper.getSerializationConfig().withSerializationInclusion(NON_NULL));
+        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(NON_NULL);
         mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
 
-        SimpleModule module = new SimpleModule("jongoModule", new Version(1, 0, 0, null));
-        module.addSerializer(new ObjectIdSerializer());
+        SimpleModule module = new SimpleModule("jongo", new Version(1, 0, 0, null, null, null));
+        module.addSerializer(ObjectId.class, new ObjectIdSerializer());
         module.addDeserializer(ObjectId.class, new ObjectIdDeserializer());
         mapper.registerModule(module);
 

@@ -17,7 +17,8 @@
 package org.jongo.model;
 
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class People {
 
@@ -45,7 +46,6 @@ public class People {
         this.name = name;
         this.coordinate = coordinate;
     }
-
 
     public People() {
     }

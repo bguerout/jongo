@@ -16,19 +16,20 @@
 
 package org.jongo.spike.dbref;
 
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.io.IOException;
+
 import org.jongo.spike.dbref.jackson.Reference;
 import org.jongo.spike.dbref.jackson.ReferenceLink;
 import org.jongo.spike.dbref.jackson.ReferenceSerializer;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class ReferenceSerializerTest {
 
@@ -42,7 +43,7 @@ public class ReferenceSerializerTest {
         serializer = new ReferenceSerializer();
         buddyWithAFriend = new Buddy("john", new Buddy("pal", null));
 
-        SimpleModule module = new SimpleModule("module", new Version(1, 0, 0, null));
+        SimpleModule module = new SimpleModule("module", new Version(1, 0, 0, null, null, null));
         module.addSerializer(Reference.class, serializer);
         mapper.registerModule(module);
     }
@@ -79,13 +80,11 @@ public class ReferenceSerializerTest {
 
         assertThat(asString).contains("{\"friend\":{ \"$ref\" : \"buddies\", \"$id\" : \"idOfAFriend\" }");
 
-
     }
 
     private String withNullId() {
         return null;
     }
-
 
     private static class FakeReferenceLink implements ReferenceLink<Buddy> {
 

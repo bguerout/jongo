@@ -16,18 +16,19 @@
 
 package org.jongo.spike.dbref;
 
-import com.mongodb.DB;
-import com.mongodb.DBRef;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.jongo.spike.dbref.jackson.Reference;
 import org.jongo.spike.dbref.jackson.ReferenceDeserializer;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.mongodb.DB;
+import com.mongodb.DBRef;
 
 public class ReferenceDeserializerTest {
 
@@ -36,7 +37,7 @@ public class ReferenceDeserializerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         DB db = mock(DB.class);
-        SimpleModule module = new SimpleModule("dbRefModule", new Version(1, 0, 0, null));
+        SimpleModule module = new SimpleModule("dbRefModule", new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Reference.class, new ReferenceDeserializer(mapper, db));
         mapper.registerModule(module);
 
@@ -47,6 +48,5 @@ public class ReferenceDeserializerTest {
         assertThat(dbRef.getRef()).isEqualTo("aCollection");
         assertThat(dbRef.getId()).isEqualTo(new ObjectId("4f916b11e4b03bf323284f86"));
     }
-
 
 }

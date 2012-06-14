@@ -16,14 +16,11 @@
 
 package org.jongo.spike.dbref;
 
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
-import com.mongodb.util.JSON;
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.net.UnknownHostException;
+
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.ResultMapper;
@@ -38,9 +35,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.UnknownHostException;
-
-import static org.fest.assertions.Assertions.assertThat;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
+import com.mongodb.util.JSON;
 
 public class DBRefSpikeTest extends JongoTestCase {
 
@@ -137,7 +138,7 @@ public class DBRefSpikeTest extends JongoTestCase {
     }
 
     private SimpleModule createDBRefModule(DB database, ObjectMapper mapper) {
-        SimpleModule module = new SimpleModule("dbRefModule", new Version(1, 0, 0, null));
+        SimpleModule module = new SimpleModule("dbRefModule", new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Reference.class, new ReferenceDeserializer(mapper, database));
 
         ReferenceSerializer serializer = new ReferenceSerializer();
