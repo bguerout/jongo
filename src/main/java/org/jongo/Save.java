@@ -16,6 +16,9 @@
 
 package org.jongo;
 
+import java.lang.reflect.Field;
+
+import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 
 import com.mongodb.DBCollection;
@@ -44,13 +47,37 @@ class Save {
     }
 
     public String execute() {
-
         String documentAsJson = marshaller.marshall(document);
         DBObject dbObject = convertToJson(documentAsJson);
 
         collection.save(dbObject, determineWriteConcern());
 
-        return dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
+        String id = dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
+        setDocumentGeneratedId(id);
+
+        return id;
+    }
+
+    private void setDocumentGeneratedId(String id) {
+        Class<?> clazz = document.getClass();
+        do {
+            findDocumentGeneratedId(id, clazz);
+            clazz = clazz.getSuperclass();
+        } while (!clazz.equals(Object.class));
+    }
+
+    private void findDocumentGeneratedId(String id, Class<?> clazz) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getType().equals(ObjectId.class)) {
+                field.setAccessible(true);
+                try {
+                    field.set(document, new ObjectId(id));
+                    break;
+                } catch (IllegalArgumentException e) {
+                } catch (IllegalAccessException e) {
+                }
+            }
+        }
     }
 
     private WriteConcern determineWriteConcern() {

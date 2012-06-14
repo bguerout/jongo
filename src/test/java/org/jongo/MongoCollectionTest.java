@@ -16,6 +16,10 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.io.IOException;
+
 import org.jongo.model.Animal;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Fox;
@@ -24,10 +28,6 @@ import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest extends JongoTestCase {
 
@@ -83,6 +83,16 @@ public class MongoCollectionTest extends JongoTestCase {
         Animal animal = mongoCollection.findOne("{name:'fantastic'}").as(Animal.class);
 
         assertThat(animal).isInstanceOf(Fox.class);
+        assertThat(animal.getId()).isNotNull();
+    }
+
+    @Test
+    public void setEntityGeneratedId() throws IOException {
+        Fox fox = new Fox("fantastic", "roux");
+
+        mongoCollection.save(fox);
+
+        assertThat(fox.getId()).isNotNull();
     }
 
     @Test

@@ -16,25 +16,23 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.Iterator;
+
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
-
 public class FindSkipSortLimitTest extends JongoTestCase {
 
     private MongoCollection collection;
-    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -42,12 +40,16 @@ public class FindSkipSortLimitTest extends JongoTestCase {
         dropCollection("users");
     }
 
+    public People newPeople() {
+        return new People("John", "22 Wall Street Avenue");
+    }
+
     @Test
     public void canLimit() throws Exception {
         /* given */
-        collection.save(people);
-        collection.save(people);
-        collection.save(people);
+        collection.save(newPeople());
+        collection.save(newPeople());
+        collection.save(newPeople());
 
         /* when */
         Iterable<People> results = collection.find("{}").limit(2).as(People.class);
@@ -59,9 +61,9 @@ public class FindSkipSortLimitTest extends JongoTestCase {
     @Test
     public void canSkip() throws Exception {
         /* given */
-        collection.save(people);
-        collection.save(people);
-        collection.save(people);
+        collection.save(newPeople());
+        collection.save(newPeople());
+        collection.save(newPeople());
 
         /* when */
         Iterable<People> results = collection.find("{}").skip(2).as(People.class);

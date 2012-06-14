@@ -50,9 +50,8 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
         try {
             return mapper.readValue(json, clazz);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e); // TODO
-                                                                                                               // handle
-                                                                                                               // this
+            // TODO handle this
+            throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e);
         }
     }
 
@@ -62,9 +61,8 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
             mapper.writeValue(writer, obj);
             return writer.toString();
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e); // TODO
-                                                                                           // handle
-                                                                                           // this
+            // TODO handle this
+            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e);
         }
     }
 
