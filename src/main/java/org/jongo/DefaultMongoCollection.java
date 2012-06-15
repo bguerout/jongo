@@ -86,11 +86,11 @@ class DefaultMongoCollection implements MongoCollection {
         return new Update(collection, query).multi().with(modifier);
     }
 
-    public String save(Object document) {
+    public WriteResult save(Object document) {
         return new Save(collection, marshaller, document).execute();
     }
 
-    public String save(Object document, WriteConcern concern) {
+    public WriteResult save(Object document, WriteConcern concern) {
         return new Save(collection, marshaller, document).concern(concern).execute();
     }
 

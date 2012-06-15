@@ -59,10 +59,11 @@ public class RemoveTest extends JongoTestCase {
     @Test
     public void canRemoveByObjectId() throws Exception {
         /* given */
-        String johnId = collection.save(new People("John"));
+        People john = new People("John");
+        collection.save(john);
 
         /* when */
-        WriteResult writeResult = collection.remove(new ObjectId(johnId));
+        WriteResult writeResult = collection.remove(john.getId());
 
         /* then */
         Iterable<People> peoples = collection.find("{}").as(People.class);
@@ -73,10 +74,11 @@ public class RemoveTest extends JongoTestCase {
     @Test
     public void canRemoveWithParameters() throws Exception {
         /* given */
-        String johnId = collection.save(new People("John"));
+        People john = new People("John");
+        collection.save(john);
 
         /* when */
-        WriteResult writeResult = collection.remove("{_id:#}", new ObjectId(johnId));
+        WriteResult writeResult = collection.remove("{_id:#}", john.getId());
 
         /* then */
         Iterable<People> peoples = collection.find("{}").as(People.class);

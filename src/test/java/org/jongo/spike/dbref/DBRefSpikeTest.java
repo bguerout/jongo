@@ -53,7 +53,8 @@ public class DBRefSpikeTest extends JongoTestCase {
         collection = createEmptyCollection("buddies");
         Buddy john = new Buddy();
         john.name = "John";
-        johnId = new ObjectId(collection.save(john));
+        collection.save(john);
+        johnId = john.id;
     }
 
     @After
@@ -105,18 +106,17 @@ public class DBRefSpikeTest extends JongoTestCase {
     @Test
     public void referenceShouldBeMarshalledWithJackson() throws Exception {
 
-        Buddy peter = new Buddy("Peter", null);
+        final Buddy peter = new Buddy("Peter", null);
         Buddy buddy = new Buddy("Abby", peter);
         MongoCollection buddies = getCollectionWithCustomMapper();
-        final String peterId = buddies.save(peter);
-        peter.id = new ObjectId(peterId);
+        buddies.save(peter);
 
         buddies.save(buddy);
 
         buddies.findOne("{name : 'Abby'}").map(new ResultMapper<DBObject>() {
             public DBObject map(DBObject result) {
                 assertThat(result.get("friend")).isInstanceOf(DBRef.class);
-                assertThat(((DBRef) result.get("friend")).getId()).isEqualTo(peterId);
+                assertThat(((DBRef) result.get("friend")).getId()).isEqualTo(peter.id.toString());
                 return result;
             }
         });

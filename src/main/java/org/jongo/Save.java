@@ -18,6 +18,7 @@ package org.jongo;
 
 import java.lang.reflect.Field;
 
+import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 
@@ -46,16 +47,16 @@ class Save {
         return this;
     }
 
-    public String execute() {
+    public WriteResult execute() {
         String documentAsJson = marshaller.marshall(document);
         DBObject dbObject = convertToJson(documentAsJson);
 
-        collection.save(dbObject, determineWriteConcern());
+        WriteResult writeResult = collection.save(dbObject, determineWriteConcern());
 
         String id = dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
         setDocumentGeneratedId(id);
 
-        return id;
+        return writeResult;
     }
 
     private void setDocumentGeneratedId(String id) {

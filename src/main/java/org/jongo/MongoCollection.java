@@ -44,9 +44,9 @@ public interface MongoCollection {
     @Deprecated
     WriteResult update(String query, String modifier);
 
-    <D> String save(D document);
+    <D> WriteResult save(D document);
 
-    <D> String save(D document, WriteConcern concern);
+    <D> WriteResult save(D document, WriteConcern concern);
 
     WriteResult insert(String query);
 

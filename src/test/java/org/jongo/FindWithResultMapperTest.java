@@ -16,26 +16,27 @@
 
 package org.jongo;
 
+import com.mongodb.DBObject;
 import org.jongo.model.People;
 import org.jongo.util.IdResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-public class FindAndMapTest extends JongoTestCase {
+public class FindWithResultMapperTest extends JongoTestCase {
 
     private MongoCollection collection;
-    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -46,30 +47,30 @@ public class FindAndMapTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(people);
-        String id2 = collection.save(new People("Smith", "23 Wall Street Avenue"));
-        String id3 = collection.save(new People("Peter", "24 Wall Street Avenue"));
+        ResultMapper mapper = mock(ResultMapper.class);
+        collection.save(new People("John", "22 Wall Street Avenue"));
 
         /* when */
-        Iterator<String> userIds = collection.find("{}").map(new IdResultMapper()).iterator();
+        for (Object o : collection.find("{}").map(mapper)) {
+           //use mapped object
+        }
 
         /* then */
-        assertThat(userIds.next()).isEqualTo(id);
-        assertThat(userIds.next()).isEqualTo(id2);
-        assertThat(userIds.next()).isEqualTo(id3);
-        assertThat(userIds.hasNext()).isFalse();
+        verify(mapper).map(any(DBObject.class));
     }
 
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(people);
+        ResultMapper mapper = mock(ResultMapper.class);
+        People john = new People("John", "22 Wall Street Avenue");
+        collection.save(john);
 
         /* when */
-        String userId = collection.findOne("{}").map(new IdResultMapper());
+        collection.findOne("{}").map(mapper);
 
         /* then */
-        assertThat(userId).isEqualTo(id);
+        verify(mapper).map(any(DBObject.class));
 
     }
 }

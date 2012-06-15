@@ -42,25 +42,25 @@ public class FindOneTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        String id = collection.save(new People("John", "22 Wall Street Avenue"));
+        collection.save(new People("John", "22 Wall Street Avenue"));
 
         /* when */
         People people = collection.findOne("{name:'John'}").as(People.class);
 
         /* then */
-        assertThat(people.getId()).isEqualTo(id);
+        assertThat(people.getName()).isEqualTo("John");
     }
 
     @Test
     public void canFindOneWithEmptyQuery() throws Exception {
         /* given */
-        String id = collection.save(new People("John", "22 Wall Street Avenue"));
+        collection.save(new People("John", "22 Wall Street Avenue"));
 
         /* when */
         People people = collection.findOne("{}").as(People.class);
 
         /* then */
-        assertThat(people.getId()).isEqualTo(id);
+        assertThat(people.getName()).isEqualTo("John");
     }
 
     @Test

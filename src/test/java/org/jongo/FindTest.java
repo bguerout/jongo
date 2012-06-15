@@ -30,12 +30,10 @@ import static org.fest.assertions.Assertions.assertThat;
 public class FindTest extends JongoTestCase {
 
     private MongoCollection collection;
-    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -46,33 +44,32 @@ public class FindTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(people);
+        People people = new People("John", "22 Wall Street Avenue");
+        collection.save(people);
 
         /* when */
         Iterator<People> users = collection.find("{address:{$exists:true}}").as(People.class).iterator();
 
         /* then */
-        assertThat(users.next().getId()).isEqualTo(id);
+        assertThat(users.next().getId()).isEqualTo(people.getId());
         assertThat(users.hasNext()).isFalse();
     }
 
     @Test
     public void canFindWithEmptySelector() throws Exception {
         /* given */
-        String id = collection.save(this.people);
-        String id2 = collection.save(new People("Smith", "23 Wall Street Avenue"));
-        String id3 = collection.save(new People("Peter", "24 Wall Street Avenue"));
+        People john = new People("John", "22 Wall Street Avenue");
+        People smith = new People("Smith", "23 Wall Street Avenue");
+        People peter = new People("Peter", "24 Wall Street Avenue");
+        collection.save(john);
+        collection.save(smith);
+        collection.save(peter);
 
         /* when */
         Iterator<People> users = collection.find("{}").as(People.class).iterator();
 
         /* then */
-        People people = users.next();
-        assertThat(people.getId()).isEqualTo(id);
-        assertThat(people.getName()).isEqualTo("John");
-        assertThat(users.next().getId()).isEqualTo(id2);
-        assertThat(users.next().getId()).isEqualTo(id3);
-        assertThat(users.hasNext()).isFalse();
+        assertThat(users).contains(john, smith, peter);
     }
 
     @Test

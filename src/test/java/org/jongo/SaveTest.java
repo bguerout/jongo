@@ -17,6 +17,7 @@
 package org.jongo;
 
 import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.model.People;
@@ -33,12 +34,10 @@ import static org.mockito.Mockito.*;
 public class SaveTest extends JongoTestCase {
 
     private MongoCollection collection;
-    private People people;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -49,61 +48,48 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSavePOJO() throws Exception {
         /* given */
-        String id = collection.save(people);
+        People people = new People("John", "22 Wall Street Avenue");
+        collection.save(people);
 
         assertThat(collection.count("{}")).isEqualTo(1);
-        assertThat(id).isNotNull();
+        assertThat(people.getId()).isNotNull();
     }
 
     @Test
-    @Ignore
     public void whenNoSpecifyShouldSaveWithCollectionWriteConcern() throws Exception {
 
-        collection.getDBCollection().setWriteConcern(WriteConcern.JOURNAL_SAFE);
-        WriteConcern writeConcern = spy(collection.getDBCollection().getWriteConcern());
+        People people = new People("John", "22 Wall Street Avenue");
 
-        collection.save(people, writeConcern);
+        WriteResult writeResult = collection.save(people);
 
-        verify(writeConcern).callGetLastError();
+        assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
 
     @Test
-    @Ignore
     public void canSaveWithWriteConcern() throws Exception {
 
-        WriteConcern writeConcern = spy(WriteConcern.SAFE);
+        People people = new People("John", "22 Wall Street Avenue");
 
-        collection.save(people, writeConcern);
+        WriteResult writeResult = collection.save(people, WriteConcern.SAFE);
 
-        verify(writeConcern).callGetLastError();
-    }
-
-    @Test
-    public void canSavedAnObjectWithAnObjectId() throws Exception {
-
-        ObjectId id = new ObjectId();
-        People john = new People(id, "John");
-
-        String savedId = collection.save(john);
-
-        assertThat(savedId).isEqualTo(id.toString());
+        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
 
     @Test
     public void canModifyAlreadySavedEntity() throws Exception {
         /* given */
-        String idAsString = collection.save(new People("John", "21 Jump Street"));
-        ObjectId id = new ObjectId(idAsString);
-        People people = collection.findOne(id).as(People.class);
-        people.setAddress("new address");
+        People john = new People("John", "21 Jump Street");
+        collection.save(john);
+        john.setAddress("new address");
 
         /* when */
-        collection.save(people);
+        collection.save(john);
 
         /* then */
-        people = collection.findOne(id).as(People.class);
-        assertThat(people.getId()).isEqualTo(id);
-        assertThat(people.getAddress()).isEqualTo("new address");
+        ObjectId johnId = john.getId();
+        People johnWithNewAddress = collection.findOne(johnId).as(People.class);
+        assertThat(johnWithNewAddress.getId()).isEqualTo(johnId);
+        assertThat(johnWithNewAddress.getAddress()).isEqualTo("new address");
     }
 
     @Test
@@ -111,11 +97,10 @@ public class SaveTest extends JongoTestCase {
 
         People john = new People(new ObjectId("47cc67093475061e3d95369d"), "John");
 
-        String id = collection.save(john);
+        collection.save(john);
 
-        People result = collection.findOne(new ObjectId(id)).as(People.class);
+        People result = collection.findOne(new ObjectId("47cc67093475061e3d95369d")).as(People.class);
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo("47cc67093475061e3d95369d");
     }
 
     @Test(expected = IllegalArgumentException.class)

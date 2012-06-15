@@ -46,11 +46,11 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
         pojo._id = new ObjectId("4f92d1ae44ae2dac4527d49b");
 
         // when
-        String id = collection.save(pojo);
+        collection.save(pojo);
 
         // then
         POJONotAnnotated result = collection.findOne("{}").as(POJONotAnnotated.class);
-        assertThat(result._id).isEqualTo(id);
+        assertThat(result._id.toString()).isEqualTo("4f92d1ae44ae2dac4527d49b");
     }
 
     @Test
