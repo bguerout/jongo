@@ -28,4 +28,24 @@ public class Coordinate {
         this.lat = lat;
         this.lng = lng;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Coordinate)) return false;
+
+        Coordinate that = (Coordinate) o;
+
+        if (lat != that.lat) return false;
+        if (lng != that.lng) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = lat;
+        result = 31 * result + lng;
+        return result;
+    }
 }
