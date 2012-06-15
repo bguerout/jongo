@@ -16,80 +16,23 @@
 
 package org.jongo;
 
-import java.net.UnknownHostException;
-
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.model.People;
-import org.junit.rules.ExternalResource;
-
 import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.MongoURI;
+import org.junit.Test;
 
-public class JongoTest extends ExternalResource {
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-    private static Jongo jongo;
-    public static MongoCollection collection;
+public class JongoTest {
 
-    static {
-        JacksonProcessor processor = new JacksonProcessor();
-        prepareMarshallingStrategy(processor, processor);
-    }
 
-    public static void prepareMarshallingStrategy(Marshaller marshaller, Unmarshaller unmarshaller) {
-        jongo = new Jongo(findDatabase(), marshaller, unmarshaller);
-    }
+    @Test
+    public void canObtainACollection() throws Exception {
 
-    public static JongoTest collection(String collectionName) {
-        return new JongoTest(collectionName);
-    }
+        DB db = mock(DB.class);
+        Jongo jongo = new Jongo(db);
 
-    private JongoTest(String collectionName) {
-        collection = jongo.getCollection(collectionName);
-        collection.drop();
-    }
+        jongo.getCollection("collection-name");
 
-    @Override
-    protected void after() {
-        collection.drop();
-    };
-
-    public static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
-
-    private static DB findDatabase() {
-        try {
-            if (mustRunTestsAgainstMongoHQ())
-                return getDBFromMongoHQ();
-            else
-                return getLocalDB();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("Unable to reach mongo database test instance", e);
-        }
-    }
-
-    private static boolean mustRunTestsAgainstMongoHQ() {
-        return System.getProperty(MONGOHQ_FLAG) != null;
-    }
-
-    private static DB getDBFromMongoHQ() throws UnknownHostException {
-        String uri = System.getProperty(MONGOHQ_FLAG);
-        MongoURI mongoURI = new MongoURI(uri);
-        DB db = mongoURI.connectDB();
-        db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
-        return db;
-    }
-
-    private static DB getLocalDB() throws UnknownHostException {
-        return new Mongo("127.0.0.1").getDB("jongo");
-    }
-
-    public DB getDatabase() {
-        return jongo.getDatabase();
-    }
-
-    public static People newPeople() {
-        return new People("John", "22 Wall Street Avenue");
+        verify(db).getCollection("collection-name");
     }
 }

@@ -16,33 +16,40 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.JongoTest.collection;
-import static org.jongo.JongoTest.newPeople;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.mongodb.WriteConcern;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.model.People;
+import org.jongo.util.JongoTestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 
-import com.mongodb.WriteConcern;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.*;
 
-public class SaveTest {
+public class SaveTest extends JongoTestCase {
 
-    @Rule
-    public JongoTest jongo = JongoTest.collection("users");
+    private MongoCollection collection;
+    private People people;
+
+    @Before
+    public void setUp() throws Exception {
+        collection = createEmptyCollection("users");
+        people = new People("John", "22 Wall Street Avenue");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dropCollection("users");
+    }
 
     @Test
     public void canSavePOJO() throws Exception {
         /* given */
-        String id = collection.save(newPeople());
+        String id = collection.save(people);
 
         assertThat(collection.count("{}")).isEqualTo(1);
         assertThat(id).isNotNull();
@@ -55,7 +62,7 @@ public class SaveTest {
         collection.getDBCollection().setWriteConcern(WriteConcern.JOURNAL_SAFE);
         WriteConcern writeConcern = spy(collection.getDBCollection().getWriteConcern());
 
-        collection.save(newPeople(), writeConcern);
+        collection.save(people, writeConcern);
 
         verify(writeConcern).callGetLastError();
     }
@@ -66,7 +73,7 @@ public class SaveTest {
 
         WriteConcern writeConcern = spy(WriteConcern.SAFE);
 
-        collection.save(newPeople(), writeConcern);
+        collection.save(people, writeConcern);
 
         verify(writeConcern).callGetLastError();
     }

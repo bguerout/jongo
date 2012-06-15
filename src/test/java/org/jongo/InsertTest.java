@@ -17,15 +17,25 @@
 package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.JongoTest.collection;
 
-import org.junit.Rule;
+import org.jongo.util.JongoTestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-public class InsertTest {
+public class InsertTest extends JongoTestCase {
 
-    @Rule
-    public JongoTest jongo = JongoTest.collection("users");
+    private MongoCollection collection;
+
+    @Before
+    public void setUp() throws Exception {
+        collection = createEmptyCollection("users");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dropCollection("users");
+    }
 
     @Test
     public void canInsert() throws Exception {
@@ -37,8 +47,10 @@ public class InsertTest {
 
     @Test
     public void canInsertWithParameters() throws Exception {
+
         collection.insert("{name : 'Abby'}");
 
         assertThat(collection.count("{name : 'Abby'}")).isEqualTo(1);
     }
+
 }

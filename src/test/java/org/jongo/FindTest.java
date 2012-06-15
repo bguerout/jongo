@@ -16,26 +16,37 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.JongoTest.collection;
-import static org.jongo.JongoTest.newPeople;
+import org.jongo.model.Coordinate;
+import org.jongo.model.People;
+import org.jongo.util.JongoTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Iterator;
 
-import org.jongo.model.Coordinate;
-import org.jongo.model.People;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
-public class FindTest {
+public class FindTest extends JongoTestCase {
 
-    @Rule
-    public JongoTest jongo = JongoTest.collection("users");
+    private MongoCollection collection;
+    private People people;
+
+    @Before
+    public void setUp() throws Exception {
+        collection = createEmptyCollection("users");
+        people = new People("John", "22 Wall Street Avenue");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dropCollection("users");
+    }
 
     @Test
     public void canFind() throws Exception {
         /* given */
-        String id = collection.save(newPeople());
+        String id = collection.save(people);
 
         /* when */
         Iterator<People> users = collection.find("{address:{$exists:true}}").as(People.class).iterator();
@@ -48,7 +59,7 @@ public class FindTest {
     @Test
     public void canFindWithEmptySelector() throws Exception {
         /* given */
-        String id = collection.save(newPeople());
+        String id = collection.save(this.people);
         String id2 = collection.save(new People("Smith", "23 Wall Street Avenue"));
         String id3 = collection.save(new People("Peter", "24 Wall Street Avenue"));
 

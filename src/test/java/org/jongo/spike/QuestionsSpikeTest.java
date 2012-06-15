@@ -16,25 +16,34 @@
 
 package org.jongo.spike;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.JongoTest.collection;
+import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
+import org.jongo.MongoCollection;
+import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.model.People;
+import org.jongo.util.JongoTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jongo.JongoTest;
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.model.People;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
+public class QuestionsSpikeTest extends JongoTestCase {
 
-public class QuestionsSpikeTest {
+    private MongoCollection collection;
 
-    @Rule
-    public JongoTest jongo = JongoTest.collection("users");
+    @Before
+    public void setUp() throws Exception {
+        collection = createEmptyCollection("users");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dropCollection("users");
+    }
 
     @Test
     // http://stackoverflow.com/questions/10444038/mongo-db-query-in-java/10445169#10445169
@@ -43,10 +52,12 @@ public class QuestionsSpikeTest {
         List<String> keys = new ArrayList<String>();
         collection.findOne("{$or:[{key1: {$in:[764]}},{key2:{$in:[#]}}, {$and:[{key3:3},{key4:67}]}]}", keys).as(People.class);
 
-        DBObject query = QueryBuilder.start().or(QueryBuilder.start("key1").in(764).get(), QueryBuilder.start("key2").in(keys).get(), QueryBuilder.start().and("key3").is(3).and("key4").is(64).get())
-                .get();
+        DBObject query = QueryBuilder
+                .start()
+                .or(QueryBuilder.start("key1").in(764).get(), QueryBuilder.start("key2").in(keys).get(),
+                        QueryBuilder.start().and("key3").is(3).and("key4").is(64).get()).get();
 
-        jongo.getDatabase().getCollection("users").find(query);
+        getDatabase().getCollection("users").find(query);
     }
 
     @Test
