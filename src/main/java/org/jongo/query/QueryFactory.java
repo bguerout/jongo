@@ -22,7 +22,7 @@ public final class QueryFactory {
     private final ParameterBinder binder;
 
     public QueryFactory() {
-        this.binder = new ParameterBinder(new NativeMarshaller());
+        this.binder = new ParameterBinder(new ParameterMarshaller());
     }
 
     public Query createQuery(String query) {

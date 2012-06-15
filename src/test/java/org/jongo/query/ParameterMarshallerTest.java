@@ -26,13 +26,13 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class NativeMarshallerTest {
+public class ParameterMarshallerTest {
 
-    private NativeMarshaller marshaller;
+    private ParameterMarshaller marshaller;
 
     @Before
     public void setUp() throws Exception {
-        marshaller = new NativeMarshaller();
+        marshaller = new ParameterMarshaller();
     }
 
     @Test(expected = RuntimeException.class)

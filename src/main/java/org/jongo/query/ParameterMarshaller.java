@@ -19,7 +19,7 @@ package org.jongo.query;
 import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 
-class NativeMarshaller implements Marshaller {
+class ParameterMarshaller implements Marshaller {
 
     public <T> String marshall(T obj) {
         return JSON.serialize(obj);
