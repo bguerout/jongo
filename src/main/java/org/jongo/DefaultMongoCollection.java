@@ -100,7 +100,7 @@ class DefaultMongoCollection implements MongoCollection {
 
     public WriteResult insert(String query, Object... parameters) {
         DBObject dbQuery = createQuery(query, parameters).toDBObject();
-        return collection.save(dbQuery);
+        return collection.insert(dbQuery);
     }
 
     public WriteResult remove(ObjectId id) {

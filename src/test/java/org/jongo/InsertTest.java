@@ -49,7 +49,7 @@ public class InsertTest extends JongoTestCase {
     @Test
     public void canInsertWithParameters() throws Exception {
 
-        collection.insert("{name : 'Abby'}");
+        collection.insert("{name : #}", "Abby");
 
         assertThat(collection.count("{name : 'Abby'}")).isEqualTo(1);
     }
