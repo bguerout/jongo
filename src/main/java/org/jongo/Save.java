@@ -16,16 +16,15 @@
 
 package org.jongo;
 
-import java.lang.reflect.Field;
-
-import com.mongodb.WriteResult;
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+
+import java.lang.reflect.Field;
 
 class Save {
 
@@ -74,8 +73,8 @@ class Save {
                 try {
                     field.set(document, new ObjectId(id));
                     break;
-                } catch (IllegalArgumentException e) {
                 } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
                 }
             }
         }

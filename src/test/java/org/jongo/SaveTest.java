@@ -20,16 +20,19 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
+import org.jongo.model.Fox;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SaveTest extends JongoTestCase {
 
@@ -112,4 +115,25 @@ public class SaveTest extends JongoTestCase {
 
         save.execute();
     }
+
+    @Test
+    public void canSetEntityGeneratedObjectIdAndRestrictedVisibility() throws IOException {
+
+        People robert = new People("Robert", "21 Jump Street");
+
+        collection.save(robert);
+
+        assertThat(robert.getId()).isNotNull();
+    }
+
+    @Test
+    public void canSetEntityGeneratedObjectIdOnSuperType() throws IOException {
+
+        Fox fox = new Fox("fantastic", "roux");
+
+        collection.save(fox);
+
+        assertThat(fox.getId()).isNotNull();
+    }
+
 }
