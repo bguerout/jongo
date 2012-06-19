@@ -16,12 +16,13 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
+import com.mongodb.WriteResult;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class InsertTest extends JongoTestCase {
 
@@ -52,5 +53,14 @@ public class InsertTest extends JongoTestCase {
 
         assertThat(collection.count("{name : 'Abby'}")).isEqualTo(1);
     }
+
+    @Test
+    public void shouldSaveWithCollectionWriteConcern() throws Exception {
+
+        WriteResult writeResult = collection.insert("{name : 'Abby'}");
+
+        assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
+    }
+
 
 }
