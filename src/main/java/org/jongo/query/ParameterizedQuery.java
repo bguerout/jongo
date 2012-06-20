@@ -24,13 +24,11 @@ class ParameterizedQuery implements Query {
     private final ParameterBinder binder;
     private final String query;
     private final Object[] parameters;
-    private final DBObjectConverter dbObjectConverter;
 
     ParameterizedQuery(ParameterBinder binder, String query, Object... parameters) {
         this.query = query;
         this.binder = binder;
         this.parameters = parameters;
-        dbObjectConverter = new DBObjectConverter();
     }
 
     public DBObject toDBObject() {
@@ -38,7 +36,7 @@ class ParameterizedQuery implements Query {
         if (parameters.length != 0) {
             boundQuery = binder.bind(query, parameters);
         }
-        return dbObjectConverter.fromString(boundQuery);
+        return JsonParser.parse(boundQuery);
     }
 
 }

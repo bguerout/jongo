@@ -19,9 +19,9 @@ package org.jongo.query;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-class DBObjectConverter {
+class JsonParser {
 
-    public DBObject fromString(String json) {
+    static DBObject parse(String json) {
         try {
             return ((DBObject) JSON.parse(json));
         } catch (Exception e) {

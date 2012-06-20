@@ -21,14 +21,12 @@ import com.mongodb.DBObject;
 class StaticQuery implements Query {
 
     private final String query;
-    private final DBObjectConverter dbObjectConverter;
 
     StaticQuery(String query) {
         this.query = query;
-        dbObjectConverter = new DBObjectConverter();
     }
 
     public DBObject toDBObject() {
-        return dbObjectConverter.fromString(query);
+        return JsonParser.parse(query);
     }
 }
