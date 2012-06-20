@@ -70,6 +70,10 @@ public interface MongoCollection {
 
     Distinct distinct(String key);
 
+    Aggregate aggregate(String pipelineOperator);
+
+    Aggregate aggregate(String pipelineOperator, Object... parameters);
+
     void drop();
 
     void ensureIndex(String index);

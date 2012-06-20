@@ -27,6 +27,7 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 
+
 class DefaultMongoCollection implements MongoCollection {
 
     private final DBCollection collection;
@@ -132,6 +133,14 @@ class DefaultMongoCollection implements MongoCollection {
 
     public Distinct distinct(String key) {
         return new Distinct(collection, unmarshaller, queryFactory, key);
+    }
+
+    public Aggregate aggregate(String pipelineOperator) {
+        return aggregate(pipelineOperator, new Object[0]);
+    }
+
+    public Aggregate aggregate(String pipelineOperator, Object... parameters) {
+        return new Aggregate(collection.getDB(), collection.getName(), unmarshaller, queryFactory).and(pipelineOperator, parameters);
     }
 
     public void drop() {
