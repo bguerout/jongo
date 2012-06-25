@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.bson.types.ObjectId;
+import org.jongo.BSONPrimitives;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 
@@ -76,12 +76,19 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
     mapper.setSerializationInclusion(NON_NULL);
     mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
 
-    SimpleModule module = new SimpleModule("jongo", new Version(1, 0, 0, null, null, null));
-    module.addSerializer(ObjectId.class, new ObjectIdSerializer());
-    module.addDeserializer(ObjectId.class, new ObjectIdDeserializer());
-    mapper.registerModule(module);
+        SimpleModule module = new SimpleModule("jongo", new Version(1, 0, 0, null, null, null));
+        addBSONTypeSerializers(module);
+        mapper.registerModule(module);
+        return mapper;
+    }
 
-    return mapper;
-  }
+    private static void addBSONTypeSerializers(SimpleModule module) {
+        NativeSerializer serializer = new NativeSerializer();
+        NativeDeserializer deserializer = new NativeDeserializer();
+        for (Class primitive : BSONPrimitives.getPrimitives()) {
+            module.addSerializer(primitive, serializer);
+            module.addDeserializer(primitive, deserializer);
+        }
+    }
 
 }

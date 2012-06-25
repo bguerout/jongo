@@ -16,32 +16,20 @@
 
 package org.jongo.marshall.jackson;
 
-import java.io.IOException;
-
-import org.bson.types.ObjectId;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.mongodb.util.JSON;
 
-class ObjectIdDeserializer extends JsonDeserializer<ObjectId> {
+import java.io.IOException;
+
+public class NativeDeserializer extends JsonDeserializer<Object> {
 
     @Override
-    public ObjectId deserialize(JsonParser jp, DeserializationContext context) throws IOException, JsonProcessingException {
-        String id = jp.getText();
-        if (id.startsWith("{")) {
-            return createObjectIdFromAField(jp, id);
-        }
-        return new ObjectId(id);
-    }
-
-    private ObjectId createObjectIdFromAField(JsonParser jp, String id) throws IOException {
-        JsonNode oid = ((JsonNode) jp.readValueAsTree()).get("$oid");
-        if (oid == null) {
-            throw new IllegalArgumentException("Unable to convert " + id + " into an ObjectId");
-        }
-        return new ObjectId(oid.textValue());
+    public Object deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        String asString = jp.readValueAsTree().toString();
+        return JSON.parse(asString);
     }
 }
