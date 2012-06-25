@@ -22,10 +22,10 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Distinct {
+public final class Distinct {
     private final DBCollection dbCollection;
     private final Unmarshaller unmarshaller;
     private final String key;
@@ -51,18 +51,28 @@ public class Distinct {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Iterable<T> as(final Class<T> clazz) {
+    public <T> List<T> as(final Class<T> clazz) {
         DBObject ref = query.toDBObject();
         final List<?> distinct = dbCollection.distinct(key, ref);
 
-        if (BSONPrimitives.contains(clazz))
-            return new Iterable<T>() {
-                public Iterator<T> iterator() {
-                    return (Iterator<T>) distinct.iterator();
-                }
-            };
-        else
-            return new MongoIterator<T>((Iterator<DBObject>) distinct.iterator(), ResultMapperFactory.newMapper(clazz, unmarshaller));
+        if (distinct.isEmpty() || resultsAreBSONPrimitive(distinct))
+            return (List<T>) distinct;
+        else {
+            return typedList((List<DBObject>) distinct, clazz);
+        }
+    }
+
+    private boolean resultsAreBSONPrimitive(List<?> distinct) {
+        return !(distinct.get(0) instanceof DBObject);
+    }
+
+    private <T> List<T> typedList(List<DBObject> distinct, Class<T> clazz) {
+        List<T> results = new ArrayList<T>();
+        ResultMapper<T> mapper = ResultMapperFactory.newMapper(clazz, unmarshaller);
+        for (DBObject dbObject : distinct) {
+            results.add(mapper.map(dbObject));
+        }
+        return results;
     }
 
 }

@@ -17,40 +17,22 @@
 package org.jongo;
 
 import com.mongodb.DBCursor;
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MongoIteratorTest {
-
-    private ResultMapper<String> mapper;
-
-    @Before
-    public void setUp() throws Exception {
-        mapper = ResultMapperFactory.newMapper(String.class, new JacksonProcessor());
-    }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailWhenNoMoreElements() throws Exception {
         DBCursor cursor = mock(DBCursor.class);
         when(cursor.hasNext()).thenReturn(false);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, mapper);
+        MongoIterator<String> iterator = new MongoIterator<String>(cursor, mock(ResultMapper.class));
 
         iterator.next();
-    }
-
-    @Test
-    public void shouldCheckCursorStatusOnHasNext() {
-        DBCursor cursor = mock(DBCursor.class);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, mapper);
-
-        iterator.hasNext();
-
-        verify(cursor).hasNext();
     }
 
 }

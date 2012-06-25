@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import java.util.Iterator;
@@ -23,10 +24,10 @@ import java.util.NoSuchElementException;
 
 class MongoIterator<E> implements Iterator<E>, Iterable<E> {
 
-    private final Iterator<DBObject> cursor;
+    private final DBCursor cursor;
     private final ResultMapper<E> resultMapper;
 
-    public MongoIterator(Iterator<DBObject> cursor, ResultMapper<E> resultMapper) {
+    public MongoIterator(DBCursor cursor, ResultMapper<E> resultMapper) {
         this.cursor = cursor;
         this.resultMapper = resultMapper;
     }
