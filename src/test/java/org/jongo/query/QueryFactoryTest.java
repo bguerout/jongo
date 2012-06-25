@@ -18,10 +18,7 @@ package org.jongo.query;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.jongo.query.QueryFactory;
-import org.jongo.query.ParameterizedQuery;
-import org.jongo.query.Query;
-import org.jongo.query.StaticQuery;
+import org.jongo.model.People;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,38 +26,52 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryFactoryTest {
 
-    private QueryFactory queryFactory;
+    private QueryFactory factory;
 
     @Before
     public void setUp() throws Exception {
-        queryFactory = new QueryFactory();
+        factory = new QueryFactory();
     }
 
     @Test
-    public void shouldCreateBindableQuery() throws Exception {
+    public void canCreateStaticQuery() throws Exception {
 
-        Query query = queryFactory.createQuery("{value:#}", 1);
+        Query query = factory.createQuery("{'value':1}");
 
         DBObject dbObject = query.toDBObject();
 
+        assertThat(dbObject.containsField("value")).isTrue();
         assertThat(dbObject.get("value")).isEqualTo(1);
-        assertThat(query).isInstanceOf(ParameterizedQuery.class);
     }
 
     @Test
-    public void shouldCreateStaticQuery() throws Exception {
+    public void canCreateParameterizedQuery() throws Exception {
 
-        Query query = queryFactory.createQuery("{value:1}");
+        Query query = factory.createQuery("{'value':#}", 2);
 
-        assertThat(query).isInstanceOf(StaticQuery.class);
+        DBObject dbObject = query.toDBObject();
+
+        assertThat(dbObject.containsField("value")).isTrue();
+        assertThat(dbObject.get("value")).isEqualTo(2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenParameterCannotBeMarshalled() throws Exception {
+
+        factory.createQuery("{value:#}", new People("robert"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenTooManyParameters() throws Exception {
+
+        factory.createQuery("{value:#}", 1, 2, 3);
     }
 
     @Test
-    public void shouldCreateAnEmptyQuery() throws Exception {
+    public void canCreateEmptyQuery() throws Exception {
 
-        Query query = queryFactory.createEmptyQuery();
+        Query query = factory.createEmptyQuery();
 
-        assertThat(query).isInstanceOf(StaticQuery.class);
         assertThat(query.toDBObject()).isEqualTo(new BasicDBObject());
     }
 }

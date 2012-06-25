@@ -17,12 +17,12 @@
 package org.jongo.query;
 
 import org.jongo.marshall.Marshaller;
-import org.jongo.query.ParameterBinder;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ParameterBinderTest {
 
@@ -42,8 +42,6 @@ public class ParameterBinderTest {
         when(marshaller.marshall(c)).thenThrow(new RuntimeException());
 
         binder.bind("{id:#}", c);
-
-        verify(marshaller.marshall(c));
     }
 
     @Test(expected = IllegalArgumentException.class)

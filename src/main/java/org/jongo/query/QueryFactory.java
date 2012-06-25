@@ -18,7 +18,8 @@ package org.jongo.query;
 
 public final class QueryFactory {
 
-    private static final StaticQuery EMPTY_QUERY = new StaticQuery("{}");
+    private static final Query EMPTY_QUERY = new Query("{}");
+
     private final ParameterBinder binder;
 
     public QueryFactory() {
@@ -32,9 +33,10 @@ public final class QueryFactory {
     public Query createQuery(String query, Object... parameters) {
 
         if (parameters.length == 0) {
-            return new StaticQuery(query);
+            return new Query(query);
         }
-        return new ParameterizedQuery(binder, query, parameters);
+        String queryWithParameters = binder.bind(query, parameters);
+        return new Query(queryWithParameters);
     }
 
     public Query createEmptyQuery() {

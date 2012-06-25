@@ -17,7 +17,20 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
-public interface Query {
-    DBObject toDBObject();
+public final class Query {
+    private final String query;
+
+    Query(String query) {
+        this.query = query;
+    }
+
+    public DBObject toDBObject() {
+        try {
+            return ((DBObject) JSON.parse(query));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(query + " cannot be parsed", e);
+        }
+    }
 }

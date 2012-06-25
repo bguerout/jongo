@@ -17,15 +17,20 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import org.junit.Test;
 
-class JsonParser {
+import static org.fest.assertions.Assertions.assertThat;
 
-    static DBObject parse(String json) {
-        try {
-            return ((DBObject) JSON.parse(json));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(json + " cannot be parsed", e);
-        }
+public class QueryTest {
+
+    @Test
+    public void shouldConvertToDBObject() throws Exception {
+
+        Query query = new Query("{'value':1}");
+
+        DBObject dbObject = query.toDBObject();
+
+        assertThat(dbObject.containsField("value")).isTrue();
+        assertThat(dbObject.get("value")).isEqualTo(1);
     }
 }

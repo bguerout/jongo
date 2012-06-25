@@ -59,8 +59,13 @@ class ParameterBinder {
             return query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
 
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("Unable to bind parameter: " + parameter + " into query: " + query, e);
+            return handleInvalidBinding(query, parameter, e);
         }
+    }
+
+    private String handleInvalidBinding(String query, Object parameter, RuntimeException e) {
+        String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
+        throw new IllegalArgumentException(message, e);
     }
 
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {
