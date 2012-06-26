@@ -33,10 +33,10 @@ public final class Update {
     private boolean upsert = false;
     private boolean multi = false;
 
-    Update(DBCollection collection, String query, Object... parameters) {
+    Update(DBCollection collection, QueryFactory queryFactory, String query, Object... parameters) {
         this.collection = collection;
-        this.queryFactory = new QueryFactory();
-        this.query = queryFactory.createQuery(query, parameters);
+        this.queryFactory = queryFactory;
+        this.query = this.queryFactory.createQuery(query, parameters);
     }
 
     private WriteConcern determineWriteConcern() {

@@ -32,12 +32,12 @@ public final class Distinct {
     private Query query;
     private final QueryFactory queryFactory;
 
-    Distinct(DBCollection dbCollection, Unmarshaller unmarshaller, String key) {
+    Distinct(DBCollection dbCollection, Unmarshaller unmarshaller, QueryFactory queryFactory, String key) {
         this.dbCollection = dbCollection;
         this.unmarshaller = unmarshaller;
         this.key = key;
-        this.queryFactory = new QueryFactory();
-        this.query = queryFactory.createEmptyQuery();
+        this.queryFactory = queryFactory;
+        this.query = this.queryFactory.createEmptyQuery();
     }
 
     public Distinct query(String query) {

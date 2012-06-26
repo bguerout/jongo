@@ -38,7 +38,7 @@ class DefaultMongoCollection implements MongoCollection {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
-        this.queryFactory = new QueryFactory();
+        this.queryFactory = new QueryFactory(marshaller);
     }
 
     private static final Object[] NO_PARAMETERS = {};
@@ -47,7 +47,7 @@ class DefaultMongoCollection implements MongoCollection {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
-        return new FindOne(collection, unmarshaller, "{_id:#}", id);
+        return new FindOne(collection, unmarshaller, queryFactory, "{_id:#}", id);
     }
 
     public FindOne findOne() {
@@ -59,7 +59,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(collection, unmarshaller, query, parameters);
+        return new FindOne(collection, unmarshaller, queryFactory, query, parameters);
     }
 
     public Find find() {
@@ -71,7 +71,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(collection, unmarshaller, query, parameters);
+        return new Find(collection, unmarshaller, queryFactory, query, parameters);
     }
 
     public long count() {
@@ -88,7 +88,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public Update update(String query) {
-        return new Update(collection, query);
+        return new Update(collection, queryFactory, query);
     }
 
     /**
@@ -98,7 +98,7 @@ class DefaultMongoCollection implements MongoCollection {
      */
     @Deprecated
     public WriteResult update(String query, String modifier) {
-        return new Update(collection, query).multi().with(modifier);
+        return new Update(collection, queryFactory, query).multi().with(modifier);
     }
 
     public WriteResult save(Object document) {
@@ -131,7 +131,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public Distinct distinct(String key) {
-        return new Distinct(collection, unmarshaller, key);
+        return new Distinct(collection, unmarshaller, queryFactory, key);
     }
 
     public void drop() {

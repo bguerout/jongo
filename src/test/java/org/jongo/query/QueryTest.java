@@ -16,10 +16,13 @@
 
 package org.jongo.query;
 
-import com.mongodb.DBObject;
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSONParseException;
 
 public class QueryTest {
 
@@ -32,5 +35,18 @@ public class QueryTest {
 
         assertThat(dbObject.containsField("value")).isTrue();
         assertThat(dbObject.get("value")).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldThrowExceptionOnInvalidQuery() throws Exception {
+
+        try {
+            new Query("{invalid}");
+            fail();
+        } catch (Exception e) {
+            assertThat(e).isInstanceOf(IllegalArgumentException.class);
+            assertThat(e.getMessage()).contains("{invalid}");
+            assertThat(e.getCause()).isInstanceOf(JSONParseException.class);
+        }
     }
 }

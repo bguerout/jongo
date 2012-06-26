@@ -20,17 +20,26 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 public final class Query {
-    private final String query;
+    private final DBObject dbObject;
 
     Query(String query) {
-        this.query = query;
+        this.dbObject = convertToDBObject(query);
     }
 
-    public DBObject toDBObject() {
+    private DBObject convertToDBObject(String query) {
         try {
             return ((DBObject) JSON.parse(query));
         } catch (Exception e) {
             throw new IllegalArgumentException(query + " cannot be parsed", e);
         }
+    }
+
+    public DBObject toDBObject() {
+        return dbObject;
+    }
+
+    @Override
+    public String toString() {
+        return dbObject.toString();
     }
 }

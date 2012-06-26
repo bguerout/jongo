@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.marshall;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
@@ -33,6 +33,7 @@ import org.bson.types.Code;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
 import org.bson.types.ObjectId;
+import org.jongo.MongoCollection;
 import org.jongo.model.People;
 import org.jongo.util.JSONResultMapper;
 import org.jongo.util.JongoTestCase;
@@ -43,18 +44,18 @@ import org.junit.Test;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class BSONMarshallingTest extends JongoTestCase {
+public class DocumentMarshallingTest extends JongoTestCase {
 
     private MongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("primitives");
+        collection = createEmptyCollection("marshalling");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("primitives");
+        dropCollection("marshalling");
     }
 
     @Test

@@ -16,55 +16,61 @@
 
 package org.jongo.query;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.jongo.marshall.Marshaller;
 import org.jongo.model.People;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.BasicDBObject;
 
 public class QueryFactoryTest {
 
     private QueryFactory factory;
+    private Marshaller marshaller;
 
     @Before
     public void setUp() throws Exception {
-        factory = new QueryFactory();
+        marshaller = mock(Marshaller.class);
+        factory = new QueryFactory(marshaller);
     }
 
     @Test
     public void canCreateStaticQuery() throws Exception {
 
-        Query query = factory.createQuery("{'value':1}");
+        Query query = factory.createQuery("{value:1}");
 
-        DBObject dbObject = query.toDBObject();
-
-        assertThat(dbObject.containsField("value")).isTrue();
-        assertThat(dbObject.get("value")).isEqualTo(1);
+        assertThat(query.toString()).isEqualTo("{ \"value\" : 1}");
+        verify(marshaller, never()).marshall(any());
     }
 
     @Test
-    public void canCreateParameterizedQuery() throws Exception {
+    public void shouldBindParameterAndCreateQuery() throws Exception {
 
-        Query query = factory.createQuery("{'value':#}", 2);
+        when(marshaller.marshall(2)).thenReturn("2");
 
-        DBObject dbObject = query.toDBObject();
+        Query query = factory.createQuery("{value:#}", 2);
 
-        assertThat(dbObject.containsField("value")).isTrue();
-        assertThat(dbObject.get("value")).isEqualTo(2);
+        assertThat(query.toString()).isEqualTo("{ \"value\" : 2}");
+        verify(marshaller).marshall(2);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenParameterCannotBeMarshalled() throws Exception {
+    @Test
+    public void shouldBindComplexParameterAndCreateQuery() throws Exception {
 
-        factory.createQuery("{value:#}", new People("robert"));
-    }
+        People robert = new People("robert");
+        when(marshaller.marshall(robert)).thenReturn("{ \"name\" : \"robert\"}");
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenTooManyParameters() throws Exception {
+        Query query = factory.createQuery("{value:#}", robert);
 
-        factory.createQuery("{value:#}", 1, 2, 3);
+        assertThat(query.toString()).isEqualTo("{ \"value\" : { \"name\" : \"robert\"}}");
+        verify(marshaller).marshall(robert);
     }
 
     @Test

@@ -16,14 +16,16 @@
 
 package org.jongo.query;
 
+import org.jongo.marshall.Marshaller;
+
 public final class QueryFactory {
 
     private static final Query EMPTY_QUERY = new Query("{}");
 
     private final ParameterBinder binder;
 
-    public QueryFactory() {
-        this.binder = new ParameterBinder(new ParameterMarshaller());
+    public QueryFactory(Marshaller marshaller) {
+        this.binder = new ParameterBinder(marshaller);
     }
 
     public Query createQuery(String query) {
@@ -35,8 +37,11 @@ public final class QueryFactory {
         if (parameters.length == 0) {
             return new Query(query);
         }
-        String queryWithParameters = binder.bind(query, parameters);
-        return new Query(queryWithParameters);
+        return new Query(bindParameters(query, parameters));
+    }
+
+    private String bindParameters(String query, Object[] parameters) {
+        return binder.bind(query, parameters);
     }
 
     public Query createEmptyQuery() {

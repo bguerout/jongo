@@ -35,11 +35,11 @@ public final class Find {
     private Integer limit, skip;
     private Query sort;
 
-    Find(DBCollection collection, Unmarshaller unmarshaller, String query, Object... parameters) {
+    Find(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
-        this.queryFactory = new QueryFactory();
-        this.query = queryFactory.createQuery(query, parameters);
+        this.queryFactory = queryFactory;
+        this.query = this.queryFactory.createQuery(query, parameters);
     }
 
     public Find fields(String fields) {
