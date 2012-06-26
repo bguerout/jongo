@@ -16,8 +16,6 @@
 
 package org.jongo.marshall;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.jongo.MongoCollection;
 import org.jongo.model.Coordinate;
 import org.jongo.model.People;
@@ -25,6 +23,8 @@ import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class ParameterMarshallingTest extends JongoTestCase {
 
@@ -41,7 +41,6 @@ public class ParameterMarshallingTest extends JongoTestCase {
         dropCollection("marshalling");
     }
 
-
     @Test
     public void shouldBindBSONPrimitiveParameter() throws Exception {
 
@@ -57,6 +56,18 @@ public class ParameterMarshallingTest extends JongoTestCase {
 
         long nb = collection.count("{friend.name:#}", "john");
         assertThat(nb).isEqualTo(1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenNotEnoughParameters() throws Exception {
+
+        collection.findOne("{id:#,id2:#}", "123").as(People.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenNotTooManyParameters() throws Exception {
+
+        collection.findOne("{id:#}", 123, 456).as(People.class);
     }
 
 
