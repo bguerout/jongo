@@ -17,19 +17,32 @@
 package org.jongo.marshall.jackson;
 
 
+import java.io.IOException;
+import java.util.Date;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.mongodb.util.JSON;
 
-import java.io.IOException;
+class BackwardDateDeserializer extends JsonDeserializer<Date> {
 
-class NativeDeserializer extends JsonDeserializer<Object> {
+    private final NativeDeserializer deserializer;
+
+    public BackwardDateDeserializer(NativeDeserializer deserializer) {
+        this.deserializer = deserializer;
+    }
 
     @Override
-    public Object deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        String asString = jp.readValueAsTree().toString();
-        return JSON.parse(asString);
+    public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        Object deserializedDate = parse(jp,ctxt);
+        if (deserializedDate instanceof Long)
+            return new Date((Long) deserializedDate);
+        return (Date) deserializedDate;
+    }
+
+    private Object parse(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        return deserializer.deserialize(jp,ctxt);
     }
 }

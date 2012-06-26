@@ -25,6 +25,7 @@ import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Date;
 
 import org.jongo.BSONPrimitives;
 import org.jongo.marshall.Marshaller;
@@ -37,44 +38,44 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public final class JacksonProcessor implements Unmarshaller, Marshaller {
 
-  private final ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-  public JacksonProcessor(ObjectMapper mapper) {
-    this.mapper = mapper;
-  }
-
-  public JacksonProcessor() {
-    this(createMinimalMapper());
-
-  }
-
-  public <T> T unmarshall(String json, Class<T> clazz) {
-    try {
-      return mapper.readValue(json, clazz);
-    } catch (IOException e) {
-      // TODO handle this
-      throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e);
+    public JacksonProcessor(ObjectMapper mapper) {
+        this.mapper = mapper;
     }
-  }
 
-  public <T> String marshall(T obj) {
-    try {
-      Writer writer = new StringWriter();
-      mapper.writeValue(writer, obj);
-      return writer.toString();
-    } catch (IOException e) {
-      // TODO handle this
-      throw new IllegalArgumentException("Unable to marshall json from: " + obj, e);
+    public JacksonProcessor() {
+        this(createMinimalMapper());
+
     }
-  }
 
-  public static ObjectMapper createMinimalMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-    mapper.configure(AUTO_DETECT_GETTERS, false);
-    mapper.configure(AUTO_DETECT_SETTERS, false);
-    mapper.setSerializationInclusion(NON_NULL);
-    mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
+    public <T> T unmarshall(String json, Class<T> clazz) {
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (IOException e) {
+            // TODO handle this
+            throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e);
+        }
+    }
+
+    public <T> String marshall(T obj) {
+        try {
+            Writer writer = new StringWriter();
+            mapper.writeValue(writer, obj);
+            return writer.toString();
+        } catch (IOException e) {
+            // TODO handle this
+            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e);
+        }
+    }
+
+    public static ObjectMapper createMinimalMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(AUTO_DETECT_GETTERS, false);
+        mapper.configure(AUTO_DETECT_SETTERS, false);
+        mapper.setSerializationInclusion(NON_NULL);
+        mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
 
         SimpleModule module = new SimpleModule("jongo", new Version(1, 0, 0, null, null, null));
         addBSONTypeSerializers(module);
@@ -89,6 +90,7 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
             module.addSerializer(primitive, serializer);
             module.addDeserializer(primitive, deserializer);
         }
+        module.addDeserializer(Date.class, new BackwardDateDeserializer(deserializer));
     }
 
 }

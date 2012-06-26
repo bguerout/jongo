@@ -25,7 +25,7 @@ import com.mongodb.util.JSON;
 
 import java.io.IOException;
 
-public class NativeSerializer extends JsonSerializer<Object> {
+class NativeSerializer extends JsonSerializer<Object> {
 
     public void serialize(Object obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
         jsonGenerator.writeRawValue(JSON.serialize(obj));

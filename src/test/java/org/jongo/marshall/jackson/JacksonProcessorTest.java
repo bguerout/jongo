@@ -19,6 +19,7 @@ package org.jongo.marshall.jackson;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.jongo.model.Fox;
 import org.jongo.model.People;
@@ -73,11 +74,24 @@ public class JacksonProcessorTest {
         assertThat(backwardPeople.getAddress()).isEqualTo("22-rue-des-murlins");
     }
 
+    @Test
+    public void canHandleNonIsoDate() throws IOException {
+
+        Date oldDate = new Date(1340714101235L);
+        String json = jsonify("{'oldDate': "+1340714101235L+" }");
+
+        BackwardPeople backwardPeople = processor.unmarshall(json, BackwardPeople.class);
+
+        assertThat(backwardPeople.oldDate).isEqualTo(oldDate);
+    }
+
     private String jsonify(String json) {
         return json.replace("'", "\"");
     }
 
     static class BackwardPeople extends People {
+
+        Date oldDate;
 
         @JsonAnySetter
         public void fallbackForBackwardCompatibility(String name, Object value) {
