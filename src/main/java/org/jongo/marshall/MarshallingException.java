@@ -16,7 +16,13 @@
 
 package org.jongo.marshall;
 
-public interface Marshaller {
+public final class MarshallingException extends RuntimeException {
 
-    <T> String marshall(T obj) throws MarshallingException;
+    public MarshallingException(String message) {
+        super(message);
+    }
+
+    public MarshallingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -116,6 +116,16 @@ public class SaveTest extends JongoTestCase {
         save.execute();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenMarshallerFail() throws Exception {
+
+        Marshaller marshaller = mock(Marshaller.class);
+        when(marshaller.marshall(anyObject())).thenThrow(new RuntimeException());
+        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
+
+        save.execute();
+    }
+
     @Test
     public void canSetEntityGeneratedObjectIdAndRestrictedVisibility() throws IOException {
 

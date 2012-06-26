@@ -16,25 +16,24 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.jongo.BSONPrimitives;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.Unmarshaller;
+
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Date;
+
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Date;
-
-import org.jongo.BSONPrimitives;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public final class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -49,23 +48,23 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
 
     }
 
-    public <T> T unmarshall(String json, Class<T> clazz) {
+    public <T> T unmarshall(String json, Class<T> clazz) throws MarshallingException{
         try {
             return mapper.readValue(json, clazz);
-        } catch (IOException e) {
-            // TODO handle this
-            throw new IllegalArgumentException("Unable to unmarshall from json: " + json + " to " + clazz, e);
+        } catch (Exception e) {
+            String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
+            throw new MarshallingException(message, e);
         }
     }
 
-    public <T> String marshall(T obj) {
+    public <T> String marshall(T obj) throws MarshallingException{
         try {
             Writer writer = new StringWriter();
             mapper.writeValue(writer, obj);
             return writer.toString();
-        } catch (IOException e) {
-            // TODO handle this
-            throw new IllegalArgumentException("Unable to marshall json from: " + obj, e);
+        } catch (Exception e) {
+            String message = String.format("Unable to marshall json from: %s", obj);
+            throw new MarshallingException(message, e);
         }
     }
 

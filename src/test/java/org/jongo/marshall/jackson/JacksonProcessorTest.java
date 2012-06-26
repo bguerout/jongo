@@ -16,17 +16,19 @@
 
 package org.jongo.marshall.jackson;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.model.Fox;
+import org.jongo.model.People;
+import org.jongo.util.UnmarshallableObject;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Date;
 
-import org.jongo.model.Fox;
-import org.jongo.model.People;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JacksonProcessorTest {
 
@@ -78,18 +80,41 @@ public class JacksonProcessorTest {
     public void canHandleNonIsoDate() throws IOException {
 
         Date oldDate = new Date(1340714101235L);
-        String json = jsonify("{'oldDate': "+1340714101235L+" }");
+        String json = jsonify("{'oldDate': " + 1340714101235L + " }");
 
         BackwardPeople backwardPeople = processor.unmarshall(json, BackwardPeople.class);
 
         assertThat(backwardPeople.oldDate).isEqualTo(oldDate);
     }
 
+    @Test
+    public void shouldFailWhenUnableToUnmarshall() throws Exception {
+
+        try {
+            processor.unmarshall("{error:'notADate'}", UnmarshallableObject.class);
+            fail();
+        } catch (MarshallingException e) {
+            assertThat(e).isInstanceOf(MarshallingException.class);
+            assertThat(e.getMessage()).contains("{error:'notADate'}");
+        }
+    }
+
+    @Test
+    public void shouldFailWhenUnableToMarshall() throws Exception {
+
+        try {
+            processor.marshall(new UnmarshallableObject());
+            fail();
+        } catch (MarshallingException e) {
+            assertThat(e).isInstanceOf(MarshallingException.class);
+        }
+    }
+
     private String jsonify(String json) {
         return json.replace("'", "\"");
     }
 
-    static class BackwardPeople extends People {
+    private static class BackwardPeople extends People {
 
         Date oldDate;
 

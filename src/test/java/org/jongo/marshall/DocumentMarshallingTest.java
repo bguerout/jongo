@@ -16,23 +16,9 @@
 
 package org.jongo.marshall;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
-import static org.jongo.util.JSONResultMapper.jsonify;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Pattern;
-
-import org.bson.types.BSONTimestamp;
-import org.bson.types.Code;
-import org.bson.types.MaxKey;
-import org.bson.types.MinKey;
-import org.bson.types.ObjectId;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import org.bson.types.*;
 import org.jongo.MongoCollection;
 import org.jongo.model.People;
 import org.jongo.util.JSONResultMapper;
@@ -41,8 +27,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+import static org.jongo.util.JSONResultMapper.jsonify;
 
 public class DocumentMarshallingTest extends JongoTestCase {
 

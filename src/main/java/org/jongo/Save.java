@@ -47,7 +47,7 @@ class Save {
     }
 
     public WriteResult execute() {
-        String documentAsJson = marshaller.marshall(document);
+        String documentAsJson = marshall();
         DBObject dbObject = convertToJson(documentAsJson);
 
         WriteResult writeResult = collection.save(dbObject, determineWriteConcern());
@@ -56,6 +56,15 @@ class Save {
         setDocumentGeneratedId(id);
 
         return writeResult;
+    }
+
+    private String marshall() {
+        try {
+            return marshaller.marshall(document);
+        } catch (Exception e) {
+            String message = String.format("Unable to save object %s due to a marshalling error", document);
+            throw new IllegalArgumentException(message, e);
+        }
     }
 
     private void setDocumentGeneratedId(String id) {
@@ -84,11 +93,13 @@ class Save {
         return concern == null ? collection.getWriteConcern() : concern;
     }
 
-    protected DBObject convertToJson(String json) {
+    private DBObject convertToJson(String json) {
         try {
             return ((DBObject) JSON.parse(json));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to save document, marshalled json cannot be parsed: " + json, e);
+            String message = String.format("Unable to save document, " +
+                    "json returned by marshaller cannot be converted into a DBObject: '%s'", json);
+            throw new IllegalArgumentException(message, e);
         }
     }
 }

@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.util;
 
-public interface Marshaller {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    <T> String marshall(T obj) throws MarshallingException;
+import java.util.Date;
+
+public class UnmarshallableObject {
+
+    private Date error;
+
+    @JsonProperty
+    public Date getError() {
+        throw new RuntimeException();
+    }
 }
