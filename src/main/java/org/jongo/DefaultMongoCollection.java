@@ -79,7 +79,7 @@ class DefaultMongoCollection implements MongoCollection {
     }
 
     public long count(String query) {
-        return collection.count(createQuery(query).toDBObject());
+        return count(query, NO_PARAMETERS);
     }
 
     public long count(String query, Object... parameters) {
@@ -91,6 +91,11 @@ class DefaultMongoCollection implements MongoCollection {
         return new Update(collection, query);
     }
 
+    /**
+     * @deprecated use {@link #update(String)} followed by
+     *             {@link Update#with(String)} instead. <b>This method is
+     *             scheduled for deletion in 0.3.</b>
+     */
     @Deprecated
     public WriteResult update(String query, String modifier) {
         return new Update(collection, query).multi().with(modifier);
