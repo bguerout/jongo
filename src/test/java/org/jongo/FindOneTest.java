@@ -57,7 +57,7 @@ public class FindOneTest extends JongoTestCase {
         collection.save(new People("John", "22 Wall Street Avenue"));
 
         /* when */
-        People people = collection.findOne("{}").as(People.class);
+        People people = collection.findOne().as(People.class);
 
         /* then */
         assertThat(people.getName()).isEqualTo("John");

@@ -49,7 +49,7 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
         collection.save(pojo);
 
         // then
-        POJONotAnnotated result = collection.findOne("{}").as(POJONotAnnotated.class);
+        POJONotAnnotated result = collection.findOne().as(POJONotAnnotated.class);
         assertThat(result._id.toString()).isEqualTo("4f92d1ae44ae2dac4527d49b");
     }
 
@@ -64,7 +64,7 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
         collection.save(pojo);
 
         // then
-        StringNotAnnotated result = collection.findOne("{}").as(StringNotAnnotated.class);
+        StringNotAnnotated result = collection.findOne().as(StringNotAnnotated.class);
         assertThat(result._id).isEqualTo(1500L);
     }
 
@@ -80,7 +80,7 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
         collection.save(pojo);
 
         // then
-        POJOWithMisspelledGetter result = collection.findOne("{}").as(POJOWithMisspelledGetter.class);
+        POJOWithMisspelledGetter result = collection.findOne().as(POJOWithMisspelledGetter.class);
         assertThat(result.getAnotherName()).isEqualTo(id);
         assertThat(result._id).isEqualTo(id);
     }

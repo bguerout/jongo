@@ -16,18 +16,18 @@
 
 package org.jongo;
 
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 public class RemoveTest extends JongoTestCase {
-
 
     private MongoCollection collection;
 
@@ -51,7 +51,7 @@ public class RemoveTest extends JongoTestCase {
         WriteResult writeResult = collection.remove("{name:'John'}");
 
         /* then */
-        Iterable<People> peoples = collection.find("{}").as(People.class);
+        Iterable<People> peoples = collection.find().as(People.class);
         assertThat(peoples).hasSize(1);
         assertThat(writeResult).isNotNull();
     }
@@ -66,7 +66,7 @@ public class RemoveTest extends JongoTestCase {
         WriteResult writeResult = collection.remove(john.getId());
 
         /* then */
-        Iterable<People> peoples = collection.find("{}").as(People.class);
+        Iterable<People> peoples = collection.find().as(People.class);
         assertThat(peoples).isEmpty();
         assertThat(writeResult).isNotNull();
     }
@@ -81,7 +81,7 @@ public class RemoveTest extends JongoTestCase {
         WriteResult writeResult = collection.remove("{_id:#}", john.getId());
 
         /* then */
-        Iterable<People> peoples = collection.find("{}").as(People.class);
+        Iterable<People> peoples = collection.find().as(People.class);
         assertThat(peoples).isEmpty();
         assertThat(writeResult).isNotNull();
     }

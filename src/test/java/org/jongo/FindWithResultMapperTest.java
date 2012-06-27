@@ -16,19 +16,17 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import org.jongo.model.People;
-import org.jongo.util.IdResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import com.mongodb.DBObject;
 
 public class FindWithResultMapperTest extends JongoTestCase {
 
@@ -51,8 +49,8 @@ public class FindWithResultMapperTest extends JongoTestCase {
         collection.save(new People("John", "22 Wall Street Avenue"));
 
         /* when */
-        for (Object o : collection.find("{}").map(mapper)) {
-           //use mapped object
+        for (Object o : collection.find().map(mapper)) {
+            // use mapped object
         }
 
         /* then */
@@ -67,7 +65,7 @@ public class FindWithResultMapperTest extends JongoTestCase {
         collection.save(john);
 
         /* when */
-        collection.findOne("{}").map(mapper);
+        collection.findOne().map(mapper);
 
         /* then */
         verify(mapper).map(any(DBObject.class));

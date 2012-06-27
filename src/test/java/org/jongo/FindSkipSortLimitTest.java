@@ -52,7 +52,7 @@ public class FindSkipSortLimitTest extends JongoTestCase {
         collection.save(newPeople());
 
         /* when */
-        Iterable<People> results = collection.find("{}").limit(2).as(People.class);
+        Iterable<People> results = collection.find().limit(2).as(People.class);
 
         /* then */
         assertThat(results).hasSize(2);
@@ -66,7 +66,7 @@ public class FindSkipSortLimitTest extends JongoTestCase {
         collection.save(newPeople());
 
         /* when */
-        Iterable<People> results = collection.find("{}").skip(2).as(People.class);
+        Iterable<People> results = collection.find().skip(2).as(People.class);
 
         /* then */
         assertThat(results).hasSize(1);
@@ -80,7 +80,7 @@ public class FindSkipSortLimitTest extends JongoTestCase {
         collection.save(new People("John", "22 Wall Street Av."));
 
         /* when */
-        Iterator<People> results = collection.find("{}").sort("{'address':1}").as(People.class).iterator();
+        Iterator<People> results = collection.find().sort("{'address':1}").as(People.class).iterator();
 
         /* then */
         assertThat(results.next().getAddress()).isEqualTo("21 Wall Street Av.");

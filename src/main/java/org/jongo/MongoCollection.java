@@ -16,18 +16,23 @@
 
 package org.jongo;
 
+import org.bson.types.ObjectId;
+
 import com.mongodb.DBCollection;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
-import org.bson.types.ObjectId;
 
 public interface MongoCollection {
+
+    FindOne findOne();
 
     FindOne findOne(ObjectId id);
 
     FindOne findOne(String query);
 
     FindOne findOne(String query, Object... parameters);
+
+    Find find();
 
     Find find(String query);
 
@@ -41,6 +46,11 @@ public interface MongoCollection {
 
     Update update(String query);
 
+    /**
+     * @deprecated use {@link #update(String)} followed by
+     *             {@link Update#with(String)} instead. <b>This method is
+     *             scheduled for deletion in 0.3.</b>
+     */
     @Deprecated
     WriteResult update(String query, String modifier);
 

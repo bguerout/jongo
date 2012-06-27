@@ -16,16 +16,16 @@
 
 package org.jongo;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.Iterator;
+
 import org.jongo.model.Coordinate;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class FindTest extends JongoTestCase {
 
@@ -66,7 +66,7 @@ public class FindTest extends JongoTestCase {
         collection.save(peter);
 
         /* when */
-        Iterator<People> users = collection.find("{}").as(People.class).iterator();
+        Iterator<People> users = collection.find().as(People.class).iterator();
 
         /* then */
         assertThat(users).contains(john, smith, peter);

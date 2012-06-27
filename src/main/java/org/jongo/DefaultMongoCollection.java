@@ -16,16 +16,16 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 class DefaultMongoCollection implements MongoCollection {
 
@@ -41,6 +41,8 @@ class DefaultMongoCollection implements MongoCollection {
         this.queryFactory = new QueryFactory();
     }
 
+    private static final Object[] NO_PARAMETERS = {};
+
     public FindOne findOne(ObjectId id) {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
@@ -48,16 +50,24 @@ class DefaultMongoCollection implements MongoCollection {
         return new FindOne(collection, unmarshaller, "{_id:#}", id);
     }
 
+    public FindOne findOne() {
+        return findOne("{}");
+    }
+
     public FindOne findOne(String query) {
-        return new FindOne(collection, unmarshaller, query);
+        return findOne(query, NO_PARAMETERS);
     }
 
     public FindOne findOne(String query, Object... parameters) {
         return new FindOne(collection, unmarshaller, query, parameters);
     }
 
+    public Find find() {
+        return find("{}");
+    }
+
     public Find find(String query) {
-        return new Find(collection, unmarshaller, query);
+        return find(query, NO_PARAMETERS);
     }
 
     public Find find(String query, Object... parameters) {
