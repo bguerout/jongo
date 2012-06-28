@@ -21,7 +21,7 @@ import org.jongo.ResultMapper;
 
 public class IdResultMapper implements ResultMapper<String> {
 
-    public String map(DBObject dbObject) {
-        return dbObject.get("_id").toString();
+    public String map(DBObject result) {
+        return result.get("_id").toString();
     }
 }

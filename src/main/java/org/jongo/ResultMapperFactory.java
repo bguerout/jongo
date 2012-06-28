@@ -24,8 +24,8 @@ class ResultMapperFactory {
 
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
         return new ResultMapper<T>() {
-            public T map(DBObject dbobject) {
-                return unmarshaller.unmarshall(dbobject.toString(), clazz);
+            public T map(DBObject result) {
+                return unmarshaller.unmarshall(result.toString(), clazz);
             }
         };
     }
