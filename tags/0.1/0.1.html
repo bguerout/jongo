@@ -138,21 +138,21 @@ _gaq.push(['_trackPageview']);
     <div class="row">
         <div class="span3">
 <pre class="prettyprint">
-public class People {
+public class Friend {
     private ObjectId _id;
 }
  </pre>
         </div>
         <div class="span3">
 <pre class="prettyprint">
-public class People {
+public class Friend {
     @JsonProperty("_id")
     private ObjectId key;
 }</pre>
         </div>
         <div class="span3">
 <pre class="prettyprint">
-public class People {
+public class Friend {
     // you must generate it!
     private String _id; 
 }</pre>
@@ -209,10 +209,10 @@ public class Fox extends Animal {
                 18}"</code>.
             </p>
 
-            <pre class="prettyprint">Iterable&lt;People&gt; all = peoples.find("{name: 'John'}").as(People.class);</pre>
+            <pre class="prettyprint">Iterable&lt;Friend&gt; all = friends.find("{name: 'John'}").as(Friend.class);</pre>
 <pre class="prettyprint">
-People john = peoples.findOne("{name: 'John'}").as(People.class);
-People john = peoples.findOne(new ObjectId("4c...e")).as(People.class);</pre>
+Friend john = friends.findOne("{name: 'John'}").as(Friend.class);
+Friend john = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
 
             <p>
                 Field names only need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
@@ -221,17 +221,17 @@ People john = peoples.findOne(new ObjectId("4c...e")).as(People.class);</pre>
             <h3>Query with parameters</h3>
 
             <p>
-                Queries can be templated: add anchors <code>#</code> as follow <code>peoples.find("{name: #, age: #}",
+                Queries can be templated: add anchors <code>#</code> as follow <code>friends.find("{name: #, age: #}",
                 "John", 18)</code><br>
                 Binded parameters can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
                 Primitives</a> or any complex type made of those.
             </p>
 
-            <pre class="prettyprint">peoples.find("{name: #, age: #}", "John", 18); //- will produce {name: 'John', age: 18}</pre>
+            <pre class="prettyprint">friends.find("{name: #, age: #}", "John", 18); //- will produce {name: 'John', age: 18}</pre>
 
 <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
-peoples.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre>
+friends.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre>
 
             <h3>Query options</h3>
             <h4>Field selection</h4>
@@ -241,7 +241,7 @@ peoples.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre
                 Jongo exposes a <code>fields(...)</code> method. A json selector must be provided: <code>{field:
                 1}</code> to include it, <code>{field: 0}</code> to exclude it.
             </p>
-            <pre class="prettyprint">peoples.find("{}").fields("{lastname: 1, address: 1}").as(User.class);</pre>
+            <pre class="prettyprint">friends.find("{}").fields("{lastname: 1, address: 1}").as(User.class);</pre>
 
             <h4>Sorting</h4>
 
@@ -249,28 +249,28 @@ peoples.find("{age: {$in:#}}", ages); //- will produce {age: {$in:[22,63]}}</pre
                 for ascending, <code>{field: -1}</code> for descending.
             </p>
 			<pre class="prettyprint">
-peoples.find("{}").sort("{firstname: 1}").as(User.class);
-peoples.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
+friends.find("{}").sort("{firstname: 1}").as(User.class);
+friends.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
 
             <h4>Skip and Limit</h4>
 
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html">DBCursor</a>.
             </p>
-            <pre class="prettyprint">peoples.find("{}").skip(20).as(User.class);</pre>
-            <pre class="prettyprint">peoples.find("{}").limit(10).as(User.class);</pre>
+            <pre class="prettyprint">friends.find("{}").skip(20).as(User.class);</pre>
+            <pre class="prettyprint">friends.find("{}").limit(10).as(User.class);</pre>
 
             <h4>Distinct</h4>
 
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#distinct(java.lang.String)">DBCollection.distinct(...)</a>.
             </p>
-            <pre class="prettyprint">peoples.distinct("address", "", Address.class);</pre>
-            <pre class="prettyprint">peoples.distinct("address", "{name: 'John'}", Address.class);</pre>
+            <pre class="prettyprint">friends.distinct("address", "", Address.class);</pre>
+            <pre class="prettyprint">friends.distinct("address", "{name: 'John'}", Address.class);</pre>
 
             <h4>Count</h4>
 
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(...)</a>.
             </p>
-            <pre class="prettyprint">peoples.count("{name: 'John'}");</pre>
+            <pre class="prettyprint">friends.count("{name: 'John'}");</pre>
 
             <h3>Advanced query</h3>
             <h4>Geospacial indexing</h4>
@@ -278,8 +278,8 @@ peoples.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
             <p>Using <a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing" target="_blank">Mongo geospacial
                 capacities</a> requires an index and some BSON operators.</p>
 <pre class="prettyprint">
-peoples.ensureIndex("{address: '2d'}");
-peoples.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</pre>
+friends.ensureIndex("{address: '2d'}");
+friends.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</pre>
 
             <h4>Complete query syntax</h4>
 
@@ -288,8 +288,8 @@ peoples.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</
                 complete expression can also be used in Jongo.
             </p>
              <pre class="prettyprint">
-peoples.find("{$query: {}, $maxScan: 2}").as(People.class);
-peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
+friends.find("{$query: {}, $maxScan: 2}").as(Friend.class);
+friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
         </div>
     </div>
 </section>
@@ -308,17 +308,17 @@ peoples.find("{$query: {}, $orderby: {name: 1}}").as(People.class);</pre>
                 convert it to json. <a href="#mapping">Object mapping section</a> defines what objects have to look
                 like.
             </p>
-            <pre class="prettyprint">peoples.save(new People("Joe", 27));</pre>
+            <pre class="prettyprint">friends.save(new Friend("Joe", 27));</pre>
 
             <h3>Update</h3>
 
             <p>In early version of Jongo 'upsert' is not available and update is always in 'multi' mode.</p>
-            <pre class="prettyprint">peoples.update("{name: 'Joe'}", "{$inc: {age: 1}}");</pre>
+            <pre class="prettyprint">friends.update("{name: 'Joe'}", "{$inc: {age: 1}}");</pre>
 
             <h3>Remove</h3>
 
             <p>Remove works as if you were in Mongo shell.</p>
-            <pre class="prettyprint">peoples.remove("{name: 'Joe'}");</pre>
+            <pre class="prettyprint">friends.remove("{name: 'Joe'}");</pre>
         </div>
     </div>
 </section>
