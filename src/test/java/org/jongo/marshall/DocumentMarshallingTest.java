@@ -173,18 +173,18 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     @Test
-    public void canHandleMap() throws Exception {
+    public void canHandleMapWithPrimitiveType() throws Exception {
 
-        Map<String, String> strings = new HashMap<String, String>();
-        strings.put("key", "value");
+        Map<String, Date> strings = new HashMap<String, Date>();
+        strings.put("key", new Date(0));
         BSONPrimitiveType type = new BSONPrimitiveType();
-        type.map = strings;
+        type.mapWithDates = strings;
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'map' : { 'key' : 'value'}"));
+        assertHasBeenPersistedAs(jsonify("'mapWithDates' : { 'key' : { '$date' : '1970-01-01T00:00:00.000Z'}}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.map).includes(entry("key", "value"));
+        assertThat(result.mapWithDates).includes(entry("key", new Date(0)));
     }
 
     @Test
@@ -217,19 +217,34 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     @Test
+    public void canHandleIterableWithPrimitiveType() throws Exception {
+
+        BSONPrimitiveType type = new BSONPrimitiveType();
+        List<Date> dates = new ArrayList<Date>();
+        dates.add(new Date(0));
+        type.dateList = dates;
+
+        collection.save(type);
+
+        assertHasBeenPersistedAs(jsonify("'dateList' : [ { '$date' : '1970-01-01T00:00:00.000Z'}]"));
+        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
+        assertThat(result.dateList).contains(new Date(0));
+    }
+
+    @Test
     public void canHandleIterableWithComplexType() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
         List<People> peoples = new ArrayList<People>();
         People robert = new People("robert");
         peoples.add(robert);
-        type.peopleList = peoples;
+        type.complexList = peoples;
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'peopleList' : [ { 'name' : 'robert'}]"));
+        assertHasBeenPersistedAs(jsonify("'complexList' : [ { 'name' : 'robert'}]"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.peopleList).contains(robert);
+        assertThat(result.complexList).contains(robert);
     }
 
     private void assertHasBeenPersistedAs(String expectedPersistedJSON) {
@@ -247,10 +262,11 @@ public class DocumentMarshallingTest extends JongoTestCase {
         UUID uuid;
         Code code;
         DBObject dbo;
-        Map<String, String> map;
+        Map<String, Date> mapWithDates;
         Map<String, People> peoples;
         int[] array;
-        List<People> peopleList;
+        List<People> complexList;
+        List<Date> dateList;
     }
 
     private static class JavaNativeType {

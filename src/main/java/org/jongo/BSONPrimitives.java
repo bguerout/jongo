@@ -45,8 +45,6 @@ public class BSONPrimitives {
         PRIMITIVES.add(CodeWScope.class);
         PRIMITIVES.add(byte[].class);
         PRIMITIVES.add(Binary.class);
-        /*PRIMITIVES.add(Iterable.class);
-        PRIMITIVES.add(Map.class);*/
     }
 
     public static Set<Class<?>> getPrimitives() {
