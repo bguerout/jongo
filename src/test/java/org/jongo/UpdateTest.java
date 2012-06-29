@@ -18,7 +18,7 @@ package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -45,44 +45,44 @@ public class UpdateTest extends JongoTestCase {
     @Deprecated
     public void canUpdateMultiDeprecated() throws Exception {
         /* given */
-        collection.save(new People("John"));
-        collection.save(new People("John"));
+        collection.save(new Friend("John"));
+        collection.save(new Friend("John"));
 
         /* when */
         collection.update("{name:'John'}", "{$unset:{name:1}}");
 
         /* then */
-        Iterable<People> peoples = collection.find("{name:{$exists:true}}").as(People.class);
-        assertThat(peoples).hasSize(0);
+        Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
+        assertThat(friends).hasSize(0);
     }
 
     @Test
     public void canUpdateMulti() throws Exception {
         /* given */
-        collection.save(new People("John"));
-        collection.save(new People("John"));
+        collection.save(new Friend("John"));
+        collection.save(new Friend("John"));
 
         /* when */
         WriteResult writeResult = collection.update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
-        Iterable<People> peoples = collection.find("{name:{$exists:true}}").as(People.class);
-        assertThat(peoples).hasSize(0);
+        Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
+        assertThat(friends).hasSize(0);
         assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
 
     @Test
     public void canUpdateMultiWithWriteConcern() throws Exception {
         /* given */
-        collection.save(new People("John"));
-        collection.save(new People("John"));
+        collection.save(new Friend("John"));
+        collection.save(new Friend("John"));
 
         /* when */
         WriteResult writeResult = collection.update("{name:'John'}").multi().concern(WriteConcern.SAFE).with("{$unset:{name:1}}");
 
         /* then */
-        Iterable<People> peoples = collection.find("{name:{$exists:true}}").as(People.class);
-        assertThat(peoples).hasSize(0);
+        Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
+        assertThat(friends).hasSize(0);
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
 
     }
@@ -94,7 +94,7 @@ public class UpdateTest extends JongoTestCase {
         WriteResult writeResult = collection.update("{}").upsert().with("{$set:{name:'John'}}");
 
         /* then */
-        People john = collection.findOne("{name:'John'}").as(People.class);
+        Friend john = collection.findOne("{name:'John'}").as(Friend.class);
         assertThat(john.getName()).isEqualTo("John");
         assertThat(writeResult).isNotNull();
     }
@@ -106,7 +106,7 @@ public class UpdateTest extends JongoTestCase {
         WriteResult writeResult = collection.update("{}").upsert().concern(WriteConcern.SAFE).with("{$set:{name:'John'}}");
 
         /* then */
-        People john = collection.findOne("{name:'John'}").as(People.class);
+        Friend john = collection.findOne("{name:'John'}").as(Friend.class);
         assertThat(john.getName()).isEqualTo("John");
         assertThat(writeResult).isNotNull();
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);

@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.UnmarshallableObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,26 +44,26 @@ public class JacksonProcessorTest {
         String json = processor.marshall(new Fox("fantastic", "roux"));
         assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
 
-        People people = processor.unmarshall(json, People.class);
-        assertThat(people.getName()).isEqualTo("fantastic");
+        Friend friend = processor.unmarshall(json, Friend.class);
+        assertThat(friend.getName()).isEqualTo("fantastic");
     }
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
         String json = jsonify("{'address': '22 rue des murlins'}");
 
-        People people = processor.unmarshall(json, People.class);
+        Friend friend = processor.unmarshall(json, Friend.class);
 
-        assertThat(people.getAddress()).isEqualTo("22 rue des murlins");
+        assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
         String json = jsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
 
-        People people = processor.unmarshall(json, People.class);
+        Friend friend = processor.unmarshall(json, Friend.class);
 
-        assertThat(people.getCoordinate().lat).isEqualTo(48);
+        assertThat(friend.getCoordinate().lat).isEqualTo(48);
     }
 
     @Test
@@ -71,9 +71,9 @@ public class JacksonProcessorTest {
 
         String json = jsonify("{'address': '22 rue des murlins', 'oldAddress': '22-rue-des-murlins'}");
 
-        BackwardPeople backwardPeople = processor.unmarshall(json, BackwardPeople.class);
+        BackwardFriend backwardFriend = processor.unmarshall(json, BackwardFriend.class);
 
-        assertThat(backwardPeople.getAddress()).isEqualTo("22-rue-des-murlins");
+        assertThat(backwardFriend.getAddress()).isEqualTo("22-rue-des-murlins");
     }
 
     @Test
@@ -82,9 +82,9 @@ public class JacksonProcessorTest {
         Date oldDate = new Date(1340714101235L);
         String json = jsonify("{'oldDate': " + 1340714101235L + " }");
 
-        BackwardPeople backwardPeople = processor.unmarshall(json, BackwardPeople.class);
+        BackwardFriend backwardFriend = processor.unmarshall(json, BackwardFriend.class);
 
-        assertThat(backwardPeople.oldDate).isEqualTo(oldDate);
+        assertThat(backwardFriend.oldDate).isEqualTo(oldDate);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class JacksonProcessorTest {
         return json.replace("'", "\"");
     }
 
-    private static class BackwardPeople extends People {
+    private static class BackwardFriend extends Friend {
 
         Date oldDate;
 

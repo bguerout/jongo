@@ -17,7 +17,7 @@
 package org.jongo;
 
 import org.jongo.model.Coordinate;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -46,9 +46,9 @@ public class DistinctTest extends JongoTestCase {
     @Test
     public void distinctOnStringEntities() throws Exception {
         /* given */
-        collection.save(new People("John", wallStreetAvenue));
-        collection.save(new People("Smith", wallStreetAvenue));
-        collection.save(new People("Peter", "24 Wall Street Avenue"));
+        collection.save(new Friend("John", wallStreetAvenue));
+        collection.save(new Friend("Smith", wallStreetAvenue));
+        collection.save(new Friend("Peter", "24 Wall Street Avenue"));
 
         /* when */
         Iterator<String> addresses = collection.distinct("address").as(String.class).iterator();
@@ -62,9 +62,9 @@ public class DistinctTest extends JongoTestCase {
     @Test
     public void distinctOnIntegerEntities() throws Exception {
         /* given */
-        collection.save(new People("John", new Coordinate(1, 2)));
-        collection.save(new People("Peter", new Coordinate(1, 2)));
-        collection.save(new People("Paul", new Coordinate(125, 72)));
+        collection.save(new Friend("John", new Coordinate(1, 2)));
+        collection.save(new Friend("Peter", new Coordinate(1, 2)));
+        collection.save(new Friend("Paul", new Coordinate(125, 72)));
 
         /* when */
         Iterator<Integer> addresses = collection.distinct("coordinate.lat").as(Integer.class).iterator();
@@ -78,9 +78,9 @@ public class DistinctTest extends JongoTestCase {
     @Test
     public void distinctOnTypedProperty() throws Exception {
         /* given */
-        collection.save(new People("John", new Coordinate(1, 2)));
-        collection.save(new People("Peter", new Coordinate(1, 2)));
-        collection.save(new People("Paul", new Coordinate(125, 72)));
+        collection.save(new Friend("John", new Coordinate(1, 2)));
+        collection.save(new Friend("Peter", new Coordinate(1, 2)));
+        collection.save(new Friend("Paul", new Coordinate(125, 72)));
 
         /* when */
         Iterator<Coordinate> coordinates = collection.distinct("coordinate").as(Coordinate.class).iterator();
@@ -98,10 +98,10 @@ public class DistinctTest extends JongoTestCase {
     @Test
     public void distinctWithQuery() throws Exception {
         /* given */
-        collection.save(new People("John", new Coordinate(1, 2)));
-        collection.save(new People("Peter", new Coordinate(1, 2)));
+        collection.save(new Friend("John", new Coordinate(1, 2)));
+        collection.save(new Friend("Peter", new Coordinate(1, 2)));
         String emptyName = null;
-        collection.save(new People(emptyName, new Coordinate(125, 72)));
+        collection.save(new Friend(emptyName, new Coordinate(125, 72)));
 
         /* when */
         Iterator<Coordinate> coordinates = collection.distinct("coordinate").query("{name:{$exists:true}}").as(Coordinate.class).iterator();
@@ -116,8 +116,8 @@ public class DistinctTest extends JongoTestCase {
     @Test
     public void distinctWithParameterizedQuery() throws Exception {
         /* given */
-        collection.save(new People("John", new Coordinate(1, 2)));
-        collection.save(new People("Peter", new Coordinate(3, 4)));
+        collection.save(new Friend("John", new Coordinate(1, 2)));
+        collection.save(new Friend("Peter", new Coordinate(3, 4)));
 
         /* when */
         Iterator<Coordinate> coordinates = collection.distinct("coordinate").query("{name:#}", "Peter").as(Coordinate.class).iterator();

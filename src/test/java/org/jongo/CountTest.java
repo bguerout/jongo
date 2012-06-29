@@ -18,7 +18,7 @@ package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -38,15 +38,15 @@ public class CountTest extends JongoTestCase {
         dropCollection("users");
     }
 
-    public People newPeople() {
-        return new People("John", "22 Wall Street Avenue");
+    public Friend newFriend() {
+        return new Friend("John", "22 Wall Street Avenue");
     }
 
     @Test
     public void canCount() throws Exception {
         /* given */
-        collection.save(newPeople());
-        collection.save(newPeople());
+        collection.save(newFriend());
+        collection.save(newFriend());
 
         /* then */
         assertThat(collection.count()).isEqualTo(2);
@@ -55,8 +55,8 @@ public class CountTest extends JongoTestCase {
     @Test
     public void canCountWithQuery() throws Exception {
         /* given */
-        collection.save(newPeople());
-        collection.save(newPeople());
+        collection.save(newFriend());
+        collection.save(newFriend());
 
         /* then */
         assertThat(collection.count("{name:{$exists:true}}")).isEqualTo(2);
@@ -65,8 +65,8 @@ public class CountTest extends JongoTestCase {
     @Test
     public void canCountWithParameters() throws Exception {
         /* given */
-        collection.save(newPeople());
-        collection.save(new People("Peter", "22 Wall Street Avenue"));
+        collection.save(newFriend());
+        collection.save(new Friend("Peter", "22 Wall Street Avenue"));
 
         /* then */
         assertThat(collection.count("{name:#}", "Peter")).isEqualTo(1);

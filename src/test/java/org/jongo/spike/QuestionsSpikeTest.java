@@ -20,7 +20,7 @@ import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
     public void complexQueryWithDriverAndJongo() throws Exception {
 
         List<String> keys = new ArrayList<String>();
-        collection.findOne("{$or:[{key1: {$in:[764]}},{key2:{$in:[#]}}, {$and:[{key3:3},{key4:67}]}]}", keys).as(People.class);
+        collection.findOne("{$or:[{key1: {$in:[764]}},{key2:{$in:[#]}}, {$and:[{key3:3},{key4:67}]}]}", keys).as(Friend.class);
 
         DBObject query = QueryBuilder
                 .start()
@@ -63,22 +63,22 @@ public class QuestionsSpikeTest extends JongoTestCase {
     @Test
     // https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
     public void pushANonBSONObject() throws Exception {
-        Peoples peoples = new Peoples();
-        peoples.add(new People("john"));
-        peoples.add(new People("peter"));
-        collection.save(peoples);
+        Friends friends = new Friends();
+        friends.add(new Friend("john"));
+        friends.add(new Friend("peter"));
+        collection.save(friends);
 
-        String robert = new JacksonProcessor().marshall(new People("Robert"));
-        collection.update("{}").with("{$push:{peoples:" + robert + "}}");
+        String robert = new JacksonProcessor().marshall(new Friend("Robert"));
+        collection.update("{}").with("{$push:{friends:" + robert + "}}");
 
-        assertThat(collection.count("{ peoples.name : 'Robert'}")).isEqualTo(1);
+        assertThat(collection.count("{ friends.name : 'Robert'}")).isEqualTo(1);
     }
 
-    private static class Peoples {
-        private List<People> peoples = new ArrayList<People>();
+    private static class Friends {
+        private List<Friend> friends = new ArrayList<Friend>();
 
-        public void add(People buddy) {
-            peoples.add(buddy);
+        public void add(Friend buddy) {
+            friends.add(buddy);
         }
     }
 }

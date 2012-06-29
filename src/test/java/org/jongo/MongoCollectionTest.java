@@ -19,7 +19,7 @@ package org.jongo;
 import org.jongo.model.Animal;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Fox;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -64,16 +64,16 @@ public class MongoCollectionTest extends JongoTestCase {
     @Test
     public void canUseGeospacial() throws Exception {
         /* given */
-        mongoCollection.save(new People("John", new Coordinate(1, 1)));
-        mongoCollection.save(new People("Peter", new Coordinate(4, 4)));
+        mongoCollection.save(new Friend("John", new Coordinate(1, 1)));
+        mongoCollection.save(new Friend("Peter", new Coordinate(4, 4)));
 
         mongoCollection.ensureIndex("{ 'coordinate' : '2d'}");
 
         /* then */
-        assertThat(mongoCollection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(People.class)).hasSize(1);
-        assertThat(mongoCollection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(People.class)).hasSize(2);
-        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(People.class)).hasSize(1);
-        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(People.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Friend.class)).hasSize(2);
+        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Friend.class)).hasSize(1);
+        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Friend.class)).hasSize(1);
     }
 
     @Test

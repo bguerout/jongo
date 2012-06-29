@@ -21,7 +21,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.util.Iterator;
 
 import org.jongo.model.Coordinate;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -44,29 +44,29 @@ public class FindTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        People people = new People("John", "22 Wall Street Avenue");
-        collection.save(people);
+        Friend friend = new Friend("John", "22 Wall Street Avenue");
+        collection.save(friend);
 
         /* when */
-        Iterator<People> users = collection.find("{address:{$exists:true}}").as(People.class).iterator();
+        Iterator<Friend> users = collection.find("{address:{$exists:true}}").as(Friend.class).iterator();
 
         /* then */
-        assertThat(users.next().getId()).isEqualTo(people.getId());
+        assertThat(users.next().getId()).isEqualTo(friend.getId());
         assertThat(users.hasNext()).isFalse();
     }
 
     @Test
     public void canFindWithEmptySelector() throws Exception {
         /* given */
-        People john = new People("John", "22 Wall Street Avenue");
-        People smith = new People("Smith", "23 Wall Street Avenue");
-        People peter = new People("Peter", "24 Wall Street Avenue");
+        Friend john = new Friend("John", "22 Wall Street Avenue");
+        Friend smith = new Friend("Smith", "23 Wall Street Avenue");
+        Friend peter = new Friend("Peter", "24 Wall Street Avenue");
         collection.save(john);
         collection.save(smith);
         collection.save(peter);
 
         /* when */
-        Iterator<People> users = collection.find().as(People.class).iterator();
+        Iterator<Friend> users = collection.find().as(Friend.class).iterator();
 
         /* then */
         assertThat(users).contains(john, smith, peter);
@@ -75,10 +75,10 @@ public class FindTest extends JongoTestCase {
     @Test
     public void canFindUsingSubProperty() throws Exception {
         /* given */
-        collection.save(new People("John", new Coordinate(2, 31)));
+        collection.save(new Friend("John", new Coordinate(2, 31)));
 
         /* when */
-        Iterator<People> results = collection.find("{'coordinate.lat':2}").as(People.class).iterator();
+        Iterator<Friend> results = collection.find("{'coordinate.lat':2}").as(Friend.class).iterator();
 
         /* then */
         assertThat(results.next().getCoordinate().lat).isEqualTo(2);

@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.jongo.marshall.Marshaller;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ public class QueryFactoryTest {
     @Test
     public void shouldBindComplexParameterAndCreateQuery() throws Exception {
 
-        People robert = new People("robert");
+        Friend robert = new Friend("robert");
         when(marshaller.marshall(robert)).thenReturn("{ \"name\" : \"robert\"}");
 
         Query query = factory.createQuery("{value:#}", robert);

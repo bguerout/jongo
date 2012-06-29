@@ -20,7 +20,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class FindWithResultMapperTest extends JongoTestCase {
     public void canFind() throws Exception {
         /* given */
         ResultMapper mapper = mock(ResultMapper.class);
-        collection.save(new People("John", "22 Wall Street Avenue"));
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
 
         /* when */
         for (Object o : collection.find().map(mapper)) {
@@ -61,7 +61,7 @@ public class FindWithResultMapperTest extends JongoTestCase {
     public void canFindOne() throws Exception {
         /* given */
         ResultMapper mapper = mock(ResultMapper.class);
-        People john = new People("John", "22 Wall Street Avenue");
+        Friend john = new Friend("John", "22 Wall Street Avenue");
         collection.save(john);
 
         /* when */

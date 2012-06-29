@@ -17,7 +17,7 @@
 package org.jongo;
 
 import org.bson.types.ObjectId;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -49,38 +49,38 @@ public class FindByObjectIdTest extends JongoTestCase {
     @Test
     public void canFindOneWithObjectId() throws Exception {
         /* given */
-        People john = new People("John", "22 Wall Street Avenue");
+        Friend john = new Friend("John", "22 Wall Street Avenue");
         collection.save(john);
 
-        People foundPeople = collection.findOne(john.getId()).as(People.class);
+        Friend foundFriend = collection.findOne(john.getId()).as(Friend.class);
 
         /* then */
-        assertThat(foundPeople).isNotNull();
-        assertThat(foundPeople.getId()).isEqualTo(john.getId());
+        assertThat(foundFriend).isNotNull();
+        assertThat(foundFriend.getId()).isEqualTo(john.getId());
     }
 
     @Test
     public void canFindOneWithOid() throws Exception {
         /* given */
-        People john = new People("John", "22 Wall Street Avenue");
+        Friend john = new Friend("John", "22 Wall Street Avenue");
         collection.save(john);
         String idAsString = john.getId().toString();
 
-        People foundPeople = collection.findOne("{_id:{$oid:#}}", idAsString).as(People.class);
+        Friend foundFriend = collection.findOne("{_id:{$oid:#}}", idAsString).as(Friend.class);
 
         /* then */
-        assertThat(foundPeople).isNotNull();
-        assertThat(foundPeople.getId()).isEqualTo(john.getId());
+        assertThat(foundFriend).isNotNull();
+        assertThat(foundFriend.getId()).isEqualTo(john.getId());
     }
 
     @Test
     public void canFindWithOid() throws Exception {
         /* given */
-        People john = new People("John", "22 Wall Street Avenue");
+        Friend john = new Friend("John", "22 Wall Street Avenue");
         collection.save(john);
         String idAsString = john.getId().toString();
 
-        Iterator<People> users = collection.find("{_id:{$oid:#}}", idAsString).as(People.class).iterator();
+        Iterator<Friend> users = collection.find("{_id:{$oid:#}}", idAsString).as(Friend.class).iterator();
 
         /* then */
         assertThat(users).isNotNull();

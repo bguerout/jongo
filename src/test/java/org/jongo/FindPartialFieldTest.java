@@ -18,7 +18,7 @@ package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -29,12 +29,12 @@ import com.mongodb.DBObject;
 public class FindPartialFieldTest extends JongoTestCase {
 
     private MongoCollection collection;
-    private People people;
+    private Friend friend;
 
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("users");
-        people = new People("John", "22 Wall Street Avenue");
+        friend = new Friend("John", "22 Wall Street Avenue");
     }
 
     @After
@@ -45,7 +45,7 @@ public class FindPartialFieldTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        collection.save(people);
+        collection.save(friend);
 
         /* when */
         collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());
@@ -54,7 +54,7 @@ public class FindPartialFieldTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        collection.save(people);
+        collection.save(friend);
 
         /* when */
         Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());

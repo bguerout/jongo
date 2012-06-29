@@ -20,7 +20,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.bson.types.*;
 import org.jongo.MongoCollection;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JSONResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -190,17 +190,17 @@ public class DocumentMarshallingTest extends JongoTestCase {
     @Test
     public void canHandleMapWithComplexType() throws Exception {
 
-        Map<String, People> peoples = new HashMap<String, People>();
-        People robert = new People("robert");
-        peoples.put("key", robert);
+        Map<String, Friend> friends = new HashMap<String, Friend>();
+        Friend robert = new Friend("robert");
+        friends.put("key", robert);
         BSONPrimitiveType type = new BSONPrimitiveType();
-        type.peoples = peoples;
+        type.friends = friends;
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'peoples' : { 'key' : { 'name' : 'robert'}}"));
+        assertHasBeenPersistedAs(jsonify("'friends' : { 'key' : { 'name' : 'robert'}}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.peoples).includes(entry("key", robert));
+        assertThat(result.friends).includes(entry("key", robert));
     }
 
     @Test
@@ -235,10 +235,10 @@ public class DocumentMarshallingTest extends JongoTestCase {
     public void canHandleIterableWithComplexType() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
-        List<People> peoples = new ArrayList<People>();
-        People robert = new People("robert");
-        peoples.add(robert);
-        type.complexList = peoples;
+        List<Friend> friends = new ArrayList<Friend>();
+        Friend robert = new Friend("robert");
+        friends.add(robert);
+        type.complexList = friends;
 
         collection.save(type);
 
@@ -263,9 +263,9 @@ public class DocumentMarshallingTest extends JongoTestCase {
         Code code;
         DBObject dbo;
         Map<String, Date> mapWithDates;
-        Map<String, People> peoples;
+        Map<String, Friend> friends;
         int[] array;
-        List<People> complexList;
+        List<Friend> complexList;
         List<Date> dateList;
     }
 

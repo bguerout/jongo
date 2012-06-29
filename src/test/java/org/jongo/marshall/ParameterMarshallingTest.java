@@ -18,7 +18,7 @@ package org.jongo.marshall;
 
 import org.jongo.MongoCollection;
 import org.jongo.model.Coordinate;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +33,7 @@ public class ParameterMarshallingTest extends JongoTestCase {
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("marshalling");
-        collection.save(new People("robert", new Coordinate(2, 3)));
+        collection.save(new Friend("robert", new Coordinate(2, 3)));
     }
 
     @After
@@ -52,7 +52,7 @@ public class ParameterMarshallingTest extends JongoTestCase {
     @Test
     public void shouldBindComplexParameter() throws Exception {
 
-        collection.update("{name:'robert'}").with("{friend:#}", new People("john"));
+        collection.update("{name:'robert'}").with("{friend:#}", new Friend("john"));
 
         long nb = collection.count("{friend.name:#}", "john");
         assertThat(nb).isEqualTo(1);
@@ -61,13 +61,13 @@ public class ParameterMarshallingTest extends JongoTestCase {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenNotEnoughParameters() throws Exception {
 
-        collection.findOne("{id:#,id2:#}", "123").as(People.class);
+        collection.findOne("{id:#,id2:#}", "123").as(Friend.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenNotTooManyParameters() throws Exception {
 
-        collection.findOne("{id:#}", 123, 456).as(People.class);
+        collection.findOne("{id:#}", 123, 456).as(Friend.class);
     }
 
 

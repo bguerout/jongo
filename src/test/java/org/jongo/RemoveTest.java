@@ -19,14 +19,13 @@ package org.jongo;
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.bson.types.ObjectId;
-import org.jongo.model.People;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 
 public class RemoveTest extends JongoTestCase {
 
@@ -45,22 +44,22 @@ public class RemoveTest extends JongoTestCase {
     @Test
     public void canRemoveASpecificDocument() throws Exception {
         /* given */
-        collection.save(new People("John"));
-        collection.save(new People("Peter"));
+        collection.save(new Friend("John"));
+        collection.save(new Friend("Peter"));
 
         /* when */
         WriteResult writeResult = collection.remove("{name:'John'}");
 
         /* then */
-        Iterable<People> peoples = collection.find().as(People.class);
-        assertThat(peoples).hasSize(1);
+        Iterable<Friend> friends = collection.find().as(Friend.class);
+        assertThat(friends).hasSize(1);
         assertThat(writeResult).isNotNull();
     }
 
     @Test
     public void canRemoveByObjectId() throws Exception {
         /* given */
-        People john = new People("John");
+        Friend john = new Friend("John");
         collection.save(john);
 
         /* when */
@@ -68,30 +67,30 @@ public class RemoveTest extends JongoTestCase {
         WriteResult writeResult = collection.remove(id);
 
         /* then */
-        Iterable<People> peoples = collection.find().as(People.class);
-        assertThat(peoples).isEmpty();
+        Iterable<Friend> friends = collection.find().as(Friend.class);
+        assertThat(friends).isEmpty();
         assertThat(writeResult).isNotNull();
     }
 
     @Test
     public void canRemoveWithParameters() throws Exception {
         /* given */
-        People john = new People("John");
+        Friend john = new Friend("John");
         collection.save(john);
 
         /* when */
         WriteResult writeResult = collection.remove("{_id:#}", john.getId());
 
         /* then */
-        Iterable<People> peoples = collection.find().as(People.class);
-        assertThat(peoples).isEmpty();
+        Iterable<Friend> friends = collection.find().as(Friend.class);
+        assertThat(friends).isEmpty();
         assertThat(writeResult).isNotNull();
     }
 
     @Test
     public void whenNoSpecifyShouldSaveWithCollectionWriteConcern() throws Exception {
 
-        People john = new People("John");
+        Friend john = new Friend("John");
         collection.save(john);
 
         WriteResult writeResult = collection.save(john);
@@ -102,7 +101,7 @@ public class RemoveTest extends JongoTestCase {
     @Test
     public void canSaveWithWriteConcern() throws Exception {
 
-        People john = new People("John");
+        Friend john = new Friend("John");
         collection.save(john);
 
         WriteResult writeResult = collection.save(john, WriteConcern.SAFE);

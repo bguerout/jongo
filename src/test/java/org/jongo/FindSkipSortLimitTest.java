@@ -20,7 +20,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Iterator;
 
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -40,19 +40,19 @@ public class FindSkipSortLimitTest extends JongoTestCase {
         dropCollection("users");
     }
 
-    public People newPeople() {
-        return new People("John", "22 Wall Street Avenue");
+    public Friend newFriend() {
+        return new Friend("John", "22 Wall Street Avenue");
     }
 
     @Test
     public void canLimit() throws Exception {
         /* given */
-        collection.save(newPeople());
-        collection.save(newPeople());
-        collection.save(newPeople());
+        collection.save(newFriend());
+        collection.save(newFriend());
+        collection.save(newFriend());
 
         /* when */
-        Iterable<People> results = collection.find().limit(2).as(People.class);
+        Iterable<Friend> results = collection.find().limit(2).as(Friend.class);
 
         /* then */
         assertThat(results).hasSize(2);
@@ -61,12 +61,12 @@ public class FindSkipSortLimitTest extends JongoTestCase {
     @Test
     public void canSkip() throws Exception {
         /* given */
-        collection.save(newPeople());
-        collection.save(newPeople());
-        collection.save(newPeople());
+        collection.save(newFriend());
+        collection.save(newFriend());
+        collection.save(newFriend());
 
         /* when */
-        Iterable<People> results = collection.find().skip(2).as(People.class);
+        Iterable<Friend> results = collection.find().skip(2).as(Friend.class);
 
         /* then */
         assertThat(results).hasSize(1);
@@ -75,12 +75,12 @@ public class FindSkipSortLimitTest extends JongoTestCase {
     @Test
     public void canSort() throws Exception {
         /* given */
-        collection.save(new People("John", "23 Wall Street Av."));
-        collection.save(new People("John", "21 Wall Street Av."));
-        collection.save(new People("John", "22 Wall Street Av."));
+        collection.save(new Friend("John", "23 Wall Street Av."));
+        collection.save(new Friend("John", "21 Wall Street Av."));
+        collection.save(new Friend("John", "22 Wall Street Av."));
 
         /* when */
-        Iterator<People> results = collection.find().sort("{'address':1}").as(People.class).iterator();
+        Iterator<Friend> results = collection.find("{}").sort("{'address':1}").as(Friend.class).iterator();
 
         /* then */
         assertThat(results.next().getAddress()).isEqualTo("21 Wall Street Av.");

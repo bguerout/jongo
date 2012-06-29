@@ -21,7 +21,7 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.model.Fox;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -51,19 +51,19 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSavePOJO() throws Exception {
         /* given */
-        People people = new People("John", "22 Wall Street Avenue");
-        collection.save(people);
+        Friend friend = new Friend("John", "22 Wall Street Avenue");
+        collection.save(friend);
 
         assertThat(collection.count("{}")).isEqualTo(1);
-        assertThat(people.getId()).isNotNull();
+        assertThat(friend.getId()).isNotNull();
     }
 
     @Test
     public void whenNoSpecifyShouldSaveWithCollectionWriteConcern() throws Exception {
 
-        People people = new People("John", "22 Wall Street Avenue");
+        Friend friend = new Friend("John", "22 Wall Street Avenue");
 
-        WriteResult writeResult = collection.save(people);
+        WriteResult writeResult = collection.save(friend);
 
         assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
@@ -71,9 +71,9 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSaveWithWriteConcern() throws Exception {
 
-        People people = new People("John", "22 Wall Street Avenue");
+        Friend friend = new Friend("John", "22 Wall Street Avenue");
 
-        WriteResult writeResult = collection.save(people, WriteConcern.SAFE);
+        WriteResult writeResult = collection.save(friend, WriteConcern.SAFE);
 
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
@@ -81,7 +81,7 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canModifyAlreadySavedEntity() throws Exception {
         /* given */
-        People john = new People("John", "21 Jump Street");
+        Friend john = new Friend("John", "21 Jump Street");
         collection.save(john);
         john.setAddress("new address");
 
@@ -90,7 +90,7 @@ public class SaveTest extends JongoTestCase {
 
         /* then */
         ObjectId johnId = john.getId();
-        People johnWithNewAddress = collection.findOne(johnId).as(People.class);
+        Friend johnWithNewAddress = collection.findOne(johnId).as(Friend.class);
         assertThat(johnWithNewAddress.getId()).isEqualTo(johnId);
         assertThat(johnWithNewAddress.getAddress()).isEqualTo("new address");
     }
@@ -98,11 +98,11 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSaveAnObjectWithAnObjectId() throws Exception {
 
-        People john = new People(new ObjectId("47cc67093475061e3d95369d"), "John");
+        Friend john = new Friend(new ObjectId("47cc67093475061e3d95369d"), "John");
 
         collection.save(john);
 
-        People result = collection.findOne(new ObjectId("47cc67093475061e3d95369d")).as(People.class);
+        Friend result = collection.findOne(new ObjectId("47cc67093475061e3d95369d")).as(Friend.class);
         assertThat(result).isNotNull();
     }
 
@@ -129,7 +129,7 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSetEntityGeneratedObjectIdAndRestrictedVisibility() throws IOException {
 
-        People robert = new People("Robert", "21 Jump Street");
+        Friend robert = new Friend("Robert", "21 Jump Street");
 
         collection.save(robert);
 

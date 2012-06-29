@@ -17,7 +17,7 @@
 package org.jongo;
 
 import org.jongo.model.Coordinate;
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -44,11 +44,11 @@ public class FindWithParametersTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        People john = new People("John", new Coordinate(1, 1));
+        Friend john = new Friend("John", new Coordinate(1, 1));
         collection.save(john);
 
         /* when */
-        People result = collection.findOne("{name:#}", "John").as(People.class);
+        Friend result = collection.findOne("{name:#}", "John").as(Friend.class);
 
         /* then */
         assertThat(result.getId()).isEqualTo(john.getId());
@@ -57,11 +57,11 @@ public class FindWithParametersTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        People john = new People("John", new Coordinate(1, 1));
+        Friend john = new Friend("John", new Coordinate(1, 1));
         collection.save(john);
 
         /* when */
-        Iterator<People> users = collection.find("{name:#}", "John").as(People.class).iterator();
+        Iterator<Friend> users = collection.find("{name:#}", "John").as(Friend.class).iterator();
 
         /* then */
         assertThat(users.next().getId()).isEqualTo(john.getId());

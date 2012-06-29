@@ -20,7 +20,7 @@ import org.bson.types.ObjectId;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class People {
+public class Friend {
 
     @JsonProperty("_id")
     private ObjectId id;
@@ -28,26 +28,26 @@ public class People {
     private String address;
     private Coordinate coordinate;
 
-    public People(String name) {
+    public Friend(String name) {
         this.name = name;
     }
 
-    public People(ObjectId id, String name) {
+    public Friend(ObjectId id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public People(String name, String address) {
+    public Friend(String name, String address) {
         this.name = name;
         this.address = address;
     }
 
-    public People(String name, Coordinate coordinate) {
+    public Friend(String name, Coordinate coordinate) {
         this.name = name;
         this.coordinate = coordinate;
     }
 
-    public People() {
+    public Friend() {
     }
 
     public ObjectId getId() {
@@ -77,14 +77,14 @@ public class People {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof People)) return false;
+        if (!(o instanceof Friend)) return false;
 
-        People people = (People) o;
+        Friend friend = (Friend) o;
 
-        if (address != null ? !address.equals(people.address) : people.address != null) return false;
-        if (coordinate != null ? !coordinate.equals(people.coordinate) : people.coordinate != null) return false;
-        if (id != null ? !id.equals(people.id) : people.id != null) return false;
-        if (name != null ? !name.equals(people.name) : people.name != null) return false;
+        if (address != null ? !address.equals(friend.address) : friend.address != null) return false;
+        if (coordinate != null ? !coordinate.equals(friend.coordinate) : friend.coordinate != null) return false;
+        if (id != null ? !id.equals(friend.id) : friend.id != null) return false;
+        if (name != null ? !name.equals(friend.name) : friend.name != null) return false;
 
         return true;
     }

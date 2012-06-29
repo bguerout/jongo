@@ -18,7 +18,7 @@ package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-import org.jongo.model.People;
+import org.jongo.model.Friend;
 import org.jongo.util.IdResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -42,25 +42,25 @@ public class FindOneTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        collection.save(new People("John", "22 Wall Street Avenue"));
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
 
         /* when */
-        People people = collection.findOne("{name:'John'}").as(People.class);
+        Friend friend = collection.findOne("{name:'John'}").as(Friend.class);
 
         /* then */
-        assertThat(people.getName()).isEqualTo("John");
+        assertThat(friend.getName()).isEqualTo("John");
     }
 
     @Test
     public void canFindOneWithEmptyQuery() throws Exception {
         /* given */
-        collection.save(new People("John", "22 Wall Street Avenue"));
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
 
         /* when */
-        People people = collection.findOne().as(People.class);
+        Friend friend = collection.findOne().as(Friend.class);
 
         /* then */
-        assertThat(people.getName()).isEqualTo("John");
+        assertThat(friend.getName()).isEqualTo("John");
     }
 
     @Test
