@@ -99,6 +99,7 @@ task('package', ['prepare', 'lessify', 'weave-html', 'dns'], function (params) {
     wrench.copyDirSyncRecursive('assets/img', path.join(outputFolder, "assets/img"));
     wrench.copyDirSyncRecursive('assets/js', path.join(outputFolder, "assets/js"));
     wrench.copyDirSyncRecursive('assets/css', path.join(outputFolder, "assets/css"));
+    wrench.copyDirSyncRecursive('tags', path.join(outputFolder, "tags"));
 });
 
 desc("Create Jongo site")
