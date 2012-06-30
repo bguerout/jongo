@@ -18,6 +18,7 @@ package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import org.bson.types.ObjectId;
 import org.jongo.model.People;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -63,7 +64,8 @@ public class RemoveTest extends JongoTestCase {
         collection.save(john);
 
         /* when */
-        WriteResult writeResult = collection.remove(john.getId());
+        ObjectId id = new ObjectId(john.getId().toString());
+        WriteResult writeResult = collection.remove(id);
 
         /* then */
         Iterable<People> peoples = collection.find().as(People.class);
