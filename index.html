@@ -21,7 +21,8 @@
     <title>Jongo {mongo-java-driver: 'with ease'}</title>
 
     <link href="assets/img/jongo_favicon.png" rel="shortcut icon">
-    <link href="assets/bootstrap/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
+    <link href="assets/css/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
+    <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
     <link href="assets/css/prettify.css" type="text/css" rel="stylesheet"/>
 
 
@@ -58,23 +59,22 @@
             <div class="nav-collapse">
                 <ul class="nav">
                     <li><a href="#mapping">Mapping</a></li>
-                    <li><a href="#querying">Querying</a></li>
                     <li><a href="#updating">Updating</a></li>
-                    <li><a href="#performance">Performance</a></li>
+                    <li><a href="#querying">Querying</a></li>
                     <li><a href="#advanced">Advanced</a></li>
+                    <li><a href="#notes">Release notes</a></li>
                     <li><a href="#maven">Maven</a></li>
+                </ul>
+                <ul class="nav pull-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li><a href="https://github.com/bguerout/jongo" target="_blank">Code on github</a></li>
-                            <li><a href="https://groups.google.com/forum/?hl=fr&fromgroups#!forum/jongo-user" target="_blank">Mailing list</a></li>
-                            <li><a href="https://twitter.com/#!/bguerout" target="_blank">@bguerout</a></li>
-                            <li><a href="https://twitter.com/#!/amsellemyves" target="_blank">@amsellemyves</a></li>
+                            <li><a href="https://groups.google.com/forum/?hl=fr&fromgroups#!forum/jongo-user" target="_blank">Ask the mailing list</a></li>
+                            <li><a href="https://github.com/bguerout/jongo" target="_blank">Grab code on github</a></li>
+                            <li><a href="https://twitter.com/#!/bguerout" target="_blank">Follow @bguerout</a></li>
+                            <li><a href="https://twitter.com/#!/amsellemyves" target="_blank">Follow @amsellemyves</a></li>
                         </ul>
                     </li>
-                </ul>
-                <ul class="nav pull-right">
-
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Versions<b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -87,7 +87,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="container">
 
@@ -117,7 +116,7 @@
     </div>
 </section>
 
-<section class="offset1">
+<section id="usage" class="offset1">
     <div class="page-header">
         <h1>Usage</h1>
     </div>
@@ -157,18 +156,25 @@ Friend one = friends.findOne("{name:'John'}").as(Friend.class);</pre>
         </div>
     </div>
     <div class="row">
-        <div class="span4">
+        <div class="span3">
+<pre class="prettyprint">
+public class Friend {
+    private ObjectId _id;
+}
+&nbsp;</pre>
+        </div>
+        <div class="span3">
 <pre class="prettyprint">
 public class Friend {
     @JsonProperty("_id")
     private ObjectId key;
 }</pre>
         </div>
-        <div class="span5">
+        <div class="span3">
 <pre class="prettyprint">
 public class Friend {
-    @JsonProperty("_id")
-    private String key;// you must generate it!
+    // you must generate it!
+    private String _id;
 }</pre>
         </div>
     </div>
@@ -185,24 +191,72 @@ public class Friend {
 
             <p>
                 To handle polymorphism of Java objects, a field containing the class name must be set into the Mongo
-                document. One can persist a <code>Fox</code> (<i>sub-class of <code>Animal</code></i>) and manipulate it
-                as an <code>Animal</code>. This feature is provided out-of-the-box by Jackson. Using another
+                document. One can persist a <code>Fox</code> (<i>sub-class of <code>Friend</code></i>) and manipulate it
+                as a <code>Friend</code>. This feature is provided out-of-the-box by Jackson. Using another
                 (un)marshaller implies extra work.
             </p>
-
+        </div>
+    </div>
+    <div class="row">
+        <div class="span5">
 <pre class="prettyprint">
-@JsonTypeInfo(use = Id.CLASS, include = As.PROPERTY, property = "_class")
-public class Animal {
-    String gender;
+@JsonTypeInfo(use = Id.CLASS, property = "_class")
+public class Friend {
+    int age;
 }</pre>
-
+        </div>
+        <div class="span4">
 <pre class="prettyprint">
-public class Fox extends Animal {
-    boolean wild;
-}</pre>
+public class Fox extends Friend {
+    String name, color;
+}
+&nbsp;</pre>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span9">
+<pre class="prettyprint">
+friends.save(new Fox("fantastic", "red-haired"));
+Friend friend = friends.findOne("{name:'fantastic'}").as(Friend.class);
+Fox fantastic = (Fox)friend;</pre>
+
             <p>
                 Using a singular <i>reserved</i> name, like <code>_class</code>, for this field is a good idea.
             </p>
+        </div>
+    </div>
+</section>
+
+<section id="updating" class="offset1">
+    <div class="page-header">
+        <h1>Updating</h1>
+    </div>
+
+
+    <div class="row">
+        <div class="span9">
+            <h2>Save</h2>
+
+            <p>Simply pass an object to the <code>save(...)</code> method, built-in Jackson marshaller will be used to
+                convert it to json. <a href="#mapping">Object mapping section</a> defines what objects have to look
+                like.
+            </p>
+            <pre class="prettyprint">friends.save(new Friend("Joe", 27));</pre>
+
+            <h2>Update</h2>
+
+            <p>Update syntax is a bit different than in Mongo shell: 'modifier' query has to be passed using <code>with(...)</code> method.
+            Upsert and multi options are no longer boolean but flag methods </p>
+            <pre class="prettyprint">
+friends.update("{name: 'Joe'}").with("{$inc: {age: 1}}");
+friends.update("{name: 'Joe'}").upsert().multi().with("{$inc: {age: 1}}");
+friends.update("{name: 'Joe'}").upsert().with("{$inc: {age: 1}}");</pre>
+            <h2>Remove</h2>
+
+            <p>Remove works as if you were in Mongo shell.</p>
+<pre class="prettyprint">
+friends.remove("{name: 'Joe'}");
+friends.remove(new ObjectId("4c...e"));</pre>
         </div>
     </div>
 </section>
@@ -256,17 +310,15 @@ friends.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
             <h2>Query templating</h2>
 
             <p>
-                Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow <code>friends.find("{name: #, age: #}",
-                "John", 18)</code><br>
-                Binded parameters can be <a
+                Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters can be <a
                     href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
                 Primitives</a> or any complex type made of those.
             </p>
 
-            <pre class="prettyprint">friends.find("{name: #, age: #}", "John", 18); //- will produce {name: 'John', age: 18}</pre>
+            <pre class="prettyprint">friends.find("{name: #, age: #}", "John", 18); //&rarr; will produce {name: 'John', age: 18}</pre>
 <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
-friends.find("{age: {$in:#}}", ages); //-> will produce {age: {$in:[22,63]}}</pre>
+friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}</pre>
 
             <h2>Count</h2>
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(...)</a>.</p>
@@ -276,17 +328,18 @@ friends.find("{age: {$in:#}}", ages); //-> will produce {age: {$in:[22,63]}}</pr
 
             <h3>Distinct</h3>
             <p>Distinct syntax is almost the same as Find/FindOne operations. Optional query can be setted using <code>query(...)</code> method</p>
-            <pre class="prettyprint">friends.distinct("name").as(String.class);</pre>
-            <pre class="prettyprint">friends.distinct("address").query("{name: 'John'}").as(Address.class);</pre>
+            <pre class="prettyprint">List&lt;String&gt; names = friends.distinct("name").as(String.class);</pre>
+            <pre class="prettyprint">List&lt;Address&gt; addresses = friends.distinct("address").query("{name: 'John'}").as(Address.class);</pre>
 
             <h3>New Aggregation Framework</h3>
-            <p>This feature will be only available in the Mongo v2.2 release and Jongo already supports it! Just use a v2.1.0+ (unstable) Mongo server.</p>
+            <p>This feature will only be available in the Mongo v2.2 release and Jongo already supports it! 
+            <br>Just use a v2.1.0+ (unstable) Mongo server.</p>
             <p>All aggregation operators are supported <code>$project, $match, $limit, $skip, $unwind, $group, $sort</code> and can be piped using <code>and(...)</code> method</p>
             <pre class="prettyprint">
 collection.aggregate("{$project:{sender:1}}")
-            .and("{$match:{tags:'read'}}")
-            .and("{$limit:10}")
-            .as(Email.class);</pre>
+          .and("{$match:{tags:'read'}}")
+          .and("{$limit:10}")
+          .as(Email.class);</pre>
 
             <h2>Advanced query</h2>
 
@@ -304,57 +357,6 @@ friends.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</
              <pre class="prettyprint">
 friends.find("{$query: {}, $maxScan: 2}").as(Friend.class);
 friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
-        </div>
-    </div>
-</section>
-
-<section id="updating" class="offset1">
-    <div class="page-header">
-        <h1>Updating</h1>
-    </div>
-
-
-    <div class="row">
-        <div class="span9">
-            <h2>Save</h2>
-
-            <p>Simply pass an object to the <code>save(...)</code> method, built-in Jackson marshaller will be used to
-                convert it to json. <a href="#mapping">Object mapping section</a> defines what objects have to look
-                like.
-            </p>
-            <pre class="prettyprint">friends.save(new Friend("Joe", 27));</pre>
-
-            <h2>Update</h2>
-
-            <p>Update syntax is a bit different than in Mongo shell: 'modifier' query has to be passed using <code>with(...)</code> method.
-            Upsert and multi options are no longer boolean but flag methods </p>
-            <pre class="prettyprint">
-friends.update("{name: 'Joe'}").with("{$inc: {age: 1}}");
-//update in upsert and multi mode
-friends.update("{name: 'Joe'}").upsert().multi().with("{$inc: {age: 1}}");
-//update in upsert mode only
-friends.update("{name: 'Joe'}").upsert().with("{$inc: {age: 1}}");</pre>
-            <h2>Remove</h2>
-
-            <p>Remove works as if you were in Mongo shell.</p>
-            <pre class="prettyprint">friends.remove("{name: 'Joe'}");</pre>
-        </div>
-    </div>
-</section>
-
-<section id="performance" class="offset1">
-    <div class="page-header">
-        <h1>Performance</h1>
-    </div>
-
-    <div class="row">
-        <div class="span9">
-            <p>Jongo is lighting fast. Not because it is made of ancient wood and magic stones, but because it binds
-                Jackson — the fastest Java json (un)marshalling library — to Mongo Java driver with the slightest glue
-                code possible.</p>
-
-            <p>Jongo's performance is currently under our microscope and we already noticed some great improvements over
-                our main competitor: Morphia. Keep tuned.</p>
         </div>
     </div>
 </section>
@@ -378,7 +380,8 @@ Iterable&lt;Integer&gt; ages = col.find("{'name':'John'}").map(
     new ResultMapper&lt;Integer&gt;() {
         @Override
         public Integer map(DBObject result) {
-            return result.get("age");//do manual stuff here
+            //do manual stuff here
+            return result.get("age");
         }
     }
 );</pre>
@@ -400,7 +403,35 @@ class CustomUnmarshaller implements Unmarshaller {
 
 Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshaller);
 </pre>
+            <h2>Performance</h2>
 
+            <p>Jongo is lighting fast. Not because it is made of ancient wood and magic stones, but because it binds
+                Jackson — the fastest Java json (un)marshalling library — to Mongo Java driver with the slightest glue
+                code possible.</p>
+
+            <p>Jongo's performance is currently under our microscope and we already noticed some great improvements over
+                our main competitor: Morphia. Keep tuned.</p>
+        </div>
+    </div>
+</section>
+
+<section id="notes" class="offset1">
+    <div class="page-header">
+        <h1>Release notes (0.1&rarr;0.2)</h1>
+    </div>
+
+    <div class="row">
+        <div class="span9">
+            <dl class="dl-horizontal">
+                <dt class="strong">Aggregation Framework</dt><dd>Support for the brand new aggregation framework, see <a href="#querying">querying</a> for more details</dd>
+                <dt>WriteConcern</dt><dd><code>save()</code> and <code>update()</code> can be configured with a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html" target="_blank">WriteConcern</a></dd>
+                <dt>WriteResult</dt><dd><code>save()</code>, <code>insert()</code>, <code>update()</code> and <code>remove()</code> return a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteResult.html" target="_blank">WriteResult</a> for every call</dd>
+                <dt>save</dt><dd>When an <code>ObjectId</code> is generated Mongo-side, it is setted in the object <a href="#mapping">_id attribute</a></dd>
+                <dt>update</dt><dd>breaking change <i class="icon-exclamation-sign"></i> <code>update(String, String)</code> becomes <code>update(String).with(String)</code></dd>
+                <dt>remove</dt><dd>docuements can be removed by id</dd>
+                <dt>distinct</dt><dd>to be faithful to the driver, <code>distinct()</code> returns <code>List&lt;T&gt;</code> instead of <code>Iterable&lt;T&gt;</code></dd>
+                <dt>find</dt><dd>query without filter can be writen with empty <code>find()</code> and <code>findOne()</code></dd>
+            </dl>
         </div>
     </div>
 </section>
@@ -414,7 +445,7 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshal
         <div class="span9">
             <p>Jongo is deployed into OSS Sonatype (Maven repository hosting service for open source projects).</p>
 
-            <h5>Add dependency into your pom.xml</h5>
+            <h5>Add the following dependency to your pom.xml</h5>
 
             <pre class="prettyprint linenums">
 &lt;dependency&gt;

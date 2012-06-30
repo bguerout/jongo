@@ -1,11 +1,13 @@
-
-
-@import "less/bootstrap.less";
+@baseLineHeight: 18px;
 
 body {
-    padding-top: 70px;
+    padding-top: 30px;
     padding-bottom: 40px;
     background: #F3F4EB;
+}
+
+section{
+  padding-top: 40px;
 }
 
 h2 {
@@ -34,6 +36,8 @@ h4 {
  .brand{
     background: url(../img/jongo_small.png) no-repeat left;
     padding-left: 30px;
+    color: white;
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, .1), 0 0 30px rgba(255, 255, 255, .125);
  }
 }
 
@@ -42,6 +46,9 @@ h4 {
    margin-bottom: 10px;
    text-align: center;
    font-size: 75px;
+  }
+  img{
+    vertical-align: baseline;
   }
 
  .intro{
@@ -53,18 +60,37 @@ h4 {
      }
 
      div.row{
-       padding: 15px 0px 15px 0px;
+       padding: 10px 0px;
      }
 	 
 	 .pitch{
 		font-size: 22px;
-        text-align: center;
-	    line-height:27px;
+    text-align: center;
+    line-height:27px;
+    margin-bottom: 40px;
 		strong{
 		 color: #468847;
 		}
 	 }
  }
+}
+
+section#usage{
+  padding-top: 0px;
+}
+
+.label, .badge{
+  font-size: 14px;
+}
+
+.dl-horizontal dt{
+  width: 150px;
+  &.strong{
+   color:#468847
+  }
+}
+.dl-horizontal dd{
+  margin-left: 160px;
 }
 
 .small-bs-icon {
@@ -86,4 +112,3 @@ p{
     padding-left: 30px;
     background-size:20px;
 }
-
