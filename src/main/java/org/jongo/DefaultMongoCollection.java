@@ -154,4 +154,12 @@ class DefaultMongoCollection implements MongoCollection {
     private Query createQuery(String query, Object... parameters) {
         return queryFactory.createQuery(query, parameters);
     }
+
+    @Override
+    public String toString() {
+        if (collection != null)
+            return "collection {" + "name: '" + collection.getName() + "', db: '" + collection.getDB().getName() + "'}";
+        else
+            return super.toString();
+    }
 }
