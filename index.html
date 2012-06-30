@@ -377,7 +377,7 @@ friends.update("{name: 'Joe'}").upsert().with("{$inc: {age: 1}}");</pre>
 Iterable&lt;Integer&gt; ages = col.find("{'name':'John'}").map(
     new ResultMapper&lt;Integer&gt;() {
         @Override
-        public String map(DBObject result) {
+        public Integer map(DBObject result) {
             return result.get("age");//do manual stuff here
         }
     }
