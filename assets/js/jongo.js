@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	prettyPrint();
+	$('.nav-collapse').scrollspy();
 
 	$('a').click(function() {
 		$('html, body').animate({
