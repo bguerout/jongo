@@ -16,6 +16,7 @@ stop_on_error "Unable to install npm dependencies"
 
 rm -rf ./$SITE_FOLDER
 node node_modules/jake/bin/cli.js -f scripts/generate-site.js
+stop_on_error "Unable to generate site"
 
 echo "
 Site has been generated into $SITE_FOLDER folder.
