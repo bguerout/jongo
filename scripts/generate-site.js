@@ -41,7 +41,7 @@ task('lessify', ['prepare'], function (params) {
     wrench.mkdirSyncRecursive(path.join(outputFolder, "assets/css"));
     var cssFile = path.join(outputFolder, "assets/css/jongo.css");
 
-    fs.readFile('./assets/bootstrap/jongo.less', 'utf-8', function (err, data) {
+    fs.readFile('./assets/css/jongo.less', 'utf-8', function (err, data) {
         if (err) throw err;
 
         var parser = new (less.Parser)({
