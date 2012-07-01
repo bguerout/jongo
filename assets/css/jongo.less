@@ -7,7 +7,7 @@ body {
 }
 
 section{
-  padding-top: 40px;
+  padding-top: 30px;
 }
 
 h2 {
@@ -28,6 +28,12 @@ h4 {
     font-size: 13px;
 }
 
+a:hover {
+  color: #08C;
+  background-color: #bbd8e9;
+  text-decoration: none;
+}
+
 .sidebar-nav {
     padding: 9px 0;
 }
@@ -35,9 +41,17 @@ h4 {
 .navbar{
  .brand{
     background: url(../img/jongo_small.png) no-repeat left;
-    padding-left: 30px;
+    padding: 3px 20px 6px 25px;
     color: white;
     text-shadow: 2px 2px 0 rgba(255, 255, 255, .1), 0 0 30px rgba(255, 255, 255, .125);
+ }
+ .navbar-inner{
+     height: 30px;
+     min-height: 30px;
+     border-bottom: 4px solid #468847;
+ }
+ .nav > li > a {
+  padding: 4px 10px 11px;
  }
 }
 
@@ -97,10 +111,6 @@ section#usage{
 .small-bs-icon {
   float: left;
   margin: 4px 5px 0 0;
-}
-
-.navbar-inner{
-     border-bottom: 4px solid #468847;
 }
 
 p{
