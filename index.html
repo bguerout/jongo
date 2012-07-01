@@ -145,7 +145,7 @@ Friend one = friends.findOne("{name:'John'}").as(Friend.class);</pre>
             </p>
 
             <p>
-                Note that every Mongo document have an <code>_id</code> field. Just annotate id property with
+                Note that every Mongo document have an <code>_id</code> field. Just name id property <code>_id</code> or annotate it with
                 <code>@JsonProperty("_id")</code>. The object type can be <code>ObjectId</code> – it will be generated
                 Mongo side – or any Java type, other than array, so long as it is unique.
             </p>
