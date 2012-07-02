@@ -18,7 +18,7 @@ package org.jongo.spike;
 
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
-import org.jongo.MongoCollection;
+import org.jongo.DefaultMongoCollection;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
@@ -33,7 +33,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class QuestionsSpikeTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

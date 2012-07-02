@@ -21,8 +21,9 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.net.UnknownHostException;
 
 import org.bson.types.ObjectId;
+import org.jongo.DefaultMongoCollection;
 import org.jongo.Jongo;
-import org.jongo.MongoCollection;
+import org.jongo.DefaultMongoCollection;
 import org.jongo.ResultMapper;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.spike.dbref.jackson.Reference;
@@ -45,7 +46,7 @@ import com.mongodb.util.JSON;
 
 public class DBRefSpikeTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
     private ObjectId johnId;
 
     @Before
@@ -94,7 +95,7 @@ public class DBRefSpikeTest extends JongoTestCase {
     @Test
     public void referenceShouldBeUnmarshalledWithJackson() throws Exception {
 
-        MongoCollection buddies = getCollectionWithCustomMapper();
+        DefaultMongoCollection buddies = getCollectionWithCustomMapper();
         buddies.insert("{name : 'Abby', friend: { $ref : 'buddies', $id : # }}", johnId);
 
         Buddy abby = buddies.findOne("{name : 'Abby'}").as(Buddy.class);
@@ -108,7 +109,7 @@ public class DBRefSpikeTest extends JongoTestCase {
 
         final Buddy peter = new Buddy("Peter", null);
         Buddy buddy = new Buddy("Abby", peter);
-        MongoCollection buddies = getCollectionWithCustomMapper();
+        DefaultMongoCollection buddies = getCollectionWithCustomMapper();
         buddies.save(peter);
 
         buddies.save(buddy);
@@ -122,7 +123,7 @@ public class DBRefSpikeTest extends JongoTestCase {
         });
     }
 
-    private MongoCollection getCollectionWithCustomMapper() throws UnknownHostException {
+    private DefaultMongoCollection getCollectionWithCustomMapper() throws UnknownHostException {
         DB db = getDatabase();
         ObjectMapper mapper = createMapper(db);
         JacksonProcessor processor = new JacksonProcessor(mapper);

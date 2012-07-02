@@ -16,8 +16,6 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.jongo.model.Friend;
 import org.jongo.util.IdResultMapper;
 import org.jongo.util.JongoTestCase;
@@ -25,9 +23,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class FindOneTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

@@ -30,7 +30,7 @@ import com.mongodb.DBObject;
 
 public class FindWithResultMapperTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

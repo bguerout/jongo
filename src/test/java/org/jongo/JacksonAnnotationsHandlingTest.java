@@ -16,17 +16,17 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.bson.types.ObjectId;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class JacksonAnnotationsHandlingTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

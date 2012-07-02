@@ -29,7 +29,7 @@ import org.junit.Test;
 
 public class FindTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

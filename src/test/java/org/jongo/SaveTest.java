@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 public class SaveTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

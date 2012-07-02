@@ -28,7 +28,7 @@ import org.junit.Test;
 
 public class FindSkipSortLimitTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

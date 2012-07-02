@@ -16,19 +16,18 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
+import com.mongodb.DBObject;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.DBObject;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class FindPartialFieldTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
     private Friend friend;
 
     @Before

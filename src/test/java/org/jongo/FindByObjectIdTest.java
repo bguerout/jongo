@@ -29,7 +29,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class FindByObjectIdTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

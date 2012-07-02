@@ -28,7 +28,7 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 
 
-class DefaultMongoCollection implements MongoCollection {
+public final class DefaultMongoCollection {
 
     private final DBCollection collection;
     private final Marshaller marshaller;

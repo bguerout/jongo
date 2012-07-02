@@ -16,20 +16,19 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class UpdateTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private DefaultMongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
