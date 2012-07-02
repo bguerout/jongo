@@ -91,16 +91,6 @@ public final class MongoCollection {
         return new Update(collection, queryFactory, query);
     }
 
-    /**
-     * @deprecated use {@link #update(String)} followed by
-     *             {@link Update#with(String)} instead. <b>This method is
-     *             scheduled for deletion in 0.3.</b>
-     */
-    @Deprecated
-    public WriteResult update(String query, String modifier) {
-        return new Update(collection, queryFactory, query).multi().with(modifier);
-    }
-
     public WriteResult save(Object document) {
         return new Save(collection, marshaller, document).execute();
     }

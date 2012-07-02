@@ -41,21 +41,6 @@ public class UpdateTest extends JongoTestCase {
     }
 
     @Test
-    @Deprecated
-    public void canUpdateMultiDeprecated() throws Exception {
-        /* given */
-        collection.save(new Friend("John"));
-        collection.save(new Friend("John"));
-
-        /* when */
-        collection.update("{name:'John'}", "{$unset:{name:1}}");
-
-        /* then */
-        Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
-        assertThat(friends).hasSize(0);
-    }
-
-    @Test
     public void canUpdateMulti() throws Exception {
         /* given */
         collection.save(new Friend("John"));
