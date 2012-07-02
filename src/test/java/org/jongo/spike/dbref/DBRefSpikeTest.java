@@ -130,7 +130,7 @@ public class DBRefSpikeTest extends JongoTestCase {
     }
 
     private ObjectMapper createMapper(DB database) {
-        ObjectMapper mapper = JacksonProcessor.createMinimalMapper();
+        ObjectMapper mapper = JacksonProcessor.createPreConfiguredMapper();
         SimpleModule dbRefModule = createDBRefModule(database, mapper);
         mapper.registerModule(dbRefModule);
         return mapper;

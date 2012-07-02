@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.marshall;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import org.bson.types.BSONTimestamp;
+import org.bson.types.Binary;
+import org.bson.types.Code;
+import org.bson.types.CodeWScope;
+import org.bson.types.MaxKey;
+import org.bson.types.MinKey;
+import org.bson.types.ObjectId;
 
 import com.mongodb.DBObject;
 import com.mongodb.DBRefBase;
-import org.bson.types.*;
 
-import java.util.*;
-import java.util.regex.Pattern;
-
-public class BSONPrimitives {
+public final class BSONPrimitives {
 
     private static final Set<Class<?>> PRIMITIVES;
 
@@ -49,5 +60,8 @@ public class BSONPrimitives {
 
     public static Set<Class<?>> getPrimitives() {
         return Collections.unmodifiableSet(PRIMITIVES);
+    }
+
+    private BSONPrimitives() {
     }
 }

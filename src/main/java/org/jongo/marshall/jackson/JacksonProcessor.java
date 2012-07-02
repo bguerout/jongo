@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.jongo.BSONPrimitives;
+import org.jongo.marshall.BSONPrimitives;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
@@ -35,7 +35,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-public final class JacksonProcessor implements Unmarshaller, Marshaller {
+public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectMapper mapper;
 
@@ -44,7 +44,7 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
     }
 
     public JacksonProcessor() {
-        this(createMinimalMapper());
+        this(createPreConfiguredMapper());
 
     }
 
@@ -68,7 +68,7 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
         }
     }
 
-    public static ObjectMapper createMinimalMapper() {
+    public static ObjectMapper createPreConfiguredMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(AUTO_DETECT_GETTERS, false);
