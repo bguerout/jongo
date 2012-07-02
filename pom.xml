@@ -373,7 +373,7 @@
             <artifactId>maven-release-plugin</artifactId>
             <configuration>
               <arguments>-s ${cloudbees.settings.file}</arguments>
-              <releaseProfiles>mongohq,check-compatibility</releaseProfiles>
+              <releaseProfiles>mongohq</releaseProfiles>
             </configuration>
           </plugin>
           <plugin>
