@@ -16,20 +16,19 @@
 
 package org.jongo.spike.dbref;
 
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.jongo.spike.dbref.jackson.Reference;
 import org.jongo.spike.dbref.jackson.ReferenceLink;
 import org.jongo.spike.dbref.jackson.ReferenceSerializer;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import java.io.IOException;
+
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class ReferenceSerializerTest {
 

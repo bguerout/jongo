@@ -16,13 +16,16 @@
 
 package org.jongo.spike.dbref;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.net.UnknownHostException;
-
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
+import com.mongodb.util.JSON;
 import org.bson.types.ObjectId;
-import org.jongo.MongoCollection;
 import org.jongo.Jongo;
+import org.jongo.MongoCollection;
 import org.jongo.ResultMapper;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.spike.dbref.jackson.Reference;
@@ -35,13 +38,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
-import com.mongodb.util.JSON;
+import java.net.UnknownHostException;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class DBRefSpikeTest extends JongoTestCase {
 

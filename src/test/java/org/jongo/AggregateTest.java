@@ -130,7 +130,7 @@ public class AggregateTest extends JongoTestCase {
         int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
         CommandResult buildInfo = getDatabase().command("buildInfo");
         String version = (String) buildInfo.get("version");
-        int currentVersion =  Integer.valueOf(version.replaceAll("\\.", ""));
+        int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
         assumeTrue(currentVersion >= expectedVersionAsInt);
     }
 }

@@ -16,10 +16,9 @@
 
 package org.jongo.model;
 
-import org.bson.types.ObjectId;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import org.bson.types.ObjectId;
 
 @JsonTypeInfo(use = Id.CLASS, property = "_class")
 public class Animal {

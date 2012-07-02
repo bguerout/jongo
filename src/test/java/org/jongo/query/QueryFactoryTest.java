@@ -16,19 +16,14 @@
 
 package org.jongo.query;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.mongodb.BasicDBObject;
 import org.jongo.marshall.Marshaller;
 import org.jongo.model.Friend;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.BasicDBObject;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class QueryFactoryTest {
 

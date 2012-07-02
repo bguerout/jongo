@@ -17,14 +17,13 @@
 package org.jongo.marshall.jackson;
 
 
-import java.io.IOException;
-import java.util.Date;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.mongodb.util.JSON;
+
+import java.io.IOException;
+import java.util.Date;
 
 class BackwardDateDeserializer extends JsonDeserializer<Date> {
 
@@ -36,13 +35,13 @@ class BackwardDateDeserializer extends JsonDeserializer<Date> {
 
     @Override
     public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        Object deserializedDate = parse(jp,ctxt);
+        Object deserializedDate = parse(jp, ctxt);
         if (deserializedDate instanceof Long)
             return new Date((Long) deserializedDate);
         return (Date) deserializedDate;
     }
 
     private Object parse(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        return deserializer.deserialize(jp,ctxt);
+        return deserializer.deserialize(jp, ctxt);
     }
 }

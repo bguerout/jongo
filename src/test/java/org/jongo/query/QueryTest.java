@@ -16,13 +16,12 @@
 
 package org.jongo.query;
 
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
-
-import org.junit.Test;
-
 import com.mongodb.DBObject;
 import com.mongodb.util.JSONParseException;
+import org.junit.Test;
+
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryTest {
 

@@ -48,7 +48,7 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
 
     }
 
-    public <T> T unmarshall(String json, Class<T> clazz) throws MarshallingException{
+    public <T> T unmarshall(String json, Class<T> clazz) throws MarshallingException {
         try {
             return mapper.readValue(json, clazz);
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public final class JacksonProcessor implements Unmarshaller, Marshaller {
         }
     }
 
-    public <T> String marshall(T obj) throws MarshallingException{
+    public <T> String marshall(T obj) throws MarshallingException {
         try {
             Writer writer = new StringWriter();
             mapper.writeValue(writer, obj);

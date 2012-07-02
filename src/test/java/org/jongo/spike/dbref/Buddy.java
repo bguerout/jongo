@@ -16,13 +16,12 @@
 
 package org.jongo.spike.dbref;
 
-import org.bson.types.ObjectId;
-import org.jongo.spike.dbref.jackson.DBRefDeserializer;
-import org.jongo.spike.dbref.jackson.DBRefSerializer;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.bson.types.ObjectId;
+import org.jongo.spike.dbref.jackson.DBRefDeserializer;
+import org.jongo.spike.dbref.jackson.DBRefSerializer;
 
 class Buddy {
     @JsonProperty("_id")

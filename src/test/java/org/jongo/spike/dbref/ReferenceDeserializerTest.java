@@ -16,19 +16,18 @@
 
 package org.jongo.spike.dbref;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-
-import org.bson.types.ObjectId;
-import org.jongo.spike.dbref.jackson.Reference;
-import org.jongo.spike.dbref.jackson.ReferenceDeserializer;
-import org.junit.Test;
-
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.DB;
 import com.mongodb.DBRef;
+import org.bson.types.ObjectId;
+import org.jongo.spike.dbref.jackson.Reference;
+import org.jongo.spike.dbref.jackson.ReferenceDeserializer;
+import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class ReferenceDeserializerTest {
 

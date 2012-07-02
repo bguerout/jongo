@@ -16,17 +16,14 @@
 
 package org.jongo.spike.dbref;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBRef;
 import org.jongo.spike.dbref.jackson.Reference;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBRef;
+import static org.mockito.Mockito.*;
 
 public class ReferenceTest {
 

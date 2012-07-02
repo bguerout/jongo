@@ -16,15 +16,15 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.util.Iterator;
-
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Iterator;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class FindSkipSortLimitTest extends JongoTestCase {
 

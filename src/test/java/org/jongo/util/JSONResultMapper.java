@@ -16,9 +16,8 @@
 
 package org.jongo.util;
 
-import org.jongo.ResultMapper;
-
 import com.mongodb.DBObject;
+import org.jongo.ResultMapper;
 
 public class JSONResultMapper implements ResultMapper<String> {
     public String map(DBObject result) {

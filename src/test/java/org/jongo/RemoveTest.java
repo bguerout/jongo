@@ -16,16 +16,16 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import org.bson.types.ObjectId;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class RemoveTest extends JongoTestCase {
 

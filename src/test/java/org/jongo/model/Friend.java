@@ -16,9 +16,8 @@
 
 package org.jongo.model;
 
-import org.bson.types.ObjectId;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.bson.types.ObjectId;
 
 public class Friend {
 
