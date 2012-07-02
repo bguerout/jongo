@@ -29,7 +29,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class DistinctTest extends JongoTestCase {
 
-    private DefaultMongoCollection collection;
+    private MongoCollection collection;
     private String wallStreetAvenue;
 
     @Before

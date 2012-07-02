@@ -27,7 +27,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class FindPartialFieldTest extends JongoTestCase {
 
-    private DefaultMongoCollection collection;
+    private MongoCollection collection;
     private Friend friend;
 
     @Before

@@ -41,9 +41,9 @@ public final class Jongo {
         this.unmarshaller = unmarshaller;
     }
 
-    public DefaultMongoCollection getCollection(String name) {
+    public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
-        return new DefaultMongoCollection(dbCollection, marshaller, unmarshaller);
+        return new MongoCollection(dbCollection, marshaller, unmarshaller);
     }
 
     public DB getDatabase() {

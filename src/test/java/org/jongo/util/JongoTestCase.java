@@ -19,7 +19,7 @@ package org.jongo.util;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoURI;
-import org.jongo.DefaultMongoCollection;
+import org.jongo.MongoCollection;
 import org.jongo.Jongo;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
@@ -38,8 +38,8 @@ public abstract class JongoTestCase {
         this.jongo = new Jongo(findDatabase(), processor, processor);
     }
 
-    protected DefaultMongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
-        DefaultMongoCollection col = jongo.getCollection(collectionName);
+    protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
+        MongoCollection col = jongo.getCollection(collectionName);
         col.drop();
         return col;
     }

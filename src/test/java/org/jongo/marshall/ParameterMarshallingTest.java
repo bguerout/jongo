@@ -16,7 +16,7 @@
 
 package org.jongo.marshall;
 
-import org.jongo.DefaultMongoCollection;
+import org.jongo.MongoCollection;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
@@ -28,7 +28,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ParameterMarshallingTest extends JongoTestCase {
 
-    private DefaultMongoCollection collection;
+    private MongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

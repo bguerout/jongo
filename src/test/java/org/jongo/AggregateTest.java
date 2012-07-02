@@ -33,7 +33,7 @@ import static org.junit.Assume.assumeTrue;
 public class AggregateTest extends JongoTestCase {
 
 
-    private DefaultMongoCollection collection;
+    private MongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

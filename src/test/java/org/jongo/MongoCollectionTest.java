@@ -31,7 +31,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest extends JongoTestCase {
 
-    private DefaultMongoCollection mongoCollection;
+    private MongoCollection mongoCollection;
 
     @Before
     public void setUp() throws Exception {

@@ -28,14 +28,14 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 
 
-public final class DefaultMongoCollection {
+public final class MongoCollection {
 
     private final DBCollection collection;
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
 
-    DefaultMongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
+    MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
