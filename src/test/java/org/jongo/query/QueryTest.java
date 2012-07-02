@@ -17,7 +17,6 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import com.mongodb.util.JSONParseException;
 import org.junit.Test;
 
 import static junit.framework.Assert.fail;
@@ -45,7 +44,6 @@ public class QueryTest {
         } catch (Exception e) {
             assertThat(e).isInstanceOf(IllegalArgumentException.class);
             assertThat(e.getMessage()).contains("{invalid}");
-            assertThat(e.getCause()).isInstanceOf(JSONParseException.class);
         }
     }
 }
