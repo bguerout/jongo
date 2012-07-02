@@ -30,7 +30,7 @@
   <version>0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Jongo</name>
-  <description>Jongo is a tiny sugar over Mongo Java Driver</description>
+  <description>Query in Java as in Mongo shell</description>
   <url>http://www.jongo.org</url>
 
   <licenses>
