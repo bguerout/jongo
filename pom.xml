@@ -76,8 +76,9 @@
   </prerequisites>
 
   <properties>
-    <mongo.version>2.7.3</mongo.version>
-    <check.compatibility.args>-Pnone</check.compatibility.args>
+      <mongo.version>[2.6.5,)</mongo.version>
+      <jackson.version>2.0.2</jackson.version>
+      <check.compatibility.args>-Pnone</check.compatibility.args>
   </properties>
 
   <dependencies>
@@ -89,11 +90,21 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.0.2</version>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
     </dependency>
 
-    <!-- TEST -->
+      <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -234,7 +245,6 @@
     </extensions>
   </build>
 
-
   <reporting>
     <plugins>
       <plugin>
@@ -277,6 +287,7 @@
   </reporting>
 
   <profiles>
+
     <profile>
       <id>check-compatibility</id>
       <build>
@@ -306,6 +317,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>mongohq</id>
       <properties>
@@ -349,6 +361,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>cloudbees</id>
       <properties>
@@ -389,6 +402,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>early</id>
       <properties>

@@ -102,7 +102,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'pattern' : { '$regex' : '[a-z]' , '$options' : ''}"));
+        assertHasBeenPersistedAs(jsonify("'pattern' : { '$regex' : '[a-z]'"));//options is not longer generated since 2.8.0
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.pattern.toString()).isEqualTo(chars.toString());
     }
