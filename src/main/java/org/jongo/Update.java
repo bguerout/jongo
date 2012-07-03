@@ -36,7 +36,7 @@ public final class Update {
     Update(DBCollection collection, QueryFactory queryFactory, String query, Object... parameters) {
         this.collection = collection;
         this.queryFactory = queryFactory;
-        this.query = this.queryFactory.createQuery(query, parameters);
+        this.query = createQuery(query, parameters);
     }
 
     private WriteConcern determineWriteConcern() {
@@ -66,5 +66,17 @@ public final class Update {
     public Update multi() {
         this.multi = true;
         return this;
+    }
+
+    private Query createQuery(String query, Object[] parameters) {
+        try {
+            return this.queryFactory.createQuery(query, parameters);
+        } catch (Exception e) {
+            String message = String.format("Unable to create Update query %s, please check cause exception. " +
+                    "Beware 'update(String query, String modifier)' has been replaced by " +
+                    "'update(String query, Object... parameters)' in v0.2. To specify modifier please use: " +
+                    "'update(String query).with(String modifier)'", query);
+            throw new IllegalArgumentException(message, e);
+        }
     }
 }

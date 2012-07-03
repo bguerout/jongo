@@ -71,8 +71,9 @@ class ParameterBinder {
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {
         int nbTokens = countTokens(template);
         if (nbTokens != parameters.length) {
-            throw new IllegalArgumentException("Tokens and parameters numbers mismatch " +
-                    "[query: " + template + " / tokens:" + nbTokens + " / parameters:[" + parameters.length + "]");
+            String message = String.format("Unable to bind parameters into query: %s. Tokens and parameters numbers mismatch " +
+                    "[tokens: %s / parameters:%s]", template,nbTokens,parameters.length);
+            throw new IllegalArgumentException(message);
         }
     }
 

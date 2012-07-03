@@ -88,7 +88,11 @@ public final class MongoCollection {
     }
 
     public Update update(String query) {
-        return new Update(collection, queryFactory, query);
+        return update(query, NO_PARAMETERS);
+    }
+
+    public Update update(String query, Object... parameters) {
+        return new Update(collection, queryFactory, query, parameters);
     }
 
     public WriteResult save(Object document) {

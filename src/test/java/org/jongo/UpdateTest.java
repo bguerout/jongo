@@ -18,12 +18,15 @@ package org.jongo;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import junit.framework.Assert;
+
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class UpdateTest extends JongoTestCase {
@@ -38,6 +41,22 @@ public class UpdateTest extends JongoTestCase {
     @After
     public void tearDown() throws Exception {
         dropCollection("users");
+    }
+
+    @Test
+    public void canUpdateMultiDeprecated() throws Exception {
+        /* given */
+        collection.save(new Friend("John"));
+        collection.save(new Friend("John"));
+
+        try {
+            collection.update("{name:'John'}", "{$unset:{name:1}}");
+            fail();
+        } catch (Exception e) {
+            assertThat(e).isInstanceOf(IllegalArgumentException.class);
+            assertThat(e.getMessage()).contains("Beware 'update(String query, String modifier)' has been replaced");
+            assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Test
