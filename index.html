@@ -372,8 +372,7 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
 
             <p>
                 If one prefers to manually map objects (<i>ie. without unmarshaller</i>), he can implements
-                <code>ResultMapper</code>. Each result entity will be passed to the inherited <code>map(String
-                json)</code> method.
+                <code>ResultMapper</code>. Each result entity will be passed to the inherited <code>map(DBObject result)</code> method.
             </p>
 			
 <pre class="prettyprint">
@@ -445,7 +444,7 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshal
 
     <div class="row">
         <div class="span9">
-            <p>Jongo is deployed into OSS Sonatype (Maven repository hosting service for open source projects).</p>
+            <p>Jongo is deployed into OSS Sonatype (<i>Maven repository hosting service for open source projects</i>).</p>
 
             <h5>Add the following dependency to your pom.xml</h5>
 
