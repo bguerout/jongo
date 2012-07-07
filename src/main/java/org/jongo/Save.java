@@ -16,27 +16,28 @@
 
 package org.jongo;
 
+import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
+
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-
-import java.lang.reflect.Field;
 
 class Save {
 
-    private static final String MONGO_DOCUMENT_ID_NAME = "_id";
-
     private final Marshaller marshaller;
+    private final Unmarshaller unmarshaller;
     private final DBCollection collection;
     private final Object document;
     private WriteConcern concern;
 
-    Save(DBCollection collection, Marshaller marshaller, Object document) {
+    Save(DBCollection collection, Marshaller marshaller, Unmarshaller unmarshaller, Object document) {
         this.marshaller = marshaller;
+        this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.document = document;
     }
@@ -53,7 +54,7 @@ class Save {
         WriteResult writeResult = collection.save(dbObject, determineWriteConcern());
 
         String id = dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
-        setDocumentGeneratedId(id);
+        unmarshaller.setDocumentGeneratedId(document, id);
 
         return writeResult;
     }
@@ -67,28 +68,6 @@ class Save {
         }
     }
 
-    private void setDocumentGeneratedId(String id) {
-        Class<?> clazz = document.getClass();
-        do {
-            findDocumentGeneratedId(id, clazz);
-            clazz = clazz.getSuperclass();
-        } while (!clazz.equals(Object.class));
-    }
-
-    private void findDocumentGeneratedId(String id, Class<?> clazz) {
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType().equals(ObjectId.class)) {
-                field.setAccessible(true);
-                try {
-                    field.set(document, new ObjectId(id));
-                    break;
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
-                }
-            }
-        }
-    }
-
     private WriteConcern determineWriteConcern() {
         return concern == null ? collection.getWriteConcern() : concern;
     }
@@ -97,8 +76,7 @@ class Save {
         try {
             return ((DBObject) JSON.parse(json));
         } catch (Exception e) {
-            String message = String.format("Unable to save document, " +
-                    "json returned by marshaller cannot be converted into a DBObject: '%s'", json);
+            String message = String.format("Unable to save document, " + "json returned by marshaller cannot be converted into a DBObject: '%s'", json);
             throw new IllegalArgumentException(message, e);
         }
     }

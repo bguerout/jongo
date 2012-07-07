@@ -16,24 +16,29 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.jongo.marshall.BSONPrimitives;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.Unmarshaller;
-
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Date;
-
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
+import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
+
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Field;
+import java.util.Date;
+
+import org.bson.types.ObjectId;
+import org.jongo.marshall.BSONPrimitives;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.Unmarshaller;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -82,6 +87,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         return mapper;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void addBSONTypeSerializers(SimpleModule module) {
         NativeSerializer serializer = new NativeSerializer();
         NativeDeserializer deserializer = new NativeDeserializer();
@@ -92,4 +98,32 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         module.addDeserializer(Date.class, new BackwardDateDeserializer(deserializer));
     }
 
+    public void setDocumentGeneratedId(Object document, String id) {
+        Class<?> clazz = document.getClass();
+        do {
+            findDocumentGeneratedId(document, id, clazz);
+            clazz = clazz.getSuperclass();
+        } while (!clazz.equals(Object.class));
+    }
+
+    private void findDocumentGeneratedId(Object document, String id, Class<?> clazz) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getType().equals(ObjectId.class)) {
+                JsonProperty annotation = field.getAnnotation(JsonProperty.class);
+                if (isId(field.getName()) || annotation != null && isId(annotation.value())) {
+                    field.setAccessible(true);
+                    try {
+                        field.set(document, new ObjectId(id));
+                        break;
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isId(String value) {
+        return MONGO_DOCUMENT_ID_NAME.equals(value);
+    }
 }
