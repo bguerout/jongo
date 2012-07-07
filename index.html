@@ -440,7 +440,7 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshal
                 <dt>marshalling</dt><dd>move to Jackson 2.0 (<i>no conflict with olders Jackson versions</i>)</dd>
                 <dt>save</dt><dd>when an <code>ObjectId</code> is generated Mongo-side, it is setted in the object <a href="#mapping">_id attribute</a></dd>
                 <dt>update</dt><dd>breaking change <i class="icon-exclamation-sign"></i> <code>update(String, String)</code> becomes <code>update(String).with(String)</code></dd>
-                <dt>remove</dt><dd>docuements can be removed by id</dd>
+                <dt>remove</dt><dd>documents can be removed by id</dd>
                 <dt>distinct</dt><dd>to be faithful to the driver, <code>distinct()</code> returns <code>List&lt;T&gt;</code> instead of <code>Iterable&lt;T&gt;</code></dd>
                 <dt>find</dt><dd>query without filter can be writen with empty <code>find()</code> and <code>findOne()</code></dd>
             </dl>
