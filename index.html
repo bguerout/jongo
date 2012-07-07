@@ -434,10 +434,11 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshal
     <div class="row">
         <div class="span9">
             <dl class="dl-horizontal">
-                <dt class="strong">Aggregation Framework</dt><dd>Support for the brand new aggregation framework, see <a href="#querying">querying</a> for more details</dd>
+                <dt class="strong">Aggregation Framework</dt><dd>support for the brand new aggregation framework, see <a href="#querying">querying</a> for more details</dd>
                 <dt>WriteConcern</dt><dd><code>save()</code> and <code>update()</code> can be configured with a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html" target="_blank">WriteConcern</a></dd>
                 <dt>WriteResult</dt><dd><code>save()</code>, <code>insert()</code>, <code>update()</code> and <code>remove()</code> return a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteResult.html" target="_blank">WriteResult</a> for every call</dd>
-                <dt>save</dt><dd>When an <code>ObjectId</code> is generated Mongo-side, it is setted in the object <a href="#mapping">_id attribute</a></dd>
+                <dt>marshalling</dt><dd>move to Jackson 2.0 (<i>no conflict with olders Jackson versions</i>)</dd>
+                <dt>save</dt><dd>when an <code>ObjectId</code> is generated Mongo-side, it is setted in the object <a href="#mapping">_id attribute</a></dd>
                 <dt>update</dt><dd>breaking change <i class="icon-exclamation-sign"></i> <code>update(String, String)</code> becomes <code>update(String).with(String)</code></dd>
                 <dt>remove</dt><dd>docuements can be removed by id</dd>
                 <dt>distinct</dt><dd>to be faithful to the driver, <code>distinct()</code> returns <code>List&lt;T&gt;</code> instead of <code>Iterable&lt;T&gt;</code></dd>
