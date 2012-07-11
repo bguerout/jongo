@@ -16,15 +16,17 @@
 
 package org.jongo;
 
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.stream.JacksonDBDecoder;
+import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.query.Query;
-import org.jongo.query.QueryFactory;
 
 
 public final class MongoCollection {
@@ -36,6 +38,7 @@ public final class MongoCollection {
 
     MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
+        dbCollection.setDBDecoderFactory(JacksonDBDecoder.FACTORY);
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
         this.queryFactory = new QueryFactory(marshaller);

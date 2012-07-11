@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.stream.LazyJacksonDBObject;
 
 class ResultMapperFactory {
 
@@ -26,6 +27,14 @@ class ResultMapperFactory {
         return new ResultMapper<T>() {
             public T map(DBObject result) {
                 return unmarshaller.unmarshall(result.toString(), clazz);
+            }
+        };
+    }
+
+    public static <T> ResultMapper<T> newLazyMapper(final Class<T> clazz) {
+        return new ResultMapper<T>() {
+            public T map(DBObject result) {
+                return ((LazyJacksonDBObject<T>)result).as(clazz);
             }
         };
     }

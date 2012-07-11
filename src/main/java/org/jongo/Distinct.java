@@ -16,14 +16,15 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 public final class Distinct {
     private final DBCollection dbCollection;

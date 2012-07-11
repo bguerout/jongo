@@ -16,13 +16,14 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newLazyMapper;
+
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 public final class FindOne {
 
@@ -45,7 +46,7 @@ public final class FindOne {
     }
 
     public <T> T as(final Class<T> clazz) {
-        return map(newMapper(clazz, unmarshaller));
+        return map(newLazyMapper(clazz));
     }
 
     public <T> T map(ResultMapper<T> resultMapper) {

@@ -17,31 +17,31 @@
 package org.jongo.marshall.jackson;
 
 
+import java.io.IOException;
+import java.util.Date;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-
-import java.io.IOException;
-import java.util.Date;
+import de.undercouch.bson4jackson.BsonParser;
 
 class BackwardDateDeserializer extends JsonDeserializer<Date> {
 
-    private final NativeDeserializer deserializer;
+    private final EmbeddedObjectDeserializer deserializer;
+    private final NativeDeserializer nativeDeserializer;
 
-    public BackwardDateDeserializer(NativeDeserializer deserializer) {
+    public BackwardDateDeserializer(EmbeddedObjectDeserializer deserializer, NativeDeserializer nativeDeserializer) {
         this.deserializer = deserializer;
+        this.nativeDeserializer = nativeDeserializer;
     }
 
     @Override
     public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        Object deserializedDate = parse(jp, ctxt);
-        if (deserializedDate instanceof Long)
-            return new Date((Long) deserializedDate);
-        return (Date) deserializedDate;
+        if(jp instanceof BsonParser){
+           return (Date)deserializer.deserialize(jp, ctxt);
+        }
+        return new Date((Long) nativeDeserializer.deserialize(jp, ctxt));
     }
 
-    private Object parse(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        return deserializer.deserialize(jp, ctxt);
-    }
 }

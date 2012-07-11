@@ -16,24 +16,21 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.jongo.marshall.BSONPrimitives;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.Unmarshaller;
-
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Date;
-
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
+
+import java.io.StringWriter;
+import java.io.Writer;
+
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.Unmarshaller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -75,21 +72,8 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         mapper.configure(AUTO_DETECT_SETTERS, false);
         mapper.setSerializationInclusion(NON_NULL);
         mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
-
-        SimpleModule module = new SimpleModule("jongo", new Version(1, 0, 0, null, null, null));
-        addBSONTypeSerializers(module);
-        mapper.registerModule(module);
+        mapper.registerModule(new BsonModule());
         return mapper;
-    }
-
-    private static void addBSONTypeSerializers(SimpleModule module) {
-        NativeSerializer serializer = new NativeSerializer();
-        NativeDeserializer deserializer = new NativeDeserializer();
-        for (Class primitive : BSONPrimitives.getPrimitives()) {
-            module.addSerializer(primitive, serializer);
-            module.addDeserializer(primitive, deserializer);
-        }
-        module.addDeserializer(Date.class, new BackwardDateDeserializer(deserializer));
     }
 
 }

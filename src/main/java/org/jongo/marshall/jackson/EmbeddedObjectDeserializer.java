@@ -16,20 +16,20 @@
 
 package org.jongo.marshall.jackson;
 
+import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.mongodb.util.JSON;
+import de.undercouch.bson4jackson.BsonParser;
 
-import java.io.IOException;
-
-class NativeDeserializer<T> extends JsonDeserializer<T> {
+class EmbeddedObjectDeserializer<T> extends JsonDeserializer<T> {
 
     @Override
     public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        String asString = jp.readValueAsTree().toString();
-        return (T)JSON.parse(asString);
+        BsonParser bsonParser = (BsonParser) jp;
+        return (T) bsonParser.getEmbeddedObject();
     }
+
 }
