@@ -49,11 +49,10 @@ class BsonModule extends Module {
     private static class BsonDeserializers extends SimpleDeserializers {
         public BsonDeserializers() {
             EmbeddedObjectDeserializer deserializer = new EmbeddedObjectDeserializer();
-            NativeDeserializer nativeDeserializer = new NativeDeserializer();
-            addDeserializer(Date.class, new BackwardDateDeserializer(deserializer, nativeDeserializer));
+            addDeserializer(Date.class, new BackwardDateDeserializer(deserializer));
             addDeserializer(MinKey.class, deserializer);
             addDeserializer(MaxKey.class, deserializer);
-            addDeserializer(DBObject.class, nativeDeserializer);
+            addDeserializer(DBObject.class, new NativeDeserializer());
         }
     }
 

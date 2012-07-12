@@ -24,24 +24,22 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import de.undercouch.bson4jackson.BsonParser;
 
 class BackwardDateDeserializer extends JsonDeserializer<Date> {
 
     private final EmbeddedObjectDeserializer deserializer;
-    private final NativeDeserializer nativeDeserializer;
 
-    public BackwardDateDeserializer(EmbeddedObjectDeserializer deserializer, NativeDeserializer nativeDeserializer) {
+    public BackwardDateDeserializer(EmbeddedObjectDeserializer deserializer) {
         this.deserializer = deserializer;
-        this.nativeDeserializer = nativeDeserializer;
     }
 
     @Override
     public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        if(jp instanceof BsonParser){
-           return (Date)deserializer.deserialize(jp, ctxt);
+        Object deserialized = deserializer.deserialize(jp, ctxt);
+        if (deserialized instanceof Long) {
+            return new Date((Long) deserialized);
         }
-        return new Date((Long) nativeDeserializer.deserialize(jp, ctxt));
+        return (Date) deserialized;
     }
 
 }

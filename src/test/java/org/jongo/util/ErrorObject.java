@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-public class UnmarshallableObject {
+public class ErrorObject {
 
     private Date error;
 

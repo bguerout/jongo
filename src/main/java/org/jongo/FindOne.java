@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import static org.jongo.ResultMapperFactory.newLazyMapper;
+import static org.jongo.ResultMapperFactory.newPojoMapper;
 
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
@@ -46,7 +46,7 @@ public final class FindOne {
     }
 
     public <T> T as(final Class<T> clazz) {
-        return map(newLazyMapper(clazz));
+        return map(newPojoMapper(clazz));
     }
 
     public <T> T map(ResultMapper<T> resultMapper) {

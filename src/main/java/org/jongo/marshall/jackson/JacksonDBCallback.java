@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jongo.marshall.jackson.stream;
+package org.jongo.marshall.jackson;
 
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.PojoDBObject;
+import org.jongo.marshall.Unmarshaller;
 
 import com.mongodb.DB;
 import com.mongodb.DBCallback;
 import com.mongodb.DBCollection;
 import com.mongodb.DBRef;
 import com.mongodb.LazyDBCallback;
-import de.undercouch.bson4jackson.BsonFactory;
 
 /**
  *
@@ -32,17 +33,17 @@ public class JacksonDBCallback extends LazyBSONCallback implements DBCallback {
 
     private final DBCollection collection;
     private final DB db;
-    private final BsonFactory bsonFactory;
+    private final Unmarshaller unmarshaller;
 
-    public JacksonDBCallback(DBCollection coll,BsonFactory bsonFactory) {
-        collection = coll;
-        db = collection == null ? null : collection.getDB();
-        this.bsonFactory = bsonFactory;
+    public JacksonDBCallback(DBCollection collection, Unmarshaller unmarshaller) {
+        this.collection = collection;
+        this.db = collection == null ? null : collection.getDB();
+        this.unmarshaller = unmarshaller;
     }
 
     @Override
     public Object createObject(byte[] data, int offset) {
-        return new LazyJacksonDBObject(data, offset,new LazyDBCallback(collection),bsonFactory);
+        return new PojoDBObject(data, offset, new LazyDBCallback(collection), unmarshaller);
     }
 
     @Override

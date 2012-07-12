@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
-import org.jongo.util.UnmarshallableObject;
+import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +29,8 @@ import java.util.Date;
 
 import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.BSON.bsonify;
+import static org.jongo.util.BSON.jsonify;
 
 public class JacksonProcessorTest {
 
@@ -36,32 +38,29 @@ public class JacksonProcessorTest {
 
     @Before
     public void setUp() throws Exception {
-        processor = new JacksonProcessor();
+        this.processor = new JacksonProcessor();
     }
 
     @Test
     public void canConvertEntityToJson() {
         String json = processor.marshall(new Fox("fantastic", "roux"));
         assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
-
-        Friend friend = processor.unmarshall(json, Friend.class);
-        assertThat(friend.getName()).isEqualTo("fantastic");
     }
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
-        String json = jsonify("{'address': '22 rue des murlins'}");
+        byte[] bson = bsonify("{'address': '22 rue des murlins'}");
 
-        Friend friend = processor.unmarshall(json, Friend.class);
+        Friend friend = processor.unmarshall(bson, 0, Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
-        String json = jsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
+        byte[] bson = bsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
 
-        Friend friend = processor.unmarshall(json, Friend.class);
+        Friend friend = processor.unmarshall(bson, 0, Friend.class);
 
         assertThat(friend.getCoordinate().lat).isEqualTo(48);
     }
@@ -69,9 +68,9 @@ public class JacksonProcessorTest {
     @Test
     public void hasAFallbackToEnsureBackwardCompatibility() throws IOException {
 
-        String json = jsonify("{'address': '22 rue des murlins', 'oldAddress': '22-rue-des-murlins'}");
+        byte[] bson = bsonify("{'oldAddress': '22-rue-des-murlins'}");
 
-        BackwardFriend backwardFriend = processor.unmarshall(json, BackwardFriend.class);
+        BackwardFriend backwardFriend = processor.unmarshall(bson, 0, BackwardFriend.class);
 
         assertThat(backwardFriend.getAddress()).isEqualTo("22-rue-des-murlins");
     }
@@ -80,9 +79,9 @@ public class JacksonProcessorTest {
     public void canHandleNonIsoDate() throws IOException {
 
         Date oldDate = new Date(1340714101235L);
-        String json = jsonify("{'oldDate': " + 1340714101235L + " }");
+        byte[] bson = bsonify("{'oldDate': " + 1340714101235L + " }");
 
-        BackwardFriend backwardFriend = processor.unmarshall(json, BackwardFriend.class);
+        BackwardFriend backwardFriend = processor.unmarshall(bson, 0, BackwardFriend.class);
 
         assertThat(backwardFriend.oldDate).isEqualTo(oldDate);
     }
@@ -91,11 +90,10 @@ public class JacksonProcessorTest {
     public void shouldFailWhenUnableToUnmarshall() throws Exception {
 
         try {
-            processor.unmarshall("{error:'notADate'}", UnmarshallableObject.class);
+            processor.unmarshall(bsonify("{'error':'notADate'}"), 0, ErrorObject.class);
             fail();
-        } catch (MarshallingException e) {
+        } catch (Exception e) {
             assertThat(e).isInstanceOf(MarshallingException.class);
-            assertThat(e.getMessage()).contains("{error:'notADate'}");
         }
     }
 
@@ -103,15 +101,11 @@ public class JacksonProcessorTest {
     public void shouldFailWhenUnableToMarshall() throws Exception {
 
         try {
-            processor.marshall(new UnmarshallableObject());
+            processor.marshall(new ErrorObject());
             fail();
         } catch (MarshallingException e) {
             assertThat(e).isInstanceOf(MarshallingException.class);
         }
-    }
-
-    private String jsonify(String json) {
-        return json.replace("'", "\"");
     }
 
     private static class BackwardFriend extends Friend {

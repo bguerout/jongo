@@ -16,26 +16,57 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
+import org.bson.io.BasicOutputBuffer;
+import org.jongo.marshall.PojoDBObject;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.stream.LazyJacksonDBObject;
+
+import com.mongodb.DBEncoder;
+import com.mongodb.DBObject;
+import com.mongodb.DefaultDBEncoder;
 
 class ResultMapperFactory {
 
 
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
-        return new ResultMapper<T>() {
-            public T map(DBObject result) {
-                return unmarshaller.unmarshall(result.toString(), clazz);
-            }
-        };
+        return new DBObjectResultMapper<T>(unmarshaller, clazz);
     }
 
-    public static <T> ResultMapper<T> newLazyMapper(final Class<T> clazz) {
-        return new ResultMapper<T>() {
-            public T map(DBObject result) {
-                return ((LazyJacksonDBObject<T>)result).as(clazz);
-            }
-        };
+    public static <T> ResultMapper<T> newPojoMapper(final Class<T> clazz) {
+        return new PojoResultMapper<T>(clazz);
+    }
+
+    private static class DBObjectResultMapper<T> implements ResultMapper<T> {
+
+        private final Unmarshaller unmarshaller;
+        private final Class<T> clazz;
+
+        public DBObjectResultMapper(Unmarshaller unmarshaller, Class<T> clazz) {
+            this.unmarshaller = unmarshaller;
+            this.clazz = clazz;
+        }
+
+        public T map(DBObject result) {
+            return unmarshaller.unmarshall(convertToBytesArray(result), 0, clazz);
+        }
+
+        private byte[] convertToBytesArray(DBObject result) {
+            BasicOutputBuffer buffer = new BasicOutputBuffer();
+            DBEncoder dbEncoder = DefaultDBEncoder.FACTORY.create();
+            dbEncoder.writeObject(buffer, result);
+            return buffer.toByteArray();//TODO close me ?
+        }
+    }
+
+    private static class PojoResultMapper<T> implements ResultMapper<T> {
+
+        private final Class<T> clazz;
+
+        public PojoResultMapper(Class<T> clazz) {
+            this.clazz = clazz;
+        }
+
+        public T map(DBObject result) {
+            return ((PojoDBObject<T>) result).as(clazz);
+        }
     }
 }
