@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -37,7 +38,7 @@
       <name>The Apache Software License, Version 2.0</name>
       <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
-      <comments />
+      <comments/>
     </license>
   </licenses>
 
@@ -75,9 +76,9 @@
   </prerequisites>
 
   <properties>
-      <mongo.version>[2.6.5,)</mongo.version>
-      <jackson.version>2.0.2</jackson.version>
-      <check.compatibility.args>-Pnone</check.compatibility.args>
+    <mongo.version>[2.6.5,)</mongo.version>
+    <jackson.version>2.0.2</jackson.version>
+    <release.profiles>sonatype-oss-release</release.profiles>
   </properties>
 
   <dependencies>
@@ -100,10 +101,10 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
+      <version>${jackson.version}</version>
     </dependency>
 
-      <!-- TEST -->
+    <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -128,52 +129,19 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <arguments>-P${release.profiles}</arguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.4</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8.1</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -212,11 +180,45 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <releaseProfiles>check-compatibility</releaseProfiles>
-          <goals>site deploy</goals>
-        </configuration>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>attach-test-jar</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.8.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
@@ -288,81 +290,13 @@
   <profiles>
 
     <profile>
-      <id>check-compatibility</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.2.1</version>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>check-compatibility-script</id>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>sh</executable>
-                  <arguments>
-                    <argument>src/test/sh/check-compatibility-with-mongo-drivers.sh</argument>
-                    <argument>${check.compatibility.args}</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>mongohq</id>
-      <properties>
-        <check.compatibility.args>-Pmongohq -Djongo.mongohq.uri=${jongo.mongohq.uri}</check.compatibility.args>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <systemProperties>
-                <property>
-                  <name>jongo.mongohq.uri</name>
-                  <value>${jongo.mongohq.uri}</value>
-                </property>
-              </systemProperties>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>enforce-mongohq-property</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <fail>true</fail>
-                  <rules>
-                    <requireProperty>
-                      <property>jongo.mongohq.uri</property>
-                      <message>'mongohq' profile require 'jongo.mongohq.uri' property to be defined.</message>
-                    </requireProperty>
-                  </rules>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
       <id>cloudbees</id>
+      <activation>
+        <property>
+          <name>env</name>
+          <value>cloudbees</value>
+        </property>
+      </activation>
       <properties>
         <cloudbees.settings.file>/private/jongo/cloudbees-settings.xml</cloudbees.settings.file>
       </properties>
@@ -372,8 +306,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
             <configuration>
-              <arguments>-s ${cloudbees.settings.file}</arguments>
-              <releaseProfiles>mongohq</releaseProfiles>
+              <arguments>-s ${cloudbees.settings.file} -P${release.profiles}</arguments>
             </configuration>
           </plugin>
           <plugin>
@@ -381,7 +314,7 @@
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
               <execution>
-                <id>enforce-files-exist</id>
+                <id>enforce-custom-cloudbees-settings-exists</id>
                 <goals>
                   <goal>enforce</goal>
                 </goals>
@@ -403,10 +336,72 @@
     </profile>
 
     <profile>
+      <id>mongohq</id>
+      <activation>
+        <property>
+          <name>env</name>
+          <value>cloudbees</value>
+        </property>
+      </activation>
+      <properties>
+        <release.profiles>mongohq,sonatype-oss-release</release.profiles>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemProperties>
+                <property>
+                  <name>jongo.mongohq.uri</name>
+                  <value>${jongo.mongohq.uri}</value>
+                </property>
+              </systemProperties>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-mongohq-uri-property-exists</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <fail>true</fail>
+                  <rules>
+                    <requireProperty>
+                      <property>jongo.mongohq.uri</property>
+                      <message>'mongohq' profile require 'jongo.mongohq.uri' property to be defined.</message>
+                    </requireProperty>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <id>early</id>
       <properties>
         <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
       </properties>
+      <distributionManagement>
+        <repository>
+          <id>cloudbees-release</id>
+          <name>cloudbees-release</name>
+          <url>dav:https://repository-jongo.forge.cloudbees.com/release/</url>
+        </repository>
+        <snapshotRepository>
+          <id>cloudbees-snapshot</id>
+          <name>cloudbees-snapshot</name>
+          <url>dav:https://repository-jongo.forge.cloudbees.com/snapshot/</url>
+        </snapshotRepository>
+      </distributionManagement>
       <build>
         <plugins>
           <plugin>
@@ -430,26 +425,12 @@
               <releaseVersion>
                 ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}-early-${maven.build.timestamp}
               </releaseVersion>
-              <developmentVersion>${project.version}</developmentVersion>
               <updateWorkingCopyVersions>false</updateWorkingCopyVersions>
             </configuration>
           </plugin>
         </plugins>
       </build>
-      <distributionManagement>
-        <repository>
-          <id>cloudbees-release</id>
-          <name>cloudbees-release</name>
-          <url>dav:https://repository-jongo.forge.cloudbees.com/release/</url>
-        </repository>
-        <snapshotRepository>
-          <id>cloudbees-snapshot</id>
-          <name>cloudbees-snapshot</name>
-          <url>dav:https://repository-jongo.forge.cloudbees.com/snapshot/</url>
-        </snapshotRepository>
-      </distributionManagement>
     </profile>
 
   </profiles>
-
 </project>
