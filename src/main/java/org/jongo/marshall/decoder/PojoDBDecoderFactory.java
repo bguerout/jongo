@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.decoder;
 
+import org.jongo.marshall.Unmarshaller;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.mongodb.util.JSON;
+import com.mongodb.DBDecoder;
+import com.mongodb.DBDecoderFactory;
 
-import java.io.IOException;
+public class PojoDBDecoderFactory implements DBDecoderFactory {
 
-class NativeSerializer extends JsonSerializer<Object> {
+    private final Unmarshaller unmarshaller;
 
-    public void serialize(Object obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-        jsonGenerator.writeRawValue(JSON.serialize(obj));
+    public PojoDBDecoderFactory(Unmarshaller unmarshaller) {
+        this.unmarshaller = unmarshaller;
     }
+
+    public DBDecoder create() {
+        return new PojoDBDecoder(unmarshaller);
+    }
+
 }

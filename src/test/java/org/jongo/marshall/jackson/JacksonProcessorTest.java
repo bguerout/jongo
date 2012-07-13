@@ -16,7 +16,14 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.BSON.bsonify;
+import static org.jongo.util.BSON.jsonify;
+
+import java.io.IOException;
+import java.util.Date;
+
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -24,13 +31,7 @@ import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Date;
-
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.BSON.bsonify;
-import static org.jongo.util.BSON.jsonify;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 public class JacksonProcessorTest {
 
@@ -43,8 +44,13 @@ public class JacksonProcessorTest {
 
     @Test
     public void canConvertEntityToJson() {
-        String json = processor.marshall(new Fox("fantastic", "roux"));
+        String json = processor.marshallAsJson(new Fox("fantastic", "roux"));
         assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
+    }
+
+    @Test(expected = MarshallingException.class)
+    public void shouldFailWhenUnableToMarshallJson() throws Exception {
+        processor.marshallAsJson(new ErrorObject());
     }
 
     @Test
@@ -93,17 +99,6 @@ public class JacksonProcessorTest {
             processor.unmarshall(bsonify("{'error':'notADate'}"), 0, ErrorObject.class);
             fail();
         } catch (Exception e) {
-            assertThat(e).isInstanceOf(MarshallingException.class);
-        }
-    }
-
-    @Test
-    public void shouldFailWhenUnableToMarshall() throws Exception {
-
-        try {
-            processor.marshall(new ErrorObject());
-            fail();
-        } catch (MarshallingException e) {
             assertThat(e).isInstanceOf(MarshallingException.class);
         }
     }

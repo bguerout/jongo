@@ -17,19 +17,34 @@
 package org.jongo.marshall.jackson;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import de.undercouch.bson4jackson.BsonParser;
+import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 
-class EmbeddedObjectDeserializer<T> extends JsonDeserializer<T> {
+class CommonDeserializers extends SimpleDeserializers {
 
-    @Override
-    public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        BsonParser bsonParser = (BsonParser) jp;
-        return (T) bsonParser.getEmbeddedObject();
+    public CommonDeserializers() {
+        addDeserializer(Date.class, new DateDeserializer());
     }
 
+    private static class DateDeserializer extends JsonDeserializer<Date> {
+
+        @Override
+        public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            Object deserialized = jp.getEmbeddedObject();
+            if (deserialized instanceof Long) {
+                return getDateFromBackwardFormat((Long) deserialized);
+            }
+            return (Date) deserialized;
+        }
+
+        private Date getDateFromBackwardFormat(Long deserialized) {
+            return new Date(deserialized);
+        }
+
+    }
 }

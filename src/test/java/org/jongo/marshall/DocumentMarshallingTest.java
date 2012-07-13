@@ -58,7 +58,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'number' : 100 , 'string' : 'value' , 'bool' : false"));
+        assertHasBeenPersistedAs(jsonify("'string' : 'value' , 'number' : 100 , 'bool' : false"));
         JavaNativeType result = collection.findOne("{}").as(JavaNativeType.class);
         assertThat(result.bool).isFalse();
         assertThat(result.string).isEqualTo("value");
@@ -154,7 +154,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'code' : { '$code' : 'code'}"));
+        assertHasBeenPersistedAs(jsonify("'code' : { '_code' : 'code'}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.code).isEqualTo(type.code);
     }

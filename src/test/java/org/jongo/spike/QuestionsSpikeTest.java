@@ -68,7 +68,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
         friends.add(new Friend("peter"));
         collection.save(friends);
 
-        String robert = new JacksonProcessor().marshall(new Friend("Robert"));
+        String robert = new JacksonProcessor().marshallAsJson(new Friend("Robert"));
         collection.update("{}").with("{$push:{friends:" + robert + "}}");
 
         assertThat(collection.count("{ friends.name : 'Robert'}")).isEqualTo(1);

@@ -17,7 +17,7 @@
 package org.jongo;
 
 import org.bson.io.BasicOutputBuffer;
-import org.jongo.marshall.PojoDBObject;
+import org.jongo.marshall.decoder.PojoDBObject;
 import org.jongo.marshall.Unmarshaller;
 
 import com.mongodb.DBEncoder;
@@ -66,6 +66,9 @@ class ResultMapperFactory {
         }
 
         public T map(DBObject result) {
+            if (!(result instanceof PojoDBObject)) {
+                throw new IllegalArgumentException("PojoResultMapper can only map PojoDBObject instances");
+            }
             return ((PojoDBObject<T>) result).as(clazz);
         }
     }

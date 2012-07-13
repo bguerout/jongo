@@ -16,7 +16,11 @@
 
 package org.jongo.marshall;
 
+import com.mongodb.DBObject;
+
 public interface Marshaller {
 
-    <T> String marshall(T obj) throws MarshallingException;
+    String marshallAsJson(Object obj) throws MarshallingException;
+
+    DBObject marshallAsBson(Object obj) throws MarshallingException;
 }

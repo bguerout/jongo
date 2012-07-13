@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.marshall.decoder;
 
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.Unmarshaller;
 
 public class PojoDBObject<T> extends LazyDBObject {
 
-    private final byte[] data;
     private final int offset;
     private final Unmarshaller unmarshaller;
 
-    public PojoDBObject(byte[] data, int offset, LazyBSONCallback cbk, Unmarshaller unmarshaller) {
+    PojoDBObject(byte[] data, int offset, LazyBSONCallback cbk, Unmarshaller unmarshaller) {
         super(data, offset, cbk);
-        this.data = data;
         this.offset = offset;
         this.unmarshaller = unmarshaller;
     }
 
     public T as(Class<T> clazz) {
         try {
-            return unmarshaller.unmarshall(data, offset, clazz);
+            return unmarshaller.unmarshall(_input.array(), offset, clazz);
         } catch (MarshallingException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, toString());
             throw new MarshallingException(message, e);

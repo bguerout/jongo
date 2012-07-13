@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
-
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.mongodb.util.JSON;
+package org.jongo.marshall.jackson.bson4jackson;
 
 import java.io.IOException;
 
-class NativeDeserializer<T> extends JsonDeserializer<T> {
+import org.bson.types.ObjectId;
 
-    @Override
-    public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        String asString = jp.readValueAsTree().toString();
-        return (T)JSON.parse(asString);
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+public class BsonObjectIdSerializer extends JsonSerializer<ObjectId> {
+
+    public void serialize(ObjectId obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        ((MongoBsonGenerator) jsonGenerator).writeNativeObjectId(obj);
     }
 }

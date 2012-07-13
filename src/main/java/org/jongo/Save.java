@@ -47,27 +47,25 @@ class Save {
     }
 
     public WriteResult execute() {
-        String documentAsJson = marshall();
-        DBObject dbObject = convertToJson(documentAsJson);
+        DBObject dbObject = marshall();
 
         WriteResult writeResult = collection.save(dbObject, determineWriteConcern());
 
-        String id = dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
-        setDocumentGeneratedId(id);
+        setDocumentGeneratedId(dbObject.get(MONGO_DOCUMENT_ID_NAME));
 
         return writeResult;
     }
 
-    private String marshall() {
+    private DBObject marshall() {
         try {
-            return marshaller.marshall(document);
+            return marshaller.marshallAsBson(document);
         } catch (Exception e) {
             String message = String.format("Unable to save object %s due to a marshalling error", document);
             throw new IllegalArgumentException(message, e);
         }
     }
 
-    private void setDocumentGeneratedId(String id) {
+    private void setDocumentGeneratedId(Object id) {
         Class<?> clazz = document.getClass();
         do {
             findDocumentGeneratedId(id, clazz);
@@ -75,12 +73,12 @@ class Save {
         } while (!clazz.equals(Object.class));
     }
 
-    private void findDocumentGeneratedId(String id, Class<?> clazz) {
+    private void findDocumentGeneratedId(Object id, Class<?> clazz) {
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType().equals(ObjectId.class)) {
                 field.setAccessible(true);
                 try {
-                    field.set(document, new ObjectId(id));
+                    field.set(document, id);
                     break;
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException("Unable to set objectid on class: " + clazz, e);

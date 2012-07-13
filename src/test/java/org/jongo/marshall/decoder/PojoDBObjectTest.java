@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.marshall.decoder;
 
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.decoder.PojoDBObject;
 import org.jongo.util.BSON;
 import org.jongo.util.ErrorObject;
 import org.junit.Test;

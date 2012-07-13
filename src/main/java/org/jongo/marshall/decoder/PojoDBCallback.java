@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jongo.marshall.jackson;
+
+package org.jongo.marshall.decoder;
 
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.PojoDBObject;
 import org.jongo.marshall.Unmarshaller;
 
 import com.mongodb.DB;
@@ -26,16 +26,13 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBRef;
 import com.mongodb.LazyDBCallback;
 
-/**
- *
- */
-public class JacksonDBCallback extends LazyBSONCallback implements DBCallback {
+class PojoDBCallback extends LazyBSONCallback implements DBCallback {
 
     private final DBCollection collection;
     private final DB db;
     private final Unmarshaller unmarshaller;
 
-    public JacksonDBCallback(DBCollection collection, Unmarshaller unmarshaller) {
+    public PojoDBCallback(DBCollection collection, Unmarshaller unmarshaller) {
         this.collection = collection;
         this.db = collection == null ? null : collection.getDB();
         this.unmarshaller = unmarshaller;

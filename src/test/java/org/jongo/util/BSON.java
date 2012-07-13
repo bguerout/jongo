@@ -23,14 +23,17 @@ import com.mongodb.DefaultDBEncoder;
 import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BSON {
 
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     public static byte[] bsonify(String json) throws IOException {
-        Map map = new ObjectMapper().readValue(jsonify(json), HashMap.class);
+        Map map = OBJECT_MAPPER.readValue(jsonify(json), HashMap.class);
         BSONObject bson = new BasicDBObject();
         bson.putAll(map);
         BasicOutputBuffer buffer = new BasicOutputBuffer();

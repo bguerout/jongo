@@ -18,10 +18,14 @@ package org.jongo;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import junit.framework.Assert;
+
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
+import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -106,24 +110,15 @@ public class SaveTest extends JongoTestCase {
         assertThat(result).isNotNull();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenMarshalledJsonIsInvalid() throws Exception {
-
-        Marshaller marshaller = mock(Marshaller.class);
-        when(marshaller.marshall(anyObject())).thenReturn("invalid");
-        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
-
-        save.execute();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailWhenMarshallerFail() throws Exception {
 
-        Marshaller marshaller = mock(Marshaller.class);
-        when(marshaller.marshall(anyObject())).thenThrow(new RuntimeException());
-        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
-
-        save.execute();
+        try {
+            collection.save(new ErrorObject());
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+           assertThat(e.getMessage()).contains("Unable to save object");
+        }
     }
 
     @Test

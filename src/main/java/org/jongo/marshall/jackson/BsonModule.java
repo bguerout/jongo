@@ -16,52 +16,23 @@
 
 package org.jongo.marshall.jackson;
 
-import java.util.Date;
+import org.jongo.marshall.jackson.bson4jackson.BsonObjectIdSerializer;
 
-import org.bson.types.MaxKey;
-import org.bson.types.MinKey;
-import org.jongo.marshall.BSONPrimitives;
-
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
-import com.mongodb.DBObject;
 
-class BsonModule extends Module {
-
-    @Override
-    public String getModuleName() {
-        return "BsonModule";
-    }
+class BsonModule extends de.undercouch.bson4jackson.BsonModule {
 
     @Override
-    public Version version() {
-        return new Version(2, 0, 0, "", "org.jongo", "bsonmodule");
+    public void setupModule(SetupContext context) {
+        super.setupModule(context);
+        context.addSerializers(new BsonSerializers());
+        context.addDeserializers(new CommonDeserializers());
     }
 
-    @Override
-    public void setupModule(Module.SetupContext context) {
-        context.addSerializers(new NativeBsonSerializers());
-        context.addDeserializers(new BsonDeserializers());
-    }
-
-    private static class BsonDeserializers extends SimpleDeserializers {
-        public BsonDeserializers() {
-            EmbeddedObjectDeserializer deserializer = new EmbeddedObjectDeserializer();
-            addDeserializer(Date.class, new BackwardDateDeserializer(deserializer));
-            addDeserializer(MinKey.class, deserializer);
-            addDeserializer(MaxKey.class, deserializer);
-            addDeserializer(DBObject.class, new NativeDeserializer());
+    private static class BsonSerializers extends SimpleSerializers {
+        public BsonSerializers() {
+            addSerializer(org.bson.types.ObjectId.class, new BsonObjectIdSerializer());
         }
     }
 
-    private static class NativeBsonSerializers extends SimpleSerializers {
-        public NativeBsonSerializers() {
-            NativeSerializer serializer = new NativeSerializer();
-            for (Class primitive : BSONPrimitives.getPrimitives()) {
-                addSerializer(primitive, serializer);
-            }
-        }
-    }
 }

@@ -39,7 +39,7 @@ public class ParameterBinderTest {
     public void shouldFailWithInvalidParameter() throws Exception {
 
         char c = '1';
-        when(marshaller.marshall(c)).thenThrow(new RuntimeException());
+        when(marshaller.marshallAsJson(c)).thenThrow(new RuntimeException());
 
         binder.bind("{id:#}", c);
     }
@@ -59,7 +59,7 @@ public class ParameterBinderTest {
     @Test
     public void shouldBindOneParameter() throws Exception {
 
-        when(marshaller.marshall("123")).thenReturn("123");
+        when(marshaller.marshallAsJson("123")).thenReturn("123");
 
         String query = binder.bind("{id:#}", "123");
 
@@ -69,8 +69,8 @@ public class ParameterBinderTest {
     @Test
     public void shouldBindManyParameters() throws Exception {
 
-        when(marshaller.marshall("123")).thenReturn("123");
-        when(marshaller.marshall("456")).thenReturn("456");
+        when(marshaller.marshallAsJson("123")).thenReturn("123");
+        when(marshaller.marshallAsJson("456")).thenReturn("456");
 
         String query = binder.bind("{id:#, test:#}", "123", "456");
 
@@ -81,7 +81,7 @@ public class ParameterBinderTest {
     public void shouldBindParameterWithCustomToken() throws Exception {
 
         ParameterBinder binderWithToken = new ParameterBinder(marshaller, "@");
-        when(marshaller.marshall("123")).thenReturn("123");
+        when(marshaller.marshallAsJson("123")).thenReturn("123");
 
         String query = binderWithToken.bind("{id:@}", "123");
 
