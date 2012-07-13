@@ -96,7 +96,7 @@ public class MongoCollectionTest extends JongoTestCase {
     
     @Test(expected=DuplicateKey.class)
     public void createUniqueIndex() {
-    	mongoCollection.ensureIndex("{name: 1}, {unique: true}");
+    	mongoCollection.ensureIndex("{name: 1}", "{unique: true}");
     	mongoCollection.save(new Friend("John"), WriteConcern.SAFE);
         mongoCollection.save(new Friend("John"), WriteConcern.SAFE);
     }
