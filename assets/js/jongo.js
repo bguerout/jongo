@@ -10,6 +10,4 @@ $(document).ready(function() {
 		});
 		return false;
 	});
-
-	$('.nav-collapse').scrollspy();
 });
