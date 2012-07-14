@@ -139,10 +139,21 @@ public final class MongoCollection {
     public void drop() {
         collection.drop();
     }
+    
+    public void ensureIndex(String keys) {
+    	collection.ensureIndex(createQuery(keys).toDBObject());
+    }
 
-    public void ensureIndex(String index) {
-        DBObject dbIndex = createQuery(index).toDBObject();
-        collection.ensureIndex(dbIndex);
+    public void ensureIndex(String keys, String options) {
+    	collection.ensureIndex(createQuery(keys).toDBObject(), createQuery(options).toDBObject());
+    }
+    
+    public void dropIndex(String keys) {
+    	collection.dropIndex(createQuery(keys).toDBObject());
+    }
+    
+    public void dropIndexes() {
+    	collection.dropIndexes();
     }
 
     public String getName() {
