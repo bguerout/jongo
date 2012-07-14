@@ -25,6 +25,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mongodb.MongoException.DuplicateKey;
+import com.mongodb.WriteConcern;
+
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -89,5 +92,12 @@ public class MongoCollectionTest extends JongoTestCase {
     @Test
     public void canGetCollectionName() throws Exception {
         assertThat(mongoCollection.getName()).isEqualTo("users");
+    }
+    
+    @Test(expected=DuplicateKey.class)
+    public void createUniqueIndex() {
+    	mongoCollection.ensureIndex("{name: 1}", "{unique: true}");
+    	mongoCollection.save(new Friend("John"), WriteConcern.SAFE);
+        mongoCollection.save(new Friend("John"), WriteConcern.SAFE);
     }
 }
