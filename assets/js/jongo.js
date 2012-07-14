@@ -2,8 +2,9 @@ $(document).ready(function() {
 	prettyPrint();
 
 	$('a').click(function(event) {
-		var href = $(event.target).attr('href');
-		var scroll = $($(this).attr('href')).offset().top;
+		var href = $(this).attr('href');
+		
+		var scroll = $(href).offset().top;
 		if(href == '#overview')
 			scroll -= 30;
 
