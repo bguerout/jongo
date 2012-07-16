@@ -16,23 +16,26 @@
 
 package org.jongo;
 
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
+import org.jongo.model.LinkedFriend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 public class SaveTest extends JongoTestCase {
 
@@ -110,8 +113,9 @@ public class SaveTest extends JongoTestCase {
     public void shouldFailWhenMarshalledJsonIsInvalid() throws Exception {
 
         Marshaller marshaller = mock(Marshaller.class);
+        Unmarshaller unmarshaller = mock(Unmarshaller.class);
         when(marshaller.marshall(anyObject())).thenReturn("invalid");
-        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
+        Save save = new Save(collection.getDBCollection(), marshaller, unmarshaller, new Object());
 
         save.execute();
     }
@@ -120,8 +124,9 @@ public class SaveTest extends JongoTestCase {
     public void shouldFailWhenMarshallerFail() throws Exception {
 
         Marshaller marshaller = mock(Marshaller.class);
+        Unmarshaller unmarshaller = mock(Unmarshaller.class);
         when(marshaller.marshall(anyObject())).thenThrow(new RuntimeException());
-        Save save = new Save(collection.getDBCollection(), marshaller, new Object());
+        Save save = new Save(collection.getDBCollection(), marshaller, unmarshaller, new Object());
 
         save.execute();
     }
@@ -146,4 +151,15 @@ public class SaveTest extends JongoTestCase {
         assertThat(fox.getId()).isNotNull();
     }
 
+    @Test
+    public void shouldNotChangeOtherObjectIdField() throws IOException {
+
+        ObjectId relationId = new ObjectId();
+        LinkedFriend friend = new LinkedFriend(relationId);
+
+        collection.save(friend);
+
+        assertThat(friend.getRelationId()).isNotEqualTo(friend.getId());
+        assertThat(friend.getRelationId()).isEqualTo(relationId);
+    }
 }
