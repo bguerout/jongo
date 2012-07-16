@@ -19,4 +19,6 @@ package org.jongo.marshall;
 public interface Unmarshaller {
 
     <T> T unmarshall(String json, Class<T> clazz) throws MarshallingException;
+
+    void setDocumentGeneratedId(Object document, String id);
 }
