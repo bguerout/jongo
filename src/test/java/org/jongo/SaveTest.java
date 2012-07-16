@@ -19,12 +19,10 @@ package org.jongo;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
-
 import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
+import org.jongo.model.LinkedFriend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -34,9 +32,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class SaveTest extends JongoTestCase {
 
@@ -117,7 +112,7 @@ public class SaveTest extends JongoTestCase {
             collection.save(new ErrorObject());
             Assert.fail();
         } catch (IllegalArgumentException e) {
-           assertThat(e.getMessage()).contains("Unable to save object");
+            assertThat(e.getMessage()).contains("Unable to save object");
         }
     }
 
@@ -141,4 +136,15 @@ public class SaveTest extends JongoTestCase {
         assertThat(fox.getId()).isNotNull();
     }
 
+    @Test
+    public void shouldNotChangeOtherObjectIdField() throws IOException {
+
+        ObjectId relationId = new ObjectId();
+        LinkedFriend friend = new LinkedFriend(relationId);
+
+        collection.save(friend);
+
+        assertThat(friend.getRelationId()).isNotEqualTo(friend.getId());
+        assertThat(friend.getRelationId()).isEqualTo(relationId);
+    }
 }

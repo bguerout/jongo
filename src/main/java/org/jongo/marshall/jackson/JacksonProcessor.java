@@ -16,19 +16,22 @@
 
 package org.jongo.marshall.jackson;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
+import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
+import org.bson.types.ObjectId;
+import org.jongo.MongoCollection;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DBObject;
-import com.mongodb.LazyWriteableDBObject;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Field;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -74,4 +77,33 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         }
         return new LazyWriteableDBObject(baos.toByteArray(), new LazyBSONCallback());
     }
+    
+    public void setDocumentGeneratedId(Object document, String id) {
+           Class<?> clazz = document.getClass();
+           do {
+               findDocumentGeneratedId(document, id, clazz);
+               clazz = clazz.getSuperclass();
+           } while (!clazz.equals(Object.class));
+       }
+   
+       private void findDocumentGeneratedId(Object document, String id, Class<?> clazz) {
+           for (Field field : clazz.getDeclaredFields()) {
+               if (field.getType().equals(ObjectId.class)) {
+                   JsonProperty annotation = field.getAnnotation(JsonProperty.class);
+                   if (isId(field.getName()) || annotation != null && isId(annotation.value())) {
+                       field.setAccessible(true);
+                       try {
+                           field.set(document, new ObjectId(id));
+                           break;
+                       } catch (IllegalAccessException e) {
+                           throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
+                       }
+                   }
+               }
+           }
+       }
+   
+       private boolean isId(String value) {
+           return MongoCollection.MONGO_DOCUMENT_ID_NAME.equals(value);
+       }
 }

@@ -16,6 +16,10 @@
 
 package org.jongo;
 
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
@@ -23,13 +27,11 @@ import org.jongo.marshall.decoder.PojoDBDecoderFactory;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
-
 
 public final class MongoCollection {
+
+    public static final String MONGO_DOCUMENT_ID_NAME = "_id";
+    private static final Object[] NO_PARAMETERS = {};
 
     private final DBCollection collection;
     private final Marshaller marshaller;
@@ -43,8 +45,6 @@ public final class MongoCollection {
         this.unmarshaller = unmarshaller;
         this.queryFactory = new QueryFactory(marshaller);
     }
-
-    private static final Object[] NO_PARAMETERS = {};
 
     public FindOne findOne(ObjectId id) {
         if (id == null) {
@@ -99,11 +99,11 @@ public final class MongoCollection {
     }
 
     public WriteResult save(Object document) {
-        return new Save(collection, marshaller, document).execute();
+        return new Save(collection, marshaller, unmarshaller, document).execute();
     }
 
     public WriteResult save(Object document, WriteConcern concern) {
-        return new Save(collection, marshaller, document).concern(concern).execute();
+        return new Save(collection, marshaller, unmarshaller, document).concern(concern).execute();
     }
 
     public WriteResult insert(String query) {
@@ -116,7 +116,7 @@ public final class MongoCollection {
     }
 
     public WriteResult remove(ObjectId id) {
-        return remove("{_id:#}", id);
+        return remove("{" + MONGO_DOCUMENT_ID_NAME + ":#}", id);
     }
 
     public WriteResult remove(String query) {
@@ -143,9 +143,20 @@ public final class MongoCollection {
         collection.drop();
     }
 
-    public void ensureIndex(String index) {
-        DBObject dbIndex = createQuery(index).toDBObject();
-        collection.ensureIndex(dbIndex);
+    public void dropIndex(String keys) {
+        collection.dropIndex(createQuery(keys).toDBObject());
+    }
+
+    public void dropIndexes() {
+        collection.dropIndexes();
+    }
+
+    public void ensureIndex(String keys) {
+    	collection.ensureIndex(createQuery(keys).toDBObject());
+    }
+
+    public void ensureIndex(String keys, String options) {
+    	collection.ensureIndex(createQuery(keys).toDBObject(), createQuery(options).toDBObject());
     }
 
     public String getName() {

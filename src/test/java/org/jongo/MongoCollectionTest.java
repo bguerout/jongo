@@ -16,6 +16,9 @@
 
 package org.jongo;
 
+import com.mongodb.MongoException.DuplicateKey;
+import com.mongodb.WriteConcern;
+import junit.framework.Assert;
 import org.jongo.model.Animal;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Fox;
@@ -31,11 +34,11 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class MongoCollectionTest extends JongoTestCase {
 
-    private MongoCollection mongoCollection;
+    private MongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
-        mongoCollection = createEmptyCollection("users");
+        collection = createEmptyCollection("users");
     }
 
     @After
@@ -46,41 +49,83 @@ public class MongoCollectionTest extends JongoTestCase {
     @Test
     public void canUseConditionnalOperator() throws Exception {
         /* given */
-        mongoCollection.save(new Coordinate(1, 1));
-        mongoCollection.save(new Coordinate(2, 1));
-        mongoCollection.save(new Coordinate(3, 1));
+        collection.save(new Coordinate(1, 1));
+        collection.save(new Coordinate(2, 1));
+        collection.save(new Coordinate(3, 1));
 
         /* then */
-        assertThat(mongoCollection.find("{lat: {$gt: 2}}").as(Coordinate.class)).hasSize(1);
-        assertThat(mongoCollection.find("{lat: {$lt: 2}}").as(Coordinate.class)).hasSize(1);
-        assertThat(mongoCollection.find("{lat: {$gte: 2}}").as(Coordinate.class)).hasSize(2);
-        assertThat(mongoCollection.find("{lat: {$lte: 2}}").as(Coordinate.class)).hasSize(2);
-        assertThat(mongoCollection.find("{lat: {$gt: 1, $lt: 3}}").as(Coordinate.class)).hasSize(1);
+        assertThat(collection.find("{lat: {$gt: 2}}").as(Coordinate.class)).hasSize(1);
+        assertThat(collection.find("{lat: {$lt: 2}}").as(Coordinate.class)).hasSize(1);
+        assertThat(collection.find("{lat: {$gte: 2}}").as(Coordinate.class)).hasSize(2);
+        assertThat(collection.find("{lat: {$lte: 2}}").as(Coordinate.class)).hasSize(2);
+        assertThat(collection.find("{lat: {$gt: 1, $lt: 3}}").as(Coordinate.class)).hasSize(1);
 
-        assertThat(mongoCollection.find("{lat: {$ne: 2}}").as(Coordinate.class)).hasSize(2);
-        assertThat(mongoCollection.find("{lat: {$in: [1,2,3]}}").as(Coordinate.class)).hasSize(3);
+        assertThat(collection.find("{lat: {$ne: 2}}").as(Coordinate.class)).hasSize(2);
+        assertThat(collection.find("{lat: {$in: [1,2,3]}}").as(Coordinate.class)).hasSize(3);
     }
 
     @Test
-    public void canUseGeospacial() throws Exception {
-        /* given */
-        mongoCollection.save(new Friend("John", new Coordinate(1, 1)));
-        mongoCollection.save(new Friend("Peter", new Coordinate(4, 4)));
+    public void createIndexWithUniqueAsOption() {
+        collection.ensureIndex("{name: 1}", "{unique: true}");
+        collection.save(new Friend("John"), WriteConcern.SAFE);
 
-        mongoCollection.ensureIndex("{ 'coordinate' : '2d'}");
+        try {
+            collection.save(new Friend("John"), WriteConcern.SAFE);
+            Assert.fail();
+        } catch (DuplicateKey e) {
+        }
+    }
+
+    @Test
+    public void canCreateGeospacialIndex() throws Exception {
+        /* given */
+        collection.save(new Friend("John", new Coordinate(1, 1)));
+        collection.save(new Friend("Peter", new Coordinate(4, 4)));
+
+        collection.ensureIndex("{ 'coordinate' : '2d'}");
 
         /* then */
-        assertThat(mongoCollection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class)).hasSize(1);
-        assertThat(mongoCollection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Friend.class)).hasSize(2);
-        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Friend.class)).hasSize(1);
-        assertThat(mongoCollection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Friend.class)).hasSize(1);
+        assertThat(collection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class)).hasSize(1);
+        assertThat(collection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Friend.class)).hasSize(2);
+        assertThat(collection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Friend.class)).hasSize(1);
+        assertThat(collection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Friend.class)).hasSize(1);
     }
+
+    @Test
+    public void canDropIndex() {
+
+        //given
+        collection.ensureIndex("{name: 1}", "{unique: true}");
+        collection.save(new Friend("John"), WriteConcern.SAFE);
+
+        //when
+        collection.dropIndex("{name: 1}");
+
+        //then
+        collection.save(new Friend("John"), WriteConcern.SAFE);
+    }
+
+    @Test
+    public void canDropIndexes() {
+
+        //given
+        collection.ensureIndex("{name: 1}", "{unique: true}");
+        collection.ensureIndex("{way: 1}", "{unique: true}");
+        collection.save(new Friend("John", "way"), WriteConcern.SAFE);
+
+        //when
+        collection.dropIndexes();
+
+        //then
+        collection.save(new Friend("John", "way"), WriteConcern.SAFE);
+    }
+
 
     @Test
     public void canFindInheritedEntity() throws IOException {
-        mongoCollection.save(new Fox("fantastic", "roux"));
+        collection.save(new Fox("fantastic", "roux"));
 
-        Animal animal = mongoCollection.findOne("{name:'fantastic'}").as(Animal.class);
+        Animal animal = collection.findOne("{name:'fantastic'}").as(Animal.class);
 
         assertThat(animal).isInstanceOf(Fox.class);
         assertThat(animal.getId()).isNotNull();
@@ -88,6 +133,6 @@ public class MongoCollectionTest extends JongoTestCase {
 
     @Test
     public void canGetCollectionName() throws Exception {
-        assertThat(mongoCollection.getName()).isEqualTo("users");
+        assertThat(collection.getName()).isEqualTo("users");
     }
 }
