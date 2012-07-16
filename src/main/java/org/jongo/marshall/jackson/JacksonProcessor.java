@@ -37,15 +37,24 @@ import org.jongo.marshall.Unmarshaller;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
-    private final ObjectMapper mapper;
-
+    private final ObjectReader reader;
+    private final ObjectWriter writer;
+    
+    public JacksonProcessor(ObjectReader reader, ObjectWriter writer) {
+    	this.reader = reader;
+    	this.writer = writer;
+    }
+    
     public JacksonProcessor(ObjectMapper mapper) {
-        this.mapper = mapper;
+        this.reader = mapper.reader();
+        this.writer = mapper.writer();
     }
 
     public JacksonProcessor() {
@@ -55,7 +64,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     public <T> T unmarshall(String json, Class<T> clazz) throws MarshallingException {
         try {
-            return mapper.readValue(json, clazz);
+        	return reader.withType(clazz).readValue(json);
         } catch (Exception e) {
             String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
             throw new MarshallingException(message, e);
@@ -64,9 +73,9 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     public <T> String marshall(T obj) throws MarshallingException {
         try {
-            Writer writer = new StringWriter();
-            mapper.writeValue(writer, obj);
-            return writer.toString();
+            Writer output = new StringWriter();
+            writer.writeValue(output, obj);
+            return output.toString();
         } catch (Exception e) {
             String message = String.format("Unable to marshall json from: %s", obj);
             throw new MarshallingException(message, e);

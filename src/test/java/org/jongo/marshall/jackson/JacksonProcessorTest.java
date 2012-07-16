@@ -16,19 +16,24 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import org.jongo.marshall.MarshallingException;
-import org.jongo.model.Fox;
-import org.jongo.model.Friend;
-import org.jongo.util.UnmarshallableObject;
-import org.junit.Before;
-import org.junit.Test;
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.Date;
 
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.model.Fox;
+import org.jongo.model.Friend;
+import org.jongo.model.Views;
+import org.jongo.util.UnmarshallableObject;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JacksonProcessorTest {
 
@@ -109,7 +114,40 @@ public class JacksonProcessorTest {
             assertThat(e).isInstanceOf(MarshallingException.class);
         }
     }
+    
+    @Test
+    public void respectsJsonViewOnMarshall() throws Exception {
+    	processor = createProcessorWithView(Views.Public.class);
+    	Fox vixen = new Fox("fantastic", "roux");
+    	vixen.setGender("female");
+    	String json = processor.marshall(vixen);
+        assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
+        
+    	processor = createProcessorWithView(Views.Private.class);
+    	json = processor.marshall(vixen);
+    	assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}"));
+    }
 
+    @Test
+    public void respectsJsonViewOnUnmarshall() throws Exception {
+    	String json = jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
+
+    	processor = createProcessorWithView(Views.Public.class);
+    	Fox fox = processor.unmarshall(json, Fox.class);
+    	assertThat(fox.getGender()).isNull();
+
+    	processor = createProcessorWithView(Views.Private.class);
+    	fox = processor.unmarshall(json, Fox.class);
+    	assertThat(fox.getGender()).isEqualTo("female");
+    }
+
+    private JacksonProcessor createProcessorWithView(Class<?> viewClass) {
+    	ObjectMapper mapper = JacksonProcessor.createPreConfiguredMapper();
+    	ObjectReader reader = mapper.reader().withView(viewClass);
+    	ObjectWriter writer = mapper.writer().withView(viewClass);
+    	return new JacksonProcessor(reader, writer);
+    }
+    
     private String jsonify(String json) {
         return json.replace("'", "\"");
     }
