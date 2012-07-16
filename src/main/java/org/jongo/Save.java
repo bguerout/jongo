@@ -22,21 +22,18 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
 
 import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
 
 class Save {
 
     private final Marshaller marshaller;
-    private final Unmarshaller unmarshaller;
     private final DBCollection collection;
     private final Object document;
     private WriteConcern concern;
 
-    Save(DBCollection collection, Marshaller marshaller, Unmarshaller unmarshaller, Object document) {
+    Save(DBCollection collection, Marshaller marshaller, Object document) {
         this.marshaller = marshaller;
-        this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.document = document;
     }
@@ -52,7 +49,7 @@ class Save {
         WriteResult writeResult = collection.save(dbObject, determineWriteConcern());
 
         String id = dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
-        unmarshaller.setDocumentGeneratedId(document, id);
+        marshaller.setDocumentGeneratedId(document, id);
 
         return writeResult;
     }

@@ -99,11 +99,11 @@ public final class MongoCollection {
     }
 
     public WriteResult save(Object document) {
-        return new Save(collection, marshaller, unmarshaller, document).execute();
+        return new Save(collection, marshaller, document).execute();
     }
 
     public WriteResult save(Object document, WriteConcern concern) {
-        return new Save(collection, marshaller, unmarshaller, document).concern(concern).execute();
+        return new Save(collection, marshaller, document).concern(concern).execute();
     }
 
     public WriteResult insert(String query) {
