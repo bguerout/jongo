@@ -49,7 +49,8 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         try {
             return documentMapper.readValue(document.getData(), document.getOffset(), document.getSize(), clazz);
         } catch (IOException e) {
-            throw new MarshallingException("Unable to unmarshall result into " + clazz, e);
+            String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
+            throw new MarshallingException(message, e);
         }
     }
 
@@ -65,17 +66,17 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         return new LazyWriteableDBObject(bsonStream.toByteArray(), new LazyBSONCallback());
     }
 
-    public void setDocumentGeneratedId(Object document, Object id) {
-        Field field = findIdFieldForClass(document.getClass());
+    public void setDocumentGeneratedId(Object target, Object id) {
+        Field field = findIdFieldForClass(target.getClass());
         try {
             if (field != null) {
                 field.setAccessible(true);
-                if (field.get(document) == null) {
-                    field.set(document, id);
+                if (field.get(target) == null) {
+                    field.set(target, id);
                 }
             }
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to set objectid on class: " + document.getClass(), e);
+            throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
         }
     }
 

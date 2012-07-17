@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.decoder;
+package org.jongo.marshall;
 
-import com.mongodb.DBEncoder;
-import com.mongodb.DefaultDBEncoder;
 import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
-import org.jongo.marshall.DocumentStream;
 
-public class DefaultDocumentStream implements DocumentStream {
+import com.mongodb.DBEncoder;
+import com.mongodb.DefaultDBEncoder;
+
+public class BsonObjectStream implements DocumentStream {
 
     private final OutputBuffer buffer;
-    private final BSONObject dbo;
+    private final BSONObject bsonObject;
 
-    public DefaultDocumentStream(BSONObject dbo) {
-        this.dbo = dbo;
+    public BsonObjectStream(BSONObject bsonObject) {
+        this.bsonObject = bsonObject;
         this.buffer = new BasicOutputBuffer();
+        writeDBObjectIntoBuffer(bsonObject);
+    }
+
+    private void writeDBObjectIntoBuffer(BSONObject dbo) {
         DBEncoder dbEncoder = DefaultDBEncoder.FACTORY.create();
         dbEncoder.writeObject(buffer, dbo);
     }
@@ -48,6 +52,6 @@ public class DefaultDocumentStream implements DocumentStream {
     }
 
     public BSONObject asBSONObject() {
-        return dbo;
+        return bsonObject;
     }
 }

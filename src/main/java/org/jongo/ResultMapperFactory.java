@@ -16,20 +16,17 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
-import org.jongo.marshall.decoder.DefaultDocumentStream;
+import org.jongo.marshall.BsonObjectStream;
+import org.jongo.marshall.DocumentStream;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.decoder.LazyDocumentStream;
+
+import com.mongodb.DBObject;
 
 class ResultMapperFactory {
 
 
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
         return new DefaultResultMapper<T>(unmarshaller, clazz);
-    }
-
-    public static <T> ResultMapper<T> newDocumentStreamMapper(final Class<T> clazz) {
-        return new DocumentStreamLazyResultMapper<T>(clazz);
     }
 
     private static class DefaultResultMapper<T> implements ResultMapper<T> {
@@ -43,23 +40,15 @@ class ResultMapperFactory {
         }
 
         public T map(DBObject result) {
-            return unmarshaller.unmarshall(new DefaultDocumentStream(result), clazz);
-        }
-    }
-
-    private static class DocumentStreamLazyResultMapper<T> implements ResultMapper<T> {
-
-        private final Class<T> clazz;
-
-        public DocumentStreamLazyResultMapper(Class<T> clazz) {
-            this.clazz = clazz;
+            return unmarshaller.unmarshall(convertToDocumentStream(result), clazz);
         }
 
-        public T map(DBObject result) {
-            if (!(result instanceof LazyDocumentStream)) {
-                throw new IllegalArgumentException("This resultMapper can only map LazyDocumentStream instances");
+        private DocumentStream convertToDocumentStream(DBObject result) {
+            if (result instanceof DocumentStream) {
+                return (DocumentStream) result;
             }
-            return ((LazyDocumentStream) result).as(clazz);
+            return new BsonObjectStream(result);
         }
     }
+
 }

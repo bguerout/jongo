@@ -23,24 +23,13 @@ import org.jongo.marshall.DocumentStream;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 
-public class LazyDocumentStream extends LazyDBObject implements DocumentStream {
+class LazyDocumentStream extends LazyDBObject implements DocumentStream {
 
     private final int offset;
-    private final Unmarshaller unmarshaller;
 
-    LazyDocumentStream(byte[] data, int offset, LazyBSONCallback cbk, Unmarshaller unmarshaller) {
+    LazyDocumentStream(byte[] data, int offset, LazyBSONCallback cbk) {
         super(data, offset, cbk);
         this.offset = offset;
-        this.unmarshaller = unmarshaller;
-    }
-
-    public <T> T as(Class<T> clazz) {
-        try {
-            return unmarshaller.unmarshall(this, clazz);
-        } catch (MarshallingException e) {
-            String message = String.format("Unable to unmarshall result to %s from content %s", clazz, toString());
-            throw new MarshallingException(message, e);
-        }
     }
 
     public int getOffset() {

@@ -22,12 +22,14 @@ import org.bson.BSONObject;
 import org.bson.io.OutputBuffer;
 
 import com.mongodb.DBEncoder;
+import com.mongodb.DBEncoderFactory;
 import com.mongodb.DefaultDBEncoder;
 import com.mongodb.LazyDBObject;
 import com.mongodb.MongoException;
 
-class PojoEncoder implements DBEncoder {
+public class PojoEncoder implements DBEncoder {
 
+    public final static PojoEncoderFactory FACTORY = new PojoEncoderFactory();
 
     public int writeObject(final OutputBuffer buf, BSONObject o) {
         if (!(o instanceof LazyDBObject)) {
@@ -41,6 +43,14 @@ class PojoEncoder implements DBEncoder {
         }
     }
 
+    public static class PojoEncoderFactory implements DBEncoderFactory {
 
+        public DBEncoder create() {
+            return new PojoEncoder();
+        }
+    }
+
+    private PojoEncoder() {
+    }
 }
 

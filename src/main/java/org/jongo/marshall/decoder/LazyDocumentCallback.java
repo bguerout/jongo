@@ -27,17 +27,15 @@ class LazyDocumentCallback extends LazyBSONCallback implements DBCallback {
 
     private final DBCollection collection;
     private final DB db;
-    private final Unmarshaller unmarshaller;
 
-    public LazyDocumentCallback(DBCollection collection, Unmarshaller unmarshaller) {
+    public LazyDocumentCallback(DBCollection collection) {
         this.collection = collection;
         this.db = collection == null ? null : collection.getDB();
-        this.unmarshaller = unmarshaller;
     }
 
     @Override
     public Object createObject(byte[] data, int offset) {
-        LazyDocumentStream o = new LazyDocumentStream(data, offset, new LazyDBCallback(collection), unmarshaller);
+        LazyDocumentStream o = new LazyDocumentStream(data, offset, new LazyDBCallback(collection));
 
         Iterator it = o.keySet().iterator();
         if (it.hasNext() && it.next().equals("$ref") &&

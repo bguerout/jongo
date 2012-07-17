@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import static org.jongo.ResultMapperFactory.newDocumentStreamMapper;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
@@ -46,7 +46,7 @@ public final class FindOne {
     }
 
     public <T> T as(final Class<T> clazz) {
-        return map(newDocumentStreamMapper(clazz));
+        return map(newMapper(clazz, unmarshaller));
     }
 
     public <T> T map(ResultMapper<T> resultMapper) {

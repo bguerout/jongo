@@ -19,7 +19,7 @@ package org.jongo.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import org.bson.BSONObject;
-import org.jongo.marshall.decoder.DefaultDocumentStream;
+import org.jongo.marshall.BsonObjectStream;
 import org.jongo.marshall.DocumentStream;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class BSON {
         Map map = OBJECT_MAPPER.readValue(jsonify(json), HashMap.class);
         BSONObject bson = new BasicDBObject();
         bson.putAll(map);
-        return new DefaultDocumentStream(bson);
+        return new BsonObjectStream(bson);
     }
 
     public static String jsonify(String json) {
