@@ -21,6 +21,7 @@ import com.mongodb.DefaultDBEncoder;
 import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
+import org.jongo.marshall.DocumentStream;
 
 public class DefaultDocumentStream implements DocumentStream {
 

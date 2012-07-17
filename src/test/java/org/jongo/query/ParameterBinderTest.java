@@ -16,13 +16,17 @@
 
 package org.jongo.query;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.jongo.marshall.Marshaller;
+import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.mongodb.BasicDBObject;
 
 public class ParameterBinderTest {
 
@@ -38,10 +42,9 @@ public class ParameterBinderTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithInvalidParameter() throws Exception {
 
-        char c = '1';
-        when(marshaller.marshallAsJson(c)).thenThrow(new RuntimeException());
+        when(marshaller.marshall(anyObject())).thenThrow(new RuntimeException());
 
-        binder.bind("{id:#}", c);
+        binder.bind("{id:#}", new ErrorObject());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -59,9 +62,7 @@ public class ParameterBinderTest {
     @Test
     public void shouldBindOneParameter() throws Exception {
 
-        when(marshaller.marshallAsJson("123")).thenReturn("123");
-
-        String query = binder.bind("{id:#}", "123");
+        String query = binder.bind("{id:#}", 123);
 
         assertThat(query).isEqualTo("{id:123}");
     }
@@ -69,21 +70,28 @@ public class ParameterBinderTest {
     @Test
     public void shouldBindManyParameters() throws Exception {
 
-        when(marshaller.marshallAsJson("123")).thenReturn("123");
-        when(marshaller.marshallAsJson("456")).thenReturn("456");
-
-        String query = binder.bind("{id:#, test:#}", "123", "456");
+        String query = binder.bind("{id:#, test:#}", 123, 456);
 
         assertThat(query).isEqualTo("{id:123, test:456}");
+    }
+
+
+    @Test
+    public void shouldBindNonBsonPrimitiveParameters() throws Exception {
+
+        when(marshaller.marshall(anyObject())).thenReturn(new BasicDBObject("custom", "object"));
+
+        String query = binder.bind("{test:#}", new Object());
+
+        assertThat(query).isEqualTo("{test:{ \"custom\" : \"object\"}}");
     }
 
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
         ParameterBinder binderWithToken = new ParameterBinder(marshaller, "@");
-        when(marshaller.marshallAsJson("123")).thenReturn("123");
 
-        String query = binderWithToken.bind("{id:@}", "123");
+        String query = binderWithToken.bind("{id:@}", 123);
 
         assertThat(query).isEqualTo("{id:123}");
     }

@@ -16,6 +16,7 @@
 
 package org.jongo.marshall.decoder;
 
+import org.jongo.marshall.DocumentStream;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.util.BSON;
@@ -34,7 +35,7 @@ public class LazyDocumentStreamTest {
 
         Unmarshaller unmarshaller = mock(Unmarshaller.class);
         DocumentStream document = BSON.bsonify("{'error':'notADate'}");
-        LazyDocumentStream<ErrorObject> dbObject = new LazyDocumentStream<ErrorObject>(document.getData(), 0, null, unmarshaller);
+        LazyDocumentStream dbObject = new LazyDocumentStream(document.getData(), 0, null, unmarshaller);
         when(unmarshaller.unmarshall(dbObject, ErrorObject.class)).thenThrow(new MarshallingException("error"));
 
         try {

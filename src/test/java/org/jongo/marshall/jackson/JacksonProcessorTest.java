@@ -17,7 +17,9 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import org.jongo.marshall.decoder.DocumentStream;
+import com.mongodb.DBObject;
+
+import org.jongo.marshall.DocumentStream;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -31,7 +33,6 @@ import java.util.Date;
 import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BSON.bsonify;
-import static org.jongo.util.BSON.jsonify;
 
 public class JacksonProcessorTest {
 
@@ -44,13 +45,17 @@ public class JacksonProcessorTest {
 
     @Test
     public void canConvertEntityToJson() {
-        String json = processor.marshallAsJson(new Fox("fantastic", "roux"));
-        assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
+
+        DBObject dbo = processor.marshall(new Fox("fantastic", "roux"));
+
+        assertThat(dbo.get("_class")).isEqualTo("org.jongo.model.Fox");
+        assertThat(dbo.get("name")).isEqualTo("fantastic");
+        assertThat(dbo.get("color")).isEqualTo("roux");
     }
 
     @Test(expected = MarshallingException.class)
-    public void shouldFailWhenUnableToMarshallJson() throws Exception {
-        processor.marshallAsJson(new ErrorObject());
+    public void shouldFailWhenUnableToMarshall() throws Exception {
+        processor.marshall(new ErrorObject());
     }
 
     @Test

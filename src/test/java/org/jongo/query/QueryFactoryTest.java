@@ -42,30 +42,27 @@ public class QueryFactoryTest {
         Query query = factory.createQuery("{value:1}");
 
         assertThat(query.toString()).isEqualTo("{ \"value\" : 1}");
-        verify(marshaller, never()).marshallAsJson(any());
+        verify(marshaller, never()).marshall(any());
     }
 
     @Test
-    public void shouldBindParameterAndCreateQuery() throws Exception {
+    public void shouldBindBsonParameterAndCreateQuery() throws Exception {
 
-        when(marshaller.marshallAsJson(2)).thenReturn("2");
+        Query query = factory.createQuery("{value:#}", 123);
 
-        Query query = factory.createQuery("{value:#}", 2);
-
-        assertThat(query.toString()).isEqualTo("{ \"value\" : 2}");
-        verify(marshaller).marshallAsJson(2);
+        assertThat(query.toString()).isEqualTo("{ \"value\" : 123}");
     }
 
     @Test
     public void shouldBindComplexParameterAndCreateQuery() throws Exception {
 
         Friend robert = new Friend("robert");
-        when(marshaller.marshallAsJson(robert)).thenReturn("{ \"name\" : \"robert\"}");
+        when(marshaller.marshall(robert)).thenReturn(new BasicDBObject("name","robert"));
 
         Query query = factory.createQuery("{value:#}", robert);
 
         assertThat(query.toString()).isEqualTo("{ \"value\" : { \"name\" : \"robert\"}}");
-        verify(marshaller).marshallAsJson(robert);
+        verify(marshaller).marshall(robert);
     }
 
     @Test

@@ -57,9 +57,9 @@ class ResultMapperFactory {
 
         public T map(DBObject result) {
             if (!(result instanceof LazyDocumentStream)) {
-                throw new IllegalArgumentException("PojoResultMapper can only map PojoDBObject instances");
+                throw new IllegalArgumentException("This resultMapper can only map LazyDocumentStream instances");
             }
-            return ((LazyDocumentStream<T>) result).as(clazz);
+            return ((LazyDocumentStream) result).as(clazz);
         }
     }
 }

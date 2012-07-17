@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.decoder;
+package org.jongo.marshall;
 
 import org.bson.BSONObject;
 

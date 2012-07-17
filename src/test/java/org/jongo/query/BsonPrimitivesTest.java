@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.query;
 
-import com.mongodb.DBObject;
+import static org.fest.assertions.Assertions.assertThat;
 
-public interface Marshaller {
+import org.junit.Test;
 
-    DBObject marshall(Object obj) throws MarshallingException;
+public class BsonPrimitivesTest {
 
-    void setDocumentGeneratedId(Object document, Object id);
+    @Test
+    public void shouldContainsClassAndSubclasses() throws Exception {
+        assertThat(BsonPrimitives.contains(Number.class)).isTrue();
+        assertThat(BsonPrimitives.contains(Integer.class)).isTrue();
+    }
 }

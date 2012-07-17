@@ -49,7 +49,7 @@ class Save {
 
     private DBObject marshallDocument() {
         try {
-            return marshaller.marshallAsBson(document);
+            return marshaller.marshall(document);
         } catch (Exception e) {
             String message = String.format("Unable to save object %s due to a marshalling error", document);
             throw new IllegalArgumentException(message, e);

@@ -16,8 +16,6 @@
 
 package org.jongo.marshall;
 
-import org.jongo.marshall.decoder.DocumentStream;
-
 public interface Unmarshaller {
 
     <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException;

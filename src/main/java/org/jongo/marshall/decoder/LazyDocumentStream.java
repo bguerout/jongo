@@ -19,10 +19,11 @@ package org.jongo.marshall.decoder;
 import com.mongodb.DBObject;
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
+import org.jongo.marshall.DocumentStream;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 
-public class LazyDocumentStream<T> extends LazyDBObject implements DocumentStream {
+public class LazyDocumentStream extends LazyDBObject implements DocumentStream {
 
     private final int offset;
     private final Unmarshaller unmarshaller;
@@ -33,7 +34,7 @@ public class LazyDocumentStream<T> extends LazyDBObject implements DocumentStrea
         this.unmarshaller = unmarshaller;
     }
 
-    public T as(Class<T> clazz) {
+    public <T> T as(Class<T> clazz) {
         try {
             return unmarshaller.unmarshall(this, clazz);
         } catch (MarshallingException e) {

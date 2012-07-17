@@ -23,56 +23,41 @@ import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
-import org.jongo.marshall.decoder.DocumentStream;
+import org.jongo.marshall.DocumentStream;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Field;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
-    private final ObjectMapper bsonMapper;
-    private ObjectMapper jsonMapper;
+    private final ObjectMapper documentMapper;
 
     public JacksonProcessor() {
-        this(ObjectMapperFactory.createBsonMapper(), ObjectMapperFactory.createJsonMapper());
+        this(ObjectMapperFactory.createBsonMapper());
     }
 
-    public JacksonProcessor(ObjectMapper bsonMapper, ObjectMapper jsonMapper) {
-        this.bsonMapper = bsonMapper;
-        this.jsonMapper = jsonMapper;
+    public JacksonProcessor(ObjectMapper documentMapper) {
+        this.documentMapper = documentMapper;
     }
 
     public <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException {
 
         try {
-            return bsonMapper.readValue(document.getData(), document.getOffset(), document.getSize(), clazz);
+            return documentMapper.readValue(document.getData(), document.getOffset(), document.getSize(), clazz);
         } catch (IOException e) {
             throw new MarshallingException("Unable to unmarshall result into " + clazz, e);
         }
     }
 
-    public String marshallAsJson(Object obj) throws MarshallingException {
-        try {
-            Writer writer = new StringWriter();
-            jsonMapper.writeValue(writer, obj);
-            return writer.toString();
-        } catch (Exception e) {
-            String message = String.format("Unable to marshall json from: %s", obj);
-            throw new MarshallingException(message, e);
-        }
-    }
-
-    public DBObject marshallAsBson(Object obj) throws MarshallingException {
+    public DBObject marshall(Object obj) throws MarshallingException {
 
         ByteArrayOutputStream bsonStream = new ByteArrayOutputStream();
         try {
-            bsonMapper.writeValue(bsonStream, obj);
+            documentMapper.writeValue(bsonStream, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }

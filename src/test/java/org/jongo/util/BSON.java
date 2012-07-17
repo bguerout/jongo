@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import org.bson.BSONObject;
 import org.jongo.marshall.decoder.DefaultDocumentStream;
-import org.jongo.marshall.decoder.DocumentStream;
+import org.jongo.marshall.DocumentStream;
 
 import java.io.IOException;
 import java.util.HashMap;

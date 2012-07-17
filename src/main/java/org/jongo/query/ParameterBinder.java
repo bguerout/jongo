@@ -16,10 +16,13 @@
 
 package org.jongo.query;
 
-import org.jongo.marshall.Marshaller;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.MarshallingException;
+
+import com.mongodb.util.JSON;
 
 class ParameterBinder {
 
@@ -54,12 +57,29 @@ class ParameterBinder {
     }
 
     private String bindParamIntoQuery(String query, Object parameter) {
+
         try {
-            String paramAsJson = marshaller.marshallAsJson(parameter);
+            String paramAsJson = marshallParameter(parameter);
             return query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
 
         } catch (RuntimeException e) {
             return handleInvalidBinding(query, parameter, e);
+        }
+    }
+
+    private String marshallParameter(Object parameter) {
+        if (BsonPrimitives.contains(parameter.getClass())) {
+            return marshallWithDriver(parameter);
+        }
+        return marshaller.marshall(parameter).toString();
+    }
+
+    private String marshallWithDriver(Object parameter) {
+        try {
+            return JSON.serialize(parameter);
+        } catch (Exception e) {
+            String message = String.format("Unable to marshall json from: %s", parameter);
+            throw new MarshallingException(message, e);
         }
     }
 
