@@ -69,38 +69,45 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     public DBObject marshallAsBson(Object obj) throws MarshallingException {
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bsonStream = new ByteArrayOutputStream();
         try {
-            bsonMapper.writeValue(baos, obj);
+            bsonMapper.writeValue(bsonStream, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
-        return new LazyWriteableDBObject(baos.toByteArray(), new LazyBSONCallback());
+
+        return new LazyWriteableDBObject(bsonStream.toByteArray(), new LazyBSONCallback());
     }
 
-    public void setDocumentGeneratedId(Object document, String id) {
-        Class<?> clazz = document.getClass();
+    public void setDocumentGeneratedId(Object document, Object id) {
+        Field field = findIdFieldForClass(document.getClass());
+        try {
+            if (field != null) {
+                field.setAccessible(true);
+                if (field.get(document) == null) {
+                    field.set(document, id);
+                }
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to set objectid on class: " + document.getClass(), e);
+        }
+    }
+
+    private Field findIdFieldForClass(Class<?> clazz) {
+
         do {
-            findDocumentGeneratedId(document, id, clazz);
-            clazz = clazz.getSuperclass();
-        } while (!clazz.equals(Object.class));
-    }
-
-    private void findDocumentGeneratedId(Object document, String id, Class<?> clazz) {
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType().equals(ObjectId.class)) {
-                JsonProperty annotation = field.getAnnotation(JsonProperty.class);
-                if (isId(field.getName()) || annotation != null && isId(annotation.value())) {
-                    field.setAccessible(true);
-                    try {
-                        field.set(document, new ObjectId(id));
-                        break;
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
+            for (Field f : clazz.getDeclaredFields()) {
+                if (f.getType().equals(ObjectId.class)) {
+                    JsonProperty annotation = f.getAnnotation(JsonProperty.class);
+                    if (isId(f.getName()) || annotation != null && isId(annotation.value())) {
+                        return f;
                     }
                 }
             }
-        }
+            clazz = clazz.getSuperclass();
+        } while (!Object.class.equals(clazz));
+
+        return null;
     }
 
     private boolean isId(String value) {

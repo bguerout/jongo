@@ -16,29 +16,21 @@
 
 package org.jongo.marshall.decoder;
 
-import com.mongodb.LazyDBObject;
-import org.bson.LazyBSONCallback;
-import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 
-public class PojoDBObject<T> extends LazyDBObject {
+import com.mongodb.DBDecoder;
+import com.mongodb.DBDecoderFactory;
 
-    private final int offset;
+public class DocumentDecoderFactory implements DBDecoderFactory {
+
     private final Unmarshaller unmarshaller;
 
-    PojoDBObject(byte[] data, int offset, LazyBSONCallback cbk, Unmarshaller unmarshaller) {
-        super(data, offset, cbk);
-        this.offset = offset;
+    public DocumentDecoderFactory(Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
     }
 
-    public T as(Class<T> clazz) {
-        try {
-            return unmarshaller.unmarshall(_input.array(), offset, clazz);
-        } catch (MarshallingException e) {
-            String message = String.format("Unable to unmarshall result to %s from content %s", clazz, toString());
-            throw new MarshallingException(message, e);
-        }
-
+    public DBDecoder create() {
+        return new DocumentDecoder(unmarshaller);
     }
+
 }

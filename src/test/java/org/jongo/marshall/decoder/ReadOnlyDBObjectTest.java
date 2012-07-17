@@ -18,7 +18,6 @@ package org.jongo.marshall.decoder;
 
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.decoder.PojoDBObject;
 import org.jongo.util.BSON;
 import org.jongo.util.ErrorObject;
 import org.junit.Test;
@@ -28,14 +27,14 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PojoDBObjectTest {
+public class ReadOnlyDBObjectTest {
 
     @Test
     public void shouldFailWhenUnableToUnmarshall() throws Exception {
 
         Unmarshaller unmarshaller = mock(Unmarshaller.class);
         byte[] bson = BSON.bsonify("{'error':'notADate'}");
-        PojoDBObject<ErrorObject> dbObject = new PojoDBObject<ErrorObject>(bson, 0, null, unmarshaller);
+        ReadOnlyDBObject<ErrorObject> dbObject = new ReadOnlyDBObject<ErrorObject>(bson, 0, null, unmarshaller);
         when(unmarshaller.unmarshall(bson, 0, ErrorObject.class)).thenThrow(new MarshallingException("error"));
 
         try {

@@ -16,14 +16,17 @@
 
 package org.jongo;
 
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+
+import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
+import org.jongo.util.ErrorObject;
 import org.jongo.util.IdResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class FindOneTest extends JongoTestCase {
 
@@ -61,6 +64,20 @@ public class FindOneTest extends JongoTestCase {
 
         /* then */
         assertThat(friend.getName()).isEqualTo("John");
+    }
+
+    @Test
+    public void shouldFailWhenUnableToUnmarshallResult() throws Exception {
+        /* given */
+        collection.insert("{error: 'NotaDate'}");
+
+        /* when */
+        try {
+            collection.findOne().as(ErrorObject.class);
+            fail();
+        } catch (MarshallingException e) {
+            assertThat(e.getMessage()).contains(" \"error\" : \"NotaDate\"");
+        }
     }
 
     @Test

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package org.jongo.model;
+package org.jongo.marshall.decoder;
 
-import org.bson.types.ObjectId;
+import com.mongodb.DBEncoder;
+import com.mongodb.DBEncoderFactory;
 
-public class LinkedFriend extends Friend {
-    ObjectId friendRelationId;
+public class PojoEncoderFactory implements DBEncoderFactory {
 
-    public LinkedFriend(ObjectId friendRelationId) {
-        this.friendRelationId = friendRelationId;
-    }
+    public static final PojoEncoderFactory FACTORY = new PojoEncoderFactory();
 
-    public ObjectId getRelationId() {
-        return friendRelationId;
+    public DBEncoder create() {
+        return new PojoEncoder();
     }
 }

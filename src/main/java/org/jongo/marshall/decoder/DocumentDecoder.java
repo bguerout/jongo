@@ -24,16 +24,16 @@ import org.jongo.marshall.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 
-class PojoDBDecoder extends LazyBSONDecoder implements DBDecoder {
+class DocumentDecoder extends LazyBSONDecoder implements DBDecoder {
 
     private final Unmarshaller unmarshaller;
 
-    public PojoDBDecoder(Unmarshaller unmarshaller) {
+    public DocumentDecoder(Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
     }
 
     public DBCallback getDBCallback(DBCollection collection) {
-        return new PojoDBCallback(collection, unmarshaller);
+        return new DocumentCallback(collection, unmarshaller);
     }
 
     public DBObject decode(byte[] b, DBCollection collection) {

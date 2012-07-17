@@ -24,5 +24,5 @@ public interface Marshaller {
 
     DBObject marshallAsBson(Object obj) throws MarshallingException;
 
-    void setDocumentGeneratedId(Object document, String id);
+    void setDocumentGeneratedId(Object document, Object id);
 }

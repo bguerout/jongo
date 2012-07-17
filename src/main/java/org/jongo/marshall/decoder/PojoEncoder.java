@@ -16,21 +16,31 @@
 
 package org.jongo.marshall.decoder;
 
-import org.jongo.marshall.Unmarshaller;
+import java.io.IOException;
 
-import com.mongodb.DBDecoder;
-import com.mongodb.DBDecoderFactory;
+import org.bson.BSONObject;
+import org.bson.io.OutputBuffer;
 
-public class PojoDBDecoderFactory implements DBDecoderFactory {
+import com.mongodb.DBEncoder;
+import com.mongodb.DefaultDBEncoder;
+import com.mongodb.LazyDBObject;
+import com.mongodb.MongoException;
 
-    private final Unmarshaller unmarshaller;
+class PojoEncoder implements DBEncoder {
 
-    public PojoDBDecoderFactory(Unmarshaller unmarshaller) {
-        this.unmarshaller = unmarshaller;
+
+    public int writeObject(final OutputBuffer buf, BSONObject o) {
+        if (!(o instanceof LazyDBObject)) {
+            return DefaultDBEncoder.FACTORY.create().writeObject(buf, o);
+        }
+
+        try {
+            return ((LazyDBObject) o).pipe(buf);
+        } catch (IOException e) {
+            throw new MongoException("Exception serializing a LazyDBObject", e);
+        }
     }
 
-    public DBDecoder create() {
-        return new PojoDBDecoder(unmarshaller);
-    }
 
 }
+

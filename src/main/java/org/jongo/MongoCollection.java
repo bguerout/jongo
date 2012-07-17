@@ -23,7 +23,8 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.decoder.PojoDBDecoderFactory;
+import org.jongo.marshall.decoder.DocumentDecoderFactory;
+import org.jongo.marshall.decoder.PojoEncoderFactory;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
@@ -40,7 +41,8 @@ public final class MongoCollection {
 
     MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
-        dbCollection.setDBDecoderFactory(new PojoDBDecoderFactory(unmarshaller));
+        dbCollection.setDBDecoderFactory(new DocumentDecoderFactory(unmarshaller));
+        dbCollection.setDBEncoderFactory(PojoEncoderFactory.FACTORY);
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
         this.queryFactory = new QueryFactory(marshaller);
@@ -152,11 +154,11 @@ public final class MongoCollection {
     }
 
     public void ensureIndex(String keys) {
-    	collection.ensureIndex(createQuery(keys).toDBObject());
+        collection.ensureIndex(createQuery(keys).toDBObject());
     }
 
     public void ensureIndex(String keys, String options) {
-    	collection.ensureIndex(createQuery(keys).toDBObject(), createQuery(options).toDBObject());
+        collection.ensureIndex(createQuery(keys).toDBObject(), createQuery(options).toDBObject());
     }
 
     public String getName() {

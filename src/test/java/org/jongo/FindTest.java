@@ -16,16 +16,20 @@
 
 package org.jongo;
 
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.Iterator;
+
+import org.bson.types.ObjectId;
+import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
+import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class FindTest extends JongoTestCase {
 
@@ -44,32 +48,49 @@ public class FindTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        Friend friend = new Friend("John", "22 Wall Street Avenue");
+        Friend friend = new Friend(new ObjectId(), "John");
         collection.save(friend);
 
         /* when */
-        Iterator<Friend> users = collection.find("{address:{$exists:true}}").as(Friend.class).iterator();
+        Iterator<Friend> users = collection.find("{name:'John'}").as(Friend.class).iterator();
 
         /* then */
-        assertThat(users.next().getId()).isEqualTo(friend.getId());
+        assertThat(users.hasNext()).isTrue();
+        assertThat(users.next().getName()).isEqualTo("John");
         assertThat(users.hasNext()).isFalse();
+    }
+
+    @Test
+    public void shouldFailWhenUnableToUnmarshallResult() throws Exception {
+        /* given */
+        collection.insert("{error: 'NotaDate'}");
+
+        /* when */
+        Iterator<ErrorObject> results = collection.find().as(ErrorObject.class).iterator();
+
+        try {
+            results.next();
+            fail();
+        } catch (MarshallingException e) {
+            assertThat(e.getMessage()).contains(" \"error\" : \"NotaDate\"");
+        }
     }
 
     @Test
     public void canFindWithEmptySelector() throws Exception {
         /* given */
-        Friend john = new Friend("John", "22 Wall Street Avenue");
-        Friend smith = new Friend("Smith", "23 Wall Street Avenue");
-        Friend peter = new Friend("Peter", "24 Wall Street Avenue");
-        collection.save(john);
-        collection.save(smith);
-        collection.save(peter);
+        collection.insert("{name:'John'}");
+        collection.insert("{name:'Smith'}");
+        collection.insert("{name:'Peter'}");
 
         /* when */
-        Iterator<Friend> users = collection.find().as(Friend.class).iterator();
+        Iterable<Friend> friends = collection.find().as(Friend.class);
 
         /* then */
-        assertThat(users).contains(john, smith, peter);
+        assertThat(friends.iterator().hasNext()).isTrue();
+        for (Friend friend : friends) {
+            assertThat(friend.getName()).isIn("John", "Smith", "Peter");
+        }
     }
 
     @Test

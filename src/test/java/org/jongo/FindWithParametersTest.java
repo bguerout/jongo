@@ -44,27 +44,26 @@ public class FindWithParametersTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        Friend john = new Friend("John", new Coordinate(1, 1));
-        collection.save(john);
+        collection.insert("{name:'John'}");
 
         /* when */
         Friend result = collection.findOne("{name:#}", "John").as(Friend.class);
 
         /* then */
-        assertThat(result.getId()).isEqualTo(john.getId());
+        assertThat(result.getName()).isEqualTo("John");
     }
 
     @Test
     public void canFind() throws Exception {
         /* given */
-        Friend john = new Friend("John", new Coordinate(1, 1));
-        collection.save(john);
+        collection.insert("{name:'John'}");
 
         /* when */
         Iterator<Friend> users = collection.find("{name:#}", "John").as(Friend.class).iterator();
 
         /* then */
-        assertThat(users.next().getId()).isEqualTo(john.getId());
+        assertThat(users.hasNext()).isTrue();
+        assertThat(users.next().getName()).isEqualTo("John");
         assertThat(users.hasNext()).isFalse();
     }
 

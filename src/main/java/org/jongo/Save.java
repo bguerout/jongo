@@ -16,14 +16,13 @@
 
 package org.jongo;
 
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
-import com.mongodb.util.JSON;
-import org.jongo.marshall.Marshaller;
-
-import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
 
 class Save {
 
@@ -44,17 +43,11 @@ class Save {
     }
 
     public WriteResult execute() {
-        DBObject dbObject = marshall();
-
-        WriteResult writeResult = collection.save(dbObject, determineWriteConcern());
-
-        String id = dbObject.get(MONGO_DOCUMENT_ID_NAME).toString();
-        marshaller.setDocumentGeneratedId(document, id);
-
-        return writeResult;
+        marshaller.setDocumentGeneratedId(document, ObjectId.get());
+        return collection.save(marshallDocument(), determineWriteConcern());
     }
 
-    private DBObject marshall() {
+    private DBObject marshallDocument() {
         try {
             return marshaller.marshallAsBson(document);
         } catch (Exception e) {
@@ -65,14 +58,5 @@ class Save {
 
     private WriteConcern determineWriteConcern() {
         return concern == null ? collection.getWriteConcern() : concern;
-    }
-
-    private DBObject convertToJson(String json) {
-        try {
-            return ((DBObject) JSON.parse(json));
-        } catch (Exception e) {
-            String message = String.format("Unable to save document, " + "json returned by marshaller cannot be converted into a DBObject: '%s'", json);
-            throw new IllegalArgumentException(message, e);
-        }
     }
 }
