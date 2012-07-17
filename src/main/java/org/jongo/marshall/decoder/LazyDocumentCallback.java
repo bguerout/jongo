@@ -16,25 +16,20 @@
 
 package org.jongo.marshall.decoder;
 
-import java.util.Iterator;
-
+import com.mongodb.*;
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Unmarshaller;
 
-import com.mongodb.DB;
-import com.mongodb.DBCallback;
-import com.mongodb.DBCollection;
-import com.mongodb.DBRef;
-import com.mongodb.LazyDBCallback;
+import java.util.Iterator;
 
-class DocumentCallback extends LazyBSONCallback implements DBCallback {
+class LazyDocumentCallback extends LazyBSONCallback implements DBCallback {
 
     private final DBCollection collection;
     private final DB db;
     private final Unmarshaller unmarshaller;
 
-    public DocumentCallback(DBCollection collection, Unmarshaller unmarshaller) {
+    public LazyDocumentCallback(DBCollection collection, Unmarshaller unmarshaller) {
         this.collection = collection;
         this.db = collection == null ? null : collection.getDB();
         this.unmarshaller = unmarshaller;
@@ -42,7 +37,7 @@ class DocumentCallback extends LazyBSONCallback implements DBCallback {
 
     @Override
     public Object createObject(byte[] data, int offset) {
-        ReadOnlyDBObject o = new ReadOnlyDBObject(data, offset, new LazyDBCallback(collection), unmarshaller);
+        LazyDocumentStream o = new LazyDocumentStream(data, offset, new LazyDBCallback(collection), unmarshaller);
 
         Iterator it = o.keySet().iterator();
         if (it.hasNext() && it.next().equals("$ref") &&

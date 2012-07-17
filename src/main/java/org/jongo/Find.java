@@ -16,15 +16,14 @@
 
 package org.jongo;
 
-import static org.jongo.ResultMapperFactory.newPojoMapper;
-
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newDocumentStreamMapper;
 
 public final class Find {
 
@@ -49,7 +48,7 @@ public final class Find {
     }
 
     public <T> Iterable<T> as(final Class<T> clazz) {
-        return map(newPojoMapper(clazz));
+        return map(newDocumentStreamMapper(clazz));
     }
 
     public <T> Iterable<T> map(ResultMapper<T> resultMapper) {

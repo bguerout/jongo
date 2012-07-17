@@ -16,17 +16,18 @@
 
 package org.jongo.marshall.decoder;
 
+import com.mongodb.DBObject;
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 
-public class ReadOnlyDBObject<T> extends LazyDBObject {
+public class LazyDocumentStream<T> extends LazyDBObject implements DocumentStream {
 
     private final int offset;
     private final Unmarshaller unmarshaller;
 
-    ReadOnlyDBObject(byte[] data, int offset, LazyBSONCallback cbk, Unmarshaller unmarshaller) {
+    LazyDocumentStream(byte[] data, int offset, LazyBSONCallback cbk, Unmarshaller unmarshaller) {
         super(data, offset, cbk);
         this.offset = offset;
         this.unmarshaller = unmarshaller;
@@ -34,11 +35,26 @@ public class ReadOnlyDBObject<T> extends LazyDBObject {
 
     public T as(Class<T> clazz) {
         try {
-            return unmarshaller.unmarshall(_input.array(), offset, clazz);
+            return unmarshaller.unmarshall(this, clazz);
         } catch (MarshallingException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, toString());
             throw new MarshallingException(message, e);
         }
+    }
 
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getSize() {
+        return getBSONSize();
+    }
+
+    public byte[] getData() {
+        return _input.array();
+    }
+
+    public DBObject asBSONObject() {
+        return this;
     }
 }

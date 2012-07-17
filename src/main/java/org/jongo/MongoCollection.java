@@ -23,7 +23,7 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.decoder.DocumentDecoderFactory;
+import org.jongo.marshall.decoder.LazyDocumentDecoderFactory;
 import org.jongo.marshall.decoder.PojoEncoderFactory;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -41,7 +41,7 @@ public final class MongoCollection {
 
     MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
-        dbCollection.setDBDecoderFactory(new DocumentDecoderFactory(unmarshaller));
+        dbCollection.setDBDecoderFactory(new LazyDocumentDecoderFactory(unmarshaller));
         dbCollection.setDBEncoderFactory(PojoEncoderFactory.FACTORY);
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;

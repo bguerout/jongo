@@ -23,6 +23,7 @@ import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
+import org.jongo.marshall.decoder.DocumentStream;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
@@ -47,10 +48,10 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         this.jsonMapper = jsonMapper;
     }
 
-    public <T> T unmarshall(byte[] data, int offset, Class<T> clazz) throws MarshallingException {
+    public <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException {
 
         try {
-            return bsonMapper.readValue(data, offset, data.length - offset, clazz);
+            return bsonMapper.readValue(document.getData(), document.getOffset(), document.getSize(), clazz);
         } catch (IOException e) {
             throw new MarshallingException("Unable to unmarshall result into " + clazz, e);
         }

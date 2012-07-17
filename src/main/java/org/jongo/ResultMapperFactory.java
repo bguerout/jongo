@@ -16,60 +16,50 @@
 
 package org.jongo;
 
-import org.bson.io.BasicOutputBuffer;
-import org.jongo.marshall.decoder.ReadOnlyDBObject;
-import org.jongo.marshall.Unmarshaller;
-
-import com.mongodb.DBEncoder;
 import com.mongodb.DBObject;
-import com.mongodb.DefaultDBEncoder;
+import org.jongo.marshall.decoder.DefaultDocumentStream;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.decoder.LazyDocumentStream;
 
 class ResultMapperFactory {
 
 
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
-        return new DBObjectResultMapper<T>(unmarshaller, clazz);
+        return new DefaultResultMapper<T>(unmarshaller, clazz);
     }
 
-    public static <T> ResultMapper<T> newPojoMapper(final Class<T> clazz) {
-        return new PojoResultMapper<T>(clazz);
+    public static <T> ResultMapper<T> newDocumentStreamMapper(final Class<T> clazz) {
+        return new DocumentStreamLazyResultMapper<T>(clazz);
     }
 
-    private static class DBObjectResultMapper<T> implements ResultMapper<T> {
+    private static class DefaultResultMapper<T> implements ResultMapper<T> {
 
         private final Unmarshaller unmarshaller;
         private final Class<T> clazz;
 
-        public DBObjectResultMapper(Unmarshaller unmarshaller, Class<T> clazz) {
+        public DefaultResultMapper(Unmarshaller unmarshaller, Class<T> clazz) {
             this.unmarshaller = unmarshaller;
             this.clazz = clazz;
         }
 
         public T map(DBObject result) {
-            return unmarshaller.unmarshall(convertToBytesArray(result), 0, clazz);
-        }
-
-        private byte[] convertToBytesArray(DBObject result) {
-            BasicOutputBuffer buffer = new BasicOutputBuffer();
-            DBEncoder dbEncoder = DefaultDBEncoder.FACTORY.create();
-            dbEncoder.writeObject(buffer, result);
-            return buffer.toByteArray();//TODO close me ?
+            return unmarshaller.unmarshall(new DefaultDocumentStream(result), clazz);
         }
     }
 
-    private static class PojoResultMapper<T> implements ResultMapper<T> {
+    private static class DocumentStreamLazyResultMapper<T> implements ResultMapper<T> {
 
         private final Class<T> clazz;
 
-        public PojoResultMapper(Class<T> clazz) {
+        public DocumentStreamLazyResultMapper(Class<T> clazz) {
             this.clazz = clazz;
         }
 
         public T map(DBObject result) {
-            if (!(result instanceof ReadOnlyDBObject)) {
+            if (!(result instanceof LazyDocumentStream)) {
                 throw new IllegalArgumentException("PojoResultMapper can only map PojoDBObject instances");
             }
-            return ((ReadOnlyDBObject<T>) result).as(clazz);
+            return ((LazyDocumentStream<T>) result).as(clazz);
         }
     }
 }

@@ -16,39 +16,21 @@
 
 package org.jongo.marshall.decoder;
 
-import com.mongodb.*;
-
-import org.bson.LazyBSONDecoder;
 import org.jongo.marshall.Unmarshaller;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.mongodb.DBDecoder;
+import com.mongodb.DBDecoderFactory;
 
-class DocumentDecoder extends LazyBSONDecoder implements DBDecoder {
+public class LazyDocumentDecoderFactory implements DBDecoderFactory {
 
     private final Unmarshaller unmarshaller;
 
-    public DocumentDecoder(Unmarshaller unmarshaller) {
+    public LazyDocumentDecoderFactory(Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
     }
 
-    public DBCallback getDBCallback(DBCollection collection) {
-        return new DocumentCallback(collection, unmarshaller);
+    public DBDecoder create() {
+        return new LazyDocumentDecoder(unmarshaller);
     }
-
-    public DBObject decode(byte[] b, DBCollection collection) {
-        DBCallback cbk = getDBCallback(collection);
-        cbk.reset();
-        decode(b, cbk);
-        return (DBObject) cbk.get();
-    }
-
-    public DBObject decode(InputStream in, DBCollection collection) throws IOException {
-        DBCallback cbk = getDBCallback(collection);
-        cbk.reset();
-        decode(in, cbk);
-        return (DBObject) cbk.get();
-    }
-
 
 }

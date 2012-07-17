@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.marshall.decoder;
 
-import org.jongo.marshall.decoder.DocumentStream;
+import org.bson.BSONObject;
 
-public interface Unmarshaller {
+public interface DocumentStream {
 
-    <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException;
+    byte[] getData();
+    int getOffset();
+    int getSize();
+    BSONObject asBSONObject();
 }

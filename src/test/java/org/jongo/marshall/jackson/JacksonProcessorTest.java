@@ -16,14 +16,8 @@
 
 package org.jongo.marshall.jackson;
 
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.BSON.bsonify;
-import static org.jongo.util.BSON.jsonify;
-
-import java.io.IOException;
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import org.jongo.marshall.decoder.DocumentStream;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -31,7 +25,13 @@ import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import java.io.IOException;
+import java.util.Date;
+
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.BSON.bsonify;
+import static org.jongo.util.BSON.jsonify;
 
 public class JacksonProcessorTest {
 
@@ -55,18 +55,18 @@ public class JacksonProcessorTest {
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
-        byte[] bson = bsonify("{'address': '22 rue des murlins'}");
+        DocumentStream document = bsonify("{'address': '22 rue des murlins'}");
 
-        Friend friend = processor.unmarshall(bson, 0, Friend.class);
+        Friend friend = processor.unmarshall(document, Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
-        byte[] bson = bsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
+        DocumentStream document = bsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
 
-        Friend friend = processor.unmarshall(bson, 0, Friend.class);
+        Friend friend = processor.unmarshall(document, Friend.class);
 
         assertThat(friend.getCoordinate().lat).isEqualTo(48);
     }
@@ -74,9 +74,9 @@ public class JacksonProcessorTest {
     @Test
     public void hasAFallbackToEnsureBackwardCompatibility() throws IOException {
 
-        byte[] bson = bsonify("{'oldAddress': '22-rue-des-murlins'}");
+        DocumentStream document = bsonify("{'oldAddress': '22-rue-des-murlins'}");
 
-        BackwardFriend backwardFriend = processor.unmarshall(bson, 0, BackwardFriend.class);
+        BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
 
         assertThat(backwardFriend.getAddress()).isEqualTo("22-rue-des-murlins");
     }
@@ -85,9 +85,9 @@ public class JacksonProcessorTest {
     public void canHandleNonIsoDate() throws IOException {
 
         Date oldDate = new Date(1340714101235L);
-        byte[] bson = bsonify("{'oldDate': " + 1340714101235L + " }");
+        DocumentStream document = bsonify("{'oldDate': " + 1340714101235L + " }");
 
-        BackwardFriend backwardFriend = processor.unmarshall(bson, 0, BackwardFriend.class);
+        BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
 
         assertThat(backwardFriend.oldDate).isEqualTo(oldDate);
     }
@@ -96,7 +96,7 @@ public class JacksonProcessorTest {
     public void shouldFailWhenUnableToUnmarshall() throws Exception {
 
         try {
-            processor.unmarshall(bsonify("{'error':'notADate'}"), 0, ErrorObject.class);
+            processor.unmarshall(bsonify("{'error':'notADate'}"), ErrorObject.class);
             fail();
         } catch (Exception e) {
             assertThat(e).isInstanceOf(MarshallingException.class);
