@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.mongodb.DBObject;
 
-import org.jongo.marshall.DocumentStream;
+import org.jongo.marshall.stream.DocumentStream;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;

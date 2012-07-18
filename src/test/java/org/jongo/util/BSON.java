@@ -19,8 +19,8 @@ package org.jongo.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import org.bson.BSONObject;
-import org.jongo.marshall.BsonObjectStream;
-import org.jongo.marshall.DocumentStream;
+import org.jongo.marshall.stream.BsonObjectStream;
+import org.jongo.marshall.stream.DocumentStream;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.decoder;
+package org.jongo.marshall.stream;
 
 import com.mongodb.*;
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.Unmarshaller;
 
 import java.util.Iterator;
 

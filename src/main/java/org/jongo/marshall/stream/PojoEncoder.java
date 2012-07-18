@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.decoder;
+package org.jongo.marshall.stream;
 
-import java.io.IOException;
-
+import com.mongodb.*;
 import org.bson.BSONObject;
 import org.bson.io.OutputBuffer;
 
-import com.mongodb.DBEncoder;
-import com.mongodb.DBEncoderFactory;
-import com.mongodb.DefaultDBEncoder;
-import com.mongodb.LazyDBObject;
-import com.mongodb.MongoException;
+import java.io.IOException;
 
 public class PojoEncoder implements DBEncoder {
 

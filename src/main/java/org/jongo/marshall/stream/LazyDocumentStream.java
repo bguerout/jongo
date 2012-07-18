@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.decoder;
+package org.jongo.marshall.stream;
 
 import com.mongodb.DBObject;
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
-import org.jongo.marshall.DocumentStream;
-import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.Unmarshaller;
 
 class LazyDocumentStream extends LazyDBObject implements DocumentStream {
 

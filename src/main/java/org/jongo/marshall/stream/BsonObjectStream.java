@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.marshall.stream;
 
 import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
@@ -22,6 +22,7 @@ import org.bson.io.OutputBuffer;
 
 import com.mongodb.DBEncoder;
 import com.mongodb.DefaultDBEncoder;
+import org.jongo.marshall.stream.DocumentStream;
 
 public class BsonObjectStream implements DocumentStream {
 

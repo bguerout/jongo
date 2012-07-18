@@ -19,8 +19,8 @@ package org.jongo;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.decoder.LazyDocumentDecoder;
-import org.jongo.marshall.decoder.PojoEncoder;
+import org.jongo.marshall.stream.LazyDocumentDecoder;
+import org.jongo.marshall.stream.PojoEncoder;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 

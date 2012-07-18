@@ -23,7 +23,7 @@ import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
-import org.jongo.marshall.DocumentStream;
+import org.jongo.marshall.stream.DocumentStream;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;

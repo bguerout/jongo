@@ -16,8 +16,8 @@
 
 package org.jongo;
 
-import org.jongo.marshall.BsonObjectStream;
-import org.jongo.marshall.DocumentStream;
+import org.jongo.marshall.stream.BsonObjectStream;
+import org.jongo.marshall.stream.DocumentStream;
 import org.jongo.marshall.Unmarshaller;
 
 import com.mongodb.DBObject;
