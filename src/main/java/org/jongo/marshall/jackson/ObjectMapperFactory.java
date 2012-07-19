@@ -36,13 +36,6 @@ class ObjectMapperFactory {
         return mapper;
     }
 
-    public static ObjectMapper createJsonMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        configureMapper(mapper);
-        mapper.registerModule(new JsonModule());
-        return mapper;
-    }
-
     private static void configureMapper(ObjectMapper mapper) {
         mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(AUTO_DETECT_GETTERS, false);
