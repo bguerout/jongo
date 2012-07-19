@@ -142,6 +142,12 @@
       <version>1.9.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.caliper</groupId>
+      <artifactId>caliper</artifactId>
+      <version>0.5-rc1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

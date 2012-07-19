@@ -49,6 +49,12 @@ public class Friend {
     public Friend() {
     }
 
+    public Friend(String name, String address, Coordinate coordinate) {
+        this.name = name;
+        this.address = address;
+        this.coordinate = coordinate;
+    }
+
     public ObjectId getId() {
         return id;
     }
