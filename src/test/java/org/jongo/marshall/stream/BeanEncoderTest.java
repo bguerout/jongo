@@ -23,12 +23,12 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class PojoEncoderTest {
+public class BeanEncoderTest {
 
     @Test
     public void shouldPipeLazyDbObject() throws Exception {
 
-        DBEncoder encoder = PojoEncoder.FACTORY.create();
+        DBEncoder encoder = BeanEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
         encoder.writeObject(buffer, new LazyDocumentStream(new byte[]{5, 0, 0, 0, 0}, 0, null));
@@ -39,7 +39,7 @@ public class PojoEncoderTest {
 
     @Test
     public void shouldEncodeDBObject() throws Exception {
-        DBEncoder encoder = PojoEncoder.FACTORY.create();
+        DBEncoder encoder = BeanEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
         encoder.writeObject(buffer, new BasicDBObject());

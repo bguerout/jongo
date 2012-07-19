@@ -22,11 +22,12 @@ import org.bson.io.OutputBuffer;
 
 import java.io.IOException;
 
-public class PojoEncoder implements DBEncoder {
+public class BeanEncoder implements DBEncoder {
 
-    public final static PojoEncoderFactory FACTORY = new PojoEncoderFactory();
+    public final static DBEncoderFactory FACTORY = new BeanEncoderFactory();
 
     public int writeObject(final OutputBuffer buf, BSONObject o) {
+
         if (!(o instanceof LazyDBObject)) {
             return DefaultDBEncoder.FACTORY.create().writeObject(buf, o);
         }
@@ -38,14 +39,14 @@ public class PojoEncoder implements DBEncoder {
         }
     }
 
-    public static class PojoEncoderFactory implements DBEncoderFactory {
-
-        public DBEncoder create() {
-            return new PojoEncoder();
-        }
+    private BeanEncoder() {
     }
 
-    private PojoEncoder() {
+    private static class BeanEncoderFactory implements DBEncoderFactory {
+        public DBEncoder create() {
+            return new BeanEncoder();
+        }
+
     }
 }
 

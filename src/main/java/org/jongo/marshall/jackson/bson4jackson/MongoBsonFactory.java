@@ -16,6 +16,10 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
@@ -23,29 +27,7 @@ import de.undercouch.bson4jackson.BsonFactory;
 import de.undercouch.bson4jackson.BsonGenerator;
 import de.undercouch.bson4jackson.BsonParser;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-public class MongoBsonFactory extends BsonFactory {
-
-    private MongoBsonFactory() {
-    }
-
-    public static BsonFactory createFactory() {
-        BsonFactory factory = new MongoBsonFactory();
-        factory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
-        return factory;
-    }
-
-    /**
-     * TODO faster factory, must only be used during unmarshalling
-     */
-    public static BsonFactory createStreamingFactory() {
-        BsonFactory factory = new MongoBsonFactory();
-        factory.enable(BsonGenerator.Feature.ENABLE_STREAMING);
-        return factory;
-    }
+class MongoBsonFactory extends BsonFactory {
 
     @Override
     protected BsonParser _createJsonParser(InputStream in, IOContext ctxt) throws IOException, JsonParseException {

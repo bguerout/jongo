@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.bson4jackson;
 
 import java.io.IOException;
 import java.util.Date;
@@ -23,28 +23,20 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 
-class CommonDeserializers extends SimpleDeserializers {
+class DateDeserializer extends JsonDeserializer<Date> {
 
-    public CommonDeserializers() {
-        addDeserializer(Date.class, new DateDeserializer());
+    @Override
+    public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        Object deserialized = jp.getEmbeddedObject();
+        if (deserialized instanceof Long) {
+            return getDateFromBackwardFormat((Long) deserialized);
+        }
+        return (Date) deserialized;
     }
 
-    private static class DateDeserializer extends JsonDeserializer<Date> {
-
-        @Override
-        public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            Object deserialized = jp.getEmbeddedObject();
-            if (deserialized instanceof Long) {
-                return getDateFromBackwardFormat((Long) deserialized);
-            }
-            return (Date) deserialized;
-        }
-
-        private Date getDateFromBackwardFormat(Long deserialized) {
-            return new Date(deserialized);
-        }
-
+    private Date getDateFromBackwardFormat(Long deserialized) {
+        return new Date(deserialized);
     }
+
 }

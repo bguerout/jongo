@@ -22,21 +22,22 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
+import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 
-class ObjectMapperFactory {
+public class ObjectMapperFactory {
 
-    public static ObjectMapper createBsonMapper() {
-        ObjectMapper mapper = new ObjectMapper(MongoBsonFactory.createFactory());
+    public static ObjectMapper createMapper(JsonFactory jsonFactory) {
+        ObjectMapper mapper = new ObjectMapper(jsonFactory);
         configureMapper(mapper);
         mapper.registerModule(new BsonModule());
         return mapper;
     }
 
-    private static void configureMapper(ObjectMapper mapper) {
+    public static void configureMapper(ObjectMapper mapper) {
         mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(AUTO_DETECT_GETTERS, false);
         mapper.configure(AUTO_DETECT_SETTERS, false);

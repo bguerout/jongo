@@ -16,37 +16,39 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DBObject;
-import com.mongodb.LazyWriteableDBObject;
-import org.bson.LazyBSONCallback;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.stream.DocumentStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import org.bson.LazyBSONCallback;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.bson4jackson.BsonModule;
+import org.jongo.marshall.stream.DocumentStream;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
+import com.mongodb.LazyWriteableDBObject;
+
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
-    private final ObjectMapper documentMapper;
+    private final ObjectMapper mapper;
     private final ObjectIdFieldLocator fieldLocator;
 
     public JacksonProcessor() {
-        this(ObjectMapperFactory.createBsonMapper());
+        this(ObjectMapperFactory.createMapper(BsonModule.createFactory()));
     }
 
-    public JacksonProcessor(ObjectMapper documentMapper) {
-        this.documentMapper = documentMapper;
+    public JacksonProcessor(ObjectMapper mapper) {
+        this.mapper = mapper;
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 
     public <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException {
 
         try {
-            return documentMapper.readValue(document.getData(), document.getOffset(), document.getSize(), clazz);
+            return mapper.readValue(document.getData(), document.getOffset(), document.getSize(), clazz);
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
@@ -57,7 +59,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
         ByteArrayOutputStream bsonStream = new ByteArrayOutputStream();
         try {
-            documentMapper.writeValue(bsonStream, obj);
+            mapper.writeValue(bsonStream, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
