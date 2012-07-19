@@ -16,17 +16,14 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
-import org.bson.types.ObjectId;
-import org.jongo.MongoCollection;
-import org.jongo.marshall.stream.DocumentStream;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.stream.DocumentStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,6 +32,7 @@ import java.lang.reflect.Field;
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectMapper documentMapper;
+    private final ObjectIdFieldLocator fieldLocator;
 
     public JacksonProcessor() {
         this(ObjectMapperFactory.createBsonMapper());
@@ -42,6 +40,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     public JacksonProcessor(ObjectMapper documentMapper) {
         this.documentMapper = documentMapper;
+        this.fieldLocator = new ObjectIdFieldLocator();
     }
 
     public <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException {
@@ -67,37 +66,18 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
     }
 
     public void setDocumentGeneratedId(Object target, Object id) {
-        Field field = findIdFieldForClass(target.getClass());
-        try {
-            if (field != null) {
+        Class<? extends Object> clazz = target.getClass();
+        Field field = fieldLocator.findFieldOrNull(clazz);
+        if (field != null) {
+            try {
+
                 field.setAccessible(true);
                 if (field.get(target) == null) {
                     field.set(target, id);
                 }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
             }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
         }
-    }
-
-    private Field findIdFieldForClass(Class<?> clazz) {
-
-        do {
-            for (Field f : clazz.getDeclaredFields()) {
-                if (f.getType().equals(ObjectId.class)) {
-                    JsonProperty annotation = f.getAnnotation(JsonProperty.class);
-                    if (isId(f.getName()) || annotation != null && isId(annotation.value())) {
-                        return f;
-                    }
-                }
-            }
-            clazz = clazz.getSuperclass();
-        } while (!Object.class.equals(clazz));
-
-        return null;
-    }
-
-    private boolean isId(String value) {
-        return MongoCollection.MONGO_DOCUMENT_ID_NAME.equals(value);
     }
 }
