@@ -16,17 +16,15 @@
 
 package org.jongo.bench;
 
-import java.io.StringWriter;
-import java.io.Writer;
-
-import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.marshall.jackson.ObjectMapperFactory;
-import org.jongo.marshall.stream.DocumentStream;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.stream.DocumentStream;
+
+import java.io.StringWriter;
+import java.io.Writer;
 
 class JsonProcessor extends JacksonProcessor {
 
@@ -35,7 +33,7 @@ class JsonProcessor extends JacksonProcessor {
     public JsonProcessor() {
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JsonModule());
-        ObjectMapperFactory.configureMapper(this.mapper);
+        configureMapper(this.mapper);
     }
 
     @Override

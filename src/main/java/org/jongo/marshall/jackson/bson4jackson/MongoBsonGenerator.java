@@ -16,12 +16,17 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import org.bson.BSON;
+import org.bson.types.BSONTimestamp;
+import org.bson.types.MaxKey;
+import org.bson.types.MinKey;
+
 import de.undercouch.bson4jackson.BsonConstants;
 import de.undercouch.bson4jackson.BsonGenerator;
 import de.undercouch.bson4jackson.io.ByteOrderUtil;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 class MongoBsonGenerator extends BsonGenerator {
 
@@ -40,6 +45,29 @@ class MongoBsonGenerator extends BsonGenerator {
         _buffer.putInt(time);
         _buffer.putInt(machine);
         _buffer.putInt(inc);
+        flushBuffer();
+    }
+
+    public void writeBSONTimestamp(BSONTimestamp timestamp) throws IOException {
+        _writeArrayFieldNameIfNeeded();
+        _verifyValueWrite("write timestamp");
+        _buffer.putByte(_typeMarker, BsonConstants.TYPE_TIMESTAMP);
+        _buffer.putInt(timestamp.getInc());
+        _buffer.putInt(timestamp.getTime());
+        flushBuffer();
+    }
+
+    public void writeMinKey(MinKey key) throws IOException {
+        _writeArrayFieldNameIfNeeded();
+        _verifyValueWrite("write int");
+        _buffer.putByte(_typeMarker, BsonConstants.TYPE_MINKEY);
+        flushBuffer();
+    }
+
+    public void writeMaxKey(MaxKey key) throws IOException {
+        _writeArrayFieldNameIfNeeded();
+        _verifyValueWrite("write boolean");
+        _buffer.putByte(_typeMarker, BsonConstants.TYPE_MAXKEY);
         flushBuffer();
     }
 }

@@ -16,47 +16,26 @@
 
 package org.jongo.bench;
 
-import static org.jongo.bench.BenchUtil.createFriend;
-
-import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.marshall.jackson.ObjectMapperFactory;
-import org.jongo.marshall.jackson.bson4jackson.BsonModule;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
-import com.mongodb.DBObject;
+import org.jongo.marshall.jackson.JacksonProcessor;
+
+import static org.jongo.bench.BenchUtil.createFriend;
 
 public class MarshallerBench extends SimpleBenchmark {
 
     private JacksonProcessor processor;
     private JacksonProcessor jsonProcessor;
-    private JacksonProcessor customProcessor;
 
     protected void setUp() throws Exception {
         processor = new JacksonProcessor();
         jsonProcessor = new JsonProcessor();
-
-        JsonFactory bsonFactory = BsonModule.createFactory();
-        ObjectMapper mapper = ObjectMapperFactory.createMapper(bsonFactory);
-        mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance());
-        customProcessor = new JsonProcessor();
     }
 
     public int timeMarshall(int reps) {
         int i = 0;
         for (; i < reps; i++) {
-            DBObject friend = processor.marshall(createFriend(i));
-        }
-        return i;
-    }
-
-    public int timeMarshallWithVisibilty(int reps) {
-        int i = 0;
-        for (; i < reps; i++) {
-            DBObject friend = customProcessor.marshall(createFriend(i));
+            processor.marshall(createFriend(i));
         }
         return i;
     }
@@ -64,7 +43,7 @@ public class MarshallerBench extends SimpleBenchmark {
     public int timeMarshallWithJongo0_2(int reps) {
         int i = 0;
         for (; i < reps; i++) {
-            DBObject friend = jsonProcessor.marshall(createFriend(i));
+            jsonProcessor.marshall(createFriend(i));
         }
         return i;
     }

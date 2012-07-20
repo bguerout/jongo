@@ -58,7 +58,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'string' : 'value' , 'number' : 100 , 'bool' : false"));
+        assertHasBeenPersistedAs(jsonify("'number' : 100 , 'string' : 'value' , 'bool' : false"));
         JavaNativeType result = collection.findOne("{}").as(JavaNativeType.class);
         assertThat(result.bool).isFalse();
         assertThat(result.string).isEqualTo("value");
@@ -78,6 +78,11 @@ public class DocumentMarshallingTest extends JongoTestCase {
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.minKey).isNotNull();
         assertThat(result.maxKey).isNotNull();
+    }
+
+    @Test
+    public void testName() throws Exception {
+        collection.getDBCollection().save(new BasicDBObject("key",new MinKey()));
     }
 
     @Test

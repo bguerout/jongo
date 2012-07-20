@@ -16,14 +16,15 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.io.IOContext;
 import de.undercouch.bson4jackson.BsonParser;
-import de.undercouch.bson4jackson.io.ByteOrderUtil;
 import de.undercouch.bson4jackson.types.ObjectId;
+import de.undercouch.bson4jackson.types.Timestamp;
+import org.bson.types.BSONTimestamp;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 class MongoBsonParser extends BsonParser {
 
@@ -37,7 +38,14 @@ class MongoBsonParser extends BsonParser {
         if (object instanceof ObjectId) {
             return convertToNativeObjectId((ObjectId) object);
         }
+        if (object instanceof Timestamp) {
+            return convertToBSONTimestamp((Timestamp) object);
+        }
         return object;
+    }
+
+    private Object convertToBSONTimestamp(Timestamp ts) {
+        return new BSONTimestamp(ts.getTime(), ts.getInc());
     }
 
     private org.bson.types.ObjectId convertToNativeObjectId(ObjectId id) {

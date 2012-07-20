@@ -16,30 +16,18 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.undercouch.bson4jackson.BsonFactory;
-import de.undercouch.bson4jackson.BsonGenerator;
 import de.undercouch.bson4jackson.BsonParser;
 
 public class BsonModule extends de.undercouch.bson4jackson.BsonModule {
 
-    public static JsonFactory createFactory() {
+    public static ObjectMapper createBsonMapper() {
         BsonFactory factory = new MongoBsonFactory();
         factory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
-        return factory;
-    }
-
-    /**
-     * TODO faster factory, must only be used during unmarshalling
-     */
-    public static JsonFactory createStreamingFactory() {
-        BsonFactory factory = new MongoBsonFactory();
-        factory.enable(BsonGenerator.Feature.ENABLE_STREAMING);
-        return factory;
+        ObjectMapper mapper = new ObjectMapper(factory);
+        mapper.registerModule(new BsonModule());
+        return mapper;
     }
 
     @Override
@@ -48,18 +36,4 @@ public class BsonModule extends de.undercouch.bson4jackson.BsonModule {
         context.addSerializers(new BsonSerializers());
         context.addDeserializers(new BsonDeserializers());
     }
-
-    private static class BsonSerializers extends SimpleSerializers {
-        public BsonSerializers() {
-            addSerializer(org.bson.types.ObjectId.class, new BsonObjectIdSerializer());
-        }
-    }
-
-    private static class BsonDeserializers extends SimpleDeserializers {
-
-        public BsonDeserializers() {
-            addDeserializer(Date.class, new DateDeserializer());
-        }
-    }
-
 }
