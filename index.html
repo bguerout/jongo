@@ -403,6 +403,12 @@ class CustomUnmarshaller implements Unmarshaller {
 
 Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshaller);
 </pre>
+            <h2>Using Jongo objects with Jersey</h2>
+
+            <p>Because Jongo uses Jackson by default, the same objects cannot be exposed with Jersey if they have an <code>ObjectId</code>. To make Jongo and Jersey work together, use <a href="https://gist.github.com/3155831">this custom Jackson Provider</a>, it exposes <code>ObjectId</code> as <code>String</code>.</p>
+
+            <p>If in doubt, <a href="https://github.com/yamsellem/jongo-jersey">this full working sample</a> put everything together.</p>
+
             <h2>Performance</h2>
 
             <p>Jongo is lighting fast. Not because it is made of ancient wood and magic stones, but because it binds
