@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
+ * Copyright (C) 2012 Mark LEWIS <mark at fortressofgeekdom dot org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jongo.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-public class Fox extends Animal {
-    String color;
-    
-    @JsonView(Views.Private.class)
-    String gender;
-    
-    Fox() {
-    }
-
-    public Fox(String name, String color) {
-        super(name);
-        this.color = color;
-    }
-    
-    public void setGender(String gender) {
-    	this.gender = gender;
-    }
-    public String getGender() {
-		return gender;
-	}
+/**
+ * A collection of Jackson marker views for testing.  These classes are used to annotate properties
+ * as being part of a particular view using @JsonView(ViewName.class)
+ * @author mark
+ */
+public class Views {
+	public static class Public {}
+	public static class Private extends Public {} 
 }
