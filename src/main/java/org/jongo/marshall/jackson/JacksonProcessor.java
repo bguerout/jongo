@@ -35,7 +35,6 @@ import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -46,12 +45,12 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectReader reader;
     private final ObjectWriter writer;
-    
+
     public JacksonProcessor(ObjectReader reader, ObjectWriter writer) {
-    	this.reader = reader;
-    	this.writer = writer;
+        this.reader = reader;
+        this.writer = writer;
     }
-    
+
     public JacksonProcessor(ObjectMapper mapper) {
         this.reader = mapper.reader();
         this.writer = mapper.writer();
@@ -64,7 +63,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     public <T> T unmarshall(String json, Class<T> clazz) throws MarshallingException {
         try {
-        	return reader.withType(clazz).readValue(json);
+            return reader.withType(clazz).readValue(json);
         } catch (Exception e) {
             String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
             throw new MarshallingException(message, e);
@@ -90,7 +89,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         mapper.setSerializationInclusion(NON_NULL);
         mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
 
-        SimpleModule module = new SimpleModule("jongo", new Version(1, 0, 0, null, null, null));
+        SimpleModule module = new SimpleModule();
         addBSONTypeSerializers(module);
         mapper.registerModule(module);
         return mapper;
