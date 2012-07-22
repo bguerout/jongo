@@ -21,10 +21,12 @@ import org.jongo.marshall.Unmarshaller;
 
 public class TestContext {
 
+    private final String contextName;
     private final Unmarshaller unmarshaller;
     private final Marshaller marshaller;
 
-    public TestContext(Marshaller marshaller, Unmarshaller unmarshaller) {
+    public TestContext(String contextName, Marshaller marshaller, Unmarshaller unmarshaller) {
+        this.contextName = contextName;
         this.unmarshaller = unmarshaller;
         this.marshaller = marshaller;
     }
@@ -37,4 +39,7 @@ public class TestContext {
         return marshaller;
     }
 
+    public String getContextName() {
+        return contextName;
+    }
 }
