@@ -16,22 +16,14 @@
 
 package org.jongo.marshall.stream;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-
+import com.mongodb.*;
 import org.bson.LazyBSONCallback;
 import org.bson.LazyBSONDecoder;
 import org.bson.types.ObjectId;
 
-import com.mongodb.DB;
-import com.mongodb.DBCallback;
-import com.mongodb.DBCollection;
-import com.mongodb.DBDecoder;
-import com.mongodb.DBDecoderFactory;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
-import com.mongodb.LazyDBCallback;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 
 public class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
 
@@ -78,14 +70,13 @@ public class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            LazyDocumentStream o = new LazyDocumentStream(data, offset, new LazyDBCallback(collection));
+            DBObject dbo = new LazyDocumentStream(data, offset, new LazyDBCallback(collection));
 
-            Iterator it = o.keySet().iterator();
-            if (it.hasNext() && it.next().equals("$ref") &&
-                    o.containsField("$id")) {
-                return new DBRef(db, o);
+            Iterator it = dbo.keySet().iterator();
+            if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {
+                return new DBRef(db, dbo);
             }
-            return o;
+            return dbo;
         }
 
         public Object createDBRef(String ns, ObjectId id) {

@@ -21,7 +21,6 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.marshall.stream.DocumentStream;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -37,8 +36,8 @@ public class JsonProcessor extends JacksonProcessor {
     }
 
     @Override
-    public <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException {
-        String json = document.asBSONObject().toString();
+    public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
+        String json = document.toString();
         try {
             return mapper.readValue(json, clazz);
         } catch (Exception e) {

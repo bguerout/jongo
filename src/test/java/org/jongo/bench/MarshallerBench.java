@@ -18,9 +18,15 @@ package org.jongo.bench;
 
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
+import com.mongodb.DBObject;
+
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.jackson.json.JsonProcessor;
+import org.jongo.marshall.stream.DocumentStream;
+import org.jongo.marshall.stream.DocumentStreamFactory;
+import org.jongo.model.Friend;
 
+import static org.jongo.bench.BenchUtil.createDBOFriend;
 import static org.jongo.bench.BenchUtil.createFriend;
 
 public class MarshallerBench extends SimpleBenchmark {

@@ -24,6 +24,7 @@ import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.stream.DocumentStream;
+import org.jongo.marshall.stream.DocumentStreamFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,10 +46,11 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 
-    public <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException {
+    public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
 
+        DocumentStream stream = DocumentStreamFactory.fromDBObject(document);
         try {
-            return mapper.readValue(document.getData(), document.getOffset(), document.getSize(), clazz);
+            return mapper.readValue(stream.getData(), stream.getOffset(), stream.getSize(), clazz);
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);

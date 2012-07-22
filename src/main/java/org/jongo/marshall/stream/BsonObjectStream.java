@@ -24,13 +24,11 @@ import com.mongodb.DBEncoder;
 import com.mongodb.DefaultDBEncoder;
 import org.jongo.marshall.stream.DocumentStream;
 
-public class BsonObjectStream implements DocumentStream {
+class BsonObjectStream implements DocumentStream {
 
     private final OutputBuffer buffer;
-    private final BSONObject bsonObject;
 
-    public BsonObjectStream(BSONObject bsonObject) {
-        this.bsonObject = bsonObject;
+    BsonObjectStream(BSONObject bsonObject) {
         this.buffer = new BasicOutputBuffer();
         writeDBObjectIntoBuffer(bsonObject);
     }
@@ -50,9 +48,5 @@ public class BsonObjectStream implements DocumentStream {
 
     public byte[] getData() {
         return buffer.toByteArray();
-    }
-
-    public BSONObject asBSONObject() {
-        return bsonObject;
     }
 }

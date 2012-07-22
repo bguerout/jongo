@@ -19,7 +19,6 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.mongodb.DBObject;
 
-import org.jongo.marshall.stream.DocumentStream;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -60,7 +59,7 @@ public class JacksonProcessorTest {
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
-        DocumentStream document = bsonify("{'address': '22 rue des murlins'}");
+        DBObject document = bsonify("{'address': '22 rue des murlins'}");
 
         Friend friend = processor.unmarshall(document, Friend.class);
 
@@ -69,7 +68,7 @@ public class JacksonProcessorTest {
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
-        DocumentStream document = bsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
+        DBObject document = bsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
 
         Friend friend = processor.unmarshall(document, Friend.class);
 
@@ -79,7 +78,7 @@ public class JacksonProcessorTest {
     @Test
     public void hasAFallbackToEnsureBackwardCompatibility() throws IOException {
 
-        DocumentStream document = bsonify("{'oldAddress': '22-rue-des-murlins'}");
+        DBObject document = bsonify("{'oldAddress': '22-rue-des-murlins'}");
 
         BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
 
@@ -90,7 +89,7 @@ public class JacksonProcessorTest {
     public void canHandleNonIsoDate() throws IOException {
 
         Date oldDate = new Date(1340714101235L);
-        DocumentStream document = bsonify("{'oldDate': " + 1340714101235L + " }");
+        DBObject document = bsonify("{'oldDate': " + 1340714101235L + " }");
 
         BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
 

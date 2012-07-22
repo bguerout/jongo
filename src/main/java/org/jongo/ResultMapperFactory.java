@@ -16,8 +16,6 @@
 
 package org.jongo;
 
-import org.jongo.marshall.stream.BsonObjectStream;
-import org.jongo.marshall.stream.DocumentStream;
 import org.jongo.marshall.Unmarshaller;
 
 import com.mongodb.DBObject;
@@ -40,14 +38,7 @@ class ResultMapperFactory {
         }
 
         public T map(DBObject result) {
-            return unmarshaller.unmarshall(convertToDocumentStream(result), clazz);
-        }
-
-        private DocumentStream convertToDocumentStream(DBObject result) {
-            if (result instanceof DocumentStream) {
-                return (DocumentStream) result;
-            }
-            return new BsonObjectStream(result);
+            return unmarshaller.unmarshall(result, clazz);
         }
     }
 

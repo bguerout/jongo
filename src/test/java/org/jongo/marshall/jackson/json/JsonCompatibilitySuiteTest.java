@@ -27,7 +27,7 @@ public class JsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext(new JsonProcessor(), new JsonProcessor());
+        return new TestContext("JsonProcessor", new JsonProcessor(), new JsonProcessor());
     }
 
 }

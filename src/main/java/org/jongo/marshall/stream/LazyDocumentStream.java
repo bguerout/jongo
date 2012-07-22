@@ -40,8 +40,4 @@ class LazyDocumentStream extends LazyDBObject implements DocumentStream {
     public byte[] getData() {
         return _input.array();
     }
-
-    public DBObject asBSONObject() {
-        return this;
-    }
 }
