@@ -17,47 +17,32 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.mongodb.DBObject;
 import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.stream.DocumentStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
-
 public class JacksonProcessor implements Unmarshaller, Marshaller {
+
+    protected static final ObjectMapperFactory OBJECT_MAPPER_FACTORY = new ObjectMapperFactory();
 
     private final ObjectMapper mapper;
     private final ObjectIdFieldLocator fieldLocator;
 
     public JacksonProcessor() {
-        this(BsonModule.createBsonMapper());
-        configureMapper(mapper);
+        this(OBJECT_MAPPER_FACTORY.createBsonMapper());
     }
 
     public JacksonProcessor(ObjectMapper mapper) {
         this.mapper = mapper;
         this.fieldLocator = new ObjectIdFieldLocator();
-    }
-
-    protected void configureMapper(ObjectMapper mapper) {
-        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(AUTO_DETECT_GETTERS, false);
-        mapper.configure(AUTO_DETECT_SETTERS, false);
-        mapper.setSerializationInclusion(NON_NULL);
-        mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
     }
 
     public <T> T unmarshall(DocumentStream document, Class<T> clazz) throws MarshallingException {

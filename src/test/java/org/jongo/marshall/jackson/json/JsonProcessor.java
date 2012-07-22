@@ -33,7 +33,7 @@ public class JsonProcessor extends JacksonProcessor {
     public JsonProcessor() {
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JsonModule());
-        configureMapper(this.mapper);
+        OBJECT_MAPPER_FACTORY.configureMapper(this.mapper);
     }
 
     @Override
