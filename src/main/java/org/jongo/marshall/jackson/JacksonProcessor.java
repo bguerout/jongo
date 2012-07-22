@@ -72,14 +72,14 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     public DBObject marshall(Object obj) throws MarshallingException {
 
-        ByteArrayOutputStream bsonStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
-            mapper.writeValue(bsonStream, obj);
+            mapper.writeValue(stream, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
 
-        return new LazyWriteableDBObject(bsonStream.toByteArray(), new LazyBSONCallback());
+        return new LazyWriteableDBObject(stream.toByteArray(), new LazyBSONCallback());
     }
 
     public void setDocumentGeneratedId(Object target, Object id) {

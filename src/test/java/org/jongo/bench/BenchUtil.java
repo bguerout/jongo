@@ -28,13 +28,16 @@ public class BenchUtil {
     }
 
     public static DBObject createDBOFriend(int id) {
+
+        Friend friend = createFriend(id);
+
         DBObject dbo = new BasicDBObject();
-        dbo.put("name", "John" + id);
-        dbo.put("address", "Address" + id);
+        dbo.put("name", friend.getName());
+        dbo.put("address", friend.getAddress());
 
         BasicDBObject coordinate = new BasicDBObject();
-        coordinate.put("lat", 1);
-        coordinate.put("lng", id);
+        coordinate.put("lat", friend.getCoordinate().lat);
+        coordinate.put("lng", friend.getCoordinate().lng);
 
         dbo.put("coordinate", coordinate);
 

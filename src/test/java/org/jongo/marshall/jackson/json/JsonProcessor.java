@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.bench;
+package org.jongo.marshall.jackson.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
@@ -26,7 +26,7 @@ import org.jongo.marshall.stream.DocumentStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
-class JsonProcessor extends JacksonProcessor {
+public class JsonProcessor extends JacksonProcessor {
 
     private final ObjectMapper mapper;
 

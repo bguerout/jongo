@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.json;
 
+import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
+import org.junit.runner.RunWith;
 
 import static org.junit.runners.Parameterized.Parameters;
 
-//@RunWith(CompatibilitySuite.class) remove comment to execute this suite.
-public class SampleCompatibilitySuiteTest {
+@RunWith(CompatibilitySuite.class)
+public class JsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext(new JacksonProcessor(), new JacksonProcessor());
+        return new TestContext(new JsonProcessor(), new JsonProcessor());
     }
 
 }

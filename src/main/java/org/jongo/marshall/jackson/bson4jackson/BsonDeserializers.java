@@ -16,27 +16,30 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import java.io.IOException;
-import java.util.Date;
-
-import org.bson.types.MaxKey;
-import org.bson.types.MinKey;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import org.bson.types.MaxKey;
+import org.bson.types.MinKey;
+
+import java.io.IOException;
+import java.util.Date;
 
 class BsonDeserializers extends SimpleDeserializers {
 
     public BsonDeserializers() {
         addDeserializer(Date.class, new DateDeserializer());
+        NativeDeserializer nativeDeserializer = new NativeDeserializer();
         addDeserializer(MinKey.class, new MinKeyDeserializer());
         addDeserializer(MaxKey.class, new MaxKeyDeserializer());
+        addDeserializer(DBObject.class, nativeDeserializer);
     }
 
-    static class DateDeserializer extends JsonDeserializer<Date> {
+    private static class DateDeserializer extends JsonDeserializer<Date> {
 
         @Override
         public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
@@ -52,17 +55,25 @@ class BsonDeserializers extends SimpleDeserializers {
         }
     }
 
-    static class MinKeyDeserializer extends JsonDeserializer<MinKey> {
+    private static class MinKeyDeserializer extends JsonDeserializer<MinKey> {
         @Override
         public MinKey deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             return new MinKey();
         }
     }
 
-    static class MaxKeyDeserializer extends JsonDeserializer<MaxKey> {
+    private static class MaxKeyDeserializer extends JsonDeserializer<MaxKey> {
         @Override
         public MaxKey deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             return new MaxKey();
+        }
+    }
+
+    private static class NativeDeserializer<T> extends JsonDeserializer<T> {
+        @Override
+        public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            String asString = jp.readValueAsTree().toString();
+            return (T) JSON.parse(asString);
         }
     }
 }

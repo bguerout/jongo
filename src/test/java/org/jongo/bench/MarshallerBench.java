@@ -19,6 +19,7 @@ package org.jongo.bench;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
 import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.json.JsonProcessor;
 
 import static org.jongo.bench.BenchUtil.createFriend;
 

@@ -152,19 +152,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     @Test
-    public void canHandleCode() throws Exception {
-
-        BSONPrimitiveType type = new BSONPrimitiveType();
-        type.code = new Code("code");
-
-        collection.save(type);
-
-        assertHasBeenPersistedAs(jsonify("'code' : { '_code' : 'code'}"));
-        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.code).isEqualTo(type.code);
-    }
-
-    @Test
     public void canHandleDBObject() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
