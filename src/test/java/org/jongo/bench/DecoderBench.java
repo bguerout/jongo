@@ -48,9 +48,8 @@ public class DecoderBench extends SimpleBenchmark {
         }
     }
 
-    public int timeDecodeWithDriver(int reps) {
-        int i = 0;
-        for (; i < reps; i++) {
+    public void timeDecodeWithDriver(int reps) {
+        for (int i = 0; i < reps; i++) {
 
             DBDecoder decoder = DefaultDBDecoder.FACTORY.create();
             DBObject dbo = decoder.decode(documents[i], (DBCollection) null);
@@ -58,22 +57,17 @@ public class DecoderBench extends SimpleBenchmark {
             DBObject coord = (DBObject) dbo.get("coordinate");
             Coordinate coordinate = new Coordinate((Integer) coord.get("lat"), (Integer) coord.get("lng"));
             Friend f = new Friend((String) dbo.get("name"), (String) dbo.get("address"), coordinate);
-
         }
-        return i;
     }
 
-    public int timeDecodeWithJongo(int reps) {
-        int i = 0;
-        for (; i < reps; i++) {
+    public void timeDecodeWithJongo(int reps) {
+        for (int i = 0; i < reps; i++) {
 
             DBDecoder decoder = BeanDecoder.FACTORY.create();
             DBObject dbo = decoder.decode(documents[i], (DBCollection) null);
 
             Friend f = processor.unmarshall(dbo, Friend.class);
-
         }
-        return i;
     }
 
 

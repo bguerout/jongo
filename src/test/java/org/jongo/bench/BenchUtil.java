@@ -16,12 +16,15 @@
 
 package org.jongo.bench;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.mongodb.*;
+import org.jongo.Jongo;
+import org.jongo.MongoCollection;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
-public class BenchUtil {
+import java.net.UnknownHostException;
+
+class BenchUtil {
 
     public static Friend createFriend(int id) {
         return new Friend("John" + id, "Address" + id, new Coordinate(1, id));
@@ -42,5 +45,17 @@ public class BenchUtil {
         dbo.put("coordinate", coordinate);
 
         return dbo;
+    }
+
+    public static DBCollection getCollectionFromDriver() throws UnknownHostException {
+        Mongo nativeMongo = new Mongo();
+        return nativeMongo.getDB("jongo").getCollection("benchmark");
+    }
+
+    public static MongoCollection getCollectionFromJongo() throws UnknownHostException {
+        Mongo mongo = new Mongo();
+        DB db = mongo.getDB("jongo");
+        Jongo jongo = new Jongo(db);
+        return jongo.getCollection("benchmark");
     }
 }

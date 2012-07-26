@@ -21,8 +21,10 @@ import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBEncoder;
 import com.mongodb.DBObject;
 import com.mongodb.DefaultDBEncoder;
+
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
+import org.bson.io.PoolOutputBuffer;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.stream.BeanEncoder;
 
@@ -37,29 +39,28 @@ public class EncoderBench extends SimpleBenchmark {
         processor = new JacksonProcessor();
     }
 
-    public int timeEncodeWithDriver(int reps) {
-        int i = 0;
-        for (; i < reps; i++) {
+    public void timeEncodeWithDriver(int reps) {
+        for (int i = 0; i < reps; i++) {
+            DBObject dbo = createDBOFriend(i);
             DBEncoder encoder = DefaultDBEncoder.FACTORY.create();
             OutputBuffer buffer = new BasicOutputBuffer();
-            DBObject dbo = createDBOFriend(i);
 
             encoder.writeObject(buffer, dbo);
 
-            byte[] bytes = buffer.toByteArray();
+            buffer.toByteArray();
         }
-        return i;
     }
 
-    public int timeEncodeWithJongo(int reps) {
-        int i = 0;
-        for (; i < reps; i++) {
+    public void timeEncodeWithJongo(int reps) {
+        for (int i = 0; i < reps; i++) {
             DBObject friend = processor.marshall(createFriend(i));
+            DBEncoder encoder = BeanEncoder.FACTORY.create();
             OutputBuffer buffer = new BasicOutputBuffer();
-            BeanEncoder.FACTORY.create().writeObject(buffer, friend);
-            byte[] bytes = buffer.toByteArray();
+
+            encoder.writeObject(buffer, friend);
+
+            buffer.toByteArray();
         }
-        return i;
     }
 
     public static void main(String[] args) {

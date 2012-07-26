@@ -16,9 +16,12 @@
 
 package org.jongo.bench;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBObject;
+import de.undercouch.bson4jackson.BsonFactory;
 
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.jackson.json.JsonProcessor;
@@ -28,6 +31,9 @@ import org.jongo.model.Friend;
 
 import static org.jongo.bench.BenchUtil.createDBOFriend;
 import static org.jongo.bench.BenchUtil.createFriend;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class MarshallerBench extends SimpleBenchmark {
 
@@ -39,20 +45,16 @@ public class MarshallerBench extends SimpleBenchmark {
         jsonProcessor = new JsonProcessor();
     }
 
-    public int timeMarshall(int reps) {
-        int i = 0;
-        for (; i < reps; i++) {
+    public void timeMarshall(int reps) {
+        for (int i = 0; i < reps; i++) {
             processor.marshall(createFriend(i));
         }
-        return i;
     }
 
-    public int timeMarshallWithJongo0_2(int reps) {
-        int i = 0;
-        for (; i < reps; i++) {
+    public void timeMarshallWithJongo0_2(int reps) {
+        for (int i = 0; i < reps; i++) {
             jsonProcessor.marshall(createFriend(i));
         }
-        return i;
     }
 
 
