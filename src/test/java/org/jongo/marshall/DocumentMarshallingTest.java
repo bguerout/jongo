@@ -82,7 +82,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
     @Test
     public void testName() throws Exception {
-        collection.getDBCollection().save(new BasicDBObject("key",new MinKey()));
+        collection.getDBCollection().save(new BasicDBObject("key", new MinKey()));
     }
 
     @Test
@@ -208,6 +208,19 @@ public class DocumentMarshallingTest extends JongoTestCase {
         assertThat(result.array).contains(1, 2, 3);
     }
 
+
+    @Test
+    public void canHandleByteArray() throws Exception {
+
+        BSONPrimitiveType type = new BSONPrimitiveType();
+        type.bytes = "this is a byte array".getBytes();
+
+        collection.save(type);
+
+        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
+        assertThat(result.bytes).isEqualTo(type.bytes);
+    }
+
     @Test
     public void canHandleIterableWithPrimitiveType() throws Exception {
 
@@ -259,6 +272,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
         int[] array;
         List<Friend> complexList;
         List<Date> dateList;
+        byte[] bytes;
     }
 
     private static class JavaNativeType {

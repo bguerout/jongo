@@ -17,6 +17,8 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mongodb.DBObject;
 import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
@@ -33,16 +35,24 @@ import java.lang.reflect.Field;
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     protected static final ObjectMapperFactory OBJECT_MAPPER_FACTORY = new ObjectMapperFactory();
-
-    private final ObjectMapper mapper;
+    
+    private final ObjectReader reader;
+    private final ObjectWriter writer;
     private final ObjectIdFieldLocator fieldLocator;
 
     public JacksonProcessor() {
         this(OBJECT_MAPPER_FACTORY.createBsonMapper());
     }
+    
+    public JacksonProcessor(ObjectReader reader, ObjectWriter writer) {
+        this.reader = reader;
+        this.writer = writer;
+        this.fieldLocator = new ObjectIdFieldLocator();
+    }
 
     public JacksonProcessor(ObjectMapper mapper) {
-        this.mapper = mapper;
+        this.reader = mapper.reader();
+        this.writer = mapper.writer();
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 
@@ -50,7 +60,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
         DocumentStream stream = DocumentStreamFactory.fromDBObject(document);
         try {
-            return mapper.readValue(stream.getData(), stream.getOffset(), stream.getSize(), clazz);
+            return reader.withType(clazz).readValue(stream.getData(), stream.getOffset(), stream.getSize());
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
@@ -61,7 +71,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
-            mapper.writeValue(stream, obj);
+            writer.writeValue(stream, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
