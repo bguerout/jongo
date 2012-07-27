@@ -216,6 +216,20 @@ public class DocumentMarshallingTest extends JongoTestCase {
         assertThat(result.array).contains(1, 2, 3);
     }
 
+
+    @Test
+    public void canHandleByteArray() throws Exception {
+
+        BSONPrimitiveType type = new BSONPrimitiveType();
+        type.bytes = "this is a byte array".getBytes();
+
+        collection.save(type);
+
+        assertHasBeenPersistedAs(jsonify("'bytes' : 'dGhpcyBpcyBhIGJ5dGUgYXJyYXk='"));
+        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
+        assertThat(result.bytes).isEqualTo(type.bytes);
+    }
+
     @Test
     public void canHandleIterableWithPrimitiveType() throws Exception {
 
@@ -267,6 +281,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
         int[] array;
         List<Friend> complexList;
         List<Date> dateList;
+        byte[] bytes;
     }
 
     private static class JavaNativeType {
