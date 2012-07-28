@@ -4,7 +4,7 @@ OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
 NEXUS_URL="http://repository.sonatype.org/service/local/data_index?g=org.mongodb&a=mongo-java-driver"
 LAST_UNSUPPORTED_VERSION="2.6.4"
-OPTS=$1
+OPTS=$*
 
 echo "Executing tests with mongo-java-driver[$LAST_UNSUPPORTED_VERSION+] dependencies available on Nexus http://repository.sonatype.org"
 
