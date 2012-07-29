@@ -394,26 +394,9 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>1.7</version>
-            <executions>
-              <execution>
-                <phase>validate</phase>
-                <goals>
-                  <goal>parse-version</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
             <configuration>
-              <tag>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}-early-${maven.build.timestamp}</tag>
-              <releaseVersion>
-                ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}-early-${maven.build.timestamp}
-              </releaseVersion>
               <updateWorkingCopyVersions>false</updateWorkingCopyVersions>
             </configuration>
           </plugin>
