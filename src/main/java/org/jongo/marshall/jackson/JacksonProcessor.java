@@ -16,122 +16,82 @@
 
 package org.jongo.marshall.jackson;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
-import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
-
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.Field;
-import java.util.Date;
-
-import org.bson.types.ObjectId;
-import org.jongo.marshall.BSONPrimitives;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.Unmarshaller;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.mongodb.DBObject;
+import com.mongodb.LazyWriteableDBObject;
+import org.bson.LazyBSONCallback;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.stream.DocumentStream;
+import org.jongo.marshall.stream.DocumentStreamFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
+    protected static final ObjectMapperFactory OBJECT_MAPPER_FACTORY = new ObjectMapperFactory();
+    
     private final ObjectReader reader;
     private final ObjectWriter writer;
+    private final ObjectIdFieldLocator fieldLocator;
 
+    public JacksonProcessor() {
+        this(OBJECT_MAPPER_FACTORY.createBsonMapper());
+    }
+    
     public JacksonProcessor(ObjectReader reader, ObjectWriter writer) {
         this.reader = reader;
         this.writer = writer;
+        this.fieldLocator = new ObjectIdFieldLocator();
     }
 
     public JacksonProcessor(ObjectMapper mapper) {
         this.reader = mapper.reader();
         this.writer = mapper.writer();
+        this.fieldLocator = new ObjectIdFieldLocator();
     }
 
-    public JacksonProcessor() {
-        this(createPreConfiguredMapper());
+    public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
 
-    }
-
-    public <T> T unmarshall(String json, Class<T> clazz) throws MarshallingException {
+        DocumentStream stream = DocumentStreamFactory.fromDBObject(document);
         try {
-            return reader.withType(clazz).readValue(json);
-        } catch (Exception e) {
-            String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
+            return reader.withType(clazz).readValue(stream.getData(), stream.getOffset(), stream.getSize());
+        } catch (IOException e) {
+            String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
         }
     }
 
-    public <T> String marshall(T obj) throws MarshallingException {
+    public DBObject marshall(Object obj) throws MarshallingException {
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
-            Writer output = new StringWriter();
-            writer.writeValue(output, obj);
-            return output.toString();
-        } catch (Exception e) {
-            String message = String.format("Unable to marshall json from: %s", obj);
-            throw new MarshallingException(message, e);
+            writer.writeValue(stream, obj);
+        } catch (IOException e) {
+            throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
+
+        return new LazyWriteableDBObject(stream.toByteArray(), new LazyBSONCallback());
     }
 
-    public static ObjectMapper createPreConfiguredMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(AUTO_DETECT_GETTERS, false);
-        mapper.configure(AUTO_DETECT_SETTERS, false);
-        mapper.setSerializationInclusion(NON_NULL);
-        mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(ANY));
+    public void setDocumentGeneratedId(Object target, Object id) {
+        Class<? extends Object> clazz = target.getClass();
+        Field field = fieldLocator.findFieldOrNull(clazz);
+        if (field != null) {
+            try {
 
-        SimpleModule module = new SimpleModule();
-        addBSONTypeSerializers(module);
-        mapper.registerModule(module);
-        return mapper;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void addBSONTypeSerializers(SimpleModule module) {
-        NativeSerializer serializer = new NativeSerializer();
-        NativeDeserializer deserializer = new NativeDeserializer();
-        for (Class primitive : BSONPrimitives.getPrimitives()) {
-            module.addSerializer(primitive, serializer);
-            module.addDeserializer(primitive, deserializer);
-        }
-        module.addDeserializer(Date.class, new BackwardDateDeserializer(deserializer));
-    }
-
-    public void setDocumentGeneratedId(Object document, String id) {
-        Class<?> clazz = document.getClass();
-        do {
-            findDocumentGeneratedId(document, id, clazz);
-            clazz = clazz.getSuperclass();
-        } while (!clazz.equals(Object.class));
-    }
-
-    private void findDocumentGeneratedId(Object document, String id, Class<?> clazz) {
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType().equals(ObjectId.class)) {
-                JsonProperty annotation = field.getAnnotation(JsonProperty.class);
-                if (isId(field.getName()) || annotation != null && isId(annotation.value())) {
-                    field.setAccessible(true);
-                    try {
-                        field.set(document, new ObjectId(id));
-                        break;
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
-                    }
+                field.setAccessible(true);
+                if (field.get(target) == null) {
+                    field.set(target, id);
                 }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
             }
         }
-    }
-
-    private boolean isId(String value) {
-        return MONGO_DOCUMENT_ID_NAME.equals(value);
     }
 }

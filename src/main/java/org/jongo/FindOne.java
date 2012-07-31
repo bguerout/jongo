@@ -16,13 +16,14 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
+
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 public final class FindOne {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.query;
 
 import com.mongodb.DBObject;
 import com.mongodb.DBRefBase;
@@ -23,8 +23,7 @@ import org.bson.types.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public final class BSONPrimitives {
-
+class BsonPrimitives {
     private static final Set<Class<?>> PRIMITIVES;
 
     static {
@@ -46,10 +45,18 @@ public final class BSONPrimitives {
         PRIMITIVES.add(Binary.class);
     }
 
-    public static Set<Class<?>> getPrimitives() {
-        return Collections.unmodifiableSet(PRIMITIVES);
+    public static <T> boolean contains(Class<T> clazz) {
+        if (PRIMITIVES.contains(clazz))
+            return true;
+
+        for (Class<?> primitive : PRIMITIVES) {
+            if (primitive.isAssignableFrom(clazz)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    private BSONPrimitives() {
+    private BsonPrimitives() {
     }
 }

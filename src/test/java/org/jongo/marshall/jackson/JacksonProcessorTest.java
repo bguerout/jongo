@@ -16,24 +16,25 @@
 
 package org.jongo.marshall.jackson;
 
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.io.IOException;
-import java.util.Date;
-
-import org.jongo.marshall.MarshallingException;
-import org.jongo.model.Fox;
-import org.jongo.model.Friend;
-import org.jongo.model.Views;
-import org.jongo.util.UnmarshallableObject;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.mongodb.DBObject;
+import org.jongo.marshall.MarshallingException;
+import org.jongo.model.Fox;
+import org.jongo.model.Friend;
+import org.jongo.model.Views;
+import org.jongo.util.ErrorObject;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Date;
+
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.BSON.bsonify;
 
 public class JacksonProcessorTest {
 
@@ -41,32 +42,38 @@ public class JacksonProcessorTest {
 
     @Before
     public void setUp() throws Exception {
-        processor = new JacksonProcessor();
+        this.processor = new JacksonProcessor();
     }
 
     @Test
     public void canConvertEntityToJson() {
-        String json = processor.marshall(new Fox("fantastic", "roux"));
-        assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
 
-        Friend friend = processor.unmarshall(json, Friend.class);
-        assertThat(friend.getName()).isEqualTo("fantastic");
+        DBObject dbo = processor.marshall(new Fox("fantastic", "roux"));
+
+        assertThat(dbo.get("_class")).isEqualTo("org.jongo.model.Fox");
+        assertThat(dbo.get("name")).isEqualTo("fantastic");
+        assertThat(dbo.get("color")).isEqualTo("roux");
+    }
+
+    @Test(expected = MarshallingException.class)
+    public void shouldFailWhenUnableToMarshall() throws Exception {
+        processor.marshall(new ErrorObject());
     }
 
     @Test
     public void canConvertJsonToEntity() throws IOException {
-        String json = jsonify("{'address': '22 rue des murlins'}");
+        DBObject document = bsonify("{'address': '22 rue des murlins'}");
 
-        Friend friend = processor.unmarshall(json, Friend.class);
+        Friend friend = processor.unmarshall(document, Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }
 
     @Test
     public void canConvertNestedJsonToEntities() throws IOException {
-        String json = jsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
+        DBObject document = bsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
 
-        Friend friend = processor.unmarshall(json, Friend.class);
+        Friend friend = processor.unmarshall(document, Friend.class);
 
         assertThat(friend.getCoordinate().lat).isEqualTo(48);
     }
@@ -74,9 +81,9 @@ public class JacksonProcessorTest {
     @Test
     public void hasAFallbackToEnsureBackwardCompatibility() throws IOException {
 
-        String json = jsonify("{'address': '22 rue des murlins', 'oldAddress': '22-rue-des-murlins'}");
+        DBObject document = bsonify("{'oldAddress': '22-rue-des-murlins'}");
 
-        BackwardFriend backwardFriend = processor.unmarshall(json, BackwardFriend.class);
+        BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
 
         assertThat(backwardFriend.getAddress()).isEqualTo("22-rue-des-murlins");
     }
@@ -85,9 +92,9 @@ public class JacksonProcessorTest {
     public void canHandleNonIsoDate() throws IOException {
 
         Date oldDate = new Date(1340714101235L);
-        String json = jsonify("{'oldDate': " + 1340714101235L + " }");
+        DBObject document = bsonify("{'oldDate': " + 1340714101235L + " }");
 
-        BackwardFriend backwardFriend = processor.unmarshall(json, BackwardFriend.class);
+        BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
 
         assertThat(backwardFriend.oldDate).isEqualTo(oldDate);
     }
@@ -96,60 +103,71 @@ public class JacksonProcessorTest {
     public void shouldFailWhenUnableToUnmarshall() throws Exception {
 
         try {
-            processor.unmarshall("{error:'notADate'}", UnmarshallableObject.class);
+            processor.unmarshall(bsonify("{'error':'notADate'}"), ErrorObject.class);
             fail();
-        } catch (MarshallingException e) {
-            assertThat(e).isInstanceOf(MarshallingException.class);
-            assertThat(e.getMessage()).contains("{error:'notADate'}");
-        }
-    }
-
-    @Test
-    public void shouldFailWhenUnableToMarshall() throws Exception {
-
-        try {
-            processor.marshall(new UnmarshallableObject());
-            fail();
-        } catch (MarshallingException e) {
+        } catch (Exception e) {
             assertThat(e).isInstanceOf(MarshallingException.class);
         }
     }
-    
+
     @Test
-    public void respectsJsonViewOnMarshall() throws Exception {
-    	processor = createProcessorWithView(Views.Public.class);
-    	Fox vixen = new Fox("fantastic", "roux");
-    	vixen.setGender("female");
-    	String json = processor.marshall(vixen);
-        assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux'}"));
-        
-    	processor = createProcessorWithView(Views.Private.class);
-    	json = processor.marshall(vixen);
-    	assertThat(json).isEqualTo(jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}"));
+    public void respectsJsonPublicViewOnMarshall() throws Exception {
+
+        JacksonProcessor custom = createProcessorWithView(Views.Public.class);
+        Fox vixen = new Fox("fantastic", "roux");
+        vixen.setGender("female");
+
+        DBObject result = custom.marshall(vixen);
+
+        assertThat(result.get("gender")).isNull();
+        assertThat(result.get("_class")).isEqualTo("org.jongo.model.Fox");
+        assertThat(result.get("name")).isEqualTo("fantastic");
+        assertThat(result.get("color")).isEqualTo("roux");
     }
 
     @Test
-    public void respectsJsonViewOnUnmarshall() throws Exception {
-    	String json = jsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
+    public void respectsJsonPrivateViewOnMarshall() throws Exception {
 
-    	processor = createProcessorWithView(Views.Public.class);
-    	Fox fox = processor.unmarshall(json, Fox.class);
-    	assertThat(fox.getGender()).isNull();
+        JacksonProcessor custom = createProcessorWithView(Views.Private.class);
+        Fox vixen = new Fox("fantastic", "roux");
+        vixen.setGender("female");
 
-    	processor = createProcessorWithView(Views.Private.class);
-    	fox = processor.unmarshall(json, Fox.class);
-    	assertThat(fox.getGender()).isEqualTo("female");
+        DBObject result = custom.marshall(vixen);
+
+        assertThat(result.get("_class")).isEqualTo("org.jongo.model.Fox");
+        assertThat(result.get("name")).isEqualTo("fantastic");
+        assertThat(result.get("color")).isEqualTo("roux");
+        assertThat(result.get("gender")).isEqualTo("female");
     }
+
+    @Test
+    public void respectsJsonPublicViewOnUnmarshall() throws Exception {
+
+        DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
+        JacksonProcessor custom = createProcessorWithView(Views.Public.class);
+
+        Fox fox = custom.unmarshall(json, Fox.class);
+
+        assertThat(fox.getGender()).isNull();
+    }
+
+    @Test
+    public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
+
+        DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
+        JacksonProcessor custom = createProcessorWithView(Views.Private.class);
+
+        Fox fox = custom.unmarshall(json, Fox.class);
+
+        assertThat(fox.getGender()).isEqualTo("female");
+    }
+
 
     private JacksonProcessor createProcessorWithView(Class<?> viewClass) {
-    	ObjectMapper mapper = JacksonProcessor.createPreConfiguredMapper();
-    	ObjectReader reader = mapper.reader().withView(viewClass);
-    	ObjectWriter writer = mapper.writer().withView(viewClass);
-    	return new JacksonProcessor(reader, writer);
-    }
-    
-    private String jsonify(String json) {
-        return json.replace("'", "\"");
+        ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
+        ObjectReader reader = mapper.reader().withView(viewClass);
+        ObjectWriter writer = mapper.writer().withView(viewClass);
+        return new JacksonProcessor(reader, writer);
     }
 
     private static class BackwardFriend extends Friend {

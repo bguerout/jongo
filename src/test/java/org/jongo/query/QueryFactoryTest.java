@@ -46,21 +46,18 @@ public class QueryFactoryTest {
     }
 
     @Test
-    public void shouldBindParameterAndCreateQuery() throws Exception {
+    public void shouldBindBsonParameterAndCreateQuery() throws Exception {
 
-        when(marshaller.marshall(2)).thenReturn("2");
+        Query query = factory.createQuery("{value:#}", 123);
 
-        Query query = factory.createQuery("{value:#}", 2);
-
-        assertThat(query.toString()).isEqualTo("{ \"value\" : 2}");
-        verify(marshaller).marshall(2);
+        assertThat(query.toString()).isEqualTo("{ \"value\" : 123}");
     }
 
     @Test
     public void shouldBindComplexParameterAndCreateQuery() throws Exception {
 
         Friend robert = new Friend("robert");
-        when(marshaller.marshall(robert)).thenReturn("{ \"name\" : \"robert\"}");
+        when(marshaller.marshall(robert)).thenReturn(new BasicDBObject("name","robert"));
 
         Query query = factory.createQuery("{value:#}", robert);
 

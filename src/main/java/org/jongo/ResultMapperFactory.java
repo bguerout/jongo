@@ -16,17 +16,30 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
+
+import com.mongodb.DBObject;
 
 class ResultMapperFactory {
 
 
     public static <T> ResultMapper<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
-        return new ResultMapper<T>() {
-            public T map(DBObject result) {
-                return unmarshaller.unmarshall(result.toString(), clazz);
-            }
-        };
+        return new DefaultResultMapper<T>(unmarshaller, clazz);
     }
+
+    private static class DefaultResultMapper<T> implements ResultMapper<T> {
+
+        private final Unmarshaller unmarshaller;
+        private final Class<T> clazz;
+
+        public DefaultResultMapper(Unmarshaller unmarshaller, Class<T> clazz) {
+            this.unmarshaller = unmarshaller;
+            this.clazz = clazz;
+        }
+
+        public T map(DBObject result) {
+            return unmarshaller.unmarshall(result, clazz);
+        }
+    }
+
 }

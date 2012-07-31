@@ -23,9 +23,11 @@ public final class QueryFactory {
     private static final Query EMPTY_QUERY = new Query("{}");
 
     private final ParameterBinder binder;
+    private final Marshaller marshaller;
 
     public QueryFactory(Marshaller marshaller) {
-        this.binder = new ParameterBinder(marshaller);
+        this.marshaller = marshaller;
+        this.binder = new ParameterBinder(this.marshaller);
     }
 
     public Query createQuery(String query) {

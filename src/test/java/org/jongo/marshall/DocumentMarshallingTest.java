@@ -81,6 +81,11 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     @Test
+    public void testName() throws Exception {
+        collection.getDBCollection().save(new BasicDBObject("key", new MinKey()));
+    }
+
+    @Test
     public void canHandleObjectId() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
@@ -144,19 +149,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
         assertHasBeenPersistedAs(jsonify("'uuid' : { '$uuid' : 'cf0eddfa-2670-4929-a581-eb263d839cab'}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.uuid).isEqualTo(type.uuid);
-    }
-
-    @Test
-    public void canHandleCode() throws Exception {
-
-        BSONPrimitiveType type = new BSONPrimitiveType();
-        type.code = new Code("code");
-
-        collection.save(type);
-
-        assertHasBeenPersistedAs(jsonify("'code' : { '$code' : 'code'}"));
-        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.code).isEqualTo(type.code);
     }
 
     @Test
@@ -225,7 +217,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'bytes' : 'dGhpcyBpcyBhIGJ5dGUgYXJyYXk='"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.bytes).isEqualTo(type.bytes);
     }

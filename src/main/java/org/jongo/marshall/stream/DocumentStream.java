@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.stream;
 
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.mongodb.util.JSON;
+public interface DocumentStream {
 
-import java.io.IOException;
-
-class NativeSerializer extends JsonSerializer<Object> {
-
-    public void serialize(Object obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-        jsonGenerator.writeRawValue(JSON.serialize(obj));
-    }
+    byte[] getData();
+    int getOffset();
+    int getSize();
 }

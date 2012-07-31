@@ -17,18 +17,15 @@
 package org.jongo;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
 import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
+import org.jongo.model.Animal;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
 import org.jongo.model.LinkedFriend;
+import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -36,6 +33,7 @@ import org.junit.Test;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import junit.framework.Assert;
 
 public class SaveTest extends JongoTestCase {
 
@@ -53,12 +51,14 @@ public class SaveTest extends JongoTestCase {
 
     @Test
     public void canSavePOJO() throws Exception {
-        /* given */
+
         Friend friend = new Friend("John", "22 Wall Street Avenue");
+
         collection.save(friend);
 
-        assertThat(collection.count("{}")).isEqualTo(1);
-        assertThat(friend.getId()).isNotNull();
+        Friend result = collection.findOne("{name:'John'}").as(Friend.class);
+        assertThat(result.getName()).isEqualTo("John");
+        assertThat(collection.count("{name:'John'}")).isEqualTo(1);
     }
 
     @Test
@@ -82,16 +82,14 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
-    public void canModifyAlreadySavedEntity() throws Exception {
-        /* given */
+    public void canUpdateAlreadySavedEntity() throws Exception {
+
         Friend john = new Friend("John", "21 Jump Street");
         collection.save(john);
-        john.setAddress("new address");
 
-        /* when */
+        john.setAddress("new address");
         collection.save(john);
 
-        /* then */
         ObjectId johnId = john.getId();
         Friend johnWithNewAddress = collection.findOne(johnId).as(Friend.class);
         assertThat(johnWithNewAddress.getId()).isEqualTo(johnId);
@@ -109,46 +107,51 @@ public class SaveTest extends JongoTestCase {
         assertThat(result).isNotNull();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenMarshalledJsonIsInvalid() throws Exception {
+    @Test
+    public void canSaveAnObjectWithACustomTypeId() throws Exception {
 
-        Marshaller marshaller = mock(Marshaller.class);
-        Unmarshaller unmarshaller = mock(Unmarshaller.class);
-        when(marshaller.marshall(anyObject())).thenReturn("invalid");
-        Save save = new Save(collection.getDBCollection(), marshaller, unmarshaller, new Object());
+        WithCustomId john = new WithCustomId(999, "Robert");
 
-        save.execute();
-    }
+        collection.save(john);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenMarshallerFail() throws Exception {
-
-        Marshaller marshaller = mock(Marshaller.class);
-        Unmarshaller unmarshaller = mock(Unmarshaller.class);
-        when(marshaller.marshall(anyObject())).thenThrow(new RuntimeException());
-        Save save = new Save(collection.getDBCollection(), marshaller, unmarshaller, new Object());
-
-        save.execute();
+        WithCustomId result = collection.findOne().as(WithCustomId.class);
+        assertThat(result).isNotNull();
+        assertThat(result._id).isEqualTo(999);
     }
 
     @Test
-    public void canSetEntityGeneratedObjectIdAndRestrictedVisibility() throws IOException {
+    public void shouldFailWhenMarshallerFail() throws Exception {
+
+        try {
+            collection.save(new ErrorObject());
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage()).contains("Unable to save object");
+        }
+    }
+
+    @Test
+    public void shouldUpdateIdField() throws IOException {
 
         Friend robert = new Friend("Robert", "21 Jump Street");
 
         collection.save(robert);
 
+        Friend result = collection.findOne().as(Friend.class);
         assertThat(robert.getId()).isNotNull();
+        assertThat(result.getId()).isEqualTo(robert.getId());
     }
 
     @Test
-    public void canSetEntityGeneratedObjectIdOnSuperType() throws IOException {
+    public void shouldUpdateIdFieldOnSuperType() throws IOException {
 
         Fox fox = new Fox("fantastic", "roux");
 
         collection.save(fox);
 
+        Animal result = collection.findOne().as(Fox.class);
         assertThat(fox.getId()).isNotNull();
+        assertThat(result.getId()).isEqualTo(fox.getId());
     }
 
     @Test
@@ -161,5 +164,20 @@ public class SaveTest extends JongoTestCase {
 
         assertThat(friend.getRelationId()).isNotEqualTo(friend.getId());
         assertThat(friend.getRelationId()).isEqualTo(relationId);
+    }
+
+    private static class WithCustomId {
+
+        private int _id;
+        private String name;
+
+        private WithCustomId() {
+            //jackson
+        }
+
+        private WithCustomId(int _id, String name) {
+            this._id = _id;
+            this.name = name;
+        }
     }
 }

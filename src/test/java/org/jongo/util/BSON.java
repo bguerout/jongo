@@ -16,16 +16,27 @@
 
 package org.jongo.util;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
-import java.util.Date;
 
-public class UnmarshallableObject {
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-    private Date error;
+public class BSON {
 
-    @JsonProperty
-    public Date getError() {
-        throw new RuntimeException();
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    public static DBObject bsonify(String json) throws IOException {
+        Map map = OBJECT_MAPPER.readValue(jsonify(json), HashMap.class);
+        DBObject bson = new BasicDBObject();
+        bson.putAll(map);
+        return bson;
+    }
+
+    public static String jsonify(String json) {
+        return json.replace("'", "\"");
     }
 }

@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.bson4jackson;
 
-import org.jongo.util.compatibility.TestContext;
+import com.fasterxml.jackson.core.JsonFactory;
+import de.undercouch.bson4jackson.BsonFactory;
+import de.undercouch.bson4jackson.BsonParser;
 
-import static org.junit.runners.Parameterized.Parameters;
+public final class BsonModule extends de.undercouch.bson4jackson.BsonModule {
 
-//@RunWith(CompatibilitySuite.class) remove comment to execute this suite.
-public class SampleCompatibilitySuiteTest {
-
-    @Parameters
-    public static TestContext context() {
-        return new TestContext(new JacksonProcessor(), new JacksonProcessor());
+    @Override
+    public void setupModule(SetupContext context) {
+        super.setupModule(context);
+        context.addSerializers(new BsonSerializers());
+        context.addDeserializers(new BsonDeserializers());
     }
 
+    public JsonFactory createJsonFactory() {
+        BsonFactory factory = new MongoBsonFactory();
+        factory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
+        return factory;
+    }
 }

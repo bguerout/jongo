@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.marshall.jackson.json;
 
-import com.mongodb.DBObject;
+import org.jongo.util.compatibility.CompatibilitySuite;
+import org.jongo.util.compatibility.TestContext;
+import org.junit.runner.RunWith;
 
-public interface Unmarshaller {
+import static org.junit.runners.Parameterized.Parameters;
 
-    <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException;
+@RunWith(CompatibilitySuite.class)
+public class JsonCompatibilitySuiteTest {
+
+    @Parameters
+    public static TestContext context() {
+        return new TestContext("JsonProcessor", new JsonProcessor(), new JsonProcessor());
+    }
 
 }

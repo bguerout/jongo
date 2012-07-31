@@ -14,12 +14,30 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.marshall.stream;
 
 import com.mongodb.DBObject;
+import com.mongodb.LazyDBObject;
+import org.bson.LazyBSONCallback;
 
-public interface Unmarshaller {
+class LazyDocumentStream extends LazyDBObject implements DocumentStream {
 
-    <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException;
+    private final int offset;
 
+    LazyDocumentStream(byte[] data, int offset, LazyBSONCallback cbk) {
+        super(data, offset, cbk);
+        this.offset = offset;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getSize() {
+        return getBSONSize();
+    }
+
+    public byte[] getData() {
+        return _input.array();
+    }
 }

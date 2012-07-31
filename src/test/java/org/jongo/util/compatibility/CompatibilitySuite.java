@@ -29,6 +29,8 @@ import org.junit.runners.model.TestClass;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class CompatibilitySuite extends Suite {
 
@@ -91,6 +93,11 @@ public class CompatibilitySuite extends Suite {
         public ContextJUnit4ClassRunner(Class<?> aClass, TestContext testContext) throws InitializationError {
             super(aClass);
             this.testContext = testContext;
+        }
+
+        @Override
+        protected String getName() {
+            return testContext.getContextName() + "-" + super.getName();
         }
 
         @Override

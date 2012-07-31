@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.stream;
 
+import com.mongodb.DBObject;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.mongodb.util.JSON;
+public class DocumentStreamFactory {
 
-import java.io.IOException;
-
-class NativeDeserializer extends JsonDeserializer<Object> {
-
-    @Override
-    public Object deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        String asString = jp.readValueAsTree().toString();
-        return JSON.parse(asString);
+    public static DocumentStream fromDBObject(DBObject dbo){
+        if (dbo instanceof DocumentStream) {
+            return (DocumentStream) dbo;
+        }
+        return new BsonObjectStream(dbo);
     }
 }

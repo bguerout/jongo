@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo.util;
 
-import com.mongodb.DBObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public interface Unmarshaller {
+import java.util.Date;
 
-    <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException;
+public class ErrorObject {
 
+    private Date error;
+
+    @JsonProperty
+    public Date getError() {
+        throw new RuntimeException();
+    }
 }

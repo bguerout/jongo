@@ -16,8 +16,8 @@
 
 package org.jongo;
 
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
@@ -25,7 +25,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 public class RemoveTest extends JongoTestCase {
 
@@ -59,32 +60,30 @@ public class RemoveTest extends JongoTestCase {
     @Test
     public void canRemoveByObjectId() throws Exception {
         /* given */
-        Friend john = new Friend("John");
-        collection.save(john);
+        collection.insert("{ _id:{$oid:'47cc67093475061e3d95369d'}, name:'John'}");
 
         /* when */
-        ObjectId id = new ObjectId(john.getId().toString());
+        ObjectId id = new ObjectId("47cc67093475061e3d95369d");
         WriteResult writeResult = collection.remove(id);
 
         /* then */
-        Iterable<Friend> friends = collection.find().as(Friend.class);
-        assertThat(friends).isEmpty();
         assertThat(writeResult).isNotNull();
+        Friend friend = collection.findOne().as(Friend.class);
+        assertThat(friend).isNull();
     }
 
     @Test
     public void canRemoveWithParameters() throws Exception {
         /* given */
-        Friend john = new Friend("John");
-        collection.save(john);
+        collection.insert("{name:'John'}");
 
         /* when */
-        WriteResult writeResult = collection.remove("{_id:#}", john.getId());
+        WriteResult writeResult = collection.remove("{name:#}", "John");
 
         /* then */
-        Iterable<Friend> friends = collection.find().as(Friend.class);
-        assertThat(friends).isEmpty();
         assertThat(writeResult).isNotNull();
+        Friend friend = collection.findOne().as(Friend.class);
+        assertThat(friend).isNull();
     }
 
     @Test

@@ -16,16 +16,18 @@
 
 package org.jongo;
 
-import com.mongodb.DBObject;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+
 import org.jongo.model.Friend;
+import org.jongo.util.DBObjectResultMapper;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import com.mongodb.DBObject;
 
 public class FindWithResultMapperTest extends JongoTestCase {
 
@@ -44,30 +46,30 @@ public class FindWithResultMapperTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        ResultMapper mapper = mock(ResultMapper.class);
+        ResultMapper<DBObject> mapper = new DBObjectResultMapper();
         collection.save(new Friend("John", "22 Wall Street Avenue"));
+        collection.save(new Friend("Peter", "22 Wall Street Avenue"));
 
         /* when */
-        for (Object o : collection.find().map(mapper)) {
-            // use mapped object
+        for (DBObject result : collection.find().map(mapper)) {
+            /* then */
+            assertThat(result.get("name")).isIn("John", "Peter");
         }
-
-        /* then */
-        verify(mapper).map(any(DBObject.class));
     }
 
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        ResultMapper mapper = mock(ResultMapper.class);
+        ResultMapper<DBObject> mapper = new DBObjectResultMapper();
         Friend john = new Friend("John", "22 Wall Street Avenue");
         collection.save(john);
 
         /* when */
-        collection.findOne().map(mapper);
+        DBObject result = collection.findOne().map(mapper);
 
         /* then */
-        verify(mapper).map(any(DBObject.class));
+        assertThat(result.get("name")).isEqualTo("John");
+
 
     }
 }
