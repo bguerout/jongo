@@ -16,11 +16,6 @@
 
 package org.jongo;
 
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.util.Iterator;
-
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
@@ -30,6 +25,11 @@ import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Iterator;
+
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class FindTest extends JongoTestCase {
 

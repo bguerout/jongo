@@ -20,7 +20,10 @@ import com.mongodb.DBObject;
 import com.mongodb.DBRefBase;
 import org.bson.types.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 class BsonPrimitives {

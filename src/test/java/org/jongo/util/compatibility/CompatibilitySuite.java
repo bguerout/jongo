@@ -29,8 +29,6 @@ import org.junit.runners.model.TestClass;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 public class CompatibilitySuite extends Suite {
 

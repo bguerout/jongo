@@ -16,18 +16,15 @@
 
 package org.jongo;
 
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.stream.BeanDecoder;
-import org.jongo.marshall.stream.BeanEncoder;
-import org.jongo.query.Query;
-import org.jongo.query.QueryFactory;
-
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
 
 
 public class MongoCollection {

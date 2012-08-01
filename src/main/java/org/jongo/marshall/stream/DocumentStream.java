@@ -20,6 +20,8 @@ package org.jongo.marshall.stream;
 public interface DocumentStream {
 
     byte[] getData();
+
     int getOffset();
+
     int getSize();
 }

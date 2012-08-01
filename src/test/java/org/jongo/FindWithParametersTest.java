@@ -16,7 +16,6 @@
 
 package org.jongo;
 
-import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;

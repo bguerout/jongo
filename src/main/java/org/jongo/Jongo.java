@@ -16,14 +16,13 @@
 
 package org.jongo;
 
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.stream.BeanDecoder;
 import org.jongo.marshall.stream.BeanEncoder;
-
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 
 public final class Jongo {
 

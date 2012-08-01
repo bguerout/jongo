@@ -16,7 +16,6 @@
 
 package org.jongo.marshall.stream;
 
-import com.mongodb.DBObject;
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
 

@@ -25,7 +25,10 @@ import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import org.bson.types.*;
+import org.bson.types.BSONTimestamp;
+import org.bson.types.MaxKey;
+import org.bson.types.MinKey;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.util.Date;

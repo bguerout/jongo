@@ -16,17 +16,15 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.bson.BSON;
+import de.undercouch.bson4jackson.BsonConstants;
+import de.undercouch.bson4jackson.BsonGenerator;
+import de.undercouch.bson4jackson.io.ByteOrderUtil;
 import org.bson.types.BSONTimestamp;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
 
-import de.undercouch.bson4jackson.BsonConstants;
-import de.undercouch.bson4jackson.BsonGenerator;
-import de.undercouch.bson4jackson.io.ByteOrderUtil;
+import java.io.IOException;
+import java.io.OutputStream;
 
 class MongoBsonGenerator extends BsonGenerator {
 

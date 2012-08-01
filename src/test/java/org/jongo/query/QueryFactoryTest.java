@@ -57,7 +57,7 @@ public class QueryFactoryTest {
     public void shouldBindComplexParameterAndCreateQuery() throws Exception {
 
         Friend robert = new Friend("robert");
-        when(marshaller.marshall(robert)).thenReturn(new BasicDBObject("name","robert"));
+        when(marshaller.marshall(robert)).thenReturn(new BasicDBObject("name", "robert"));
 
         Query query = factory.createQuery("{value:#}", robert);
 

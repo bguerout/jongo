@@ -16,16 +16,16 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
 import de.undercouch.bson4jackson.BsonFactory;
 import de.undercouch.bson4jackson.BsonGenerator;
 import de.undercouch.bson4jackson.BsonParser;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 class MongoBsonFactory extends BsonFactory {
 

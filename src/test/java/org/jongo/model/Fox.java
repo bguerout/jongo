@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 public class Fox extends Animal {
     String color;
-    
+
     @JsonView(Views.Private.class)
     String gender;
-    
+
     Fox() {
     }
 
@@ -31,11 +31,12 @@ public class Fox extends Animal {
         super(name);
         this.color = color;
     }
-    
+
     public void setGender(String gender) {
-    	this.gender = gender;
+        this.gender = gender;
     }
+
     public String getGender() {
-		return gender;
-	}
+        return gender;
+    }
 }

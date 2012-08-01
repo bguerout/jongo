@@ -18,9 +18,13 @@ package org.jongo.model;
 /**
  * A collection of Jackson marker views for testing.  These classes are used to annotate properties
  * as being part of a particular view using @JsonView(ViewName.class)
+ *
  * @author mark
  */
 public class Views {
-	public static class Public {}
-	public static class Private extends Public {} 
+    public static class Public {
+    }
+
+    public static class Private extends Public {
+    }
 }

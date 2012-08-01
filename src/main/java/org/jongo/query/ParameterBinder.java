@@ -16,13 +16,12 @@
 
 package org.jongo.query;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import com.mongodb.util.JSON;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class ParameterBinder {
 
@@ -92,7 +91,7 @@ class ParameterBinder {
         int nbTokens = countTokens(template);
         if (nbTokens != parameters.length) {
             String message = String.format("Unable to bind parameters into query: %s. Tokens and parameters numbers mismatch " +
-                    "[tokens: %s / parameters:%s]", template,nbTokens,parameters.length);
+                    "[tokens: %s / parameters:%s]", template, nbTokens, parameters.length);
             throw new IllegalArgumentException(message);
         }
     }

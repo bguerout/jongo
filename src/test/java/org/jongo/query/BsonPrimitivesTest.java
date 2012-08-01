@@ -16,9 +16,9 @@
 
 package org.jongo.query;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class BsonPrimitivesTest {
 

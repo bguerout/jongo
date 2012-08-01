@@ -16,10 +16,9 @@
 
 package org.jongo;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.io.IOException;
-
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
+import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.model.Animal;
 import org.jongo.model.Fox;
@@ -31,9 +30,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
-import junit.framework.Assert;
+import java.io.IOException;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class SaveTest extends JongoTestCase {
 

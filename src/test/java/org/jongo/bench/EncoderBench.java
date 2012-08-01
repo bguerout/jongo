@@ -21,10 +21,8 @@ import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBEncoder;
 import com.mongodb.DBObject;
 import com.mongodb.DefaultDBEncoder;
-
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
-import org.bson.io.PoolOutputBuffer;
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.stream.BeanEncoder;
 

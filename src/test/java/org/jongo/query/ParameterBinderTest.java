@@ -16,17 +16,16 @@
 
 package org.jongo.query;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
+import com.mongodb.BasicDBObject;
 import org.jongo.marshall.Marshaller;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.BasicDBObject;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ParameterBinderTest {
 

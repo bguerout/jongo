@@ -16,24 +16,12 @@
 
 package org.jongo.bench;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
-import com.mongodb.DBObject;
-import de.undercouch.bson4jackson.BsonFactory;
-
 import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.jackson.json.JsonProcessor;
-import org.jongo.marshall.stream.DocumentStream;
-import org.jongo.marshall.stream.DocumentStreamFactory;
-import org.jongo.model.Friend;
 
-import static org.jongo.bench.BenchUtil.createDBOFriend;
 import static org.jongo.bench.BenchUtil.createFriend;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 public class MarshallerBench extends SimpleBenchmark {
 

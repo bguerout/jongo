@@ -35,7 +35,7 @@ import java.lang.reflect.Field;
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     protected static final ObjectMapperFactory OBJECT_MAPPER_FACTORY = new ObjectMapperFactory();
-    
+
     private final ObjectReader reader;
     private final ObjectWriter writer;
     private final ObjectIdFieldLocator fieldLocator;
@@ -43,7 +43,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
     public JacksonProcessor() {
         this(OBJECT_MAPPER_FACTORY.createBsonMapper());
     }
-    
+
     public JacksonProcessor(ObjectReader reader, ObjectWriter writer) {
         this.reader = reader;
         this.writer = writer;
@@ -69,14 +69,14 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     public DBObject marshall(Object obj) throws MarshallingException {
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
-            writer.writeValue(stream, obj);
+            writer.writeValue(output, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
 
-        return new LazyWriteableDBObject(stream.toByteArray(), new LazyBSONCallback());
+        return new LazyWriteableDBObject(output.toByteArray(), new LazyBSONCallback());
     }
 
     public void setDocumentGeneratedId(Object target, Object id) {

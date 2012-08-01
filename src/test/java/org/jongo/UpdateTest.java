@@ -18,8 +18,6 @@ package org.jongo;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
-import junit.framework.Assert;
-
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;

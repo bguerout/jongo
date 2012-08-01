@@ -16,13 +16,12 @@
 
 package org.jongo;
 
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
 
 class Save {
 

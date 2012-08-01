@@ -16,9 +16,8 @@
 
 package org.jongo;
 
-import org.jongo.marshall.Unmarshaller;
-
 import com.mongodb.DBObject;
+import org.jongo.marshall.Unmarshaller;
 
 class ResultMapperFactory {
 

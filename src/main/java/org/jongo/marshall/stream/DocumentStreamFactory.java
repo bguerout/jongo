@@ -20,7 +20,7 @@ import com.mongodb.DBObject;
 
 public class DocumentStreamFactory {
 
-    public static DocumentStream fromDBObject(DBObject dbo){
+    public static DocumentStream fromDBObject(DBObject dbo) {
         if (dbo instanceof DocumentStream) {
             return (DocumentStream) dbo;
         }

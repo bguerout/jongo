@@ -16,13 +16,11 @@
 
 package org.jongo.marshall.stream;
 
+import com.mongodb.DBEncoder;
+import com.mongodb.DefaultDBEncoder;
 import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
-
-import com.mongodb.DBEncoder;
-import com.mongodb.DefaultDBEncoder;
-import org.jongo.marshall.stream.DocumentStream;
 
 class BsonObjectStream implements DocumentStream {
 

@@ -16,18 +16,17 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import java.io.IOException;
-
-import org.bson.types.BSONTimestamp;
-import org.bson.types.MaxKey;
-import org.bson.types.MinKey;
-import org.bson.types.ObjectId;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import org.bson.types.BSONTimestamp;
+import org.bson.types.MaxKey;
+import org.bson.types.MinKey;
+import org.bson.types.ObjectId;
+
+import java.io.IOException;
 
 class BsonSerializers extends SimpleSerializers {
     public BsonSerializers() {
