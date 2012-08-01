@@ -47,6 +47,14 @@ public class MongoCollectionTest extends JongoTestCase {
     }
 
     @Test
+    public void canCreateACollection() throws Exception {
+
+        MongoCollection mongoCollection = MongoCollection.create(null, null, null);
+
+        assertThat(mongoCollection).isNotNull();
+    }
+
+    @Test
     public void canUseConditionnalOperator() throws Exception {
         /* given */
         collection.save(new Coordinate(1, 1));

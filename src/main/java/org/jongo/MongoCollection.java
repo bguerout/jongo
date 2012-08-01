@@ -30,7 +30,7 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 
 
-public final class MongoCollection {
+public class MongoCollection {
 
     public static final String MONGO_DOCUMENT_ID_NAME = "_id";
     private static final Object[] NO_PARAMETERS = {};
@@ -40,7 +40,11 @@ public final class MongoCollection {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
 
-    MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
+    static MongoCollection create(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
+        return new MongoCollection(dbCollection, marshaller, unmarshaller);
+    }
+
+    private MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
