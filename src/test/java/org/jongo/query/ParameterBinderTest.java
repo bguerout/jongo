@@ -95,6 +95,14 @@ public class ParameterBinderTest {
         assertThat(query).isEqualTo("{id:123}");
     }
 
+    @Test
+    public void shouldBindAQueryWithASingleToken() throws Exception {
+
+        String query = binder.bind("##", 123,1);
+
+        assertThat(query).isEqualTo("1231");
+    }
+
 }
 
 

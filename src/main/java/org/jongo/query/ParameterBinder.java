@@ -104,6 +104,11 @@ class ParameterBinder {
     }
 
     private int countTokens(String template) {
-        return pattern.split(template, 0).length - 1;
+        int count =0;
+        Matcher matcher = pattern.matcher(template);
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
     }
 }
