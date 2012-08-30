@@ -96,6 +96,13 @@ public class MongoCollection {
         return update(query, NO_PARAMETERS);
     }
 
+    public Update update(ObjectId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Object id must not be null");
+        }
+        return update("{_id:#}", id);
+    }
+
     public Update update(String query, Object... parameters) {
         return new Update(collection, queryFactory, query, parameters);
     }

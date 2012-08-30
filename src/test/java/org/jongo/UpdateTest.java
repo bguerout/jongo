@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -86,6 +87,27 @@ public class UpdateTest extends JongoTestCase {
         assertThat(friends).hasSize(0);
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
 
+    }
+
+    @Test
+    public void canUpdateByObjectId() throws Exception {
+
+        Friend friend = new Friend();
+        collection.save(friend);
+
+        /* when */
+        collection.update(friend.getId()).with("{$set:{name:'John'}}");
+
+        /* then */
+        Friend john = collection.findOne("{name:'John'}").as(Friend.class);
+        assertThat(john.getName()).isEqualTo("John");
+        assertThat(friend.getId()).isEqualTo(john.getId());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenUpdateWithNullObjectId() throws Exception {
+
+        collection.update((ObjectId) null);
     }
 
     @Test
