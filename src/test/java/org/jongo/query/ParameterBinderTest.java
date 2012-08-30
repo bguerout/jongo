@@ -25,6 +25,7 @@ import org.junit.Test;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ParameterBinderTest {
@@ -74,15 +75,16 @@ public class ParameterBinderTest {
         assertThat(query).isEqualTo("{id:123, test:456}");
     }
 
-
     @Test
-    public void shouldBindNonBsonPrimitiveParameters() throws Exception {
+    public void shouldDelegateNonBsonPrimitiveToMarshaller() throws Exception {
 
         when(marshaller.marshall(anyObject())).thenReturn(new BasicDBObject("custom", "object"));
+        Object o = new Object();
 
-        String query = binder.bind("{test:#}", new Object());
+        String query = binder.bind("{test:#}", o);
 
         assertThat(query).isEqualTo("{test:{ \"custom\" : \"object\"}}");
+        verify(marshaller).marshall(o);
     }
 
     @Test
@@ -96,11 +98,11 @@ public class ParameterBinderTest {
     }
 
     @Test
-    public void shouldBindAQueryWithASingleToken() throws Exception {
+    public void shouldBindAQueryWithOnlyAToken() throws Exception {
 
-        String query = binder.bind("##", 123,1);
+        String query = binder.bind("#", 123);
 
-        assertThat(query).isEqualTo("1231");
+        assertThat(query).isEqualTo("123");
     }
 
 }

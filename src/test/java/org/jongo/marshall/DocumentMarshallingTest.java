@@ -55,14 +55,16 @@ public class DocumentMarshallingTest extends JongoTestCase {
         type.number = 100L;
         type.string = "value";
         type.bool = false;
+        type.anEnum = Parameter.TEST;
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'number' : 100 , 'string' : 'value' , 'bool' : false"));
+        assertHasBeenPersistedAs(jsonify("'number' : 100 , 'string' : 'value' , 'bool' : false , 'anEnum' : 'TEST'"));
         JavaNativeType result = collection.findOne("{}").as(JavaNativeType.class);
         assertThat(result.bool).isFalse();
         assertThat(result.string).isEqualTo("value");
         assertThat(result.number).isEqualTo(100L);
+        assertThat(result.anEnum).isEqualTo(Parameter.TEST);
     }
 
     @Test
@@ -279,6 +281,12 @@ public class DocumentMarshallingTest extends JongoTestCase {
         long number;
         String string;
         boolean bool;
+        Parameter anEnum;
+    }
+
+    private static enum Parameter{
+        TEST,
+        TEST2
     }
 
 }
