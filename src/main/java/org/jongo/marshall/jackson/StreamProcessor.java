@@ -29,15 +29,15 @@ import org.jongo.marshall.stream.BsonStreamFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class StreamProcessor implements Unmarshaller, Marshaller {
+import static org.jongo.marshall.jackson.ObjectMapperBuilder.useJongoMapper;
 
-    protected static final ObjectMapperFactory OBJECT_MAPPER_FACTORY = new ObjectMapperFactory();
+public class StreamProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectIdFieldLocator fieldLocator;
     private ObjectMapper mapper;
 
     public StreamProcessor() {
-        this(OBJECT_MAPPER_FACTORY.createBsonMapper());
+        this(useJongoMapper().getMapper());
     }
 
     public StreamProcessor(ObjectMapper mapper) {

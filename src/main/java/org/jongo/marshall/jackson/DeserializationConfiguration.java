@@ -16,34 +16,15 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-public class ObjectMapperFactory {
+public final class DeserializationConfiguration implements ObjectMapperConfiguration {
 
-    public ObjectMapper createBsonMapper() {
-
-        BsonModule module = new BsonModule();
-        ObjectMapper mapper = new ObjectMapper(module.createJsonFactory());
-        mapper.registerModule(module);
-        configureMapper(mapper);
-        return mapper;
-    }
-
-    public void configureMapper(ObjectMapper mapper) {
+    public void configure(ObjectMapper mapper) {
         mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(AUTO_DETECT_GETTERS, false);
         mapper.configure(AUTO_DETECT_SETTERS, false);
-        mapper.setSerializationInclusion(NON_NULL);
-
-        VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
-        mapper.setVisibilityChecker(checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY));
     }
 }

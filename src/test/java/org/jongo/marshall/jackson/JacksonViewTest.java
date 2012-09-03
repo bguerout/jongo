@@ -16,9 +16,6 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mongodb.DBObject;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
@@ -35,7 +32,7 @@ public class JacksonViewTest {
     @Ignore
     public void shouldRespectJsonPublicViewOnMarshall() throws Exception {
 
-        StreamProcessor custom = createProcessorWithView(Views.Public.class);
+        JacksonProcessor custom = createProcessorWithView(Views.Public.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -51,7 +48,7 @@ public class JacksonViewTest {
     @Ignore
     public void shouldRespectJsonPrivateViewOnMarshall() throws Exception {
 
-        StreamProcessor custom = createProcessorWithView(Views.Private.class);
+        JacksonProcessor custom = createProcessorWithView(Views.Private.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -68,7 +65,7 @@ public class JacksonViewTest {
     public void respectsJsonPublicViewOnUnmarshall() throws Exception {
 
         DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        StreamProcessor custom = createProcessorWithView(Views.Public.class);
+        JacksonProcessor custom = createProcessorWithView(Views.Public.class);
 
         Fox fox = custom.unmarshall(json, Fox.class);
 
@@ -80,7 +77,7 @@ public class JacksonViewTest {
     public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
 
         DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        StreamProcessor custom = createProcessorWithView(Views.Private.class);
+        JacksonProcessor custom = createProcessorWithView(Views.Private.class);
 
         Fox fox = custom.unmarshall(json, Fox.class);
 
@@ -88,10 +85,10 @@ public class JacksonViewTest {
     }
 
 
-    private StreamProcessor createProcessorWithView(Class<?> viewClass) {
-        ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
-        ObjectReader reader = mapper.readerWithView(viewClass);
-        ObjectWriter writer = mapper.writerWithView(viewClass);
-        return new StreamProcessor(mapper);
+    private JacksonProcessor createProcessorWithView(Class<?> viewClass) {
+        //ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
+        //ObjectReader reader = mapper.readerWithView(viewClass);
+        //ObjectWriter writer = mapper.writerWithView(viewClass);
+        return new JacksonProcessor();
     }
 }

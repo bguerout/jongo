@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.bson4jackson;
+package org.jongo.marshall.jackson;
 
-class BsonModule extends de.undercouch.bson4jackson.BsonModule {
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    @Override
-    public void setupModule(SetupContext context) {
-        super.setupModule(context);
-        context.addSerializers(new BsonSerializers());
-        context.addDeserializers(new BsonDeserializers());
-    }
+public interface ObjectMapperConfiguration {
+
+    void configure(ObjectMapper mapper);
+
 }
