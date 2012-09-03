@@ -89,9 +89,9 @@ public class JacksonViewTest {
 
 
     private BsonProcessor createProcessorWithView(Class<?> viewClass) {
-        ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
-        ObjectReader reader = mapper.readerWithView(viewClass);
-        ObjectWriter writer = mapper.writerWithView(viewClass);
-        return new BsonProcessor(mapper);
+        //ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
+        //ObjectReader reader = mapper.readerWithView(viewClass);
+        //ObjectWriter writer = mapper.writerWithView(viewClass);
+        return new BsonProcessor();
     }
 }

@@ -26,15 +26,23 @@ import org.jongo.marshall.Unmarshaller;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import static org.jongo.marshall.jackson.ObjectMapperBuilder.useNewMapper;
+
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectMapper mapper;
     private final ObjectIdFieldLocator fieldLocator;
 
     public JacksonProcessor() {
-        this.mapper = new ObjectMapper();
-        this.mapper.registerModule(new JsonModule());
-        new ObjectMapperFactory().configureMapper(this.mapper);
+        this(useNewMapper()
+                .add(new SerializationConfiguration())
+                .add(new DeserializationConfiguration())
+                .add(new JsonModule())
+                .getMapper());
+    }
+
+    public JacksonProcessor(ObjectMapper mapper) {
+        this.mapper = mapper;
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 

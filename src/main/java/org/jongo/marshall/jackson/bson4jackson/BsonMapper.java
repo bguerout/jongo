@@ -16,12 +16,21 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-class BsonModule extends de.undercouch.bson4jackson.BsonModule {
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.undercouch.bson4jackson.BsonFactory;
+import de.undercouch.bson4jackson.BsonParser;
 
-    @Override
-    public void setupModule(SetupContext context) {
-        super.setupModule(context);
-        context.addSerializers(new BsonSerializers());
-        context.addDeserializers(new BsonDeserializers());
+public class BsonMapper {
+
+    public static ObjectMapper createMapper() {
+        ObjectMapper mapper = new ObjectMapper(createFactory());
+        mapper.registerModule(new BsonModule());
+        return mapper;
+    }
+
+    private static BsonFactory createFactory() {
+        BsonFactory factory = new MongoBsonFactory();
+        factory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
+        return factory;
     }
 }
