@@ -22,7 +22,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBDecoder;
 import com.mongodb.DBObject;
 import com.mongodb.DefaultDBDecoder;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.StreamProcessor;
 import org.jongo.marshall.stream.BeanDecoder;
 import org.jongo.marshall.stream.DocumentStream;
 import org.jongo.marshall.stream.DocumentStreamFactory;
@@ -35,12 +35,12 @@ public class DecoderBench extends SimpleBenchmark {
 
     private static final int NB_DOCS = 1000000;
 
-    private JacksonProcessor processor;
+    private StreamProcessor processor;
     private byte[][] documents = new byte[NB_DOCS][];
 
     @Override
     protected void setUp() throws Exception {
-        processor = new JacksonProcessor();
+        processor = new StreamProcessor();
         for (int i = 0; i < NB_DOCS; i++) {
             DBObject dbObject = createDBOFriend(i);
             DocumentStream stream = DocumentStreamFactory.fromDBObject(dbObject);

@@ -32,7 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-public class JacksonProcessor implements Unmarshaller, Marshaller {
+public class StreamProcessor implements Unmarshaller, Marshaller {
 
     protected static final ObjectMapperFactory OBJECT_MAPPER_FACTORY = new ObjectMapperFactory();
 
@@ -40,17 +40,17 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
     private final ObjectWriter writer;
     private final ObjectIdFieldLocator fieldLocator;
 
-    public JacksonProcessor() {
+    public StreamProcessor() {
         this(OBJECT_MAPPER_FACTORY.createBsonMapper());
     }
 
-    public JacksonProcessor(ObjectReader reader, ObjectWriter writer) {
+    public StreamProcessor(ObjectReader reader, ObjectWriter writer) {
         this.reader = reader;
         this.writer = writer;
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 
-    public JacksonProcessor(ObjectMapper mapper) {
+    public StreamProcessor(ObjectMapper mapper) {
         this.reader = mapper.reader();
         this.writer = mapper.writer();
         this.fieldLocator = new ObjectIdFieldLocator();

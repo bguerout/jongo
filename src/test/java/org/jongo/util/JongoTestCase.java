@@ -23,7 +23,7 @@ import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.StreamProcessor;
 
 import java.net.UnknownHostException;
 
@@ -34,7 +34,7 @@ public abstract class JongoTestCase {
     private Jongo jongo;
 
     public JongoTestCase() {
-        JacksonProcessor processor = new JacksonProcessor();
+        StreamProcessor processor = new StreamProcessor();
         this.jongo = new Jongo(findDatabase(), processor, processor);
     }
 

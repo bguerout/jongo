@@ -20,7 +20,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.StreamProcessor;
 import org.jongo.marshall.stream.BeanDecoder;
 import org.jongo.marshall.stream.BeanEncoder;
 
@@ -32,9 +32,9 @@ public final class Jongo {
 
     public Jongo(DB database) {
         this.database = database;
-        JacksonProcessor jacksonProcessor = new JacksonProcessor();
-        this.marshaller = jacksonProcessor;
-        this.unmarshaller = jacksonProcessor;
+        StreamProcessor streamProcessor = new StreamProcessor();
+        this.marshaller = streamProcessor;
+        this.unmarshaller = streamProcessor;
     }
 
     public Jongo(DB database, Marshaller marshaller, Unmarshaller unmarshaller) {

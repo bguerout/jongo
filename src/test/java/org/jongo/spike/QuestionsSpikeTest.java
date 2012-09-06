@@ -19,7 +19,7 @@ package org.jongo.spike;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.MongoCollection;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.StreamProcessor;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -68,7 +68,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
         friends.add(new Friend("peter"));
         collection.save(friends);
 
-        String robert = new JacksonProcessor().marshall(new Friend("Robert")).toString();
+        String robert = new StreamProcessor().marshall(new Friend("Robert")).toString();
         collection.update("{}").with("{$push:{friends:" + robert + "}}");
 
         assertThat(collection.count("{ friends.name : 'Robert'}")).isEqualTo(1);
