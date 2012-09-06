@@ -20,12 +20,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.StreamProcessor;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
-public class JsonProcessor extends JacksonProcessor {
+public class JsonProcessor extends StreamProcessor {
 
     private final ObjectMapper mapper;
 

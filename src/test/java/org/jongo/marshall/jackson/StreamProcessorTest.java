@@ -36,13 +36,13 @@ import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BSON.bsonify;
 
-public class JacksonProcessorTest {
+public class StreamProcessorTest {
 
-    private JacksonProcessor processor;
+    private StreamProcessor processor;
 
     @Before
     public void setUp() throws Exception {
-        this.processor = new JacksonProcessor();
+        this.processor = new StreamProcessor();
     }
 
     @Test
@@ -113,7 +113,7 @@ public class JacksonProcessorTest {
     @Test
     public void respectsJsonPublicViewOnMarshall() throws Exception {
 
-        JacksonProcessor custom = createProcessorWithView(Views.Public.class);
+        StreamProcessor custom = createProcessorWithView(Views.Public.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -128,7 +128,7 @@ public class JacksonProcessorTest {
     @Test
     public void respectsJsonPrivateViewOnMarshall() throws Exception {
 
-        JacksonProcessor custom = createProcessorWithView(Views.Private.class);
+        StreamProcessor custom = createProcessorWithView(Views.Private.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -144,7 +144,7 @@ public class JacksonProcessorTest {
     public void respectsJsonPublicViewOnUnmarshall() throws Exception {
 
         DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        JacksonProcessor custom = createProcessorWithView(Views.Public.class);
+        StreamProcessor custom = createProcessorWithView(Views.Public.class);
 
         Fox fox = custom.unmarshall(json, Fox.class);
 
@@ -155,7 +155,7 @@ public class JacksonProcessorTest {
     public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
 
         DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        JacksonProcessor custom = createProcessorWithView(Views.Private.class);
+        StreamProcessor custom = createProcessorWithView(Views.Private.class);
 
         Fox fox = custom.unmarshall(json, Fox.class);
 
@@ -163,11 +163,11 @@ public class JacksonProcessorTest {
     }
 
 
-    private JacksonProcessor createProcessorWithView(Class<?> viewClass) {
+    private StreamProcessor createProcessorWithView(Class<?> viewClass) {
         ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
         ObjectReader reader = mapper.reader().withView(viewClass);
         ObjectWriter writer = mapper.writer().withView(viewClass);
-        return new JacksonProcessor(reader, writer);
+        return new StreamProcessor(reader, writer);
     }
 
     private static class BackwardFriend extends Friend {
