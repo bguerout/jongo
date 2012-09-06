@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.json;
+package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.jackson.StreamProcessor;
+import org.jongo.marshall.Unmarshaller;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
-public class JsonProcessor extends StreamProcessor {
+public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectMapper mapper;
+    private final ObjectIdFieldLocator fieldLocator;
 
-    public JsonProcessor() {
+    public JacksonProcessor() {
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JsonModule());
-        OBJECT_MAPPER_FACTORY.configureMapper(this.mapper);
+        new ObjectMapperFactory().configureMapper(this.mapper);
+        this.fieldLocator = new ObjectIdFieldLocator();
     }
 
-    @Override
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
         String json = document.toString();
         try {
@@ -46,7 +48,6 @@ public class JsonProcessor extends StreamProcessor {
         }
     }
 
-    @Override
     public DBObject marshall(Object obj) throws MarshallingException {
         try {
             Writer writer = new StringWriter();
@@ -58,4 +59,7 @@ public class JsonProcessor extends StreamProcessor {
         }
     }
 
+    public void setDocumentGeneratedId(Object target, Object id) {
+        fieldLocator.findFieldAndUpdate(target, id);
+    }
 }

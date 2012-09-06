@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -83,11 +84,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     @Test
-    public void testName() throws Exception {
-        collection.getDBCollection().save(new BasicDBObject("key", new MinKey()));
-    }
-
-    @Test
     public void canHandleObjectId() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
@@ -138,6 +134,16 @@ public class DocumentMarshallingTest extends JongoTestCase {
         assertHasBeenPersistedAs(jsonify("'date' : { '$date' : '1970-01-01T00:00:00.000Z'}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.date).isEqualTo(new Date(0));
+    }
+
+    @Test
+    public void canHandleNonIsoDate() throws IOException {
+
+        collection.insert("{date:#}",1340714101235L);
+
+        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
+
+        assertThat(result.date).isEqualTo(new Date(1340714101235L));
     }
 
     @Test
@@ -209,7 +215,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.array).contains(1, 2, 3);
     }
-
 
     @Test
     public void canHandleByteArray() throws Exception {

@@ -32,9 +32,13 @@ public abstract class JongoTestCase {
     public static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
 
     private Jongo jongo;
+    private Marshaller marshaller;
+    private Unmarshaller unmarshaller;
 
     public JongoTestCase() {
         StreamProcessor processor = new StreamProcessor();
+        this.marshaller = processor;
+        this.unmarshaller = processor;
         this.jongo = new Jongo(findDatabase(), processor, processor);
     }
 
@@ -46,6 +50,14 @@ public abstract class JongoTestCase {
 
     protected void dropCollection(String collectionName) throws UnknownHostException {
         getDatabase().getCollection(collectionName).drop();
+    }
+
+    public Marshaller getMarshaller() {
+        return marshaller;
+    }
+
+    public Unmarshaller getUnmarshaller() {
+        return unmarshaller;
     }
 
     protected DB getDatabase() throws UnknownHostException {
@@ -82,6 +94,8 @@ public abstract class JongoTestCase {
     }
 
     public void prepareMarshallingStrategy(Marshaller marshaller, Unmarshaller unmarshaller) {
+        this.marshaller = marshaller;
+        this.unmarshaller = unmarshaller;
         this.jongo = new Jongo(findDatabase(), marshaller, unmarshaller);
     }
 

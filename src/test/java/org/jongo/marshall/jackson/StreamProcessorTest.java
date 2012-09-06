@@ -16,7 +16,6 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -30,7 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Date;
 
 import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
@@ -45,58 +43,10 @@ public class StreamProcessorTest {
         this.processor = new StreamProcessor();
     }
 
-    @Test
-    public void canConvertEntityToJson() {
-
-        DBObject dbo = processor.marshall(new Fox("fantastic", "roux"));
-
-        assertThat(dbo.get("_class")).isEqualTo("org.jongo.model.Fox");
-        assertThat(dbo.get("name")).isEqualTo("fantastic");
-        assertThat(dbo.get("color")).isEqualTo("roux");
-    }
-
     @Test(expected = MarshallingException.class)
     public void shouldFailWhenUnableToMarshall() throws Exception {
+
         processor.marshall(new ErrorObject());
-    }
-
-    @Test
-    public void canConvertJsonToEntity() throws IOException {
-        DBObject document = bsonify("{'address': '22 rue des murlins'}");
-
-        Friend friend = processor.unmarshall(document, Friend.class);
-
-        assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
-    }
-
-    @Test
-    public void canConvertNestedJsonToEntities() throws IOException {
-        DBObject document = bsonify("{'address': '22 rue des murlins', 'coordinate': {'lat': 48}}");
-
-        Friend friend = processor.unmarshall(document, Friend.class);
-
-        assertThat(friend.getCoordinate().lat).isEqualTo(48);
-    }
-
-    @Test
-    public void hasAFallbackToEnsureBackwardCompatibility() throws IOException {
-
-        DBObject document = bsonify("{'oldAddress': '22-rue-des-murlins'}");
-
-        BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
-
-        assertThat(backwardFriend.getAddress()).isEqualTo("22-rue-des-murlins");
-    }
-
-    @Test
-    public void canHandleNonIsoDate() throws IOException {
-
-        Date oldDate = new Date(1340714101235L);
-        DBObject document = bsonify("{'oldDate': " + 1340714101235L + " }");
-
-        BackwardFriend backwardFriend = processor.unmarshall(document, BackwardFriend.class);
-
-        assertThat(backwardFriend.oldDate).isEqualTo(oldDate);
     }
 
     @Test
@@ -111,7 +61,26 @@ public class StreamProcessorTest {
     }
 
     @Test
-    public void respectsJsonPublicViewOnMarshall() throws Exception {
+    public void canMarshall() {
+
+        DBObject dbo = processor.marshall(new Fox("fantastic", "roux"));
+
+        assertThat(dbo.get("_class")).isEqualTo("org.jongo.model.Fox");
+        assertThat(dbo.get("name")).isEqualTo("fantastic");
+        assertThat(dbo.get("color")).isEqualTo("roux");
+    }
+
+    @Test
+    public void canUnmarshall() throws IOException {
+        DBObject document = bsonify("{'address': '22 rue des murlins'}");
+
+        Friend friend = processor.unmarshall(document, Friend.class);
+
+        assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
+    }
+
+    @Test
+    public void shouldRespectJsonPublicViewOnMarshall() throws Exception {
 
         StreamProcessor custom = createProcessorWithView(Views.Public.class);
         Fox vixen = new Fox("fantastic", "roux");
@@ -126,7 +95,7 @@ public class StreamProcessorTest {
     }
 
     @Test
-    public void respectsJsonPrivateViewOnMarshall() throws Exception {
+    public void shouldRespectJsonPrivateViewOnMarshall() throws Exception {
 
         StreamProcessor custom = createProcessorWithView(Views.Private.class);
         Fox vixen = new Fox("fantastic", "roux");
@@ -165,20 +134,8 @@ public class StreamProcessorTest {
 
     private StreamProcessor createProcessorWithView(Class<?> viewClass) {
         ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
-        ObjectReader reader = mapper.reader().withView(viewClass);
-        ObjectWriter writer = mapper.writer().withView(viewClass);
+        ObjectReader reader = mapper.readerWithView(viewClass);
+        ObjectWriter writer = mapper.writerWithView(viewClass);
         return new StreamProcessor(reader, writer);
-    }
-
-    private static class BackwardFriend extends Friend {
-
-        Date oldDate;
-
-        @JsonAnySetter
-        public void fallbackForBackwardCompatibility(String name, Object value) {
-            if ("oldAddress".equals(name)) {
-                setAddress((String) value);
-            }
-        }
     }
 }
