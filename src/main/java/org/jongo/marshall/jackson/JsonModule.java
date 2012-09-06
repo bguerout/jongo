@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.json;
+package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -57,7 +57,7 @@ class JsonModule extends Module {
         public JsonDeserializers() {
             NativeDeserializer deserializer = new NativeDeserializer();
             addDeserializer(ObjectId.class, deserializer);
-            addDeserializer(Date.class, deserializer);
+            addDeserializer(Date.class, new BackwardDateDeserializer(deserializer));
             addDeserializer(UUID.class, deserializer);
             addDeserializer(Pattern.class, deserializer);
             addDeserializer(BSONTimestamp.class, deserializer);
@@ -92,6 +92,27 @@ class JsonModule extends Module {
         public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             String asString = jp.readValueAsTree().toString();
             return (T) JSON.parse(asString);
+        }
+    }
+
+    static class BackwardDateDeserializer extends JsonDeserializer<Date> {
+
+        private final NativeDeserializer deserializer;
+
+        public BackwardDateDeserializer(NativeDeserializer deserializer) {
+            this.deserializer = deserializer;
+        }
+
+        @Override
+        public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            Object deserializedDate = parse(jp, ctxt);
+            if (deserializedDate instanceof Long)
+                return new Date((Long) deserializedDate);
+            return (Date) deserializedDate;
+        }
+
+        private Object parse(JsonParser jp, DeserializationContext ctxt) throws IOException {
+            return deserializer.deserialize(jp, ctxt);
         }
     }
 }

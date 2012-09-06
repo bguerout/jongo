@@ -30,7 +30,6 @@ import org.jongo.marshall.stream.DocumentStreamFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 public class StreamProcessor implements Unmarshaller, Marshaller {
 
@@ -80,18 +79,7 @@ public class StreamProcessor implements Unmarshaller, Marshaller {
     }
 
     public void setDocumentGeneratedId(Object target, Object id) {
-        Class<? extends Object> clazz = target.getClass();
-        Field field = fieldLocator.findFieldOrNull(clazz);
-        if (field != null) {
-            try {
-
-                field.setAccessible(true);
-                if (field.get(target) == null) {
-                    field.set(target, id);
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
-            }
-        }
+        fieldLocator.findFieldAndUpdate(target, id);
     }
+
 }

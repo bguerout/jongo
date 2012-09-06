@@ -18,28 +18,28 @@ package org.jongo.bench;
 
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.jackson.StreamProcessor;
-import org.jongo.marshall.jackson.json.JsonProcessor;
 
 import static org.jongo.bench.BenchUtil.createFriend;
 
 public class MarshallerBench extends SimpleBenchmark {
 
-    private StreamProcessor processor;
-    private StreamProcessor jsonProcessor;
+    private StreamProcessor streamProcessor;
+    private JacksonProcessor jsonProcessor;
 
     protected void setUp() throws Exception {
-        processor = new StreamProcessor();
-        jsonProcessor = new JsonProcessor();
+        streamProcessor = new StreamProcessor();
+        jsonProcessor = new JacksonProcessor();
     }
 
-    public void timeMarshall(int reps) {
+    public void timeMarshallAsStream(int reps) {
         for (int i = 0; i < reps; i++) {
-            processor.marshall(createFriend(i));
+            streamProcessor.marshall(createFriend(i));
         }
     }
 
-    public void timeMarshallWithJongo0_2(int reps) {
+    public void timeMarshallAsJson(int reps) {
         for (int i = 0; i < reps; i++) {
             jsonProcessor.marshall(createFriend(i));
         }
