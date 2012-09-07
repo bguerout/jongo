@@ -16,14 +16,10 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mongodb.DBObject;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
-import org.jongo.model.Views;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,65 +73,5 @@ public class StreamProcessorTest {
         Friend friend = processor.unmarshall(document, Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
-    }
-
-    @Test
-    public void shouldRespectJsonPublicViewOnMarshall() throws Exception {
-
-        StreamProcessor custom = createProcessorWithView(Views.Public.class);
-        Fox vixen = new Fox("fantastic", "roux");
-        vixen.setGender("female");
-
-        DBObject result = custom.marshall(vixen);
-
-        assertThat(result.get("gender")).isNull();
-        assertThat(result.get("_class")).isEqualTo("org.jongo.model.Fox");
-        assertThat(result.get("name")).isEqualTo("fantastic");
-        assertThat(result.get("color")).isEqualTo("roux");
-    }
-
-    @Test
-    public void shouldRespectJsonPrivateViewOnMarshall() throws Exception {
-
-        StreamProcessor custom = createProcessorWithView(Views.Private.class);
-        Fox vixen = new Fox("fantastic", "roux");
-        vixen.setGender("female");
-
-        DBObject result = custom.marshall(vixen);
-
-        assertThat(result.get("_class")).isEqualTo("org.jongo.model.Fox");
-        assertThat(result.get("name")).isEqualTo("fantastic");
-        assertThat(result.get("color")).isEqualTo("roux");
-        assertThat(result.get("gender")).isEqualTo("female");
-    }
-
-    @Test
-    public void respectsJsonPublicViewOnUnmarshall() throws Exception {
-
-        DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        StreamProcessor custom = createProcessorWithView(Views.Public.class);
-
-        Fox fox = custom.unmarshall(json, Fox.class);
-
-        assertThat(fox.getGender()).isNull();
-    }
-
-    @Test
-    public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
-
-        DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        StreamProcessor custom = createProcessorWithView(Views.Private.class);
-
-        Fox fox = custom.unmarshall(json, Fox.class);
-
-        assertThat(fox.getGender()).isEqualTo("female");
-    }
-
-
-    private StreamProcessor createProcessorWithView(Class<?> viewClass) {
-        ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
-        ObjectReader reader = mapper.readerWithView(viewClass);
-        ObjectWriter writer = mapper.writerWithView(viewClass);
-        return new StreamProcessor(reader, writer);
     }
 }
