@@ -22,7 +22,7 @@ import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
 
-class BsonObjectStream implements DocumentStream {
+class BsonObjectStream implements BsonStream {
 
     private final OutputBuffer buffer;
 

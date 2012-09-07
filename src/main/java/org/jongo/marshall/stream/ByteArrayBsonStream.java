@@ -19,11 +19,11 @@ package org.jongo.marshall.stream;
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
 
-class LazyDocumentStream extends LazyDBObject implements DocumentStream {
+class ByteArrayBsonStream extends LazyDBObject implements BsonStream {
 
     private final int offset;
 
-    LazyDocumentStream(byte[] data, int offset, LazyBSONCallback cbk) {
+    ByteArrayBsonStream(byte[] data, int offset, LazyBSONCallback cbk) {
         super(data, offset, cbk);
         this.offset = offset;
     }

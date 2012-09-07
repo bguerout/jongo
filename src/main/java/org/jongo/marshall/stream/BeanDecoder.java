@@ -17,9 +17,7 @@
 package org.jongo.marshall.stream;
 
 import com.mongodb.*;
-import org.bson.LazyBSONCallback;
 import org.bson.LazyBSONDecoder;
-import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,29 +56,24 @@ public class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
         }
     }
 
-    private static class BeanDecoderCallback extends LazyBSONCallback implements DBCallback {
+    private static class BeanDecoderCallback extends LazyDBCallback  {
 
-        private final DBCollection collection;
         private final DB db;
 
         public BeanDecoderCallback(DBCollection collection) {
-            this.collection = collection;
+            super(collection);
             this.db = collection == null ? null : collection.getDB();
         }
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            DBObject dbo = new LazyDocumentStream(data, offset, new LazyDBCallback(collection));
+            DBObject dbo = new ByteArrayBsonStream(data, offset, this);
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {
                 return new DBRef(db, dbo);
             }
             return dbo;
-        }
-
-        public Object createDBRef(String ns, ObjectId id) {
-            return new DBRef(db, ns, id);
         }
     }
 }

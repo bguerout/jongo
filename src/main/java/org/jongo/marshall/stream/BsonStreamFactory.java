@@ -16,12 +16,14 @@
 
 package org.jongo.marshall.stream;
 
+import com.mongodb.DBObject;
 
-public interface DocumentStream {
+public class BsonStreamFactory {
 
-    byte[] getData();
-
-    int getOffset();
-
-    int getSize();
+    public static BsonStream fromDBObject(DBObject dbo) {
+        if (dbo instanceof BsonStream) {
+            return (BsonStream) dbo;
+        }
+        return new BsonObjectStream(dbo);
+    }
 }
