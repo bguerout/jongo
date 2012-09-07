@@ -24,8 +24,8 @@ import com.mongodb.DBObject;
 import com.mongodb.DefaultDBDecoder;
 import org.jongo.marshall.jackson.StreamProcessor;
 import org.jongo.marshall.stream.BeanDecoder;
-import org.jongo.marshall.stream.DocumentStream;
-import org.jongo.marshall.stream.DocumentStreamFactory;
+import org.jongo.marshall.stream.BsonStream;
+import org.jongo.marshall.stream.BsonStreamFactory;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -43,7 +43,7 @@ public class DecoderBench extends SimpleBenchmark {
         processor = new StreamProcessor();
         for (int i = 0; i < NB_DOCS; i++) {
             DBObject dbObject = createDBOFriend(i);
-            DocumentStream stream = DocumentStreamFactory.fromDBObject(dbObject);
+            BsonStream stream = BsonStreamFactory.fromDBObject(dbObject);
             documents[i] = stream.getData();
         }
     }

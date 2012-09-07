@@ -23,8 +23,8 @@ import org.bson.LazyBSONCallback;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.stream.DocumentStream;
-import org.jongo.marshall.stream.DocumentStreamFactory;
+import org.jongo.marshall.stream.BsonStream;
+import org.jongo.marshall.stream.BsonStreamFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class StreamProcessor implements Unmarshaller, Marshaller {
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
 
-        DocumentStream stream = DocumentStreamFactory.fromDBObject(document);
+        BsonStream stream = BsonStreamFactory.fromDBObject(document);
         try {
             return mapper.readValue(stream.getData(), stream.getOffset(), stream.getSize(), clazz);
         } catch (IOException e) {

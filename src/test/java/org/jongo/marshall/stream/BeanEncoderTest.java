@@ -31,7 +31,7 @@ public class BeanEncoderTest {
         DBEncoder encoder = BeanEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
-        encoder.writeObject(buffer, new LazyDocumentStream(new byte[]{5, 0, 0, 0, 0}, 0, null));
+        encoder.writeObject(buffer, new ByteArrayBsonStream(new byte[]{5, 0, 0, 0, 0}, 0, null));
 
         assertThat(buffer.toByteArray()).isEqualTo(new byte[]{5, 0, 0, 0, 0});
 
