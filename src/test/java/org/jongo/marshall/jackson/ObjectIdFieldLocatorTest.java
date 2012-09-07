@@ -94,6 +94,27 @@ public class ObjectIdFieldLocatorTest {
         assertThat(field).isNull();
     }
 
+    @Test
+    public void shouldUpdateObjectId() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        WithAnnotation target = new WithAnnotation();
+
+        locator.findFieldAndUpdate(target, oid);
+
+        assertThat(target.key).isEqualTo(oid);
+    }
+
+    @Test
+    public void whenNoIdShouldDoNothing() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        WithOtherName target = new WithOtherName();
+        locator.findFieldAndUpdate(target, oid);
+
+        assertThat(target.otherKey).isNull();
+    }
+
     private static class WithAnnotation {
         @JsonProperty("_id")
         ObjectId key;

@@ -28,22 +28,26 @@ class ObjectIdFieldLocator {
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
 
     public void findFieldAndUpdate(Object target, Object id) {
-        Class<? extends Object> clazz = target.getClass();
-        Field field = findFieldOrNull(clazz);
+        Field field = findFieldOrNull(target.getClass());
         if (field != null) {
-            try {
-
-                field.setAccessible(true);
-                if (field.get(target) == null) {
-                    field.set(target, id);
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to set objectid on class: " + clazz, e);
-            }
+            updateField(target, id, field);
         }
     }
 
-    public Field findFieldOrNull(Class<?> clazz) {
+    private void updateField(Object target, Object id, Field field) {
+        try {
+
+            field.setAccessible(true);
+            if (field.get(target) == null) {
+                field.set(target, id);
+            }
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
+        }
+    }
+
+    protected Field findFieldOrNull(Class<?> clazz) {
 
         if (idFields.containsKey(clazz)) {
             return idFields.get(clazz);
