@@ -18,14 +18,12 @@ package org.jongo.bench;
 
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
-import com.mongodb.DBCollection;
-import com.mongodb.DBDecoder;
-import com.mongodb.DBObject;
-import com.mongodb.DefaultDBDecoder;
+import com.mongodb.*;
+import org.jongo.bson.BsonByte;
 import org.jongo.bson.BsonByteFactory;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.bson.BsonByte;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -34,42 +32,52 @@ import static org.jongo.bench.BenchUtil.createDBOFriend;
 public class DecoderBench extends SimpleBenchmark {
 
     private static final int NB_DOCS = 1000000;
+    private static final byte[][] documents = createInMemoryDocuments(NB_DOCS);
 
-    private BsonProcessor processor;
-    private byte[][] documents = new byte[NB_DOCS][];
-
-    @Override
-    protected void setUp() throws Exception {
-        processor = new BsonProcessor();
-        for (int i = 0; i < NB_DOCS; i++) {
-            DBObject dbObject = createDBOFriend(i);
-            BsonByte bson = BsonByteFactory.fromDBObject(dbObject);
-            documents[i] = bson.getData();
-        }
-    }
+    private final BsonProcessor bsonProcessor = new BsonProcessor();
+    private final JacksonProcessor jacksonProcessor = new JacksonProcessor();
 
     public void timeDecodeWithDriver(int reps) {
+
         for (int i = 0; i < reps; i++) {
 
-            DBDecoder decoder = DefaultDBDecoder.FACTORY.create();
-            DBObject dbo = decoder.decode(documents[i], (DBCollection) null);
-
+            DBObject dbo = decode(i, DefaultDBDecoder.FACTORY);
             DBObject coord = (DBObject) dbo.get("coordinate");
             Coordinate coordinate = new Coordinate((Integer) coord.get("lat"), (Integer) coord.get("lng"));
             Friend f = new Friend((String) dbo.get("name"), (String) dbo.get("address"), coordinate);
         }
     }
 
-    public void timeDecodeWithJongo(int reps) {
-        for (int i = 0; i < reps; i++) {
+    public void timeDecodeWithDefaultJongo(int reps) {
 
-            DBDecoder decoder = BsonDBDecoder.FACTORY.create();
-            DBObject dbo = decoder.decode(documents[i], (DBCollection) null);
-
-            Friend f = processor.unmarshall(dbo, Friend.class);
+        for (int docIndex = 0; docIndex < reps; docIndex++) {
+            DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);
+            Friend f = jacksonProcessor.unmarshall(dbo, Friend.class);
         }
     }
 
+    public void timeDecodeWithStreamJongo(int reps) {
+
+        for (int docIndex = 0; docIndex < reps; docIndex++) {
+            DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);
+            Friend f = bsonProcessor.unmarshall(dbo, Friend.class);
+        }
+    }
+
+    private DBObject decode(int i, DBDecoderFactory factory) {
+        DBDecoder decoder = factory.create();
+        return decoder.decode(documents[i], (DBCollection) null);
+    }
+
+    private static byte[][] createInMemoryDocuments(int nbDocs) {
+        byte[][] documents = new byte[NB_DOCS][];
+        for (int i = 0; i < nbDocs; i++) {
+            DBObject dbObject = createDBOFriend(i);
+            BsonByte stream = BsonByteFactory.fromDBObject(dbObject);
+            documents[i] = stream.getData();
+        }
+        return documents;
+    }
 
     public static void main(String[] args) {
         Runner.main(DecoderBench.class, new String[]{});

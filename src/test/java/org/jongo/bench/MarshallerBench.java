@@ -25,12 +25,13 @@ import static org.jongo.bench.BenchUtil.createFriend;
 
 public class MarshallerBench extends SimpleBenchmark {
 
-    private BsonProcessor bsonProcessor;
-    private JacksonProcessor jsonProcessor;
+    private final BsonProcessor bsonProcessor = new BsonProcessor();
+    private final JacksonProcessor jsonProcessor = new JacksonProcessor();
 
-    protected void setUp() throws Exception {
-        bsonProcessor = new BsonProcessor();
-        jsonProcessor = new JacksonProcessor();
+    public void timeMarshallAsDefault(int reps) {
+        for (int i = 0; i < reps; i++) {
+            jsonProcessor.marshall(createFriend(i));
+        }
     }
 
     public void timeMarshallAsStream(int reps) {
