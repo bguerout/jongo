@@ -23,13 +23,12 @@ import org.bson.LazyBSONCallback;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.JacksonConfiguration;
 import org.jongo.marshall.stream.BsonStream;
 import org.jongo.marshall.stream.BsonStreamFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import static org.jongo.marshall.jackson.ObjectMapperBuilder.useJongoMapper;
 
 public class StreamProcessor implements Unmarshaller, Marshaller {
 
@@ -37,11 +36,11 @@ public class StreamProcessor implements Unmarshaller, Marshaller {
     private ObjectMapper mapper;
 
     public StreamProcessor() {
-        this(useJongoMapper().getMapper());
+        this(new JacksonConfiguration().createBsonMapper());
     }
 
-    public StreamProcessor(ObjectMapper mapper) {
-        this.mapper = mapper;
+    public StreamProcessor(ObjectMapper bsonMapper) {
+        this.mapper = bsonMapper;
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 

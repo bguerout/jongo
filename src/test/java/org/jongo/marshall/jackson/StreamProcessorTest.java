@@ -67,7 +67,8 @@ public class StreamProcessorTest {
     }
 
     @Test
-    public void canUnmarshall() throws IOException {
+    public void canUnmarshallBson() throws IOException {
+
         DBObject document = bsonify("{'address': '22 rue des murlins'}");
 
         Friend friend = processor.unmarshall(document, Friend.class);

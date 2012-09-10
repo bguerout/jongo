@@ -27,7 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class MongoBsonFactory extends BsonFactory {
+public final class MongoBsonFactory extends BsonFactory {
+
+    public static BsonFactory createFactory() {
+        BsonFactory factory = new MongoBsonFactory();
+        factory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
+        return factory;
+    }
 
     @Override
     protected BsonParser _createJsonParser(InputStream in, IOContext ctxt) throws IOException, JsonParseException {

@@ -67,7 +67,7 @@ public class JacksonProcessorTest {
     }
 
     @Test
-    public void canUnmarshall() throws IOException {
+    public void canUnmarshallJson() throws IOException {
         DBObject document = bsonify("{'address': '22 rue des murlins'}");
 
         Friend friend = processor.unmarshall(document, Friend.class);

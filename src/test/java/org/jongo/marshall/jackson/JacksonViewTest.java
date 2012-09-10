@@ -16,10 +16,15 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.mongodb.DBObject;
+import org.jongo.marshall.jackson.configuration.DeserializationBehavior;
+import org.jongo.marshall.jackson.configuration.JacksonConfiguration;
+import org.jongo.marshall.jackson.configuration.SerializationBehavior;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -29,7 +34,6 @@ public class JacksonViewTest {
 
 
     @Test
-    @Ignore
     public void shouldRespectJsonPublicViewOnMarshall() throws Exception {
 
         JacksonProcessor custom = createProcessorWithView(Views.Public.class);
@@ -45,7 +49,6 @@ public class JacksonViewTest {
     }
 
     @Test
-    @Ignore
     public void shouldRespectJsonPrivateViewOnMarshall() throws Exception {
 
         JacksonProcessor custom = createProcessorWithView(Views.Private.class);
@@ -61,7 +64,6 @@ public class JacksonViewTest {
     }
 
     @Test
-    @Ignore
     public void respectsJsonPublicViewOnUnmarshall() throws Exception {
 
         DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
@@ -73,7 +75,6 @@ public class JacksonViewTest {
     }
 
     @Test
-    @Ignore
     public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
 
         DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
@@ -84,11 +85,30 @@ public class JacksonViewTest {
         assertThat(fox.getGender()).isEqualTo("female");
     }
 
-
     private JacksonProcessor createProcessorWithView(Class<?> viewClass) {
-        //ObjectMapper mapper = new ObjectMapperFactory().createBsonMapper();
-        //ObjectReader reader = mapper.readerWithView(viewClass);
-        //ObjectWriter writer = mapper.writerWithView(viewClass);
-        return new JacksonProcessor();
+        ObjectMapper objectMapper = new JacksonConfiguration()
+                .addBehaviour(new SerializationBehavior())
+                .addBehaviour(new DeserializationBehavior())
+                .addModule(new JsonModule())
+                .configureMapper(new ViewObjectMapper(viewClass));
+        return new JacksonProcessor(objectMapper);
+    }
+
+    private static class ViewObjectMapper extends ObjectMapper {
+        private final Class<?> viewClass;
+
+        public ViewObjectMapper(Class<?> viewClass) {
+            this.viewClass = viewClass;
+        }
+
+        @Override
+        public DeserializationConfig getDeserializationConfig() {
+            return super.getDeserializationConfig().withView(viewClass);
+        }
+
+        @Override
+        public SerializationConfig getSerializationConfig() {
+            return super.getSerializationConfig().withView(viewClass);
+        }
     }
 }
