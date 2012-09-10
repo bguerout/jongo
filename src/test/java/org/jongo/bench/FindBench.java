@@ -33,32 +33,22 @@ public class FindBench extends SimpleBenchmark {
 
     @Param({"10"})
     int size = 10;
-    private MongoCollection jsonCollection;
+    private MongoCollection defaultCollection;
     private MongoCollection streamCollection;
     private DBCollection dbCollection;
 
     protected void setUp() throws Exception {
-        jsonCollection = getCollectionFromJongo();
+        defaultCollection = getCollectionFromJongo();
         streamCollection = getStreamCollectionFromJongo();
         dbCollection = getCollectionFromDriver();
         dbCollection.drop();
 
         for (int i = 0; i < size; i++) {
-            jsonCollection.save(createFriend(i), WriteConcern.SAFE);
+            defaultCollection.save(createFriend(i), WriteConcern.SAFE);
         }
-        if (jsonCollection.count() != size) {
+        if (defaultCollection.count() != size) {
             System.exit(1);
         }
-    }
-
-    public int timeFindWithStreamJongo(int reps) {
-        int insertions = 0;
-        for (int i = 0; i < reps; i++) {
-            for (Friend friend : streamCollection.find().as(Friend.class)) {
-                insertions++;
-            }
-        }
-        return insertions;
     }
 
     public int timeFindWithDriver(int reps) {
@@ -79,7 +69,17 @@ public class FindBench extends SimpleBenchmark {
     public int timeFindWithDefaultJongo(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
-            for (Friend friend : jsonCollection.find().as(Friend.class)) {
+            for (Friend friend : defaultCollection.find().as(Friend.class)) {
+                insertions++;
+            }
+        }
+        return insertions;
+    }
+
+    public int timeFindWithStreamJongo(int reps) {
+        int insertions = 0;
+        for (int i = 0; i < reps; i++) {
+            for (Friend friend : streamCollection.find().as(Friend.class)) {
                 insertions++;
             }
         }

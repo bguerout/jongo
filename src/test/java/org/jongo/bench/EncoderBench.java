@@ -19,10 +19,12 @@ package org.jongo.bench;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBEncoder;
+import com.mongodb.DBEncoderFactory;
 import com.mongodb.DBObject;
 import com.mongodb.DefaultDBEncoder;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.marshall.jackson.StreamProcessor;
 import org.jongo.marshall.stream.BeanEncoder;
 
@@ -31,34 +33,35 @@ import static org.jongo.bench.BenchUtil.createFriend;
 
 public class EncoderBench extends SimpleBenchmark {
 
-    private StreamProcessor processor;
-
-    protected void setUp() throws Exception {
-        processor = new StreamProcessor();
-    }
+    private final StreamProcessor streamProcessor = new StreamProcessor();
+    private final JacksonProcessor jacksonProcessor = new JacksonProcessor();
 
     public void timeEncodeWithDriver(int reps) {
         for (int i = 0; i < reps; i++) {
             DBObject dbo = createDBOFriend(i);
-            DBEncoder encoder = DefaultDBEncoder.FACTORY.create();
-            OutputBuffer buffer = new BasicOutputBuffer();
-
-            encoder.writeObject(buffer, dbo);
-
-            buffer.toByteArray();
+            encode(dbo, DefaultDBEncoder.FACTORY);
         }
     }
 
-    public void timeEncodeWithJongo(int reps) {
+    public void timeEncodeWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject friend = processor.marshall(createFriend(i));
-            DBEncoder encoder = BeanEncoder.FACTORY.create();
-            OutputBuffer buffer = new BasicOutputBuffer();
-
-            encoder.writeObject(buffer, friend);
-
-            buffer.toByteArray();
+            DBObject friend = jacksonProcessor.marshall(createFriend(i));
+            encode(friend, BeanEncoder.FACTORY);
         }
+    }
+
+    public void timeEncodeWithStreamJongo(int reps) {
+        for (int i = 0; i < reps; i++) {
+            DBObject friend = streamProcessor.marshall(createFriend(i));
+            encode(friend, BeanEncoder.FACTORY);
+        }
+    }
+
+    private byte[] encode(DBObject friend, DBEncoderFactory factory) {
+        DBEncoder encoder = factory.create();
+        OutputBuffer buffer = new BasicOutputBuffer();
+        encoder.writeObject(buffer, friend);
+        return buffer.toByteArray();
     }
 
     public static void main(String[] args) {

@@ -25,12 +25,13 @@ import static org.jongo.bench.BenchUtil.createFriend;
 
 public class MarshallerBench extends SimpleBenchmark {
 
-    private StreamProcessor streamProcessor;
-    private JacksonProcessor jsonProcessor;
+    private final StreamProcessor streamProcessor = new StreamProcessor();
+    private final JacksonProcessor jsonProcessor = new JacksonProcessor();
 
-    protected void setUp() throws Exception {
-        streamProcessor = new StreamProcessor();
-        jsonProcessor = new JacksonProcessor();
+    public void timeMarshallAsDefault(int reps) {
+        for (int i = 0; i < reps; i++) {
+            jsonProcessor.marshall(createFriend(i));
+        }
     }
 
     public void timeMarshallAsStream(int reps) {
@@ -38,13 +39,6 @@ public class MarshallerBench extends SimpleBenchmark {
             streamProcessor.marshall(createFriend(i));
         }
     }
-
-    public void timeMarshallAsJson(int reps) {
-        for (int i = 0; i < reps; i++) {
-            jsonProcessor.marshall(createFriend(i));
-        }
-    }
-
 
     public static void main(String[] args) {
         Runner.main(MarshallerBench.class, new String[]{});
