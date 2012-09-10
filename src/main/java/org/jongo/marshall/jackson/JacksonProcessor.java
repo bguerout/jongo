@@ -22,11 +22,10 @@ import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.JacksonConfiguration;
 
 import java.io.StringWriter;
 import java.io.Writer;
-
-import static org.jongo.marshall.jackson.ObjectMapperBuilder.useNewMapper;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
@@ -34,11 +33,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
     private final ObjectIdFieldLocator fieldLocator;
 
     public JacksonProcessor() {
-        this(useNewMapper()
-                .add(new SerializationConfiguration())
-                .add(new DeserializationConfiguration())
-                .add(new JsonModule())
-                .getMapper());
+        this(new JacksonConfiguration().createJsonMapper());
     }
 
     public JacksonProcessor(ObjectMapper mapper) {

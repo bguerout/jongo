@@ -20,16 +20,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
+import org.jongo.bson.BsonByte;
+import org.jongo.bson.BsonByteFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.bson.BsonByteFactory;
-import org.jongo.bson.BsonByte;
+import org.jongo.marshall.jackson.configuration.JacksonConfiguration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.jongo.marshall.jackson.ObjectMapperBuilder.useJongoMapper;
 
 public class BsonProcessor implements Unmarshaller, Marshaller {
 
@@ -37,7 +37,7 @@ public class BsonProcessor implements Unmarshaller, Marshaller {
     private ObjectMapper mapper;
 
     public BsonProcessor() {
-        this(useJongoMapper().getMapper());
+        this(new JacksonConfiguration().createBsonMapper());
     }
 
     public BsonProcessor(ObjectMapper mapper) {

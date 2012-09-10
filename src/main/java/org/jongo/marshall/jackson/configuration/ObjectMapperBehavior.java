@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.bson4jackson;
+package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.undercouch.bson4jackson.BsonFactory;
-import de.undercouch.bson4jackson.BsonParser;
 
-public class BsonMapper {
+public interface ObjectMapperBehavior {
 
-    public static ObjectMapper createMapper() {
-        ObjectMapper mapper = new ObjectMapper(createFactory());
-        mapper.registerModule(new BsonModule());
-        return mapper;
-    }
+    void configure(ObjectMapper mapper);
 
-    private static BsonFactory createFactory() {
-        BsonFactory factory = new MongoBsonFactory();
-        factory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
-        return factory;
-    }
 }

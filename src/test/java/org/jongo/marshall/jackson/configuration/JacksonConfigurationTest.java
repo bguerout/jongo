@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -22,23 +22,32 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
+import org.jongo.bson.BsonByte;
+import org.jongo.bson.BsonByteFactory;
+import org.jongo.marshall.jackson.JsonModule;
 import org.jongo.model.Friend;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.ObjectMapperBuilder.useNewMapper;
 
-public class ObjectMapperBuilderTest {
+public class JacksonConfigurationTest {
+
+    private JacksonConfiguration configuration;
+
+    @Before
+    public void setUp() throws Exception {
+        configuration = new JacksonConfiguration();
+    }
 
     @Test
     public void canAddDeserializer() throws Exception {
 
-        ObjectMapperBuilder builder = useNewMapper();
-        builder.addDeserializer(String.class, new DoeJsonDeserializer());
+        configuration.addDeserializer(String.class, new DoeJsonDeserializer());
 
-        ObjectMapper mapper = builder.getMapper();
+        ObjectMapper mapper = configuration.configureMapper(new ObjectMapper());
 
         Friend friend = mapper.readValue("{\"name\":\"robert\"}", Friend.class);
         assertThat(friend.getName()).isEqualTo("Doe");
@@ -47,22 +56,20 @@ public class ObjectMapperBuilderTest {
     @Test
     public void canAddSerializer() throws Exception {
 
-        ObjectMapperBuilder builder = useNewMapper();
-        builder.addSerializer(String.class, new DoeJsonSerializer());
+        configuration.addSerializer(String.class, new DoeJsonSerializer());
 
-        ObjectMapper mapper = builder.getMapper();
+        ObjectMapper mapper = configuration.configureMapper(new ObjectMapper());
 
         String friend = mapper.writeValueAsString(new Friend("Robert"));
         assertThat(friend).contains("\"name\":\"Doe\"");
     }
 
     @Test
-    public void canRegisterModule() throws Exception {
+    public void canAddModule() throws Exception {
 
-        ObjectMapperBuilder builder = useNewMapper();
-        builder.add(new JsonModule());
+        configuration.addModule(new JsonModule());
 
-        ObjectMapper mapper = builder.getMapper();
+        ObjectMapper mapper = configuration.configureMapper(new ObjectMapper());
 
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
         String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
@@ -70,15 +77,27 @@ public class ObjectMapperBuilderTest {
     }
 
     @Test
-    public void canCreateConfiguredProcessor() throws Exception {
+    public void canCreateJsonMapper() throws Exception {
 
-        ObjectMapperBuilder builder = useNewMapper()
-                .addDeserializer(String.class, new DoeJsonDeserializer());
+        configuration.addDeserializer(String.class, new DoeJsonDeserializer());
 
-        JacksonProcessor processor = builder.createProcessor();
+        ObjectMapper mapper = configuration.createJsonMapper();
 
-        Friend friend = processor.unmarshall(new BasicDBObject("name", "robert"), Friend.class);
-        assertThat(friend.getName()).contains("Doe");
+        ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
+        String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
+        assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
+    }
+
+    @Test
+    public void canCreateBsonMapper() throws Exception {
+
+        configuration.addDeserializer(String.class, new DoeJsonDeserializer());
+
+        ObjectMapper mapper = configuration.createBsonMapper();
+
+        BsonByte stream = BsonByteFactory.fromDBObject(new BasicDBObject("name", "robert"));
+        Friend friend = mapper.readValue(stream.getData(), Friend.class);
+        assertThat(friend.getName()).isEqualTo("Doe");
     }
 
     private static class DoeJsonDeserializer extends JsonDeserializer<String> {

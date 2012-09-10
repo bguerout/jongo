@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 
-public final class DeserializationConfiguration implements ObjectMapperConfiguration {
+public final class SerializationBehavior implements ObjectMapperBehavior {
 
     public void configure(ObjectMapper mapper) {
-        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(AUTO_DETECT_SETTERS, false);
+
+        mapper.configure(AUTO_DETECT_GETTERS, false);
+        mapper.setSerializationInclusion(NON_NULL);
+        VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
+        mapper.setVisibilityChecker(checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY));
     }
 }
