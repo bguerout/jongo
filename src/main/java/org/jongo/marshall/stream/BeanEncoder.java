@@ -22,7 +22,7 @@ import org.bson.io.OutputBuffer;
 
 import java.io.IOException;
 
-public class BeanEncoder implements DBEncoder {
+public final class BeanEncoder implements DBEncoder {
 
     public final static DBEncoderFactory FACTORY = new BeanEncoderFactory();
 

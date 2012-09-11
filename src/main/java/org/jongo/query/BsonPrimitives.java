@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 class BsonPrimitives {
+
     private static final Set<Class<?>> PRIMITIVES;
 
     static {

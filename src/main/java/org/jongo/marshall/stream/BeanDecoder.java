@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
-public class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
+public final class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
 
     public final static DBDecoderFactory FACTORY = new BeanDecoderFactory();
 

@@ -18,12 +18,15 @@ package org.jongo.marshall.stream;
 
 import com.mongodb.DBObject;
 
-public class BsonStreamFactory {
+public final class BsonStreamFactory {
 
     public static BsonStream fromDBObject(DBObject dbo) {
         if (dbo instanceof BsonStream) {
             return (BsonStream) dbo;
         }
         return new BsonObjectStream(dbo);
+    }
+
+    private BsonStreamFactory() {
     }
 }

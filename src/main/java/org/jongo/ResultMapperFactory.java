@@ -41,4 +41,6 @@ class ResultMapperFactory {
         }
     }
 
+    private ResultMapperFactory() {
+    }
 }
