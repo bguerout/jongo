@@ -24,7 +24,6 @@ import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.bson.BsonByte;
 import org.jongo.bson.BsonByteFactory;
-import org.jongo.marshall.jackson.JsonModule;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
@@ -35,7 +34,6 @@ import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usin
 import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingStream;
 
 public class JacksonConfigBuilderTest {
-
 
     @Test
     public void canAddDeserializer() throws Exception {
@@ -78,7 +76,7 @@ public class JacksonConfigBuilderTest {
     }
 
     @Test
-    public void canCreateJacksonMapper() throws Exception {
+    public void canCreateJsonMapper() throws Exception {
 
         JacksonConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())

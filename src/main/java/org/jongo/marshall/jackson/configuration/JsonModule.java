@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class JsonModule extends Module {
+public final class JsonModule extends Module {
 
     @Override
     public String getModuleName() {
