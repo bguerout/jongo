@@ -26,7 +26,7 @@ public class JacksonConfig {
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    public JacksonConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
+    JacksonConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
         this.mapper = mapper;
         this.readerCallback = readerCallback;
         this.writerCallback = writerCallback;
