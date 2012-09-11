@@ -17,9 +17,30 @@
 package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
-public interface ObjectMapperBehavior {
+public class JacksonConfig {
 
-    void configure(ObjectMapper mapper);
+    private ObjectMapper mapper;
+    private ReaderCallback readerCallback;
+    private WriterCallback writerCallback;
 
+    public JacksonConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
+        this.mapper = mapper;
+        this.readerCallback = readerCallback;
+        this.writerCallback = writerCallback;
+    }
+
+    ObjectMapper getObjectMapper() {
+        return mapper;
+    }
+
+    public ObjectReader getReader(Class<?> clazz) {
+        return readerCallback.getReader(mapper, clazz);
+    }
+
+    public ObjectWriter getWriter(Object pojo) {
+        return writerCallback.getWriter(mapper, pojo);
+    }
 }

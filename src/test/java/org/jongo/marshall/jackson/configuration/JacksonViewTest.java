@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mongodb.DBObject;
-import org.jongo.marshall.jackson.configuration.DeserializationBehavior;
-import org.jongo.marshall.jackson.configuration.JacksonConfiguration;
-import org.jongo.marshall.jackson.configuration.SerializationBehavior;
+import org.jongo.marshall.jackson.JacksonProcessor;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;
@@ -32,6 +30,14 @@ import static org.jongo.util.BSON.bsonify;
 
 public class JacksonViewTest {
 
+
+    private JacksonProcessor createProcessorWithView(final Class<?> viewClass) {
+        JacksonConfig conf = JacksonConfigBuilder.usingJson()
+                .setReaderCallback(new ViewReaderCallback(viewClass))
+                .setWriterCallback(new ViewWriterCallback(viewClass))
+                .createConfiguration();
+        return new JacksonProcessor(conf);
+    }
 
     @Test
     public void shouldRespectJsonPublicViewOnMarshall() throws Exception {
@@ -85,30 +91,27 @@ public class JacksonViewTest {
         assertThat(fox.getGender()).isEqualTo("female");
     }
 
-    private JacksonProcessor createProcessorWithView(Class<?> viewClass) {
-        ObjectMapper objectMapper = new JacksonConfiguration()
-                .addBehaviour(new SerializationBehavior())
-                .addBehaviour(new DeserializationBehavior())
-                .addModule(new JsonModule())
-                .configureMapper(new ViewObjectMapper(viewClass));
-        return new JacksonProcessor(objectMapper);
-    }
-
-    private static class ViewObjectMapper extends ObjectMapper {
+    private static class ViewWriterCallback implements WriterCallback {
         private final Class<?> viewClass;
 
-        public ViewObjectMapper(Class<?> viewClass) {
+        public ViewWriterCallback(Class<?> viewClass) {
             this.viewClass = viewClass;
         }
 
-        @Override
-        public DeserializationConfig getDeserializationConfig() {
-            return super.getDeserializationConfig().withView(viewClass);
+        public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
+            return mapper.writerWithView(viewClass);
+        }
+    }
+
+    private static class ViewReaderCallback implements ReaderCallback {
+        private final Class<?> viewClass;
+
+        public ViewReaderCallback(Class<?> viewClass) {
+            this.viewClass = viewClass;
         }
 
-        @Override
-        public SerializationConfig getSerializationConfig() {
-            return super.getSerializationConfig().withView(viewClass);
+        public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
+            return mapper.reader(clazz).withView(viewClass);
         }
     }
 }

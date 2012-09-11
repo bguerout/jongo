@@ -18,13 +18,8 @@ package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
+public interface MapperModifier {
 
-public final class DeserializationBehavior implements ObjectMapperBehavior {
+    void modify(ObjectMapper mapper);
 
-    public void configure(ObjectMapper mapper) {
-        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(AUTO_DETECT_SETTERS, false);
-    }
 }

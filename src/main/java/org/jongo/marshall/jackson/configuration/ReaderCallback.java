@@ -16,20 +16,10 @@
 
 package org.jongo.marshall.jackson.configuration;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.ObjectReader;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
+public interface ReaderCallback {
 
-public final class SerializationBehavior implements ObjectMapperBehavior {
-
-    public void configure(ObjectMapper mapper) {
-
-        mapper.configure(AUTO_DETECT_GETTERS, false);
-        mapper.setSerializationInclusion(NON_NULL);
-        VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
-        mapper.setVisibilityChecker(checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-    }
+    ObjectReader getReader(ObjectMapper mapper, Class<?> clazz);
 }
