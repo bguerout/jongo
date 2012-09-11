@@ -26,28 +26,25 @@ import org.jongo.bson.BsonByte;
 import org.jongo.bson.BsonByteFactory;
 import org.jongo.marshall.jackson.JsonModule;
 import org.jongo.model.Friend;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingJson;
+import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingStream;
 
-public class JacksonConfigurationTest {
+public class JacksonConfigBuilderTest {
 
-    private JacksonConfiguration configuration;
-
-    @Before
-    public void setUp() throws Exception {
-        configuration = new JacksonConfiguration();
-    }
 
     @Test
     public void canAddDeserializer() throws Exception {
 
-        configuration.addDeserializer(String.class, new DoeJsonDeserializer());
+        JacksonConfig config = usingJson()
+                .addDeserializer(String.class, new DoeJsonDeserializer())
+                .createConfiguration();
 
-        ObjectMapper mapper = configuration.configureMapper(new ObjectMapper());
+        ObjectMapper mapper = config.getObjectMapper();
 
         Friend friend = mapper.readValue("{\"name\":\"robert\"}", Friend.class);
         assertThat(friend.getName()).isEqualTo("Doe");
@@ -56,9 +53,11 @@ public class JacksonConfigurationTest {
     @Test
     public void canAddSerializer() throws Exception {
 
-        configuration.addSerializer(String.class, new DoeJsonSerializer());
+        JacksonConfig conf = usingJson()
+                .addSerializer(String.class, new DoeJsonSerializer())
+                .createConfiguration();
 
-        ObjectMapper mapper = configuration.configureMapper(new ObjectMapper());
+        ObjectMapper mapper = conf.getObjectMapper();
 
         String friend = mapper.writeValueAsString(new Friend("Robert"));
         assertThat(friend).contains("\"name\":\"Doe\"");
@@ -67,21 +66,11 @@ public class JacksonConfigurationTest {
     @Test
     public void canAddModule() throws Exception {
 
-        configuration.addModule(new JsonModule());
+        JacksonConfig config = usingJson()
+                .add(new JsonModule())
+                .createConfiguration();
 
-        ObjectMapper mapper = configuration.configureMapper(new ObjectMapper());
-
-        ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
-        String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
-        assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
-    }
-
-    @Test
-    public void canCreateJsonMapper() throws Exception {
-
-        configuration.addDeserializer(String.class, new DoeJsonDeserializer());
-
-        ObjectMapper mapper = configuration.createJsonMapper();
+        ObjectMapper mapper = config.getObjectMapper();
 
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
         String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
@@ -89,11 +78,40 @@ public class JacksonConfigurationTest {
     }
 
     @Test
-    public void canCreateBsonMapper() throws Exception {
+    public void canCreateJacksonMapper() throws Exception {
 
-        configuration.addDeserializer(String.class, new DoeJsonDeserializer());
+        JacksonConfig config = usingJson()
+                .addDeserializer(String.class, new DoeJsonDeserializer())
+                .createConfiguration();
 
-        ObjectMapper mapper = configuration.createBsonMapper();
+        ObjectMapper mapper = config.getObjectMapper();
+
+        ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
+        String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
+        assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
+    }
+
+    @Test
+    public void canCreateConfigWithCustomMapper() throws Exception {
+
+        JacksonConfig config = new JacksonConfigBuilder(new ObjectMapper())
+                .addDeserializer(String.class, new DoeJsonDeserializer())
+                .createConfiguration();
+
+        ObjectMapper mapper = config.getObjectMapper();
+
+        Friend friend = mapper.readValue("{\"name\":\"robert\"}", Friend.class);
+        assertThat(friend.getName()).isEqualTo("Doe");
+    }
+
+    @Test
+    public void canCreateStreamMapper() throws Exception {
+
+        JacksonConfig config = usingStream()
+                .addDeserializer(String.class, new DoeJsonDeserializer())
+                .createConfiguration();
+
+        ObjectMapper mapper = config.getObjectMapper();
 
         BsonByte stream = BsonByteFactory.fromDBObject(new BasicDBObject("name", "robert"));
         Friend friend = mapper.readValue(stream.getData(), Friend.class);

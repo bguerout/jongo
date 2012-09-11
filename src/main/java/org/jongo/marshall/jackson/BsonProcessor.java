@@ -16,7 +16,6 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
@@ -25,31 +24,33 @@ import org.jongo.bson.BsonByteFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.JacksonConfiguration;
+import org.jongo.marshall.jackson.configuration.JacksonConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingStream;
 
 
 public class BsonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectIdFieldLocator fieldLocator;
-    private ObjectMapper mapper;
+    private final JacksonConfig config;
 
     public BsonProcessor() {
-        this(new JacksonConfiguration().createBsonMapper());
+        this(usingStream().createConfiguration());
     }
 
-    public BsonProcessor(ObjectMapper mapper) {
-        this.mapper = mapper;
+    public BsonProcessor(JacksonConfig config) {
+        this.config = config;
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
 
-        BsonByte bson = BsonByteFactory.fromDBObject(document);
+        BsonByte stream = BsonByteFactory.fromDBObject(document);
         try {
-            return mapper.readValue(bson.getData(), bson.getOffset(), bson.getSize(), clazz);
+            return config.getReader(clazz).readValue(stream.getData(), stream.getOffset(), stream.getSize());
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
@@ -60,7 +61,7 @@ public class BsonProcessor implements Unmarshaller, Marshaller {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
-            mapper.writeValue(output, obj);
+            config.getWriter(obj).writeValue(output, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }

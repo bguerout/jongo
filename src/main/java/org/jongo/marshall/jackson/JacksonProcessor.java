@@ -22,29 +22,37 @@ import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.JacksonConfiguration;
+import org.jongo.marshall.jackson.configuration.JacksonConfig;
+import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
+import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingJson;
+
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
-    private final ObjectMapper mapper;
     private final ObjectIdFieldLocator fieldLocator;
+    private final JacksonConfig config;
 
     public JacksonProcessor() {
-        this(new JacksonConfiguration().createJsonMapper());
+        this(usingJson().createConfiguration());
     }
 
-    public JacksonProcessor(ObjectMapper mapper) {
-        this.mapper = mapper;
+    public JacksonProcessor(ObjectMapper bsonMapper) {
+        this(new JacksonConfigBuilder(bsonMapper).createConfiguration());
+    }
+
+    public JacksonProcessor(JacksonConfig config) {
+        this.config = config;
         this.fieldLocator = new ObjectIdFieldLocator();
     }
+
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
         String json = document.toString();
         try {
-            return mapper.readValue(json, clazz);
+            return config.getReader(clazz).readValue(json);
         } catch (Exception e) {
             String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
             throw new MarshallingException(message, e);
@@ -54,7 +62,7 @@ public class JacksonProcessor implements Unmarshaller, Marshaller {
     public DBObject marshall(Object obj) throws MarshallingException {
         try {
             Writer writer = new StringWriter();
-            mapper.writeValue(writer, obj);
+            config.getWriter(obj.getClass()).writeValue(writer, obj);
             return (DBObject) JSON.parse(writer.toString());
         } catch (Exception e) {
             String message = String.format("Unable to marshall json from: %s", obj);
