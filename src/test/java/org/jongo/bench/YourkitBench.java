@@ -22,14 +22,16 @@ import org.junit.Test;
 
 public class YourkitBench {
 
-    private static int ITERATION = 100000;
+    private static int ITERATION = 1000000;
 
     private SaveBench saveBench;
+    private EncoderBench encoderBench;
 
     @Before
     public void setUp() throws Exception {
         saveBench = new SaveBench();
         saveBench.setUp();
+        encoderBench = new EncoderBench();
     }
 
     @Test
@@ -46,9 +48,13 @@ public class YourkitBench {
 
     @Test
     @Ignore
-    public void encodeWithStreamJongo() throws Exception {
-        EncoderBench bench = new EncoderBench();
+    public void encodeWithDriver() throws Exception {
+        encoderBench.timeEncodeWithDriver(ITERATION);
+    }
 
-        bench.timeEncodeWithStreamJongo(ITERATION + 1000000);
+    @Test
+    @Ignore
+    public void encodeWithStreamJongo() throws Exception {
+        encoderBench.timeEncodeWithStreamJongo(ITERATION);
     }
 }

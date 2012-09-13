@@ -27,13 +27,17 @@ import static org.jongo.bench.BenchUtil.*;
 
 public class SaveBench extends SimpleBenchmark {
 
-    @Param({"10"})
-    int size;
+    @Param({"1"})
+    int size = 1;
+    @Param("NORMAL")
+    WriteConcern concern = WriteConcern.NORMAL;
+
     private MongoCollection defaultCollection;
     private DBCollection dbCollection;
     private MongoCollection streamCollection;
 
     protected void setUp() throws Exception {
+
         defaultCollection = getCollectionFromJongo();
         streamCollection = getStreamCollectionFromJongo();
         dbCollection = getCollectionFromDriver();
@@ -44,7 +48,7 @@ public class SaveBench extends SimpleBenchmark {
     public void timeSaveWithDriver(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                dbCollection.save(createDBOFriend(reps + j), WriteConcern.SAFE);
+                dbCollection.save(createDBOFriend(reps + j), concern);
             }
         }
     }
@@ -52,7 +56,7 @@ public class SaveBench extends SimpleBenchmark {
     public void timeSaveWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                defaultCollection.save(createFriend(reps + j), WriteConcern.SAFE);
+                defaultCollection.save(createFriend(reps + j), concern);
             }
         }
     }
@@ -60,12 +64,12 @@ public class SaveBench extends SimpleBenchmark {
     public void timeSaveWithStreamJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                streamCollection.save(createFriend(reps + j), WriteConcern.SAFE);
+                streamCollection.save(createFriend(reps + j), concern);
             }
         }
     }
 
     public static void main(String[] args) {
-        Runner.main(SaveBench.class, new String[]{"-Dsize=1,10,100,1000"});
+        Runner.main(SaveBench.class, new String[]{"-Dsize=1", "-Dconcern=SAFE"});
     }
 }

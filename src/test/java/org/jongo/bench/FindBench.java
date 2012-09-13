@@ -31,8 +31,8 @@ import static org.jongo.bench.BenchUtil.*;
 
 public class FindBench extends SimpleBenchmark {
 
-    @Param({"10"})
-    int size = 10;
+    @Param({"1"})
+    int size = 1;
     private MongoCollection defaultCollection;
     private MongoCollection streamCollection;
     private DBCollection dbCollection;
