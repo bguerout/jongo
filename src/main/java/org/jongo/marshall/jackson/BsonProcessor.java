@@ -28,6 +28,7 @@ import org.jongo.marshall.jackson.configuration.JacksonConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingStream;
 
@@ -74,7 +75,10 @@ public class BsonProcessor implements Unmarshaller, Marshaller {
     }
 
     public void setDocumentGeneratedId(Object target, Object id) {
-        fieldLocator.findFieldAndUpdate(target, id);
+        Field field = fieldLocator.findFieldOrNull(target.getClass());
+        if (field != null) {
+            fieldLocator.updateField(target, id, field);
+        }
     }
 
 }
