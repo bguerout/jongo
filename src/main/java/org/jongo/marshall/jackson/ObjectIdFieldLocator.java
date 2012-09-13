@@ -27,14 +27,7 @@ class ObjectIdFieldLocator {
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
 
-    public void findFieldAndUpdate(Object target, Object id) {
-        Field field = findFieldOrNull(target.getClass());
-        if (field != null) {
-            updateField(target, id, field);
-        }
-    }
-
-    private void updateField(Object target, Object id, Field field) {
+    public void updateField(Object target, Object id, Field field) {
         try {
 
             field.setAccessible(true);
@@ -47,7 +40,7 @@ class ObjectIdFieldLocator {
         }
     }
 
-    protected Field findFieldOrNull(Class<?> clazz) {
+    public Field findFieldOrNull(Class<?> clazz) {
 
         if (idFields.containsKey(clazz)) {
             return idFields.get(clazz);
