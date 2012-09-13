@@ -28,6 +28,8 @@ import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.BsonProcessor;
 import org.jongo.marshall.jackson.JacksonProcessor;
 
+import java.util.Map;
+
 import static org.jongo.bench.BenchUtil.createDBOFriend;
 import static org.jongo.bench.BenchUtil.createFriend;
 
@@ -35,33 +37,74 @@ public class EncoderBench extends SimpleBenchmark {
 
     private final BsonProcessor bsonProcessor = new BsonProcessor();
     private final JacksonProcessor jacksonProcessor = new JacksonProcessor();
+    private final DBApiLayerEmulator dbApiLayer = new DBApiLayerEmulator();
 
     public void timeEncodeWithDriver(int reps) {
         for (int i = 0; i < reps; i++) {
             DBObject dbo = createDBOFriend(i);
-            encode(dbo, DefaultDBEncoder.FACTORY);
+            dbApiLayer.encode(DefaultDBEncoder.FACTORY, dbo);
         }
     }
 
     public void timeEncodeWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             DBObject friend = jacksonProcessor.marshall(createFriend(i));
-            encode(friend, BsonDBEncoder.FACTORY);
+            dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }
 
     public void timeEncodeWithStreamJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             DBObject friend = bsonProcessor.marshall(createFriend(i));
-            encode(friend, BsonDBEncoder.FACTORY);
+            dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }
 
-    private byte[] encode(DBObject friend, DBEncoderFactory factory) {
-        DBEncoder encoder = factory.create();
-        OutputBuffer buffer = new BasicOutputBuffer();
-        encoder.writeObject(buffer, friend);
-        return buffer.toByteArray();
+    private static class DBApiLayerEmulator {
+
+        private byte[] encode(DBEncoderFactory factory, DBObject dbo) {
+            if (dbo.get("_id") == null || dbo.isPartialObject())
+                throw new RuntimeException();
+
+            _checkKeys(dbo);
+
+            DBEncoder encoder = factory.create();
+            OutputBuffer buffer = new BasicOutputBuffer();
+            encoder.writeObject(buffer, dbo);
+            return buffer.toByteArray();
+        }
+
+        private void _checkKeys(DBObject o) {
+            for (String s : o.keySet()) {
+                validateKey(s);
+                Object inner = o.get(s);
+                if (inner instanceof DBObject) {
+                    _checkKeys((DBObject) inner);
+                } else if (inner instanceof Map) {
+                    _checkKeys((Map<String, Object>) inner);
+                }
+            }
+        }
+
+        private void _checkKeys(Map<String, Object> o) {
+            for (String s : o.keySet()) {
+                validateKey(s);
+                Object inner = o.get(s);
+                if (inner instanceof DBObject) {
+                    _checkKeys((DBObject) inner);
+                } else if (inner instanceof Map) {
+                    _checkKeys((Map<String, Object>) inner);
+                }
+            }
+        }
+
+        private void validateKey(String s) {
+            if (s.contains("."))
+                throw new IllegalArgumentException("fields stored in the db can't have . in them. (Bad Key: '" + s + "')");
+            if (s.startsWith("$"))
+                throw new IllegalArgumentException("fields stored in the db can't start with '$' (Bad Key: '" + s + "')");
+        }
+
     }
 
     public static void main(String[] args) {
