@@ -85,6 +85,8 @@ task('weave-html', ['prepare'], function (params) {
             window.document.getElementsByTagName("head")[0].appendChild(script);
             script.text = gaScript;
 
+            $('.jsdom').remove();
+
             fs.writeFileSync(htmlFile, $("html").html(), "utf8");
         }
     });
