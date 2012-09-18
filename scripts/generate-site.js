@@ -81,6 +81,7 @@ task('weave-html', ['prepare'], function (params) {
             var gaScript = fs.readFileSync("scripts/google-analytics.js", "utf8");
             var script = window.document.createElement("script");
             script.type = "text/javascript";
+            script.id = "ga-script";
             window.document.getElementsByTagName("head")[0].appendChild(script);
             script.text = gaScript;
 
