@@ -21,7 +21,7 @@ var path = require('path');
 var util = require('util')
 var wrench = require('wrench');
 
-var outputFolder = path.resolve("./generated-site");
+var outputFolder = path.resolve("./target/jongo_org_website");
 
 task('prepare', [], function (params) {
     if (path.existsSync(outputFolder)) {

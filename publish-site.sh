@@ -34,7 +34,7 @@ stop_on_error "Jake script has failed"
 
 #Trash current files and apply new sources
 git checkout -b gh-pages origin/gh-pages
-git rm -r --ignore-unmatch * && mv generated-site/* ./ && rm -rf generated-site/ && git add ./ && git status
+git rm -r --ignore-unmatch * && mv target/jongo_org_website/* ./ && rm -rf target/ && git add ./ && git status
 stop_on_error "Unable to apply sources from site branch on gh-pages branch"
 
 if [ "$DRY_RUN" = "false" ]; then
