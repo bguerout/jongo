@@ -19,9 +19,9 @@ else
     make install
     rm -rf out/
     popd
+    zip -r nodejs-$NODE_VERSION-cloudbees.zip $NODE_SOURCE_DIR
 fi
 
-zip -r nodejs-$NODE_VERSION-cloudbees.zip $NODE_SOURCE_DIR
 export PATH=$PWD/$NODE_SOURCE_DIR/installed/bin:${PATH}
 echo "nodejs $NODE_VERSION has been installed."
 
