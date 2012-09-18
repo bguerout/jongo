@@ -13,7 +13,6 @@ stop_on_error() {
 npm install express@2.5.8 jake@0.2.18 jsdom@0.2.12 less@1.2.2 wrench@1.3.7
 stop_on_error "Unable to install npm dependencies"
 
-
 rm -rf ./$SITE_FOLDER
 node node_modules/jake/bin/cli.js -f scripts/generate-site.js
 stop_on_error "Unable to generate site"

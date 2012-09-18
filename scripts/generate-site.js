@@ -22,17 +22,17 @@ var util = require('util')
 var wrench = require('wrench');
 
 var outputFolder = path.resolve("./generated-site");
-var scriptFile = path.resolve("./apply_changes.sh");
 
 task('prepare', [], function (params) {
     if (path.existsSync(outputFolder)) {
         console.log("Deleting folder: " + outputFolder);
         wrench.rmdirSyncRecursive(outputFolder);
     }
-    if (path.existsSync(scriptFile)) {
-        fs.unlinkSync(scriptFile)
-    }
+
     wrench.mkdirSyncRecursive(outputFolder);
+
+    wrench.copyDirSyncRecursive('assets', path.join(outputFolder, "assets"));
+    wrench.copyDirSyncRecursive('tags', path.join(outputFolder, "tags"));
 });
 
 desc("Compile less file into a css file")
@@ -94,15 +94,7 @@ task('dns', ['prepare'], function (params) {
     fs.writeFileSync(cnameFile, "jongo.org");
 });
 
-task('package', ['prepare', 'lessify', 'weave-html', 'dns'], function (params) {
-
-    wrench.copyDirSyncRecursive('assets/img', path.join(outputFolder, "assets/img"));
-    wrench.copyDirSyncRecursive('assets/js', path.join(outputFolder, "assets/js"));
-    wrench.copyDirSyncRecursive('assets/css', path.join(outputFolder, "assets/css"));
-    wrench.copyDirSyncRecursive('tags', path.join(outputFolder, "tags"));
-});
-
 desc("Create Jongo site")
-task('default', ['package'], function (params) {
+task('default', ['prepare', 'lessify', 'weave-html', 'dns'], function (params) {
 });
 
