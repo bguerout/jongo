@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 
 <!--
   ~ Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
@@ -17,33 +17,44 @@
   -->
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Jongo {mongo-java-driver: 'with ease'}</title>
 
-    <link href="assets/img/jongo_favicon.png" rel="shortcut icon">
-    <link href="assets/css/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
-    <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
-    <link href="assets/css/prettify.css" type="text/css" rel="stylesheet"/>
+    <link href="assets/img/jongo_favicon.png" rel="shortcut icon" />
+    
+    <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link href="assets/css/prettify.css" type="text/css" rel="stylesheet" />
 
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
     <![endif]-->
-    <script type="text/javascript" src="assets/js/less.min.js" data-env="dev"></script>
+    
     <script type="text/javascript" src="assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap-scrollspy.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap-dropdown.js"></script>
     <script type="text/javascript" src="assets/js/prettify.js"></script>
     <script type="text/javascript" src="assets/js/jongo.js"></script>
 
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="pragma" content="no-cache">
-    <meta charset="utf-8">
-    <meta name="description"
-          content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)"/>
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta charset="utf-8" />
+    <meta name="description" content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)" />
 
-</head>
+<link href="assets/css/jongo.css" type="text/css" rel="stylesheet" /><script type="text/javascript" id="ga-script">var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-30202616-1']);
+_gaq.push(['_trackPageview']);
+
+(function () {
+    var ga = document.createElement('script');
+    ga.type = 'text/javascript';
+    ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(ga, s);
+})();
+</script></head>
 
 <body data-spy="scroll">
 
@@ -55,7 +66,7 @@
                 <span class="i-bar"></span>
                 <span class="i-bar"></span>
             </a>
-            <a class="brand" href="#overview">Jongo</a>
+            <a class="brand" href="/">Jongo 0.2</a>
 
             <div class="nav-collapse">
                 <ul class="nav">
@@ -78,7 +89,7 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Versions<b class="caret"></b></a>
-                       <ul class="dropdown-menu">
+                        <ul class="dropdown-menu">
                             <li> <a href="/">Current (0.3)</a></li>
                             <li><a href="/tags/0.1/0.1.html">0.1 Documentation</a></li>
                             <li><a href="/tags/0.2/0.2.html">0.2 Documentation</a></li>
@@ -92,48 +103,17 @@
 
 <div class="container">
 
-<section id="overview">
-    <div class="row">
-        <div class="span12 intro">
-
-            <h1><img src="assets/img/jongo_big.png">Jongo</h1>
-
-            <div class="row">
-                <div class="span12 pitch">Query in <strong>Java</strong> as in <strong>Mongo</strong> shell</div>
-            </div>
-
-            <div class="row">
-                <div class="span9 offset2">
-                    <span class="label">Shell</span>
-                    <pre class="prettyprint maincode">db.friends.find({"age": {$gt: 18}});</pre>
-
-                    <span class="label label-warning">Java Driver</span>
-                    <pre class="prettyprint maincode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt", 18)));</pre>
-
-                    <span class="label label-success">Jongo</span>
-                    <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class);</pre>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="usage" class="offset1">
+<section class="offset1">
     <div class="page-header">
-        <h1>Usage</h1>
+        <h1>Document for Jongo v0.2</h1>
     </div>
     <div class="row">
-        <div class="span9">
-		   <pre class="prettyprint">
-Mongo mongo = new Mongo("127.0.0.1" , 27017);
-Jongo jongo = new Jongo(mongo.getDB("dbname"));
-MongoCollection friends = jongo.getCollection("friends");
-
-Iterable&lt;Friend&gt; all = friends.find("{name:'John'}").as(Friend.class);
-Friend one = friends.findOne("{name:'John'}").as(Friend.class);</pre>
+        <div class="span9 warning">
+            0.2 is a deprecated version, please go to <a href="/">main page</a> to get up-to-date documentation
         </div>
     </div>
 </section>
+
 
 <section id="mapping" class="offset1">
     <div class="page-header">
@@ -275,7 +255,7 @@ friends.remove(new ObjectId("4c...e"));</pre>
 
             <p>
                 Query syntax is almost the same as in Mongo shell: copy/paste, it just works.
-                <br>Strings have to be escaped with single quotes <code>"{name: 'John'}"</code>, numbers don't <code>"{age:
+                <br />Strings have to be escaped with single quotes <code>"{name: 'John'}"</code>, numbers don't <code>"{age:
                 18}"</code>.
             </p>
 
@@ -312,15 +292,14 @@ friends.find("{}").sort("{lasttname: -1}").as(User.class);</pre>
             <h2>Query templating</h2>
 
             <p>
-                Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters can be <a
-                    href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
+                Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
                 Primitives</a> or any complex type made of those.
             </p>
 
-            <pre class="prettyprint">friends.find("{name: #, age: #}", "John", 18); //&rarr; will produce {name: 'John', age: 18}</pre>
+            <pre class="prettyprint">friends.find("{name: #, age: #}", "John", 18); //→ will produce {name: 'John', age: 18}</pre>
 <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
-friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}</pre>
+friends.find("{age: {$in:#}}", ages); //→ will produce {age: {$in:[22,63]}}</pre>
 
             <h2>Count</h2>
             <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(...)</a>.</p>
@@ -335,7 +314,7 @@ friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}
 
             <h3>New Aggregation Framework</h3>
             <p>This feature will only be available in the Mongo v2.2 release and Jongo already supports it! 
-            <br>Just use a v2.1.0+ (unstable) Mongo server.</p>
+            <br />Just use a v2.1.0+ (unstable) Mongo server.</p>
             <p>All aggregation operators are supported <code>$project, $match, $limit, $skip, $unwind, $group, $sort</code> and can be piped using <code>and(...)</code> method</p>
             <pre class="prettyprint">
 collection.aggregate("{$project:{sender:1}}")
@@ -424,7 +403,7 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshal
 
 <section id="notes" class="offset1">
     <div class="page-header">
-        <h1>Release notes (0.1&rarr;0.2)</h1>
+        <h1>Release notes (0.1→0.2)</h1>
     </div>
 
     <div class="row">
@@ -466,12 +445,12 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshal
     </div>
 </section>
 
-<hr>
+<hr />
 
 <footer class="offset1">
     <div class="row">
         <div class="span2">
-            <a href="https://jongo.ci.cloudbees.com/"><img src="assets/img/cloudbees.png"></a>
+            <a href="https://jongo.ci.cloudbees.com/"><img src="assets/img/cloudbees.png" /></a>
         </div>
         <div class="span5 offset2">
             <p>
@@ -489,4 +468,4 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), customMarshaller, customUnmarshal
 </div>
 
 </body>
-</html>
+<script class="jsdom" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
