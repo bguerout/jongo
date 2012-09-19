@@ -65,7 +65,11 @@ public class StreamProcessor implements Unmarshaller, Marshaller {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
 
-        return new LazyWriteableDBObject(output.toByteArray(), new LazyBSONCallback());
+        return convertToDBObject(output.toByteArray());
+    }
+
+    protected DBObject convertToDBObject(byte[] bytes) {
+        return new LazyWriteableDBObject(bytes, new LazyBSONCallback());
     }
 
     public void setDocumentGeneratedId(Object target, Object id) {
