@@ -37,11 +37,7 @@ public class MongoCollection {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
 
-    public static MongoCollection create(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
-        return new MongoCollection(dbCollection, marshaller, unmarshaller);
-    }
-
-    private MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
+    public MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;

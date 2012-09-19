@@ -49,7 +49,7 @@ public class MongoCollectionTest extends JongoTestCase {
     @Test
     public void canCreateACollection() throws Exception {
 
-        MongoCollection mongoCollection = MongoCollection.create(null, null, null);
+        MongoCollection mongoCollection = new MongoCollection(null, null, null);
 
         assertThat(mongoCollection).isNotNull();
     }

@@ -21,11 +21,10 @@ import com.mongodb.DBCollection;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.marshall.jackson.StreamProcessor;
 import org.jongo.marshall.stream.BeanDecoder;
 import org.jongo.marshall.stream.BeanEncoder;
 
-public final class Jongo {
+public class Jongo {
 
     private final DB database;
     private final Marshaller marshaller;
@@ -48,7 +47,7 @@ public final class Jongo {
         DBCollection dbCollection = database.getCollection(name);
         dbCollection.setDBDecoderFactory(BeanDecoder.FACTORY);
         dbCollection.setDBEncoderFactory(BeanEncoder.FACTORY);
-        return MongoCollection.create(dbCollection, marshaller, unmarshaller);
+        return new MongoCollection(dbCollection, marshaller, unmarshaller);
     }
 
     public DB getDatabase() {
