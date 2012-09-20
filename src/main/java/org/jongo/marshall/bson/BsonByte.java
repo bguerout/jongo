@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.stream;
+package org.jongo.marshall.bson;
 
-import com.mongodb.DBObject;
 
-public final class BsonStreamFactory {
+public interface BsonByte {
 
-    public static BsonStream fromDBObject(DBObject dbo) {
-        if (dbo instanceof BsonStream) {
-            return (BsonStream) dbo;
-        }
-        return new BsonObjectStream(dbo);
-    }
+    byte[] getData();
 
-    private BsonStreamFactory() {
-    }
+    int getOffset();
+
+    int getSize();
 }

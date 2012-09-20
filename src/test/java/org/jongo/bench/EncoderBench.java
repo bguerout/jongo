@@ -23,18 +23,18 @@ import com.mongodb.DBObject;
 import com.mongodb.DefaultDBEncoder;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
-import org.jongo.marshall.jackson.StreamProcessor;
-import org.jongo.marshall.stream.BeanEncoder;
+import org.jongo.marshall.jackson.BsonProcessor;
+import org.jongo.marshall.bson.BeanEncoder;
 
 import static org.jongo.bench.BenchUtil.createDBOFriend;
 import static org.jongo.bench.BenchUtil.createFriend;
 
 public class EncoderBench extends SimpleBenchmark {
 
-    private StreamProcessor processor;
+    private BsonProcessor processor;
 
     protected void setUp() throws Exception {
-        processor = new StreamProcessor();
+        processor = new BsonProcessor();
     }
 
     public void timeEncodeWithDriver(int reps) {

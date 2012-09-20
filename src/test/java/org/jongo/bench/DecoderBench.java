@@ -22,10 +22,10 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBDecoder;
 import com.mongodb.DBObject;
 import com.mongodb.DefaultDBDecoder;
-import org.jongo.marshall.jackson.StreamProcessor;
-import org.jongo.marshall.stream.BeanDecoder;
-import org.jongo.marshall.stream.BsonStream;
-import org.jongo.marshall.stream.BsonStreamFactory;
+import org.jongo.marshall.bson.BsonByteFactory;
+import org.jongo.marshall.jackson.BsonProcessor;
+import org.jongo.marshall.bson.BeanDecoder;
+import org.jongo.marshall.bson.BsonByte;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -35,16 +35,16 @@ public class DecoderBench extends SimpleBenchmark {
 
     private static final int NB_DOCS = 1000000;
 
-    private StreamProcessor processor;
+    private BsonProcessor processor;
     private byte[][] documents = new byte[NB_DOCS][];
 
     @Override
     protected void setUp() throws Exception {
-        processor = new StreamProcessor();
+        processor = new BsonProcessor();
         for (int i = 0; i < NB_DOCS; i++) {
             DBObject dbObject = createDBOFriend(i);
-            BsonStream stream = BsonStreamFactory.fromDBObject(dbObject);
-            documents[i] = stream.getData();
+            BsonByte bson = BsonByteFactory.fromDBObject(dbObject);
+            documents[i] = bson.getData();
         }
     }
 

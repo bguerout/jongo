@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.stream;
+package org.jongo.marshall.bson;
 
 import com.mongodb.*;
 import org.bson.LazyBSONDecoder;
@@ -67,7 +67,7 @@ public final class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            DBObject dbo = new ByteArrayBsonStream(data, offset, this);
+            DBObject dbo = new ReadOnlyDBObject(data, offset, this);
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {

@@ -23,33 +23,33 @@ import org.bson.LazyBSONCallback;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.stream.BsonStream;
-import org.jongo.marshall.stream.BsonStreamFactory;
+import org.jongo.marshall.bson.BsonByteFactory;
+import org.jongo.marshall.bson.BsonByte;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class StreamProcessor implements Unmarshaller, Marshaller {
+public class BsonProcessor implements Unmarshaller, Marshaller {
 
     protected static final ObjectMapperFactory OBJECT_MAPPER_FACTORY = new ObjectMapperFactory();
 
     private final ObjectIdFieldLocator fieldLocator;
     private ObjectMapper mapper;
 
-    public StreamProcessor() {
+    public BsonProcessor() {
         this(OBJECT_MAPPER_FACTORY.createBsonMapper());
     }
 
-    public StreamProcessor(ObjectMapper mapper) {
+    public BsonProcessor(ObjectMapper mapper) {
         this.mapper = mapper;
         this.fieldLocator = new ObjectIdFieldLocator();
     }
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
 
-        BsonStream stream = BsonStreamFactory.fromDBObject(document);
+        BsonByte bson = BsonByteFactory.fromDBObject(document);
         try {
-            return mapper.readValue(stream.getData(), stream.getOffset(), stream.getSize(), clazz);
+            return mapper.readValue(bson.getData(), bson.getOffset(), bson.getSize(), clazz);
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);

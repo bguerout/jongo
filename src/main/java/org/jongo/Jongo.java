@@ -21,8 +21,8 @@ import com.mongodb.DBCollection;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.marshall.stream.BeanDecoder;
-import org.jongo.marshall.stream.BeanEncoder;
+import org.jongo.marshall.bson.BeanDecoder;
+import org.jongo.marshall.bson.BeanEncoder;
 
 public class Jongo {
 

@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.stream;
+package org.jongo.marshall.bson;
 
+import com.mongodb.LazyDBObject;
+import org.bson.LazyBSONCallback;
 
-public interface BsonStream {
+class ReadOnlyDBObject extends LazyDBObject implements BsonByte {
 
-    byte[] getData();
+    private final int offset;
 
-    int getOffset();
+    ReadOnlyDBObject(byte[] data, int offset, LazyBSONCallback cbk) {
+        super(data, offset, cbk);
+        this.offset = offset;
+    }
 
-    int getSize();
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getSize() {
+        return getBSONSize();
+    }
+
+    public byte[] getData() {
+        return _input.array();
+    }
 }

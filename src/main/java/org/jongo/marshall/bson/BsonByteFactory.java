@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.bson;
 
-import org.jongo.util.compatibility.CompatibilitySuite;
-import org.jongo.util.compatibility.TestContext;
-import org.junit.runner.RunWith;
+import com.mongodb.DBObject;
 
-import static org.junit.runners.Parameterized.Parameters;
+public final class BsonByteFactory {
 
-@RunWith(CompatibilitySuite.class)
-public class StreamCompatibilitySuiteTest {
-
-    @Parameters
-    public static TestContext context() {
-        return new TestContext("StreamProcessor", new BsonProcessor(), new BsonProcessor());
+    public static BsonByte fromDBObject(DBObject dbo) {
+        if (dbo instanceof BsonByte) {
+            return (BsonByte) dbo;
+        }
+        return new BufferedBsonByte(dbo);
     }
 
+    private BsonByteFactory() {
+    }
 }

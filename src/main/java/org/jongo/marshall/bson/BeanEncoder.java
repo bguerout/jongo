@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.stream;
+package org.jongo.marshall.bson;
 
 import com.mongodb.*;
 import org.bson.BSONObject;

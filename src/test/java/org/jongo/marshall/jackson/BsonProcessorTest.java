@@ -30,13 +30,13 @@ import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BSON.bsonify;
 
-public class StreamProcessorTest {
+public class BsonProcessorTest {
 
-    private StreamProcessor processor;
+    private BsonProcessor processor;
 
     @Before
     public void setUp() throws Exception {
-        this.processor = new StreamProcessor();
+        this.processor = new BsonProcessor();
     }
 
     @Test(expected = MarshallingException.class)

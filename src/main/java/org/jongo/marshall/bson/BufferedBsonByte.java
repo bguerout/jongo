@@ -14,29 +14,37 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.stream;
+package org.jongo.marshall.bson;
 
-import com.mongodb.LazyDBObject;
-import org.bson.LazyBSONCallback;
+import com.mongodb.DBEncoder;
+import com.mongodb.DefaultDBEncoder;
+import org.bson.BSONObject;
+import org.bson.io.BasicOutputBuffer;
+import org.bson.io.OutputBuffer;
 
-class ByteArrayBsonStream extends LazyDBObject implements BsonStream {
+class BufferedBsonByte implements BsonByte {
 
-    private final int offset;
+    private final OutputBuffer buffer;
 
-    ByteArrayBsonStream(byte[] data, int offset, LazyBSONCallback cbk) {
-        super(data, offset, cbk);
-        this.offset = offset;
+    BufferedBsonByte(BSONObject bsonObject) {
+        this.buffer = new BasicOutputBuffer();
+        writeDBObjectIntoBuffer(bsonObject);
+    }
+
+    private void writeDBObjectIntoBuffer(BSONObject dbo) {
+        DBEncoder dbEncoder = DefaultDBEncoder.FACTORY.create();
+        dbEncoder.writeObject(buffer, dbo);
     }
 
     public int getOffset() {
-        return offset;
+        return 0;
     }
 
     public int getSize() {
-        return getBSONSize();
+        return buffer.size();
     }
 
     public byte[] getData() {
-        return _input.array();
+        return buffer.toByteArray();
     }
 }

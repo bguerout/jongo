@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.stream;
+package org.jongo.marshall.bson;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBEncoder;
@@ -31,7 +31,7 @@ public class BeanEncoderTest {
         DBEncoder encoder = BeanEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
-        encoder.writeObject(buffer, new ByteArrayBsonStream(new byte[]{5, 0, 0, 0, 0}, 0, null));
+        encoder.writeObject(buffer, new ReadOnlyDBObject(new byte[]{5, 0, 0, 0, 0}, 0, null));
 
         assertThat(buffer.toByteArray()).isEqualTo(new byte[]{5, 0, 0, 0, 0});
 
