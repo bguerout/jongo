@@ -23,8 +23,8 @@ import com.mongodb.DBObject;
 import com.mongodb.DefaultDBEncoder;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
+import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.marshall.bson.BeanEncoder;
 
 import static org.jongo.bench.BenchUtil.createDBOFriend;
 import static org.jongo.bench.BenchUtil.createFriend;
@@ -52,7 +52,7 @@ public class EncoderBench extends SimpleBenchmark {
     public void timeEncodeWithJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             DBObject friend = processor.marshall(createFriend(i));
-            DBEncoder encoder = BeanEncoder.FACTORY.create();
+            DBEncoder encoder = BsonDBEncoder.FACTORY.create();
             OutputBuffer buffer = new BasicOutputBuffer();
 
             encoder.writeObject(buffer, friend);

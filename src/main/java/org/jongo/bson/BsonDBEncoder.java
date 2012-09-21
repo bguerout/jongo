@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.bson;
+package org.jongo.bson;
 
 import com.mongodb.*;
 import org.bson.BSONObject;
@@ -22,9 +22,12 @@ import org.bson.io.OutputBuffer;
 
 import java.io.IOException;
 
-public final class BeanEncoder implements DBEncoder {
+public final class BsonDBEncoder implements DBEncoder {
 
     public final static DBEncoderFactory FACTORY = new BeanEncoderFactory();
+
+    private BsonDBEncoder() {
+    }
 
     public int writeObject(final OutputBuffer buf, BSONObject o) {
 
@@ -39,12 +42,9 @@ public final class BeanEncoder implements DBEncoder {
         }
     }
 
-    private BeanEncoder() {
-    }
-
     private static class BeanEncoderFactory implements DBEncoderFactory {
         public DBEncoder create() {
-            return new BeanEncoder();
+            return new BsonDBEncoder();
         }
 
     }

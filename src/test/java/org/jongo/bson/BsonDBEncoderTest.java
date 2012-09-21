@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.bson;
+package org.jongo.bson;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBEncoder;
@@ -23,15 +23,15 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class BeanEncoderTest {
+public class BsonDBEncoderTest {
 
     @Test
     public void shouldPipeLazyDbObject() throws Exception {
 
-        DBEncoder encoder = BeanEncoder.FACTORY.create();
+        DBEncoder encoder = BsonDBEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
-        encoder.writeObject(buffer, new OpenedLazyDBObject(new byte[]{5, 0, 0, 0, 0}, 0, null));
+        encoder.writeObject(buffer, new LazyBsonByte(new byte[]{5, 0, 0, 0, 0}, 0, null));
 
         assertThat(buffer.toByteArray()).isEqualTo(new byte[]{5, 0, 0, 0, 0});
 
@@ -39,7 +39,7 @@ public class BeanEncoderTest {
 
     @Test
     public void shouldEncodeDBObject() throws Exception {
-        DBEncoder encoder = BeanEncoder.FACTORY.create();
+        DBEncoder encoder = BsonDBEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
         encoder.writeObject(buffer, new BasicDBObject());

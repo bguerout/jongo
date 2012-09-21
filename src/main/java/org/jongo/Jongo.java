@@ -18,11 +18,11 @@ package org.jongo;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import org.jongo.bson.BsonDBDecoder;
+import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.marshall.bson.BeanDecoder;
-import org.jongo.marshall.bson.BeanEncoder;
 
 public class Jongo {
 
@@ -45,8 +45,8 @@ public class Jongo {
 
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
-        dbCollection.setDBDecoderFactory(BeanDecoder.FACTORY);
-        dbCollection.setDBEncoderFactory(BeanEncoder.FACTORY);
+        dbCollection.setDBDecoderFactory(BsonDBDecoder.FACTORY);
+        dbCollection.setDBEncoderFactory(BsonDBEncoder.FACTORY);
         return new MongoCollection(dbCollection, marshaller, unmarshaller);
     }
 

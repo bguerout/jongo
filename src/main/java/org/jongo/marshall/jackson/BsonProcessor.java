@@ -23,8 +23,8 @@ import org.bson.LazyBSONCallback;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.bson.BsonByteFactory;
-import org.jongo.marshall.bson.BsonByte;
+import org.jongo.bson.BsonByteFactory;
+import org.jongo.bson.BsonByte;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

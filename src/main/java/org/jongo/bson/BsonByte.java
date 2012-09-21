@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.bson;
+package org.jongo.bson;
 
-import com.mongodb.DBObject;
 
-public final class BsonByteFactory {
+public interface BsonByte {
 
-    public static BsonByte fromDBObject(DBObject dbo) {
-        if (dbo instanceof BsonByte) {
-            return (BsonByte) dbo;
-        }
-        return new BufferedBsonByte(dbo);
-    }
+    byte[] getData();
 
-    private BsonByteFactory() {
-    }
+    int getOffset();
+
+    int getSize();
 }

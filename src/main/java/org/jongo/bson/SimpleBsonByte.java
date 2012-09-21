@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.bson;
+package org.jongo.bson;
 
 import com.mongodb.DBEncoder;
 import com.mongodb.DefaultDBEncoder;
@@ -22,11 +22,11 @@ import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
 
-class BufferedBsonByte implements BsonByte {
+class SimpleBsonByte implements BsonByte {
 
     private final OutputBuffer buffer;
 
-    BufferedBsonByte(BSONObject bsonObject) {
+    SimpleBsonByte(BSONObject bsonObject) {
         this.buffer = new BasicOutputBuffer();
         encode(bsonObject);
     }

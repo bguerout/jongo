@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.bson;
+package org.jongo.bson;
 
-import com.mongodb.LazyDBObject;
-import org.bson.LazyBSONCallback;
+import com.mongodb.DBObject;
 
-class OpenedLazyDBObject extends LazyDBObject implements BsonByte {
+public final class BsonByteFactory {
 
-    private final int offset;
-
-    OpenedLazyDBObject(byte[] data, int offset, LazyBSONCallback cbk) {
-        super(data, offset, cbk);
-        this.offset = offset;
+    public static BsonByte fromDBObject(DBObject dbo) {
+        if (dbo instanceof BsonByte) {
+            return (BsonByte) dbo;
+        }
+        return new SimpleBsonByte(dbo);
     }
 
-    public int getOffset() {
-        return offset;
-    }
-
-    public int getSize() {
-        return getBSONSize();
-    }
-
-    public byte[] getData() {
-        return _input.array();
+    private BsonByteFactory() {
     }
 }

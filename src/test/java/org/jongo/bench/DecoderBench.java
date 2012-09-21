@@ -22,10 +22,10 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBDecoder;
 import com.mongodb.DBObject;
 import com.mongodb.DefaultDBDecoder;
-import org.jongo.marshall.bson.BsonByteFactory;
+import org.jongo.bson.BsonByteFactory;
+import org.jongo.bson.BsonDBDecoder;
 import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.marshall.bson.BeanDecoder;
-import org.jongo.marshall.bson.BsonByte;
+import org.jongo.bson.BsonByte;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -63,7 +63,7 @@ public class DecoderBench extends SimpleBenchmark {
     public void timeDecodeWithJongo(int reps) {
         for (int i = 0; i < reps; i++) {
 
-            DBDecoder decoder = BeanDecoder.FACTORY.create();
+            DBDecoder decoder = BsonDBDecoder.FACTORY.create();
             DBObject dbo = decoder.decode(documents[i], (DBCollection) null);
 
             Friend f = processor.unmarshall(dbo, Friend.class);

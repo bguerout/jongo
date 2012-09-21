@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.bson;
+package org.jongo.bson;
 
 import com.mongodb.*;
 
 import java.util.Iterator;
 
-public final class BeanDecoder extends LazyDBDecoder implements DBDecoder {
+public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
     public final static DBDecoderFactory FACTORY = new BeanDecoderFactory();
 
-    private BeanDecoder() {
+    private BsonDBDecoder() {
     }
 
     public DBCallback getDBCallback(DBCollection collection) {
@@ -34,7 +34,7 @@ public final class BeanDecoder extends LazyDBDecoder implements DBDecoder {
     private static class BeanDecoderFactory implements DBDecoderFactory {
 
         public DBDecoder create() {
-            return new BeanDecoder();
+            return new BsonDBDecoder();
         }
     }
 
@@ -49,7 +49,7 @@ public final class BeanDecoder extends LazyDBDecoder implements DBDecoder {
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            DBObject dbo = new OpenedLazyDBObject(data, offset, this);
+            DBObject dbo = new LazyBsonByte(data, offset, this);
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {
