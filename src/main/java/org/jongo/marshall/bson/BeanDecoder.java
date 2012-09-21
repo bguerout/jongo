@@ -17,37 +17,19 @@
 package org.jongo.marshall.bson;
 
 import com.mongodb.*;
-import org.bson.LazyBSONDecoder;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 
-public final class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
+public final class BeanDecoder extends LazyDBDecoder implements DBDecoder {
 
     public final static DBDecoderFactory FACTORY = new BeanDecoderFactory();
-
-    public DBCallback getDBCallback(DBCollection collection) {
-        return new BeanDecoderCallback(collection);
-    }
-
-    public DBObject decode(byte[] b, DBCollection collection) {
-        DBCallback cbk = getDBCallback(collection);
-        cbk.reset();
-        decode(b, cbk);
-        return (DBObject) cbk.get();
-    }
-
-    public DBObject decode(InputStream in, DBCollection collection) throws IOException {
-        DBCallback cbk = getDBCallback(collection);
-        cbk.reset();
-        decode(in, cbk);
-        return (DBObject) cbk.get();
-    }
 
     private BeanDecoder() {
     }
 
+    public DBCallback getDBCallback(DBCollection collection) {
+        return new BeanDecoderCallback(collection);
+    }
 
     private static class BeanDecoderFactory implements DBDecoderFactory {
 
@@ -67,7 +49,7 @@ public final class BeanDecoder extends LazyBSONDecoder implements DBDecoder {
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            DBObject dbo = new ReadOnlyDBObject(data, offset, this);
+            DBObject dbo = new OpenedLazyDBObject(data, offset, this);
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {

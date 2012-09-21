@@ -28,10 +28,10 @@ class BufferedBsonByte implements BsonByte {
 
     BufferedBsonByte(BSONObject bsonObject) {
         this.buffer = new BasicOutputBuffer();
-        writeDBObjectIntoBuffer(bsonObject);
+        encode(bsonObject);
     }
 
-    private void writeDBObjectIntoBuffer(BSONObject dbo) {
+    private void encode(BSONObject dbo) {
         DBEncoder dbEncoder = DefaultDBEncoder.FACTORY.create();
         dbEncoder.writeObject(buffer, dbo);
     }

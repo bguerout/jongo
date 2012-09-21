@@ -19,11 +19,11 @@ package org.jongo.marshall.bson;
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
 
-class ReadOnlyDBObject extends LazyDBObject implements BsonByte {
+class OpenedLazyDBObject extends LazyDBObject implements BsonByte {
 
     private final int offset;
 
-    ReadOnlyDBObject(byte[] data, int offset, LazyBSONCallback cbk) {
+    OpenedLazyDBObject(byte[] data, int offset, LazyBSONCallback cbk) {
         super(data, offset, cbk);
         this.offset = offset;
     }

@@ -31,7 +31,7 @@ public class BeanEncoderTest {
         DBEncoder encoder = BeanEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
-        encoder.writeObject(buffer, new ReadOnlyDBObject(new byte[]{5, 0, 0, 0, 0}, 0, null));
+        encoder.writeObject(buffer, new OpenedLazyDBObject(new byte[]{5, 0, 0, 0, 0}, 0, null));
 
         assertThat(buffer.toByteArray()).isEqualTo(new byte[]{5, 0, 0, 0, 0});
 
