@@ -16,27 +16,17 @@
 
 package org.jongo.bson;
 
-import com.mongodb.LazyDBObject;
-import org.bson.LazyBSONCallback;
+import com.mongodb.DBObject;
 
-class LazyBsonByte extends LazyDBObject implements BsonByte {
+public final class BsonDocumentFactory {
 
-    private final int offset;
-
-    LazyBsonByte(byte[] data, int offset, LazyBSONCallback cbk) {
-        super(data, offset, cbk);
-        this.offset = offset;
+    public static BsonDocument fromDBObject(DBObject dbo) {
+        if (dbo instanceof BsonDocument) {
+            return (BsonDocument) dbo;
+        }
+        return new SimpleBsonDocument(dbo);
     }
 
-    public int getOffset() {
-        return offset;
-    }
-
-    public int getSize() {
-        return getBSONSize();
-    }
-
-    public byte[] getData() {
-        return _input.array();
+    private BsonDocumentFactory() {
     }
 }

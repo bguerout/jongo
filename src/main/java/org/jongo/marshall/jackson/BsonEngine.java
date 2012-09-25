@@ -19,8 +19,8 @@ package org.jongo.marshall.jackson;
 import com.mongodb.DBObject;
 import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
-import org.jongo.bson.BsonByte;
-import org.jongo.bson.BsonByteFactory;
+import org.jongo.bson.BsonDocument;
+import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
@@ -44,9 +44,9 @@ public class BsonEngine implements Unmarshaller, Marshaller {
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
 
-        BsonByte stream = BsonByteFactory.fromDBObject(document);
+        BsonDocument bson = BsonDocumentFactory.fromDBObject(document);
         try {
-            return (T) config.getReader(clazz).readValue(stream.getData(), stream.getOffset(), stream.getSize());
+            return (T) config.getReader(clazz).readValue(bson.getData(), 0, bson.getSize());
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);

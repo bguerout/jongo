@@ -49,7 +49,7 @@ public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            DBObject dbo = new LazyBsonByte(data, offset, this);
+            DBObject dbo = new LazyBsonDocument(data, offset, this);
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {

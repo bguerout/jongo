@@ -17,11 +17,9 @@
 package org.jongo.bson;
 
 
-public interface BsonByte {
+public interface BsonDocument {
 
     byte[] getData();
-
-    int getOffset();
 
     int getSize();
 }

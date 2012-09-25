@@ -16,17 +16,31 @@
 
 package org.jongo.bson;
 
-import com.mongodb.DBObject;
+import com.mongodb.DBEncoder;
+import com.mongodb.DefaultDBEncoder;
+import org.bson.BSONObject;
+import org.bson.io.BasicOutputBuffer;
+import org.bson.io.OutputBuffer;
 
-public final class BsonByteFactory {
+class SimpleBsonDocument implements BsonDocument {
 
-    public static BsonByte fromDBObject(DBObject dbo) {
-        if (dbo instanceof BsonByte) {
-            return (BsonByte) dbo;
-        }
-        return new SimpleBsonByte(dbo);
+    private final OutputBuffer buffer;
+
+    SimpleBsonDocument(BSONObject bsonObject) {
+        this.buffer = new BasicOutputBuffer();
+        encode(bsonObject);
     }
 
-    private BsonByteFactory() {
+    private void encode(BSONObject dbo) {
+        DBEncoder dbEncoder = DefaultDBEncoder.FACTORY.create();
+        dbEncoder.writeObject(buffer, dbo);
+    }
+
+    public int getSize() {
+        return buffer.size();
+    }
+
+    public byte[] getData() {
+        return buffer.toByteArray();
     }
 }
