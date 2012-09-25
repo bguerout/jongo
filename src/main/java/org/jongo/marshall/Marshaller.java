@@ -16,9 +16,9 @@
 
 package org.jongo.marshall;
 
-import com.mongodb.DBObject;
+import org.jongo.bson.BsonDocument;
 
 public interface Marshaller {
 
-    DBObject marshall(Object source) throws MarshallingException;
+    BsonDocument marshall(Object source) throws MarshallingException;
 }

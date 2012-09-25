@@ -17,6 +17,7 @@
 package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
+import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -59,8 +60,9 @@ public class JsonEngineTest {
     @Test
     public void canMarshall() {
 
-        DBObject dbo = engine.marshall(new Fox("fantastic", "roux"));
+        BsonDocument doc = engine.marshall(new Fox("fantastic", "roux"));
 
+        DBObject dbo = doc.toDBObject();
         assertThat(dbo.get("_class")).isEqualTo("org.jongo.model.Fox");
         assertThat(dbo.get("name")).isEqualTo("fantastic");
         assertThat(dbo.get("color")).isEqualTo("roux");
@@ -68,12 +70,10 @@ public class JsonEngineTest {
 
     @Test
     public void canUnmarshallJson() throws IOException {
-        DBObject document = bsonify("{'address': '22 rue des murlins'}");
+        BsonDocument document = bsonify("{'address': '22 rue des murlins'}");
 
         Friend friend = engine.unmarshall(document, Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }
-
-
 }

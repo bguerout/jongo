@@ -17,6 +17,7 @@
 package org.jongo.bson;
 
 import com.mongodb.DBEncoder;
+import com.mongodb.DBObject;
 import com.mongodb.DefaultDBEncoder;
 import org.bson.BSONObject;
 import org.bson.io.BasicOutputBuffer;
@@ -25,10 +26,12 @@ import org.bson.io.OutputBuffer;
 class SimpleBsonDocument implements BsonDocument {
 
     private final OutputBuffer buffer;
+    private final DBObject dbo;
 
-    SimpleBsonDocument(BSONObject bsonObject) {
+    SimpleBsonDocument(DBObject dbo) {
         this.buffer = new BasicOutputBuffer();
-        encode(bsonObject);
+        this.dbo = dbo;
+        encode(this.dbo);
     }
 
     private void encode(BSONObject dbo) {
@@ -40,7 +43,11 @@ class SimpleBsonDocument implements BsonDocument {
         return buffer.size();
     }
 
-    public byte[] getData() {
+    public byte[] toByteArray() {
         return buffer.toByteArray();
+    }
+
+    public DBObject toDBObject() {
+        return dbo;
     }
 }

@@ -21,6 +21,7 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
+import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 
 class Save {
@@ -48,16 +49,16 @@ class Save {
         if (objectIdUpdater.canSetObjectId(document)) {
             ObjectId id = ObjectId.get();
             objectIdUpdater.setDocumentGeneratedId(document, id);
-            dbObject = marshallDocument();
+            dbObject = marshallDocument().toDBObject();
             dbObject.put("_id", id);
         } else {
-            dbObject = marshallDocument();
+            dbObject = marshallDocument().toDBObject();
         }
 
         return collection.save(dbObject, determineWriteConcern());
     }
 
-    private DBObject marshallDocument() {
+    private BsonDocument marshallDocument() {
         try {
             return marshaller.marshall(document);
         } catch (Exception e) {

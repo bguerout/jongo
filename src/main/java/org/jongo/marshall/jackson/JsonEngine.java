@@ -18,6 +18,8 @@ package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.jongo.bson.BsonDocument;
+import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
@@ -34,13 +36,13 @@ public class JsonEngine implements Unmarshaller, Marshaller {
     public JsonEngine() {
         this(usingJson().innerConfig());
     }
-
+    
     public JsonEngine(MappingConfig config) {
         this.config = config;
     }
 
-    public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
-        String json = document.toString();
+    public <T> T unmarshall(BsonDocument document, Class<T> clazz) throws MarshallingException {
+        String json = document.toDBObject().toString();
         try {
             return (T) config.getReader(clazz).readValue(json);
         } catch (Exception e) {
@@ -49,14 +51,19 @@ public class JsonEngine implements Unmarshaller, Marshaller {
         }
     }
 
-    public DBObject marshall(Object obj) throws MarshallingException {
+    public BsonDocument marshall(Object obj) throws MarshallingException {
         try {
             Writer writer = new StringWriter();
             config.getWriter(obj.getClass()).writeValue(writer, obj);
-            return (DBObject) JSON.parse(writer.toString());
+            DBObject dbObject = createDBObjectWithDriver(writer.toString());
+            return BsonDocumentFactory.fromDBObject(dbObject);
         } catch (Exception e) {
             String message = String.format("Unable to marshall json from: %s", obj);
             throw new MarshallingException(message, e);
         }
+    }
+    
+    protected DBObject createDBObjectWithDriver(String json) {
+        return (DBObject) JSON.parse(json);
     }
 }

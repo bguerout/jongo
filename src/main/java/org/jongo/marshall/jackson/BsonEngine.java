@@ -16,9 +16,6 @@
 
 package org.jongo.marshall.jackson;
 
-import com.mongodb.DBObject;
-import com.mongodb.LazyWriteableDBObject;
-import org.bson.LazyBSONCallback;
 import org.jongo.bson.BsonDocument;
 import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.Marshaller;
@@ -42,18 +39,17 @@ public class BsonEngine implements Unmarshaller, Marshaller {
         this.config = config;
     }
 
-    public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
+    public <T> T unmarshall(BsonDocument document, Class<T> clazz) throws MarshallingException {
 
-        BsonDocument bson = BsonDocumentFactory.fromDBObject(document);
         try {
-            return (T) config.getReader(clazz).readValue(bson.getData(), 0, bson.getSize());
+            return (T) config.getReader(clazz).readValue(document.toByteArray(), 0, document.getSize());
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
         }
     }
 
-    public DBObject marshall(Object obj) throws MarshallingException {
+    public BsonDocument marshall(Object obj) throws MarshallingException {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -62,11 +58,7 @@ public class BsonEngine implements Unmarshaller, Marshaller {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
 
-        return convertToDBObject(output.toByteArray());
-    }
-
-    protected DBObject convertToDBObject(byte[] bytes) {
-        return new LazyWriteableDBObject(bytes, new LazyBSONCallback());
+        return BsonDocumentFactory.fromByteArray(output.toByteArray());
     }
 
 }

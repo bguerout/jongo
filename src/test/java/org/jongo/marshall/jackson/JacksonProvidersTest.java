@@ -112,8 +112,8 @@ public class JacksonProvidersTest {
 
         ObjectMapper mapper = config.getObjectMapper();
 
-        BsonDocument stream = BsonDocumentFactory.fromDBObject(new BasicDBObject("name", "robert"));
-        Friend friend = mapper.readValue(stream.getData(), Friend.class);
+        BsonDocument document = BsonDocumentFactory.fromDBObject(new BasicDBObject("name", "robert"));
+        Friend friend = mapper.readValue(document.toByteArray(), Friend.class);
         assertThat(friend.getName()).isEqualTo("Doe");
     }
 

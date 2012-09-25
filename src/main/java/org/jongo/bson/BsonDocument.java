@@ -17,9 +17,13 @@
 package org.jongo.bson;
 
 
+import com.mongodb.DBObject;
+
 public interface BsonDocument {
 
-    byte[] getData();
+    byte[] toByteArray();
+
+    DBObject toDBObject();
 
     int getSize();
 }
