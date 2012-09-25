@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package org.jongo.query;
+package org.jongo.marshall.jackson;
 
-import com.mongodb.util.JSON;
-import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.jackson.configuration.JacksonConfig;
+import org.jongo.query.QueryBinder;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class ParameterBinder {
+public class JacksonQueryBinder implements QueryBinder {
 
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
     private final Pattern pattern;
-    private final Marshaller marshaller;
+    private final JacksonConfig config;
 
-    ParameterBinder(Marshaller marshaller) {
-        this(marshaller, DEFAULT_TOKEN);
+    public JacksonQueryBinder(JacksonConfig config) {
+        this(config, DEFAULT_TOKEN);
     }
 
-    ParameterBinder(Marshaller marshaller, String token) {
-        this.marshaller = marshaller;
+    public JacksonQueryBinder(JacksonConfig config, String token) {
+        this.config = config;
         this.token = token;
         this.pattern = Pattern.compile(token);
     }
@@ -67,20 +69,16 @@ class ParameterBinder {
     }
 
     private String marshallParameter(Object parameter) {
-        if (BsonPrimitives.contains(parameter.getClass())) {
-            return marshallWithDriver(parameter);
-        }
-        return marshaller.marshall(parameter).toString();
-    }
-
-    private String marshallWithDriver(Object parameter) {
         try {
-            return JSON.serialize(parameter);
+            Writer writer = new StringWriter();
+            config.getWriter(parameter.getClass()).writeValue(writer, parameter);
+            return writer.toString();
         } catch (Exception e) {
             String message = String.format("Unable to marshall json from: %s", parameter);
             throw new MarshallingException(message, e);
         }
     }
+
 
     private String handleInvalidBinding(String query, Object parameter, RuntimeException e) {
         String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
@@ -104,7 +102,7 @@ class ParameterBinder {
     }
 
     private int countTokens(String template) {
-        int count =0;
+        int count = 0;
         Matcher matcher = pattern.matcher(template);
         while (matcher.find()) {
             count++;

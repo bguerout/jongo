@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-package org.jongo.query;
+package org.jongo.marshall.jackson;
 
-import com.mongodb.BasicDBObject;
-import org.jongo.marshall.Marshaller;
+import com.google.common.collect.Lists;
+import org.jongo.marshall.jackson.configuration.JacksonConfig;
+import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
+import org.jongo.model.Gender;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-public class ParameterBinderTest {
+public class JacksonQueryBinderTest {
 
-    private ParameterBinder binder;
-    private Marshaller marshaller;
+    private JacksonQueryBinder binder;
 
     @Before
     public void setUp() throws Exception {
-        marshaller = mock(Marshaller.class);
-        binder = new ParameterBinder(marshaller);
+        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        binder = new JacksonQueryBinder(config);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithInvalidParameter() throws Exception {
-
-        when(marshaller.marshall(anyObject())).thenThrow(new RuntimeException());
 
         binder.bind("{id:#}", new ErrorObject());
     }
@@ -76,21 +73,28 @@ public class ParameterBinderTest {
     }
 
     @Test
-    public void shouldDelegateNonBsonPrimitiveToMarshaller() throws Exception {
+    public void shouldSerializeListOfPrimitive() throws Exception {
+        List<String> strings = Lists.newArrayList("1", "2");
 
-        when(marshaller.marshall(anyObject())).thenReturn(new BasicDBObject("custom", "object"));
-        Object o = new Object();
+        String query = binder.bind("{test:#}", strings);
 
-        String query = binder.bind("{test:#}", o);
-
-        assertThat(query).isEqualTo("{test:{ \"custom\" : \"object\"}}");
-        verify(marshaller).marshall(o);
+        assertThat(query).isEqualTo("{test:[\"1\",\"2\"]}");
     }
+
+    @Test
+    public void shouldSerializeEnum() throws Exception {
+
+        String query = binder.bind("{test:#}", Gender.FEMALE);
+
+        assertThat(query).isEqualTo("{test:\"FEMALE\"}");
+    }
+
 
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        ParameterBinder binderWithToken = new ParameterBinder(marshaller, "@");
+        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        JacksonQueryBinder binderWithToken = new JacksonQueryBinder(config, "@");
 
         String query = binderWithToken.bind("{id:@}", 123);
 
@@ -104,6 +108,7 @@ public class ParameterBinderTest {
 
         assertThat(query).isEqualTo("123");
     }
+
 
 }
 

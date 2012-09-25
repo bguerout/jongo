@@ -22,17 +22,25 @@ import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.JacksonQueryBinder;
 import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.configuration.JacksonConfig;
+import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
+import org.jongo.query.QueryBinder;
+import org.jongo.query.QueryFactory;
 
 public class Jongo {
 
     private final DB database;
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
+    private final QueryBinder queryBinder;
 
     public Jongo(DB database) {
         this.database = database;
-        JacksonProcessor processor = new JacksonProcessor();
+        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        JacksonProcessor processor = new JacksonProcessor(config);
+        this.queryBinder = new JacksonQueryBinder(config);
         this.marshaller = processor;
         this.unmarshaller = processor;
     }
@@ -41,13 +49,15 @@ public class Jongo {
         this.database = database;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
+        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        this.queryBinder = new JacksonQueryBinder(config);
     }
 
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
         dbCollection.setDBDecoderFactory(BsonDBDecoder.FACTORY);
         dbCollection.setDBEncoderFactory(BsonDBEncoder.FACTORY);
-        return new MongoCollection(dbCollection, marshaller, unmarshaller);
+        return new MongoCollection(dbCollection, marshaller, unmarshaller, new QueryFactory(queryBinder));
     }
 
     public DB getDatabase() {

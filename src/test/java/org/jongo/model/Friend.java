@@ -26,6 +26,7 @@ public class Friend {
     private String name;
     private String address;
     private Coordinate coordinate;
+    private Gender gender;
 
     public Friend(String name) {
         this.name = name;
@@ -101,5 +102,13 @@ public class Friend {
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (coordinate != null ? coordinate.hashCode() : 0);
         return result;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public Gender getGender() {
+        return gender;
     }
 }

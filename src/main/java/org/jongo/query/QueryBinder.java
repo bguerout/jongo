@@ -16,15 +16,6 @@
 
 package org.jongo.query;
 
-import org.junit.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-
-public class BsonPrimitivesTest {
-
-    @Test
-    public void shouldContainsClassAndSubclasses() throws Exception {
-        assertThat(BsonPrimitives.contains(Number.class)).isTrue();
-        assertThat(BsonPrimitives.contains(Integer.class)).isTrue();
-    }
+public interface QueryBinder {
+    String bind(String template, Object... parameters);
 }

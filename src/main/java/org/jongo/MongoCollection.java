@@ -37,11 +37,11 @@ public class MongoCollection {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
 
-    public MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller) {
+    public MongoCollection(DBCollection dbCollection, Marshaller marshaller, Unmarshaller unmarshaller, QueryFactory queryFactory) {
         this.collection = dbCollection;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
-        this.queryFactory = new QueryFactory(marshaller);
+        this.queryFactory = queryFactory;
     }
 
     public FindOne findOne(ObjectId id) {

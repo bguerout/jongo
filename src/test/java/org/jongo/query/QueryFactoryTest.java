@@ -18,7 +18,9 @@ package org.jongo.query;
 
 import com.mongodb.BasicDBObject;
 import org.jongo.marshall.Marshaller;
-import org.jongo.model.Friend;
+import org.jongo.marshall.jackson.JacksonQueryBinder;
+import org.jongo.marshall.jackson.configuration.JacksonConfig;
+import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +35,8 @@ public class QueryFactoryTest {
     @Before
     public void setUp() throws Exception {
         marshaller = mock(Marshaller.class);
-        factory = new QueryFactory(marshaller);
+        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        factory = new QueryFactory(new JacksonQueryBinder(config));
     }
 
     @Test
@@ -51,18 +54,6 @@ public class QueryFactoryTest {
         Query query = factory.createQuery("{value:#}", 123);
 
         assertThat(query.toString()).isEqualTo("{ \"value\" : 123}");
-    }
-
-    @Test
-    public void shouldBindComplexParameterAndCreateQuery() throws Exception {
-
-        Friend robert = new Friend("robert");
-        when(marshaller.marshall(robert)).thenReturn(new BasicDBObject("name", "robert"));
-
-        Query query = factory.createQuery("{value:#}", robert);
-
-        assertThat(query.toString()).isEqualTo("{ \"value\" : { \"name\" : \"robert\"}}");
-        verify(marshaller).marshall(robert);
     }
 
     @Test

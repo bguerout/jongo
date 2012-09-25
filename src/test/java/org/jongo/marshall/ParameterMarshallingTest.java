@@ -19,10 +19,13 @@ package org.jongo.marshall;
 import org.jongo.MongoCollection;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
+import org.jongo.model.Gender;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Iterator;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -56,6 +59,21 @@ public class ParameterMarshallingTest extends JongoTestCase {
 
         long nb = collection.count("{friend.name:#}", "john");
         assertThat(nb).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldBindEnumParameter() throws Exception {
+        /* given */
+        Friend friend = new Friend("John", new Coordinate(2, 31));
+        friend.setGender(Gender.FEMALE);
+        collection.save(friend);
+
+        /* when */
+        Iterator<Friend> results = collection.find("{'gender':#}", Gender.FEMALE).as(Friend.class).iterator();
+
+        /* then */
+        assertThat(results.next().getGender()).isEqualTo(Gender.FEMALE);
+        assertThat(results.hasNext()).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
