@@ -103,7 +103,7 @@ public class CompatibilitySuite extends Suite {
             Object test = super.createTest();
             if (PARENT_CLASS.isAssignableFrom(getTestClass().getJavaClass())) {
                 JongoTestCase jongoTestCase = (JongoTestCase) test;
-                jongoTestCase.prepareMarshallingStrategy(testContext.getMarshaller(), testContext.getUnmarshaller());
+                jongoTestCase.prepareMarshallingStrategy(testContext.getProvider());
             }
             return test;
         }

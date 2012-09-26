@@ -23,11 +23,11 @@ import org.junit.runner.RunWith;
 import static org.junit.runners.Parameterized.Parameters;
 
 @RunWith(CompatibilitySuite.class)
-public class StreamCompatibilitySuiteTest {
+public class JacksonBsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext("StreamProcessor", new BsonProcessor(), new BsonProcessor());
+        return new TestContext("BsonProvider", new BsonProvider());
     }
 
 }

@@ -31,6 +31,8 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.endsWith;
+import static org.mockito.Mockito.mock;
 
 public class MongoCollectionTest extends JongoTestCase {
 
@@ -49,7 +51,7 @@ public class MongoCollectionTest extends JongoTestCase {
     @Test
     public void canCreateACollection() throws Exception {
 
-        MongoCollection mongoCollection = new MongoCollection(null, null, null, null);
+        MongoCollection mongoCollection = new MongoCollection(null, mock(Provider.class));
 
         assertThat(mongoCollection).isNotNull();
     }

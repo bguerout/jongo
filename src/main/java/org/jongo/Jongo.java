@@ -20,44 +20,28 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JsonProcessor;
-import org.jongo.marshall.jackson.JacksonQueryBinder;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
-import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
-import org.jongo.query.QueryBinder;
-import org.jongo.query.QueryFactory;
+import org.jongo.marshall.jackson.JacksonProvider;
 
 public class Jongo {
 
     private final DB database;
-    private final Marshaller marshaller;
-    private final Unmarshaller unmarshaller;
-    private final QueryBinder queryBinder;
+    private final Provider provider;
 
     public Jongo(DB database) {
         this.database = database;
-        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
-        JsonProcessor processor = new JsonProcessor(config);
-        this.queryBinder = new JacksonQueryBinder(config);
-        this.marshaller = processor;
-        this.unmarshaller = processor;
+        this.provider = new JacksonProvider();
     }
 
-    public Jongo(DB database, Marshaller marshaller, Unmarshaller unmarshaller) {
+    public Jongo(DB database, Provider provider) {
         this.database = database;
-        this.marshaller = marshaller;
-        this.unmarshaller = unmarshaller;
-        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
-        this.queryBinder = new JacksonQueryBinder(config);
+        this.provider = provider;
     }
 
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
         dbCollection.setDBDecoderFactory(BsonDBDecoder.FACTORY);
         dbCollection.setDBEncoderFactory(BsonDBEncoder.FACTORY);
-        return new MongoCollection(dbCollection, marshaller, unmarshaller, new QueryFactory(queryBinder));
+        return new MongoCollection(dbCollection, provider);
     }
 
     public DB getDatabase() {

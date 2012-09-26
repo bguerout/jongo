@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package org.jongo.util.compatibility;
+package org.jongo;
 
-import org.jongo.Provider;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.QueryBinder;
 
-public class TestContext {
+public interface Provider {
 
-    private final String contextName;
-    private final Provider provider;
+    Marshaller getMarshaller();
 
-    public TestContext(String contextName, Provider provider) {
-        this.contextName = contextName;
-        this.provider = provider;
-    }
+    Unmarshaller getUnmarshaller();
 
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public String getContextName() {
-        return contextName;
-    }
+    QueryBinder getQueryBinder();
 }
