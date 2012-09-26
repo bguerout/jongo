@@ -33,7 +33,7 @@ public class MongoCollection {
     private static final Object[] NO_PARAMETERS = {};
 
     private final DBCollection collection;
-    private final Marshaller marshaller;
+    private final Marshaller<DBObject> marshaller;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
 
@@ -41,7 +41,7 @@ public class MongoCollection {
         this.collection = dbCollection;
         this.marshaller = provider.getMarshaller();
         this.unmarshaller = provider.getUnmarshaller();
-        this.queryFactory = new QueryFactory(provider.getQueryBinder());
+        this.queryFactory = new QueryFactory(provider.getParameterMarshaller());
     }
 
     public FindOne findOne(ObjectId id) {

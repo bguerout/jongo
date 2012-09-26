@@ -16,10 +16,10 @@
 
 package org.jongo.marshall.jackson;
 
+import com.mongodb.DBObject;
 import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.query.QueryBinder;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
@@ -27,14 +27,14 @@ import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usin
 public class BsonProvider implements Provider {
 
     private final BsonProcessor processor;
-    private final JacksonQueryBinder queryBinder;
+    private final Marshaller<String> parameterMarshaller;
 
     public BsonProvider() {
         processor = new BsonProcessor(usingStream().createConfiguration());
-        queryBinder = new JacksonQueryBinder(usingJson().createConfiguration());
+        parameterMarshaller = new JacksonParameterMarshaller(usingJson().createConfiguration());
     }
 
-    public Marshaller getMarshaller() {
+    public Marshaller<DBObject> getMarshaller() {
         return processor;
     }
 
@@ -42,7 +42,7 @@ public class BsonProvider implements Provider {
         return processor;
     }
 
-    public QueryBinder getQueryBinder() {
-        return queryBinder;
+    public Marshaller<String> getParameterMarshaller() {
+        return parameterMarshaller;
     }
 }

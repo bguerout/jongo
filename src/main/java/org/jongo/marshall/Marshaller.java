@@ -16,11 +16,9 @@
 
 package org.jongo.marshall;
 
-import com.mongodb.DBObject;
+public interface Marshaller<T> {
 
-public interface Marshaller {
-
-    DBObject marshall(Object obj) throws MarshallingException;
+    T marshall(Object obj) throws MarshallingException;
 
     void setDocumentGeneratedId(Object target, Object id);
 }

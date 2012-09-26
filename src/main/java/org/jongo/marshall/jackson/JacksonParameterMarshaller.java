@@ -16,33 +16,33 @@
 
 package org.jongo.marshall.jackson;
 
-import com.mongodb.DBObject;
-import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
-import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 
-public class JacksonProvider implements Provider {
+import java.io.StringWriter;
+import java.io.Writer;
 
-    private final JsonProcessor processor;
-    private final Marshaller<String> parameterMarshaller;
+public class JacksonParameterMarshaller implements Marshaller<String> {
 
-    public JacksonProvider() {
-        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
-        processor = new JsonProcessor(config);
-        parameterMarshaller = new JacksonParameterMarshaller(config);
+    private final MappingConfig config;
+
+
+    public JacksonParameterMarshaller(MappingConfig config) {
+        this.config = config;
     }
 
-    public Marshaller<DBObject> getMarshaller() {
-        return processor;
+    public String marshall(Object parameter) {
+        try {
+            Writer writer = new StringWriter();
+            config.getWriter(parameter.getClass()).writeValue(writer, parameter);
+            return writer.toString();
+        } catch (Exception e) {
+            String message = String.format("Unable to marshall json from: %s", parameter);
+            throw new MarshallingException(message, e);
+        }
     }
 
-    public Unmarshaller getUnmarshaller() {
-        return processor;
-    }
-
-    public Marshaller<String> getParameterMarshaller() {
-        return parameterMarshaller;
+    public void setDocumentGeneratedId(Object target, Object id) {
     }
 }

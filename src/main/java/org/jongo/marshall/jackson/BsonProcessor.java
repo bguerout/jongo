@@ -32,8 +32,7 @@ import java.lang.reflect.Field;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
 
-
-public class BsonProcessor implements Unmarshaller, Marshaller {
+public class BsonProcessor implements Unmarshaller, Marshaller<DBObject> {
 
     private final ObjectIdFieldLocator fieldLocator;
     private final MappingConfig config;

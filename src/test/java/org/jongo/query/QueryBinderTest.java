@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.query;
 
 import com.google.common.collect.Lists;
+import org.jongo.marshall.jackson.JacksonParameterMarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 import org.jongo.model.Gender;
@@ -28,14 +29,15 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JacksonQueryBinderTest {
+public class QueryBinderTest {
 
-    private JacksonQueryBinder binder;
+    private QueryBinder binder;
 
     @Before
     public void setUp() throws Exception {
         MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
-        binder = new JacksonQueryBinder(config);
+        JacksonParameterMarshaller parameterMarshaller = new JacksonParameterMarshaller(config);
+        binder = new QueryBinder(parameterMarshaller);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -94,7 +96,8 @@ public class JacksonQueryBinderTest {
     public void shouldBindParameterWithCustomToken() throws Exception {
 
         MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
-        JacksonQueryBinder binderWithToken = new JacksonQueryBinder(config, "@");
+        JacksonParameterMarshaller parameterMarshaller = new JacksonParameterMarshaller(config);
+        QueryBinder binderWithToken = new QueryBinder(parameterMarshaller, "@");
 
         String query = binderWithToken.bind("{id:@}", 123);
 

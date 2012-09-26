@@ -31,7 +31,7 @@ import java.lang.reflect.Field;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 
-public class JsonProcessor implements Unmarshaller, Marshaller {
+public class JsonProcessor implements Unmarshaller, Marshaller<DBObject> {
 
     private final ObjectIdFieldLocator fieldLocator;
     private final MappingConfig config;
