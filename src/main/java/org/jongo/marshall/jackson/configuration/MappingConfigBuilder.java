@@ -31,7 +31,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-public final class JacksonConfigBuilder {
+public final class MappingConfigBuilder {
 
     private final SimpleModule module;
     private final ArrayList<MapperModifier> modifiers;
@@ -39,7 +39,7 @@ public final class JacksonConfigBuilder {
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    public JacksonConfigBuilder(ObjectMapper mapper) {
+    public MappingConfigBuilder(ObjectMapper mapper) {
         this.mapper = mapper;
         this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
@@ -48,17 +48,17 @@ public final class JacksonConfigBuilder {
         add(module);
     }
 
-    public <T> JacksonConfigBuilder addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
+    public <T> MappingConfigBuilder addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
         module.addDeserializer(type, deserializer);
         return this;
     }
 
-    public <T> JacksonConfigBuilder addSerializer(Class<T> type, JsonSerializer<T> serializer) {
+    public <T> MappingConfigBuilder addSerializer(Class<T> type, JsonSerializer<T> serializer) {
         module.addSerializer(type, serializer);
         return this;
     }
 
-    public JacksonConfigBuilder add(final Module module) {
+    public MappingConfigBuilder add(final Module module) {
         modifiers.add(new MapperModifier() {
             public void modify(ObjectMapper mapper) {
                 mapper.registerModule(module);
@@ -67,38 +67,38 @@ public final class JacksonConfigBuilder {
         return this;
     }
 
-    public JacksonConfigBuilder add(MapperModifier modifier) {
+    public MappingConfigBuilder add(MapperModifier modifier) {
         modifiers.add(modifier);
         return this;
     }
 
-    public JacksonConfigBuilder setReaderCallback(ReaderCallback readerCallback) {
+    public MappingConfigBuilder setReaderCallback(ReaderCallback readerCallback) {
         this.readerCallback = readerCallback;
         return this;
     }
 
-    public JacksonConfigBuilder setWriterCallback(WriterCallback writerCallback) {
+    public MappingConfigBuilder setWriterCallback(WriterCallback writerCallback) {
         this.writerCallback = writerCallback;
         return this;
     }
 
-    public JacksonConfig createConfiguration() {
+    public MappingConfig createConfiguration() {
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
         }
-        return new JacksonConfig(mapper, readerCallback, writerCallback);
+        return new MappingConfig(mapper, readerCallback, writerCallback);
     }
 
-    public static JacksonConfigBuilder usingJson() {
-        return new JacksonConfigBuilder(new ObjectMapper())
+    public static MappingConfigBuilder usingJson() {
+        return new MappingConfigBuilder(new ObjectMapper())
                 .add(new JsonModule())
                 .add(new SerializationModifier())
                 .add(new DeserializationModifier());
     }
 
-    public static JacksonConfigBuilder usingStream() {
+    public static MappingConfigBuilder usingStream() {
         BsonFactory bsonFactory = MongoBsonFactory.createFactory();
-        return new JacksonConfigBuilder(new ObjectMapper(bsonFactory))
+        return new MappingConfigBuilder(new ObjectMapper(bsonFactory))
                 .add(new BsonModule())
                 .add(new SerializationModifier())
                 .add(new DeserializationModifier());

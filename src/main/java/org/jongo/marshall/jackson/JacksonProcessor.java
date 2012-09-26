@@ -22,29 +22,29 @@ import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.JacksonConfig;
-import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
 
-import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingJson;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 
 public class JacksonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectIdFieldLocator fieldLocator;
-    private final JacksonConfig config;
+    private final MappingConfig config;
 
     public JacksonProcessor() {
         this(usingJson().createConfiguration());
     }
 
     public JacksonProcessor(ObjectMapper bsonMapper) {
-        this(new JacksonConfigBuilder(bsonMapper).createConfiguration());
+        this(new MappingConfigBuilder(bsonMapper).createConfiguration());
     }
 
-    public JacksonProcessor(JacksonConfig config) {
+    public JacksonProcessor(MappingConfig config) {
         this.config = config;
         this.fieldLocator = new ObjectIdFieldLocator();
     }

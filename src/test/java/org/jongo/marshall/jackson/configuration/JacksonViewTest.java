@@ -32,7 +32,7 @@ public class JacksonViewTest {
 
 
     private JacksonProcessor createProcessorWithView(final Class<?> viewClass) {
-        JacksonConfig conf = JacksonConfigBuilder.usingJson()
+        MappingConfig conf = MappingConfigBuilder.usingJson()
                 .setReaderCallback(new ViewReaderCallback(viewClass))
                 .setWriterCallback(new ViewWriterCallback(viewClass))
                 .createConfiguration();

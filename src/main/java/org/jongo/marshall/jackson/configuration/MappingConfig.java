@@ -20,13 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class JacksonConfig {
+public class MappingConfig {
 
     private ObjectMapper mapper;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    JacksonConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
+    MappingConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
         this.mapper = mapper;
         this.readerCallback = readerCallback;
         this.writerCallback = writerCallback;

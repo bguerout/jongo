@@ -17,8 +17,8 @@
 package org.jongo.marshall.jackson;
 
 import com.google.common.collect.Lists;
-import org.jongo.marshall.jackson.configuration.JacksonConfig;
-import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 import org.jongo.model.Gender;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
@@ -34,7 +34,7 @@ public class JacksonQueryBinderTest {
 
     @Before
     public void setUp() throws Exception {
-        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
         binder = new JacksonQueryBinder(config);
     }
 
@@ -93,7 +93,7 @@ public class JacksonQueryBinderTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
         JacksonQueryBinder binderWithToken = new JacksonQueryBinder(config, "@");
 
         String query = binderWithToken.bind("{id:@}", 123);

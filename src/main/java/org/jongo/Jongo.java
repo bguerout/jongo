@@ -22,10 +22,10 @@ import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JacksonQueryBinder;
 import org.jongo.marshall.jackson.JacksonProcessor;
-import org.jongo.marshall.jackson.configuration.JacksonConfig;
-import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
+import org.jongo.marshall.jackson.JacksonQueryBinder;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 import org.jongo.query.QueryBinder;
 import org.jongo.query.QueryFactory;
 
@@ -38,7 +38,7 @@ public class Jongo {
 
     public Jongo(DB database) {
         this.database = database;
-        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
         JacksonProcessor processor = new JacksonProcessor(config);
         this.queryBinder = new JacksonQueryBinder(config);
         this.marshaller = processor;
@@ -49,7 +49,7 @@ public class Jongo {
         this.database = database;
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
-        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
         this.queryBinder = new JacksonQueryBinder(config);
     }
 

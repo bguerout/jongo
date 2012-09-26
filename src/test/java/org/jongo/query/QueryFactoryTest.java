@@ -19,8 +19,8 @@ package org.jongo.query;
 import com.mongodb.BasicDBObject;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.jackson.JacksonQueryBinder;
-import org.jongo.marshall.jackson.configuration.JacksonConfig;
-import org.jongo.marshall.jackson.configuration.JacksonConfigBuilder;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class QueryFactoryTest {
     @Before
     public void setUp() throws Exception {
         marshaller = mock(Marshaller.class);
-        JacksonConfig config = JacksonConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
         factory = new QueryFactory(new JacksonQueryBinder(config));
     }
 

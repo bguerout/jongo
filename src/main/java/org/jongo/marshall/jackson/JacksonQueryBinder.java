@@ -17,7 +17,7 @@
 package org.jongo.marshall.jackson;
 
 import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.jackson.configuration.JacksonConfig;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.query.QueryBinder;
 
 import java.io.StringWriter;
@@ -30,13 +30,13 @@ public class JacksonQueryBinder implements QueryBinder {
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
     private final Pattern pattern;
-    private final JacksonConfig config;
+    private final MappingConfig config;
 
-    public JacksonQueryBinder(JacksonConfig config) {
+    public JacksonQueryBinder(MappingConfig config) {
         this(config, DEFAULT_TOKEN);
     }
 
-    public JacksonQueryBinder(JacksonConfig config, String token) {
+    public JacksonQueryBinder(MappingConfig config, String token) {
         this.config = config;
         this.token = token;
         this.pattern = Pattern.compile(token);

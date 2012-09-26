@@ -24,25 +24,25 @@ import org.jongo.bson.BsonByteFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.JacksonConfig;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingStream;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
 
 
 public class BsonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectIdFieldLocator fieldLocator;
-    private final JacksonConfig config;
+    private final MappingConfig config;
 
     public BsonProcessor() {
         this(usingStream().createConfiguration());
     }
 
-    public BsonProcessor(JacksonConfig config) {
+    public BsonProcessor(MappingConfig config) {
         this.config = config;
         this.fieldLocator = new ObjectIdFieldLocator();
     }

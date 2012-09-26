@@ -30,15 +30,15 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingJson;
-import static org.jongo.marshall.jackson.configuration.JacksonConfigBuilder.usingStream;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
 
-public class JacksonConfigBuilderTest {
+public class MappingConfigBuilderTest {
 
     @Test
     public void canAddDeserializer() throws Exception {
 
-        JacksonConfig config = usingJson()
+        MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .createConfiguration();
 
@@ -51,7 +51,7 @@ public class JacksonConfigBuilderTest {
     @Test
     public void canAddSerializer() throws Exception {
 
-        JacksonConfig conf = usingJson()
+        MappingConfig conf = usingJson()
                 .addSerializer(String.class, new DoeJsonSerializer())
                 .createConfiguration();
 
@@ -64,7 +64,7 @@ public class JacksonConfigBuilderTest {
     @Test
     public void canAddModule() throws Exception {
 
-        JacksonConfig config = usingJson()
+        MappingConfig config = usingJson()
                 .add(new JsonModule())
                 .createConfiguration();
 
@@ -78,7 +78,7 @@ public class JacksonConfigBuilderTest {
     @Test
     public void canCreateJsonMapper() throws Exception {
 
-        JacksonConfig config = usingJson()
+        MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .createConfiguration();
 
@@ -92,7 +92,7 @@ public class JacksonConfigBuilderTest {
     @Test
     public void canCreateConfigWithCustomMapper() throws Exception {
 
-        JacksonConfig config = new JacksonConfigBuilder(new ObjectMapper())
+        MappingConfig config = new MappingConfigBuilder(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .createConfiguration();
 
@@ -105,7 +105,7 @@ public class JacksonConfigBuilderTest {
     @Test
     public void canCreateStreamMapper() throws Exception {
 
-        JacksonConfig config = usingStream()
+        MappingConfig config = usingStream()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .createConfiguration();
 
