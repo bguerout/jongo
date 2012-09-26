@@ -17,7 +17,6 @@
 package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
-import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -76,26 +75,5 @@ public class JsonProcessorTest {
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }
 
-    @Test
-    public void shouldUpdateObjectId() throws Exception {
-
-        ObjectId oid = new ObjectId();
-        Friend friend = new Friend();
-
-        processor.setDocumentGeneratedId(friend, oid);
-
-        assertThat(friend.getId()).isEqualTo(oid);
-    }
-
-    @Test
-    public void whenFriendHasIdShouldDoNothing() throws Exception {
-
-        ObjectId oid = new ObjectId();
-        Friend friend = new Friend(oid, "user");
-
-        processor.setDocumentGeneratedId(friend, new ObjectId());
-
-        assertThat(friend.getId()).isEqualTo(oid);
-    }
 
 }

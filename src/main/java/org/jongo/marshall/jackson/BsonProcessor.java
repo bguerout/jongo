@@ -28,13 +28,12 @@ import org.jongo.marshall.jackson.configuration.MappingConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
 
 public class BsonProcessor implements Unmarshaller, Marshaller<DBObject> {
 
-    private final ObjectIdFieldLocator fieldLocator;
+    private final JacksonObjectIdUpdater updater;
     private final MappingConfig config;
 
     public BsonProcessor() {
@@ -43,7 +42,7 @@ public class BsonProcessor implements Unmarshaller, Marshaller<DBObject> {
 
     public BsonProcessor(MappingConfig config) {
         this.config = config;
-        this.fieldLocator = new ObjectIdFieldLocator();
+        this.updater = new JacksonObjectIdUpdater();
     }
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
@@ -71,13 +70,6 @@ public class BsonProcessor implements Unmarshaller, Marshaller<DBObject> {
 
     protected DBObject convertToDBObject(byte[] bytes) {
         return new LazyWriteableDBObject(bytes, new LazyBSONCallback());
-    }
-
-    public void setDocumentGeneratedId(Object target, Object id) {
-        Field field = fieldLocator.findFieldOrNull(target.getClass());
-        if (field != null) {
-            fieldLocator.updateField(target, id, field);
-        }
     }
 
 }

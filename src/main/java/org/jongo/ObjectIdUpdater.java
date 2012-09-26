@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo;
 
-public interface Marshaller<T> {
+import org.bson.types.ObjectId;
 
-    T marshall(Object obj) throws MarshallingException;
+public interface ObjectIdUpdater {
+
+    void setDocumentGeneratedId(Object target, ObjectId id);
 }

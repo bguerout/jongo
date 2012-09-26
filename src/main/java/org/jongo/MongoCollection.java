@@ -36,11 +36,13 @@ public class MongoCollection {
     private final Marshaller<DBObject> marshaller;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
+    private final ObjectIdUpdater objectIdUpdater;
 
     public MongoCollection(DBCollection dbCollection,Provider provider) {
         this.collection = dbCollection;
         this.marshaller = provider.getMarshaller();
         this.unmarshaller = provider.getUnmarshaller();
+        this.objectIdUpdater = provider.getObjectIdUpdater();
         this.queryFactory = new QueryFactory(provider.getParameterMarshaller());
     }
 
@@ -104,11 +106,11 @@ public class MongoCollection {
     }
 
     public WriteResult save(Object document) {
-        return new Save(collection, marshaller, document).execute();
+        return new Save(collection, marshaller, objectIdUpdater, document).execute();
     }
 
     public WriteResult save(Object document, WriteConcern concern) {
-        return new Save(collection, marshaller, document).concern(concern).execute();
+        return new Save(collection, marshaller, objectIdUpdater, document).concern(concern).execute();
     }
 
     public WriteResult insert(String query) {

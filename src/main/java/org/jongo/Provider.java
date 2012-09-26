@@ -27,4 +27,6 @@ public interface Provider {
     Unmarshaller getUnmarshaller();
 
     Marshaller<String> getParameterMarshaller();
+
+    ObjectIdUpdater getObjectIdUpdater();
 }

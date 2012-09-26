@@ -42,7 +42,4 @@ public class JacksonParameterMarshaller implements Marshaller<String> {
             throw new MarshallingException(message, e);
         }
     }
-
-    public void setDocumentGeneratedId(Object target, Object id) {
-    }
 }

@@ -17,6 +17,7 @@
 package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
+import org.jongo.ObjectIdUpdater;
 import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
@@ -44,5 +45,9 @@ public class JacksonProvider implements Provider {
 
     public Marshaller<String> getParameterMarshaller() {
         return parameterMarshaller;
+    }
+
+    public ObjectIdUpdater getObjectIdUpdater() {
+        return new JacksonObjectIdUpdater();
     }
 }

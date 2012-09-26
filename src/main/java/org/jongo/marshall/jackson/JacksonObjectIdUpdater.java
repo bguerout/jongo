@@ -18,16 +18,24 @@ package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
+import org.jongo.ObjectIdUpdater;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-class ObjectIdFieldLocator {
+class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
 
-    public void updateField(Object target, Object id, Field field) {
+    public void setDocumentGeneratedId(Object target, ObjectId id) {
+        Field field = findFieldOrNull(target.getClass());
+        if (field != null) {
+            updateField(target, id, field);
+        }
+    }
+
+    protected void updateField(Object target, Object id, Field field) {
         try {
 
             field.setAccessible(true);
@@ -40,7 +48,7 @@ class ObjectIdFieldLocator {
         }
     }
 
-    public Field findFieldOrNull(Class<?> clazz) {
+    protected Field findFieldOrNull(Class<?> clazz) {
 
         if (idFields.containsKey(clazz)) {
             return idFields.get(clazz);

@@ -19,6 +19,7 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
+import org.jongo.model.Friend;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,19 +27,19 @@ import java.lang.reflect.Field;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ObjectIdFieldLocatorTest {
+public class JacksonObjectIdUpdaterTest {
 
-    private ObjectIdFieldLocator locator;
+    private JacksonObjectIdUpdater updater;
 
     @Before
     public void setUp() throws Exception {
-        locator = new ObjectIdFieldLocator();
+        updater = new JacksonObjectIdUpdater();
     }
 
     @Test
     public void whenNoDeclaredFieldShouldReturnNull() throws Exception {
 
-        Field field = locator.findFieldOrNull(Object.class);
+        Field field = updater.findFieldOrNull(Object.class);
 
         assertThat(field).isNull();
     }
@@ -46,7 +47,7 @@ public class ObjectIdFieldLocatorTest {
     @Test
     public void whenNoObjectdIdShouldReturnNull() throws Exception {
 
-        Field field = locator.findFieldOrNull(Coordinate.class);
+        Field field = updater.findFieldOrNull(Coordinate.class);
 
         assertThat(field).isNull();
     }
@@ -54,7 +55,7 @@ public class ObjectIdFieldLocatorTest {
     @Test
     public void shouldLocateObjectIdUsingAnnotation() throws Exception {
 
-        Field field = locator.findFieldOrNull(WithAnnotation.class);
+        Field field = updater.findFieldOrNull(WithAnnotation.class);
 
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("key");
@@ -63,7 +64,7 @@ public class ObjectIdFieldLocatorTest {
     @Test
     public void shouldLocateObjectIdUsingFieldName() throws Exception {
 
-        Field field = locator.findFieldOrNull(WithName.class);
+        Field field = updater.findFieldOrNull(WithName.class);
 
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("_id");
@@ -72,7 +73,7 @@ public class ObjectIdFieldLocatorTest {
     @Test
     public void shouldLocateObjectIdInParent() throws Exception {
 
-        Field field = locator.findFieldOrNull(WithParent.class);
+        Field field = updater.findFieldOrNull(WithParent.class);
 
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("_id");
@@ -81,7 +82,7 @@ public class ObjectIdFieldLocatorTest {
     @Test
     public void shouldNotLocateOtherObjectId() throws Exception {
 
-        Field field = locator.findFieldOrNull(WithOtherName.class);
+        Field field = updater.findFieldOrNull(WithOtherName.class);
 
         assertThat(field).isNull();
     }
@@ -89,9 +90,31 @@ public class ObjectIdFieldLocatorTest {
     @Test
     public void shouldNotLocateOtherAnnotatedObjectId() throws Exception {
 
-        Field field = locator.findFieldOrNull(WithOtherAnnotation.class);
+        Field field = updater.findFieldOrNull(WithOtherAnnotation.class);
 
         assertThat(field).isNull();
+    }
+
+    @Test
+    public void shouldUpdateObjectId() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        Friend friend = new Friend();
+
+        updater.setDocumentGeneratedId(friend, oid);
+
+        assertThat(friend.getId()).isEqualTo(oid);
+    }
+
+    @Test
+    public void whenFriendHasIdShouldDoNothing() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        Friend friend = new Friend(oid, "user");
+
+        updater.setDocumentGeneratedId(friend, new ObjectId());
+
+        assertThat(friend.getId()).isEqualTo(oid);
     }
 
     private static class WithAnnotation {

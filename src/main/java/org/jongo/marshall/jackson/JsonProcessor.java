@@ -27,13 +27,12 @@ import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Field;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 
 public class JsonProcessor implements Unmarshaller, Marshaller<DBObject> {
 
-    private final ObjectIdFieldLocator fieldLocator;
+    private final JacksonObjectIdUpdater updater;
     private final MappingConfig config;
 
     public JsonProcessor() {
@@ -46,7 +45,7 @@ public class JsonProcessor implements Unmarshaller, Marshaller<DBObject> {
 
     public JsonProcessor(MappingConfig config) {
         this.config = config;
-        this.fieldLocator = new ObjectIdFieldLocator();
+        this.updater = new JacksonObjectIdUpdater();
     }
 
 
@@ -68,13 +67,6 @@ public class JsonProcessor implements Unmarshaller, Marshaller<DBObject> {
         } catch (Exception e) {
             String message = String.format("Unable to marshall json from: %s", obj);
             throw new MarshallingException(message, e);
-        }
-    }
-
-    public void setDocumentGeneratedId(Object target, Object id) {
-        Field field = fieldLocator.findFieldOrNull(target.getClass());
-        if (field != null) {
-            fieldLocator.updateField(target, id, field);
         }
     }
 }
