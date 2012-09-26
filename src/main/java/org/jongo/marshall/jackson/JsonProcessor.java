@@ -31,20 +31,20 @@ import java.lang.reflect.Field;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 
-public class JacksonProcessor implements Unmarshaller, Marshaller {
+public class JsonProcessor implements Unmarshaller, Marshaller {
 
     private final ObjectIdFieldLocator fieldLocator;
     private final MappingConfig config;
 
-    public JacksonProcessor() {
+    public JsonProcessor() {
         this(usingJson().createConfiguration());
     }
 
-    public JacksonProcessor(ObjectMapper bsonMapper) {
+    public JsonProcessor(ObjectMapper bsonMapper) {
         this(new MappingConfigBuilder(bsonMapper).createConfiguration());
     }
 
-    public JacksonProcessor(MappingConfig config) {
+    public JsonProcessor(MappingConfig config) {
         this.config = config;
         this.fieldLocator = new ObjectIdFieldLocator();
     }

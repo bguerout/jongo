@@ -26,7 +26,7 @@ import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.JsonProcessor;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ import static org.jongo.bench.BenchUtil.createFriend;
 public class EncoderBench extends SimpleBenchmark {
 
     private final BsonProcessor bsonProcessor = new BsonProcessor();
-    private final JacksonProcessor jacksonProcessor = new JacksonProcessor();
+    private final JsonProcessor jsonProcessor = new JsonProcessor();
     private final DBApiLayerEmulator dbApiLayer = new DBApiLayerEmulator();
 
     public void timeEncodeWithDriver(int reps) {
@@ -48,7 +48,7 @@ public class EncoderBench extends SimpleBenchmark {
 
     public void timeEncodeWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject friend = jacksonProcessor.marshall(createFriend(i));
+            DBObject friend = jsonProcessor.marshall(createFriend(i));
             dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }

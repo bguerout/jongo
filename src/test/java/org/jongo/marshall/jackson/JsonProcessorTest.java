@@ -31,13 +31,13 @@ import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BSON.bsonify;
 
-public class JacksonProcessorTest {
+public class JsonProcessorTest {
 
-    private JacksonProcessor processor;
+    private JsonProcessor processor;
 
     @Before
     public void setUp() throws Exception {
-        this.processor = new JacksonProcessor();
+        this.processor = new JsonProcessor();
     }
 
     @Test(expected = MarshallingException.class)

@@ -23,7 +23,7 @@ import org.jongo.bson.BsonByte;
 import org.jongo.bson.BsonByteFactory;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.JsonProcessor;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -35,7 +35,7 @@ public class DecoderBench extends SimpleBenchmark {
     private static final byte[][] documents = createInMemoryDocuments(NB_DOCS);
 
     private final BsonProcessor bsonProcessor = new BsonProcessor();
-    private final JacksonProcessor jacksonProcessor = new JacksonProcessor();
+    private final JsonProcessor jsonProcessor = new JsonProcessor();
 
     public void timeDecodeWithDriver(int reps) {
 
@@ -52,7 +52,7 @@ public class DecoderBench extends SimpleBenchmark {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
             DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);
-            Friend f = jacksonProcessor.unmarshall(dbo, Friend.class);
+            Friend f = jsonProcessor.unmarshall(dbo, Friend.class);
         }
     }
 

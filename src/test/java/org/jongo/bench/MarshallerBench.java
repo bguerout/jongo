@@ -19,14 +19,14 @@ package org.jongo.bench;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
 import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.marshall.jackson.JacksonProcessor;
+import org.jongo.marshall.jackson.JsonProcessor;
 
 import static org.jongo.bench.BenchUtil.createFriend;
 
 public class MarshallerBench extends SimpleBenchmark {
 
     private final BsonProcessor bsonProcessor = new BsonProcessor();
-    private final JacksonProcessor jsonProcessor = new JacksonProcessor();
+    private final JsonProcessor jsonProcessor = new JsonProcessor();
 
     public void timeMarshallAsDefault(int reps) {
         for (int i = 0; i < reps; i++) {
