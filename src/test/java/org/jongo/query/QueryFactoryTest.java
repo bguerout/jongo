@@ -36,7 +36,7 @@ public class QueryFactoryTest {
     @Before
     public void setUp() throws Exception {
         marshaller = mock(Marshaller.class);
-        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().build();
         factory = new QueryFactory(new JacksonParameterMarshaller(config));
     }
 

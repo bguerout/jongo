@@ -35,7 +35,7 @@ public class JacksonViewTest {
         MappingConfig conf = MappingConfigBuilder.usingJson()
                 .setReaderCallback(new ViewReaderCallback(viewClass))
                 .setWriterCallback(new ViewWriterCallback(viewClass))
-                .createConfiguration();
+                .build();
         return new JsonProcessor(conf);
     }
 

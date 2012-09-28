@@ -35,7 +35,7 @@ public class QueryBinderTest {
 
     @Before
     public void setUp() throws Exception {
-        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().build();
         JacksonParameterMarshaller parameterMarshaller = new JacksonParameterMarshaller(config);
         binder = new QueryBinder(parameterMarshaller);
     }
@@ -95,7 +95,7 @@ public class QueryBinderTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
+        MappingConfig config = MappingConfigBuilder.usingJson().build();
         JacksonParameterMarshaller parameterMarshaller = new JacksonParameterMarshaller(config);
         QueryBinder binderWithToken = new QueryBinder(parameterMarshaller, "@");
 

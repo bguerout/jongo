@@ -40,7 +40,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .createConfiguration();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -53,7 +53,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig conf = usingJson()
                 .addSerializer(String.class, new DoeJsonSerializer())
-                .createConfiguration();
+                .build();
 
         ObjectMapper mapper = conf.getObjectMapper();
 
@@ -66,7 +66,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = usingJson()
                 .add(new JsonModule())
-                .createConfiguration();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -80,7 +80,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .createConfiguration();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -94,7 +94,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = new MappingConfigBuilder(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .createConfiguration();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -107,7 +107,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = usingStream()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .createConfiguration();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 

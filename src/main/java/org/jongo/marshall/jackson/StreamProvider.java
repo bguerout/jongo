@@ -25,14 +25,14 @@ import org.jongo.marshall.Unmarshaller;
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
 
-public class BsonProvider implements Provider {
+public class StreamProvider implements Provider {
 
     private final BsonProcessor processor;
     private final Marshaller<String> parameterMarshaller;
 
-    public BsonProvider() {
-        processor = new BsonProcessor(usingStream().createConfiguration());
-        parameterMarshaller = new JacksonParameterMarshaller(usingJson().createConfiguration());
+    public StreamProvider() {
+        processor = new BsonProcessor(usingStream().build());
+        parameterMarshaller = new JacksonParameterMarshaller(usingJson().build());
     }
 
     public Marshaller<DBObject> getMarshaller() {

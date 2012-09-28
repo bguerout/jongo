@@ -37,7 +37,7 @@ public class BsonProcessor implements Unmarshaller, Marshaller<DBObject> {
     private final MappingConfig config;
 
     public BsonProcessor() {
-        this(usingStream().createConfiguration());
+        this(usingStream().build());
     }
 
     public BsonProcessor(MappingConfig config) {

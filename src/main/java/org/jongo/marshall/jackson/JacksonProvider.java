@@ -30,7 +30,7 @@ public class JacksonProvider implements Provider {
     private final Marshaller<String> parameterMarshaller;
 
     public JacksonProvider() {
-        this(MappingConfigBuilder.usingJson().createConfiguration());
+        this(MappingConfigBuilder.usingJson().build());
     }
 
     public JacksonProvider(MappingConfig config) {

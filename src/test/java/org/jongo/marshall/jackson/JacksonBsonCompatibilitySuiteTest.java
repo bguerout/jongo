@@ -27,7 +27,7 @@ public class JacksonBsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext("BsonProvider", new BsonProvider());
+        return new TestContext("BsonProvider", new StreamProvider());
     }
 
 }

@@ -82,7 +82,7 @@ public final class MappingConfigBuilder {
         return this;
     }
 
-    public MappingConfig createConfiguration() {
+    public MappingConfig build() {
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
         }

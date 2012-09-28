@@ -36,11 +36,11 @@ public class JsonProcessor implements Unmarshaller, Marshaller<DBObject> {
     private final MappingConfig config;
 
     public JsonProcessor() {
-        this(usingJson().createConfiguration());
+        this(usingJson().build());
     }
 
     public JsonProcessor(ObjectMapper bsonMapper) {
-        this(new MappingConfigBuilder(bsonMapper).createConfiguration());
+        this(new MappingConfigBuilder(bsonMapper).build());
     }
 
     public JsonProcessor(MappingConfig config) {
