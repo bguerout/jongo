@@ -39,12 +39,12 @@ public class BsonProvider implements Provider {
         return processor;
     }
 
-    public Unmarshaller getUnmarshaller() {
-        return processor;
-    }
-
     public Marshaller<String> getParameterMarshaller() {
         return parameterMarshaller;
+    }
+
+    public Unmarshaller getUnmarshaller() {
+        return processor;
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {

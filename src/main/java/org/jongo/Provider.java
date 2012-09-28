@@ -24,9 +24,9 @@ public interface Provider {
 
     Marshaller<DBObject> getMarshaller();
 
-    Unmarshaller getUnmarshaller();
-
     Marshaller<String> getParameterMarshaller();
+
+    Unmarshaller getUnmarshaller();
 
     ObjectIdUpdater getObjectIdUpdater();
 }

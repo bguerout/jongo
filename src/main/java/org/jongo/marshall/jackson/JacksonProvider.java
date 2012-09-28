@@ -30,7 +30,10 @@ public class JacksonProvider implements Provider {
     private final Marshaller<String> parameterMarshaller;
 
     public JacksonProvider() {
-        MappingConfig config = MappingConfigBuilder.usingJson().createConfiguration();
+        this(MappingConfigBuilder.usingJson().createConfiguration());
+    }
+
+    public JacksonProvider(MappingConfig config) {
         processor = new JsonProcessor(config);
         parameterMarshaller = new JacksonParameterMarshaller(config);
     }
@@ -39,12 +42,12 @@ public class JacksonProvider implements Provider {
         return processor;
     }
 
-    public Unmarshaller getUnmarshaller() {
-        return processor;
-    }
-
     public Marshaller<String> getParameterMarshaller() {
         return parameterMarshaller;
+    }
+
+    public Unmarshaller getUnmarshaller() {
+        return processor;
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {
