@@ -33,8 +33,7 @@ public abstract class JongoTestCase {
     private Jongo jongo;
 
     public JongoTestCase() {
-        JsonProvider provider = new JsonProvider();
-        this.jongo = new Jongo(findDatabase(), provider);
+        this.jongo = new Jongo(findDatabase(), new JsonProvider());
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {

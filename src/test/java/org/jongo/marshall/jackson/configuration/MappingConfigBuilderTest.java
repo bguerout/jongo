@@ -31,7 +31,7 @@ import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingBson;
 
 public class MappingConfigBuilderTest {
 
@@ -105,7 +105,7 @@ public class MappingConfigBuilderTest {
     @Test
     public void canCreateStreamMapper() throws Exception {
 
-        MappingConfig config = usingStream()
+        MappingConfig config = usingBson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .build();
 

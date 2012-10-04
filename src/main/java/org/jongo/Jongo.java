@@ -28,7 +28,7 @@ public class Jongo {
 
     public Jongo(DB database) {
         this.database = database;
-        this.provider = JacksonProviders.usingBson().build();
+        this.provider = JacksonProviders.usingJson().build();
     }
 
     public Jongo(DB database, Provider provider) {

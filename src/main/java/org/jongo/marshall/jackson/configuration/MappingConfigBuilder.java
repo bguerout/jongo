@@ -96,7 +96,7 @@ public final class MappingConfigBuilder {
                 .addModifier(new DeserializationModifier());
     }
 
-    public static MappingConfigBuilder usingStream() {
+    public static MappingConfigBuilder usingBson() {
         BsonFactory bsonFactory = MongoBsonFactory.createFactory();
         return new MappingConfigBuilder(new ObjectMapper(bsonFactory))
                 .addModule(new BsonModule())

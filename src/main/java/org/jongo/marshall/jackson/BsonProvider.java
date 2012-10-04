@@ -24,7 +24,7 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingBson;
 
 public class BsonProvider implements Provider {
 
@@ -32,7 +32,7 @@ public class BsonProvider implements Provider {
     private final Marshaller<String> parameterMarshaller;
 
     public BsonProvider() {
-        this.engine = new BsonEngine(usingStream().build());
+        this.engine = new BsonEngine(usingBson().build());
         this.parameterMarshaller = new JacksonParameterMarshaller(usingJson().build());
     }
 

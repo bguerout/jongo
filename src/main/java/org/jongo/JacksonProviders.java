@@ -31,7 +31,7 @@ public class JacksonProviders {
         public Builder(Type type) {
             switch (type) {
                 case BSON:
-                    builder = MappingConfigBuilder.usingStream();
+                    builder = MappingConfigBuilder.usingBson();
                     paramBuilder = MappingConfigBuilder.usingJson();
                     break;
                 case JSON:

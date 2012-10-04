@@ -56,7 +56,7 @@ public class DecoderBench extends SimpleBenchmark {
         }
     }
 
-    public void timeDecodeWithStreamJongo(int reps) {
+    public void timeDecodeWithBsonJongo(int reps) {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
             DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);

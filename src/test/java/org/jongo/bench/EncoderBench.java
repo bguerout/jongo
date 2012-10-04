@@ -53,7 +53,7 @@ public class EncoderBench extends SimpleBenchmark {
         }
     }
 
-    public void timeEncodeWithStreamJongo(int reps) {
+    public void timeEncodeWithBsonJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             DBObject friend = bsonEngine.marshall(createFriend(i));
             dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
@@ -63,8 +63,7 @@ public class EncoderBench extends SimpleBenchmark {
     private static class DBApiLayerEmulator {
 
         private byte[] encode(DBEncoderFactory factory, DBObject dbo) {
-            if (dbo.get("_id") == null || dbo.isPartialObject())
-                throw new RuntimeException();
+            Object id = dbo.get("_id");
 
             _checkKeys(dbo);
 

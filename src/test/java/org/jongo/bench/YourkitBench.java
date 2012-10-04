@@ -42,8 +42,8 @@ public class YourkitBench {
 
     @Test
     @Ignore
-    public void saveWithStreamJongo() throws Exception {
-        saveBench.timeSaveWithStreamJongo(ITERATION);
+    public void saveWithBsonJongo() throws Exception {
+        saveBench.timeSaveWithBsonJongo(ITERATION);
     }
 
     @Test
@@ -55,6 +55,6 @@ public class YourkitBench {
     @Test
     @Ignore
     public void encodeWithStreamJongo() throws Exception {
-        encoderBench.timeEncodeWithStreamJongo(ITERATION);
+        encoderBench.timeEncodeWithBsonJongo(ITERATION);
     }
 }

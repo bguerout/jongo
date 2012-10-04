@@ -32,17 +32,17 @@ public class SaveBench extends SimpleBenchmark {
     @Param("NORMAL")
     WriteConcern concern = WriteConcern.NORMAL;
 
-    private MongoCollection defaultCollection;
+    private MongoCollection jsonCollection;
     private DBCollection dbCollection;
-    private MongoCollection streamCollection;
+    private MongoCollection bsonCollection;
 
     protected void setUp() throws Exception {
 
-        defaultCollection = getCollectionFromJongo();
-        streamCollection = getStreamCollectionFromJongo();
+        jsonCollection = getJsonCollectionFromJongo();
+        bsonCollection = getBsonCollectionFromJongo();
         dbCollection = getCollectionFromDriver();
 
-        defaultCollection.drop();
+        jsonCollection.drop();
     }
 
     public void timeSaveWithDriver(int reps) {
@@ -56,15 +56,15 @@ public class SaveBench extends SimpleBenchmark {
     public void timeSaveWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                defaultCollection.save(createFriend(reps + j), concern);
+                jsonCollection.save(createFriend(reps + j), concern);
             }
         }
     }
 
-    public void timeSaveWithStreamJongo(int reps) {
+    public void timeSaveWithBsonJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                streamCollection.save(createFriend(reps + j), concern);
+                bsonCollection.save(createFriend(reps + j), concern);
             }
         }
     }

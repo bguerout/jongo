@@ -33,20 +33,20 @@ public class FindBench extends SimpleBenchmark {
 
     @Param({"1"})
     int size = 1;
-    private MongoCollection defaultCollection;
-    private MongoCollection streamCollection;
+    private MongoCollection jsonCollection;
+    private MongoCollection bsonCollection;
     private DBCollection dbCollection;
 
     protected void setUp() throws Exception {
-        defaultCollection = getCollectionFromJongo();
-        streamCollection = getStreamCollectionFromJongo();
+        jsonCollection = getJsonCollectionFromJongo();
+        bsonCollection = getBsonCollectionFromJongo();
         dbCollection = getCollectionFromDriver();
         dbCollection.drop();
 
         for (int i = 0; i < size; i++) {
-            defaultCollection.save(createFriend(i), WriteConcern.SAFE);
+            jsonCollection.save(createFriend(i), WriteConcern.SAFE);
         }
-        if (defaultCollection.count() != size) {
+        if (jsonCollection.count() != size) {
             System.exit(1);
         }
     }
@@ -69,17 +69,17 @@ public class FindBench extends SimpleBenchmark {
     public int timeFindWithDefaultJongo(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
-            for (Friend friend : defaultCollection.find().as(Friend.class)) {
+            for (Friend friend : jsonCollection.find().as(Friend.class)) {
                 insertions++;
             }
         }
         return insertions;
     }
 
-    public int timeFindWithStreamJongo(int reps) {
+    public int timeFindWithBsonJongo(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
-            for (Friend friend : streamCollection.find().as(Friend.class)) {
+            for (Friend friend : bsonCollection.find().as(Friend.class)) {
                 insertions++;
             }
         }
@@ -87,6 +87,6 @@ public class FindBench extends SimpleBenchmark {
     }
 
     public static void main(String[] args) {
-        Runner.main(FindBench.class, new String[]{"-Dsize=1,10,100,1000"});
+        Runner.main(FindBench.class, new String[]{"-Dsize=1"});
     }
 }
