@@ -25,8 +25,8 @@ import com.mongodb.DefaultDBEncoder;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
 import org.jongo.bson.BsonDBEncoder;
-import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.marshall.jackson.JsonProcessor;
+import org.jongo.marshall.jackson.BsonEngine;
+import org.jongo.marshall.jackson.JsonEngine;
 
 import java.util.Map;
 
@@ -35,8 +35,8 @@ import static org.jongo.bench.BenchUtil.createFriend;
 
 public class EncoderBench extends SimpleBenchmark {
 
-    private final BsonProcessor bsonProcessor = new BsonProcessor();
-    private final JsonProcessor jsonProcessor = new JsonProcessor();
+    private final BsonEngine bsonEngine = new BsonEngine();
+    private final JsonEngine jsonEngine = new JsonEngine();
     private final DBApiLayerEmulator dbApiLayer = new DBApiLayerEmulator();
 
     public void timeEncodeWithDriver(int reps) {
@@ -48,14 +48,14 @@ public class EncoderBench extends SimpleBenchmark {
 
     public void timeEncodeWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject friend = jsonProcessor.marshall(createFriend(i));
+            DBObject friend = jsonEngine.marshall(createFriend(i));
             dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }
 
     public void timeEncodeWithStreamJongo(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject friend = bsonProcessor.marshall(createFriend(i));
+            DBObject friend = bsonEngine.marshall(createFriend(i));
             dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }

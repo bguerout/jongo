@@ -22,8 +22,8 @@ import com.mongodb.*;
 import org.jongo.bson.BsonByte;
 import org.jongo.bson.BsonByteFactory;
 import org.jongo.bson.BsonDBDecoder;
-import org.jongo.marshall.jackson.BsonProcessor;
-import org.jongo.marshall.jackson.JsonProcessor;
+import org.jongo.marshall.jackson.BsonEngine;
+import org.jongo.marshall.jackson.JsonEngine;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -34,8 +34,8 @@ public class DecoderBench extends SimpleBenchmark {
     private static final int NB_DOCS = 1000000;
     private static final byte[][] documents = createInMemoryDocuments(NB_DOCS);
 
-    private final BsonProcessor bsonProcessor = new BsonProcessor();
-    private final JsonProcessor jsonProcessor = new JsonProcessor();
+    private final BsonEngine bsonEngine = new BsonEngine();
+    private final JsonEngine jsonEngine = new JsonEngine();
 
     public void timeDecodeWithDriver(int reps) {
 
@@ -52,7 +52,7 @@ public class DecoderBench extends SimpleBenchmark {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
             DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);
-            Friend f = jsonProcessor.unmarshall(dbo, Friend.class);
+            Friend f = jsonEngine.unmarshall(dbo, Friend.class);
         }
     }
 
@@ -60,7 +60,7 @@ public class DecoderBench extends SimpleBenchmark {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
             DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);
-            Friend f = bsonProcessor.unmarshall(dbo, Friend.class);
+            Friend f = bsonEngine.unmarshall(dbo, Friend.class);
         }
     }
 

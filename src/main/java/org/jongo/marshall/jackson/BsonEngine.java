@@ -16,57 +16,58 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import com.mongodb.LazyWriteableDBObject;
+import org.bson.LazyBSONCallback;
+import org.jongo.bson.BsonByte;
+import org.jongo.bson.BsonByteFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
-import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
 
-public class JsonProcessor implements Unmarshaller, Marshaller<DBObject> {
+public class BsonEngine implements Unmarshaller, Marshaller<DBObject> {
 
-    private final JacksonObjectIdUpdater updater;
     private final MappingConfig config;
 
-    public JsonProcessor() {
-        this(usingJson().build());
+    public BsonEngine() {
+        this(usingStream().build());
     }
 
-    public JsonProcessor(ObjectMapper bsonMapper) {
-        this(new MappingConfigBuilder(bsonMapper).build());
-    }
-
-    public JsonProcessor(MappingConfig config) {
+    public BsonEngine(MappingConfig config) {
         this.config = config;
-        this.updater = new JacksonObjectIdUpdater();
     }
-
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
-        String json = document.toString();
+
+        BsonByte stream = BsonByteFactory.fromDBObject(document);
         try {
-            return config.getReader(clazz).readValue(json);
-        } catch (Exception e) {
-            String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
+            return config.getReader(clazz).readValue(stream.getData(), stream.getOffset(), stream.getSize());
+        } catch (IOException e) {
+            String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
         }
     }
 
     public DBObject marshall(Object obj) throws MarshallingException {
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
-            Writer writer = new StringWriter();
-            config.getWriter(obj.getClass()).writeValue(writer, obj);
-            return (DBObject) JSON.parse(writer.toString());
-        } catch (Exception e) {
-            String message = String.format("Unable to marshall json from: %s", obj);
-            throw new MarshallingException(message, e);
+            config.getWriter(obj).writeValue(output, obj);
+        } catch (IOException e) {
+            throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
+
+        return convertToDBObject(output.toByteArray());
     }
+
+    protected DBObject convertToDBObject(byte[] bytes) {
+        return new LazyWriteableDBObject(bytes, new LazyBSONCallback());
+    }
+
 }

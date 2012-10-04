@@ -45,7 +45,7 @@ public final class MappingConfigBuilder {
         this.modifiers = new ArrayList<MapperModifier>();
         this.readerCallback = new DefaultReaderCallback();
         this.writerCallback = new DefaultWriterCallback();
-        add(module);
+        addModule(module);
     }
 
     public <T> MappingConfigBuilder addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
@@ -58,7 +58,7 @@ public final class MappingConfigBuilder {
         return this;
     }
 
-    public MappingConfigBuilder add(final Module module) {
+    public MappingConfigBuilder addModule(final Module module) {
         modifiers.add(new MapperModifier() {
             public void modify(ObjectMapper mapper) {
                 mapper.registerModule(module);
@@ -67,7 +67,7 @@ public final class MappingConfigBuilder {
         return this;
     }
 
-    public MappingConfigBuilder add(MapperModifier modifier) {
+    public MappingConfigBuilder addModifier(MapperModifier modifier) {
         modifiers.add(modifier);
         return this;
     }
@@ -91,17 +91,17 @@ public final class MappingConfigBuilder {
 
     public static MappingConfigBuilder usingJson() {
         return new MappingConfigBuilder(new ObjectMapper())
-                .add(new JsonModule())
-                .add(new SerializationModifier())
-                .add(new DeserializationModifier());
+                .addModule(new JsonModule())
+                .addModifier(new SerializationModifier())
+                .addModifier(new DeserializationModifier());
     }
 
     public static MappingConfigBuilder usingStream() {
         BsonFactory bsonFactory = MongoBsonFactory.createFactory();
         return new MappingConfigBuilder(new ObjectMapper(bsonFactory))
-                .add(new BsonModule())
-                .add(new SerializationModifier())
-                .add(new DeserializationModifier());
+                .addModule(new BsonModule())
+                .addModifier(new SerializationModifier())
+                .addModifier(new DeserializationModifier());
     }
 
 

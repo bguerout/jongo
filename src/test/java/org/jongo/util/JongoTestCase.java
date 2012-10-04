@@ -22,7 +22,7 @@ import com.mongodb.MongoURI;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.Provider;
-import org.jongo.marshall.jackson.JacksonProvider;
+import org.jongo.marshall.jackson.JsonProvider;
 
 import java.net.UnknownHostException;
 
@@ -33,7 +33,7 @@ public abstract class JongoTestCase {
     private Jongo jongo;
 
     public JongoTestCase() {
-        JacksonProvider provider = new JacksonProvider();
+        JsonProvider provider = new JsonProvider();
         this.jongo = new Jongo(findDatabase(), provider);
     }
 

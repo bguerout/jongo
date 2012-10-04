@@ -26,7 +26,7 @@ public class MappingConfig {
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    MappingConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
+    public MappingConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
         this.mapper = mapper;
         this.readerCallback = readerCallback;
         this.writerCallback = writerCallback;

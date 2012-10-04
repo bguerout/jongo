@@ -65,7 +65,7 @@ public class MappingConfigBuilderTest {
     public void canAddModule() throws Exception {
 
         MappingConfig config = usingJson()
-                .add(new JsonModule())
+                .addModule(new JsonModule())
                 .build();
 
         ObjectMapper mapper = config.getObjectMapper();

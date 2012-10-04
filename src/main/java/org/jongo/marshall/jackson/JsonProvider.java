@@ -24,22 +24,22 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 
-public class JacksonProvider implements Provider {
+public class JsonProvider implements Provider {
 
-    private final JsonProcessor processor;
+    private final JsonEngine engine;
     private final Marshaller<String> parameterMarshaller;
 
-    public JacksonProvider() {
+    public JsonProvider() {
         this(MappingConfigBuilder.usingJson().build());
     }
 
-    public JacksonProvider(MappingConfig config) {
-        processor = new JsonProcessor(config);
+    public JsonProvider(MappingConfig config) {
+        engine = new JsonEngine(config);
         parameterMarshaller = new JacksonParameterMarshaller(config);
     }
 
     public Marshaller<DBObject> getMarshaller() {
-        return processor;
+        return engine;
     }
 
     public Marshaller<String> getParameterMarshaller() {
@@ -47,7 +47,7 @@ public class JacksonProvider implements Provider {
     }
 
     public Unmarshaller getUnmarshaller() {
-        return processor;
+        return engine;
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {

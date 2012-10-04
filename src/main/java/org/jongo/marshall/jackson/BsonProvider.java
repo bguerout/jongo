@@ -21,22 +21,28 @@ import org.jongo.ObjectIdUpdater;
 import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingStream;
 
-public class StreamProvider implements Provider {
+public class BsonProvider implements Provider {
 
-    private final BsonProcessor processor;
+    private final BsonEngine engine;
     private final Marshaller<String> parameterMarshaller;
 
-    public StreamProvider() {
-        processor = new BsonProcessor(usingStream().build());
-        parameterMarshaller = new JacksonParameterMarshaller(usingJson().build());
+    public BsonProvider() {
+        this.engine = new BsonEngine(usingStream().build());
+        this.parameterMarshaller = new JacksonParameterMarshaller(usingJson().build());
+    }
+
+    public BsonProvider(MappingConfig mappingConfig, MappingConfig parameterMappingConfig) {
+        this.engine = new BsonEngine(mappingConfig);
+        this.parameterMarshaller = new JacksonParameterMarshaller(parameterMappingConfig);
     }
 
     public Marshaller<DBObject> getMarshaller() {
-        return processor;
+        return engine;
     }
 
     public Marshaller<String> getParameterMarshaller() {
@@ -44,7 +50,7 @@ public class StreamProvider implements Provider {
     }
 
     public Unmarshaller getUnmarshaller() {
-        return processor;
+        return engine;
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {

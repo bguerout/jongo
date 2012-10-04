@@ -30,26 +30,26 @@ import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BSON.bsonify;
 
-public class JsonProcessorTest {
+public class JsonEngineTest {
 
-    private JsonProcessor processor;
+    private JsonEngine engine;
 
     @Before
     public void setUp() throws Exception {
-        this.processor = new JsonProcessor();
+        this.engine = new JsonEngine();
     }
 
     @Test(expected = MarshallingException.class)
     public void shouldFailWhenUnableToMarshall() throws Exception {
 
-        processor.marshall(new ErrorObject());
+        engine.marshall(new ErrorObject());
     }
 
     @Test
     public void shouldFailWhenUnableToUnmarshall() throws Exception {
 
         try {
-            processor.unmarshall(bsonify("{'error':'notADate'}"), ErrorObject.class);
+            engine.unmarshall(bsonify("{'error':'notADate'}"), ErrorObject.class);
             fail();
         } catch (Exception e) {
             assertThat(e).isInstanceOf(MarshallingException.class);
@@ -59,7 +59,7 @@ public class JsonProcessorTest {
     @Test
     public void canMarshall() {
 
-        DBObject dbo = processor.marshall(new Fox("fantastic", "roux"));
+        DBObject dbo = engine.marshall(new Fox("fantastic", "roux"));
 
         assertThat(dbo.get("_class")).isEqualTo("org.jongo.model.Fox");
         assertThat(dbo.get("name")).isEqualTo("fantastic");
@@ -70,7 +70,7 @@ public class JsonProcessorTest {
     public void canUnmarshallJson() throws IOException {
         DBObject document = bsonify("{'address': '22 rue des murlins'}");
 
-        Friend friend = processor.unmarshall(document, Friend.class);
+        Friend friend = engine.unmarshall(document, Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }
