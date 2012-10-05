@@ -22,6 +22,8 @@ import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBCollection;
 import com.mongodb.WriteConcern;
 import org.jongo.MongoCollection;
+import org.jongo.marshall.jackson.BsonProvider;
+import org.jongo.marshall.jackson.JsonProvider;
 
 import static org.jongo.bench.BenchUtil.*;
 
@@ -38,8 +40,8 @@ public class SaveBench extends SimpleBenchmark {
 
     protected void setUp() throws Exception {
 
-        jsonCollection = getJsonCollectionFromJongo();
-        bsonCollection = getBsonCollectionFromJongo();
+        jsonCollection = getCollectionFromJongo(new JsonProvider());
+        bsonCollection = getCollectionFromJongo(new BsonProvider());
         dbCollection = getCollectionFromDriver();
 
         jsonCollection.drop();

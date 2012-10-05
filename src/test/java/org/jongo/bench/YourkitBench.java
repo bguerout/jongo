@@ -49,13 +49,13 @@ public class YourkitBench {
 
     @Test
     @Ignore
-    public void encodeWithDriver() throws Exception {
+    public void findWithDriver() throws Exception {
         findBench.timeFindWithDriver(ITERATION);
     }
 
     @Test
     @Ignore
-    public void encodeWithBsonJongo() throws Exception {
+    public void findWithBsonJongo() throws Exception {
         findBench.timeFindWithBsonJongo(ITERATION);
     }
 }
