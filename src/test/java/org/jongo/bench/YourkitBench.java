@@ -25,13 +25,14 @@ public class YourkitBench {
     private static int ITERATION = 1000000;
 
     private SaveBench saveBench;
-    private EncoderBench encoderBench;
+    private FindBench findBench;
 
     @Before
     public void setUp() throws Exception {
         saveBench = new SaveBench();
         saveBench.setUp();
-        encoderBench = new EncoderBench();
+        findBench = new FindBench();
+        findBench.setUp();
     }
 
     @Test
@@ -49,12 +50,12 @@ public class YourkitBench {
     @Test
     @Ignore
     public void encodeWithDriver() throws Exception {
-        encoderBench.timeEncodeWithDriver(ITERATION);
+        findBench.timeFindWithDriver(ITERATION);
     }
 
     @Test
     @Ignore
-    public void encodeWithStreamJongo() throws Exception {
-        encoderBench.timeEncodeWithBsonJongo(ITERATION);
+    public void encodeWithBsonJongo() throws Exception {
+        findBench.timeFindWithBsonJongo(ITERATION);
     }
 }
