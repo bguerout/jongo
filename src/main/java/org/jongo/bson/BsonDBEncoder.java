@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public final class BsonDBEncoder implements DBEncoder {
 
-    public final static DBEncoderFactory FACTORY = new BeanEncoderFactory();
+    public final static DBEncoderFactory FACTORY = new BsonDBEncoderFactory();
 
     private BsonDBEncoder() {
     }
@@ -42,7 +42,7 @@ public final class BsonDBEncoder implements DBEncoder {
         }
     }
 
-    private static class BeanEncoderFactory implements DBEncoderFactory {
+    private static class BsonDBEncoderFactory implements DBEncoderFactory {
         public DBEncoder create() {
             return new BsonDBEncoder();
         }

@@ -22,27 +22,27 @@ import java.util.Iterator;
 
 public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
-    public final static DBDecoderFactory FACTORY = new BeanDecoderFactory();
+    public final static DBDecoderFactory FACTORY = new BsonDBDecoderFactory();
 
     private BsonDBDecoder() {
     }
 
     public DBCallback getDBCallback(DBCollection collection) {
-        return new BeanDecoderCallback(collection);
+        return new BsonDBCallback(collection);
     }
 
-    private static class BeanDecoderFactory implements DBDecoderFactory {
+    private static class BsonDBDecoderFactory implements DBDecoderFactory {
 
         public DBDecoder create() {
             return new BsonDBDecoder();
         }
     }
 
-    private static class BeanDecoderCallback extends LazyDBCallback  {
+    private static class BsonDBCallback extends LazyDBCallback  {
 
         private final DB db;
 
-        public BeanDecoderCallback(DBCollection collection) {
+        public BsonDBCallback(DBCollection collection) {
             super(collection);
             this.db = collection == null ? null : collection.getDB();
         }
