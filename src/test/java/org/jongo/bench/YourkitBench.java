@@ -16,46 +16,50 @@
 
 package org.jongo.bench;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class YourkitBench {
 
-    private static int ITERATION = 1000000;
+    private static int ITERATION = 100000;
 
-    private SaveBench saveBench;
-    private FindBench findBench;
-
-    @Before
-    public void setUp() throws Exception {
-        saveBench = new SaveBench();
-        saveBench.setUp();
-        findBench = new FindBench();
-        findBench.setUp();
-    }
 
     @Test
     @Ignore
     public void saveWithDriver() throws Exception {
+        SaveBench saveBench = new SaveBench();
+        saveBench.setUp();
         saveBench.timeSaveWithDriver(ITERATION);
     }
 
     @Test
     @Ignore
     public void saveWithBsonJongo() throws Exception {
+        SaveBench saveBench = new SaveBench();
+        saveBench.setUp();
         saveBench.timeSaveWithBsonJongo(ITERATION);
     }
 
     @Test
     @Ignore
     public void findWithDriver() throws Exception {
+        FindBench findBench = new FindBench();
+        findBench.setUp();
         findBench.timeFindWithDriver(ITERATION);
     }
 
     @Test
     @Ignore
     public void findWithBsonJongo() throws Exception {
+        FindBench findBench = new FindBench();
+        findBench.setUp();
         findBench.timeFindWithBsonJongo(ITERATION);
+    }
+
+    @Test
+    @Ignore
+    public void decodeWithBsonJongo() throws Exception {
+        DecoderBench bench = new DecoderBench();
+        bench.timeDecodeWithDriver(1);
     }
 }

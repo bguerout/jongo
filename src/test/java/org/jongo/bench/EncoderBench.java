@@ -64,9 +64,7 @@ public class EncoderBench extends SimpleBenchmark {
 
         private byte[] encode(DBEncoderFactory factory, DBObject dbo) {
             Object id = dbo.get("_id");
-
             _checkKeys(dbo);
-
             DBEncoder encoder = factory.create();
             OutputBuffer buffer = new BasicOutputBuffer();
             encoder.writeObject(buffer, dbo);

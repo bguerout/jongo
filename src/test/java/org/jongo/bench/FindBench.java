@@ -22,17 +22,18 @@ import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.BsonProvider;
 import org.jongo.marshall.jackson.JsonProvider;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
-import static org.jongo.bench.BenchUtil.*;
+import static org.jongo.bench.BenchUtil.getCollectionFromDriver;
+import static org.jongo.bench.BenchUtil.getCollectionFromJongo;
 
 public class FindBench extends SimpleBenchmark {
 
+    private static final int NB_DOCUMENTS = 10000;
     @Param({"1"})
     int size = 1;
     private MongoCollection jsonCollection;
@@ -43,23 +44,18 @@ public class FindBench extends SimpleBenchmark {
         jsonCollection = getCollectionFromJongo(new JsonProvider());
         bsonCollection = getCollectionFromJongo(new BsonProvider());
         dbCollection = getCollectionFromDriver();
-        dbCollection.drop();
 
-        for (int i = 0; i < size; i++) {
-            jsonCollection.save(createFriend(i), WriteConcern.SAFE);
-        }
-        if (jsonCollection.count() != size) {
-            System.exit(1);
+        if (dbCollection.count() < NB_DOCUMENTS) {
+            BenchUtil.injectFriendsIntoDB(NB_DOCUMENTS);
         }
     }
 
     public int timeFindWithDriver(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
-            DBCursor cursor = dbCollection.find();
+            DBCursor cursor = dbCollection.find().limit(size);
             for (DBObject dbo : cursor) {
                 DBObject coord = (DBObject) dbo.get("coordinate");
-
                 Coordinate coordinate = new Coordinate((Integer) coord.get("lat"), (Integer) coord.get("lng"));
                 Friend f = new Friend((String) dbo.get("name"), (String) dbo.get("address"), coordinate);
                 insertions++;
@@ -71,7 +67,7 @@ public class FindBench extends SimpleBenchmark {
     public int timeFindWithDefaultJongo(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
-            for (Friend friend : jsonCollection.find().as(Friend.class)) {
+            for (Friend friend : jsonCollection.find().limit(size).as(Friend.class)) {
                 insertions++;
             }
         }
@@ -81,7 +77,7 @@ public class FindBench extends SimpleBenchmark {
     public int timeFindWithBsonJongo(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
-            for (Friend friend : bsonCollection.find().as(Friend.class)) {
+            for (Friend friend : bsonCollection.find().limit(size).as(Friend.class)) {
                 insertions++;
             }
         }

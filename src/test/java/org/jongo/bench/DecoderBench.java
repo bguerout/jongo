@@ -27,6 +27,9 @@ import org.jongo.marshall.jackson.JsonEngine;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 import static org.jongo.bench.BenchUtil.createDBOFriend;
 
 public class DecoderBench extends SimpleBenchmark {
@@ -66,7 +69,11 @@ public class DecoderBench extends SimpleBenchmark {
 
     private DBObject decode(int i, DBDecoderFactory factory) {
         DBDecoder decoder = factory.create();
-        return decoder.decode(documents[i], (DBCollection) null);
+        try {
+            return decoder.decode(new ByteArrayInputStream(documents[i]), (DBCollection) null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static byte[][] createInMemoryDocuments(int nbDocs) {

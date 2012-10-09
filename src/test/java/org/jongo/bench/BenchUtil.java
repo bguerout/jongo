@@ -20,6 +20,7 @@ import com.mongodb.*;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.Provider;
+import org.jongo.marshall.jackson.JsonProvider;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -58,5 +59,16 @@ class BenchUtil {
         DB db = mongo.getDB("jongo");
         Jongo jongo = new Jongo(db, provider);
         return jongo.getCollection("benchmark");
+    }
+
+    public static void injectFriendsIntoDB(int nbDocuments) throws UnknownHostException {
+        MongoCollection collection = getCollectionFromJongo(new JsonProvider());
+        collection.drop();
+        for (int i = 0; i < nbDocuments; i++) {
+            collection.save(createFriend(i), WriteConcern.SAFE);
+        }
+        if (collection.count() < nbDocuments) {
+            System.exit(1);
+        }
     }
 }
