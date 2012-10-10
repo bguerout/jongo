@@ -26,13 +26,13 @@ class QueryBinder {
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
     private final Pattern pattern;
-    private final Marshaller<String> parameterMarshaller;
+    private final Marshaller<Object, String> parameterMarshaller;
 
-    public QueryBinder(Marshaller<String> parameterMarshaller) {
+    public QueryBinder(Marshaller<Object, String> parameterMarshaller) {
         this(parameterMarshaller, DEFAULT_TOKEN);
     }
 
-    public QueryBinder(Marshaller<String> parameterMarshaller, String token) {
+    public QueryBinder(Marshaller<Object, String> parameterMarshaller, String token) {
         this.parameterMarshaller = parameterMarshaller;
         this.token = token;
         this.pattern = Pattern.compile(token);

@@ -23,10 +23,9 @@ import org.jongo.marshall.jackson.configuration.MappingConfig;
 import java.io.StringWriter;
 import java.io.Writer;
 
-public class JacksonParameterMarshaller implements Marshaller<String> {
+public class JacksonParameterMarshaller implements Marshaller<Object, String> {
 
     private final MappingConfig config;
-
 
     public JacksonParameterMarshaller(MappingConfig config) {
         this.config = config;

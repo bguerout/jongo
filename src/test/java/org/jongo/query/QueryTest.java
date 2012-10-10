@@ -17,6 +17,7 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
+import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.junit.Test;
 
 import static junit.framework.Assert.fail;
@@ -24,10 +25,12 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryTest {
 
+    JacksonQueryMarshaller marshaller = new JacksonQueryMarshaller();
+
     @Test
     public void shouldConvertToDBObject() throws Exception {
 
-        Query query = new Query("{'value':1}");
+        Query query = new Query("{'value':1}", marshaller);
 
         DBObject dbObject = query.toDBObject();
 
@@ -39,7 +42,7 @@ public class QueryTest {
     public void shouldThrowExceptionOnInvalidQuery() throws Exception {
 
         try {
-            new Query("{invalid}");
+            new Query("{invalid}", marshaller);
             fail();
         } catch (Exception e) {
             assertThat(e).isInstanceOf(IllegalArgumentException.class);

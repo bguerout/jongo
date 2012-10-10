@@ -17,21 +17,13 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import org.jongo.marshall.Marshaller;
 
 public final class Query {
     private final DBObject dbObject;
 
-    Query(String query) {
-        this.dbObject = convertToDBObject(query);
-    }
-
-    private DBObject convertToDBObject(String query) {
-        try {
-            return ((DBObject) JSON.parse(query));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(query + " cannot be parsed", e);
-        }
+    Query(String query, Marshaller<String, DBObject> marshaller) {
+        this.dbObject = marshaller.marshall(query);
     }
 
     public DBObject toDBObject() {

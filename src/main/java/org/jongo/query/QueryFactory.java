@@ -16,16 +16,17 @@
 
 package org.jongo.query;
 
+import com.mongodb.DBObject;
 import org.jongo.marshall.Marshaller;
 
 public final class QueryFactory {
 
-    private static final Query EMPTY_QUERY = new Query("{}");
-
     private final QueryBinder binder;
+    private final Marshaller<String, DBObject> queryMarshaller;
 
-    public QueryFactory(Marshaller<String> parameterMarshaller) {
+    public QueryFactory(Marshaller<Object, String> parameterMarshaller, Marshaller<String, DBObject> queryMarshaller) {
         this.binder = new QueryBinder(parameterMarshaller);
+        this.queryMarshaller = queryMarshaller;
     }
 
     public Query createQuery(String query) {
@@ -35,17 +36,12 @@ public final class QueryFactory {
     public Query createQuery(String query, Object... parameters) {
 
         if (parameters.length == 0) {
-            return new Query(query);
+            return new Query(query, queryMarshaller);
         }
-        return new Query(bindParameters(query, parameters));
-    }
-
-    private String bindParameters(String query, Object[] parameters) {
-        return binder.bind(query, parameters);
+        return new Query(binder.bind(query, parameters), queryMarshaller);
     }
 
     public Query createEmptyQuery() {
-        return EMPTY_QUERY;
+        return new Query("{}", queryMarshaller);
     }
-
 }

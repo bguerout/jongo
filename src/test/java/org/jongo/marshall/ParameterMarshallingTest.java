@@ -57,7 +57,7 @@ public class ParameterMarshallingTest extends JongoTestCase {
 
         collection.update("{name:'robert'}").with("{friend:#}", new Friend("john"));
 
-        long nb = collection.count("{friend.name:#}", "john");
+        long nb = collection.count("{'friend.name':#}", "john");
         assertThat(nb).isEqualTo(1);
     }
 

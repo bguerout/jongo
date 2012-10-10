@@ -30,9 +30,8 @@ import java.io.Writer;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 
-public class JsonEngine implements Unmarshaller, Marshaller<DBObject> {
+public class JsonEngine implements Unmarshaller, Marshaller<Object, DBObject> {
 
-    private final JacksonObjectIdUpdater updater;
     private final MappingConfig config;
 
     public JsonEngine() {
@@ -45,7 +44,6 @@ public class JsonEngine implements Unmarshaller, Marshaller<DBObject> {
 
     public JsonEngine(MappingConfig config) {
         this.config = config;
-        this.updater = new JacksonObjectIdUpdater();
     }
 
 

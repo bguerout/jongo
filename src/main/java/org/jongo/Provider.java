@@ -22,9 +22,11 @@ import org.jongo.marshall.Unmarshaller;
 
 public interface Provider {
 
-    Marshaller<DBObject> getMarshaller();
+    Marshaller<Object, DBObject> getMarshaller();
 
-    Marshaller<String> getParameterMarshaller();
+    Marshaller<Object, String> getParameterMarshaller();
+
+    Marshaller<String, DBObject> getQueryMarshaller();
 
     Unmarshaller getUnmarshaller();
 

@@ -16,7 +16,7 @@
 
 package org.jongo.marshall;
 
-public interface Marshaller<T> {
+public interface Marshaller<S,D> {
 
-    T marshall(Object obj) throws MarshallingException;
+    D marshall(S source) throws MarshallingException;
 }

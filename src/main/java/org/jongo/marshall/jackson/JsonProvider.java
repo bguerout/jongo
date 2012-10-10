@@ -27,7 +27,8 @@ import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 public class JsonProvider implements Provider {
 
     private final JsonEngine engine;
-    private final Marshaller<String> parameterMarshaller;
+    private final Marshaller<Object, String> parameterMarshaller;
+    private final Marshaller<String, DBObject> queryMarshaller;
 
     public JsonProvider() {
         this(MappingConfigBuilder.usingJson().build());
@@ -36,14 +37,19 @@ public class JsonProvider implements Provider {
     public JsonProvider(MappingConfig config) {
         engine = new JsonEngine(config);
         parameterMarshaller = new JacksonParameterMarshaller(config);
+        queryMarshaller = new JacksonQueryMarshaller();
     }
 
-    public Marshaller<DBObject> getMarshaller() {
+    public Marshaller<Object, DBObject> getMarshaller() {
         return engine;
     }
 
-    public Marshaller<String> getParameterMarshaller() {
+    public Marshaller<Object, String> getParameterMarshaller() {
         return parameterMarshaller;
+    }
+
+    public Marshaller<String, DBObject> getQueryMarshaller() {
+        return queryMarshaller;
     }
 
     public Unmarshaller getUnmarshaller() {

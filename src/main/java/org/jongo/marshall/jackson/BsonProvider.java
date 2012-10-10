@@ -29,24 +29,29 @@ import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usin
 public class BsonProvider implements Provider {
 
     private final BsonEngine engine;
-    private final Marshaller<String> parameterMarshaller;
+    private final Marshaller<Object, String> parameterMarshaller;
+    private final Marshaller<String, DBObject> queryMarshaller;
 
     public BsonProvider() {
-        this.engine = new BsonEngine(usingBson().build());
-        this.parameterMarshaller = new JacksonParameterMarshaller(usingJson().build());
+        this(usingBson().build(), usingJson().build());
     }
 
     public BsonProvider(MappingConfig mappingConfig, MappingConfig parameterMappingConfig) {
-        this.engine = new BsonEngine(mappingConfig);
-        this.parameterMarshaller = new JacksonParameterMarshaller(parameterMappingConfig);
+        engine = new BsonEngine(mappingConfig);
+        parameterMarshaller = new JacksonParameterMarshaller(parameterMappingConfig);
+        queryMarshaller = new JacksonQueryMarshaller();
     }
 
-    public Marshaller<DBObject> getMarshaller() {
+    public Marshaller<Object, DBObject> getMarshaller() {
         return engine;
     }
 
-    public Marshaller<String> getParameterMarshaller() {
+    public Marshaller<Object, String> getParameterMarshaller() {
         return parameterMarshaller;
+    }
+
+    public Marshaller<String, DBObject> getQueryMarshaller() {
+        return queryMarshaller;
     }
 
     public Unmarshaller getUnmarshaller() {
