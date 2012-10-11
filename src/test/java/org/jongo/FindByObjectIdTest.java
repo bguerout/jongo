@@ -86,4 +86,24 @@ public class FindByObjectIdTest extends JongoTestCase {
         assertThat(users.hasNext()).isTrue();
         assertThat(users.next().getId()).isEqualTo(id);
     }
+
+    @Test
+    public void canFindWithTwoOid() throws Exception {
+        /* given */
+        ObjectId id1 = new ObjectId();
+        Friend john = new Friend(id1, "John");
+        ObjectId id2 = new ObjectId();
+        Friend peter = new Friend(id2, "Peter");
+
+        collection.save(john);
+        collection.save(peter);
+
+        Iterable<Friend> friends = collection.find("{$or :[{_id:{$oid:#}},{_id:{$oid:#}}]}", id1.toString(),id2.toString()).as(Friend.class);
+
+        /* then */
+        assertThat(friends.iterator().hasNext()).isTrue();
+        for (Friend friend : friends) {
+            assertThat(friend.getId()).isIn(id1, id2);
+        }
+    }
 }

@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES;
@@ -40,17 +41,33 @@ public class JacksonQueryMarshaller implements Marshaller<String, DBObject> {
 
     public DBObject marshall(String query) throws MarshallingException {
         try {
-            Map map = mapper.reader(Map.class).readValue(query.replace('\'', '"'));
-            replaceOidWithObjectIdIfExists(map);
+            Map<String, Object> map = mapper.reader(Map.class).readValue(query.replace('\'', '"'));
+            findObjectIds(map);
             return new BasicDBObject(map);
         } catch (Exception e) {
             throw new IllegalArgumentException(query + " cannot be parsed", e);
         }
     }
 
-    private void replaceOidWithObjectIdIfExists(Map map) {
-        Object _id = map.get(MONGO_DOCUMENT_ID_NAME);
-        if(_id != null && _id instanceof Map) {
+    private void findObjectIds(Map<String, Object> map) {
+        for(String key : map.keySet()) {
+            Object value = map.get(key);
+            if(key.equals(MONGO_DOCUMENT_ID_NAME))
+                replaceObjectId(map, value);
+            else if(value instanceof List)
+                deepFindObjectIds(((List)value).toArray());
+            else deepFindObjectIds(value);
+        }
+    }
+
+    private void deepFindObjectIds(Object... values) {
+        for(Object value : values)
+            if (value instanceof Map)
+                findObjectIds((Map<String, Object>) value);
+    }
+
+    private void replaceObjectId(Map<String, Object> map, Object _id) {
+        if(_id instanceof Map) {
             Map<String, String> oid = (Map)_id;
             String value = oid.get(MONGO_QUERY_OID);
             if(value != null)
