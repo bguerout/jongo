@@ -20,6 +20,7 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
+import org.jongo.model.Gender;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -106,4 +107,35 @@ public class FindTest extends JongoTestCase {
         assertThat(results.hasNext()).isFalse();
     }
 
+    @Test
+    public void canFindUsingEnum() throws Exception {
+        /* given */
+        Friend friend = new Friend("Jane", new Coordinate(2, 31));
+        friend.setGender(Gender.FEMALE);
+        collection.save(friend);
+
+        /* when */
+        Iterator<Friend> results = collection.find("{'gender':#}", Gender.FEMALE).as(Friend.class).iterator();
+
+        /* then */
+        assertThat(results.next().getGender()).isEqualTo(Gender.FEMALE);
+        assertThat(results.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canFindWithRegex() throws Exception {
+        /* given */
+        collection.insert("{name:'John'}");
+        collection.insert("{name:'Smith'}");
+        collection.insert("{name:'Peter'}");
+
+        /* when */
+        Iterable<Friend> friends = collection.find("{name : {$regex: '.*h$'}}").as(Friend.class);
+
+        /* then */
+        assertThat(friends.iterator().hasNext()).isTrue();
+        for (Friend friend : friends) {
+            assertThat(friend.getName()).isIn("Smith");
+        }
+    }
 }
