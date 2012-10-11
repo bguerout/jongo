@@ -108,21 +108,6 @@ public class FindTest extends JongoTestCase {
     }
 
     @Test
-    public void canFindUsingEnum() throws Exception {
-        /* given */
-        Friend friend = new Friend("Jane", new Coordinate(2, 31));
-        friend.setGender(Gender.FEMALE);
-        collection.save(friend);
-
-        /* when */
-        Iterator<Friend> results = collection.find("{'gender':#}", Gender.FEMALE).as(Friend.class).iterator();
-
-        /* then */
-        assertThat(results.next().getGender()).isEqualTo(Gender.FEMALE);
-        assertThat(results.hasNext()).isFalse();
-    }
-
-    @Test
     public void canFindWithRegex() throws Exception {
         /* given */
         collection.insert("{name:'John'}");
