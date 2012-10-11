@@ -19,23 +19,13 @@ package org.jongo.bench;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
 import com.mongodb.*;
-import org.jongo.bson.BsonByte;
-import org.jongo.bson.BsonByteFactory;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.marshall.jackson.BsonEngine;
 import org.jongo.marshall.jackson.JsonEngine;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import static org.jongo.bench.BenchUtil.createDBOFriend;
-
 public class DecoderBench extends SimpleBenchmark {
-
-    private static final int NB_DOCS = 1000000;
-    private static final byte[][] documents = createInMemoryDocuments(NB_DOCS);
 
     private final BsonEngine bsonEngine = new BsonEngine();
     private final JsonEngine jsonEngine = new JsonEngine();
@@ -44,17 +34,17 @@ public class DecoderBench extends SimpleBenchmark {
 
         for (int i = 0; i < reps; i++) {
 
-            DBObject dbo = decode(i, DefaultDBDecoder.FACTORY);
+            DBObject dbo = decode(DefaultDBDecoder.FACTORY);
             DBObject coord = (DBObject) dbo.get("coordinate");
             Coordinate coordinate = new Coordinate((Integer) coord.get("lat"), (Integer) coord.get("lng"));
             Friend f = new Friend((String) dbo.get("name"), (String) dbo.get("address"), coordinate);
         }
     }
 
-    public void timeDecodeWithDefaultJongo(int reps) {
+    public void XXtimeDecodeWithDefaultJongo(int reps) {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
-            DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);
+            DBObject dbo = decode(BsonDBDecoder.FACTORY);
             Friend f = jsonEngine.unmarshall(dbo, Friend.class);
         }
     }
@@ -62,31 +52,34 @@ public class DecoderBench extends SimpleBenchmark {
     public void timeDecodeWithBsonJongo(int reps) {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
-            DBObject dbo = decode(docIndex, BsonDBDecoder.FACTORY);
+            DBObject dbo = decode(BsonDBDecoder.FACTORY);
             Friend f = bsonEngine.unmarshall(dbo, Friend.class);
         }
     }
 
-    private DBObject decode(int i, DBDecoderFactory factory) {
+    private DBObject decode(DBDecoderFactory factory) {
         DBDecoder decoder = factory.create();
-        try {
-            return decoder.decode(new ByteArrayInputStream(documents[i]), (DBCollection) null);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static byte[][] createInMemoryDocuments(int nbDocs) {
-        byte[][] documents = new byte[NB_DOCS][];
-        for (int i = 0; i < nbDocs; i++) {
-            DBObject dbObject = createDBOFriend(i);
-            BsonByte stream = BsonByteFactory.fromDBObject(dbObject);
-            documents[i] = stream.getData();
-        }
-        return documents;
+        return decoder.decode(FRIEND_AS_BYTE, (DBCollection) null);
     }
 
     public static void main(String[] args) {
         Runner.main(DecoderBench.class, new String[]{});
     }
+
+    private static final byte[] FRIEND_AS_BYTE = new byte[]{-75, 1, 0, 0, 7, 95, 105, 100, 0, 80, 116, -128, -1, 48, 4,
+            -104, 62, 31, -27, -19, 85, 2, 110, 97, 109, 101, 0, 6, 0, 0, 0, 74, 111, 104, 110, 48, 0, 2, 97, 100, 100,
+            114, 101, 115, 115, 0, 9, 0, 0, 0, 65, 100, 100, 114, 101, 115, 115, 48, 0, 3, 99, 111, 111, 114, 100, 105,
+            110, 97, 116, 101, 0, 23, 0, 0, 0, 16, 108, 97, 116, 0, 1, 0, 0, 0, 16, 108, 110, 103, 0, 0, 0, 0, 0, 0, 4,
+            98, 117, 100, 100, 105, 101, 115, 0, 77, 1, 0, 0, 3, 48, 0, 79, 0, 0, 0, 2, 110, 97, 109, 101, 0, 7, 0, 0, 0,
+            74, 111, 104, 110, 48, 49, 0, 2, 97, 100, 100, 114, 101, 115, 115, 0, 9, 0, 0, 0, 65, 100, 100, 114, 101, 115,
+            115, 48, 0, 3, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 0, 23, 0, 0, 0, 16, 108, 97, 116, 0, 1, 0, 0, 0,
+            16, 108, 110, 103, 0, 0, 0, 0, 0, 0, 0, 3, 49, 0, 79, 0, 0, 0, 2, 110, 97, 109, 101, 0, 7, 0, 0, 0, 74, 111, 104,
+            110, 48, 50, 0, 2, 97, 100, 100, 114, 101, 115, 115, 0, 9, 0, 0, 0, 65, 100, 100, 114, 101, 115, 115, 48, 0, 3, 99,
+            111, 111, 114, 100, 105, 110, 97, 116, 101, 0, 23, 0, 0, 0, 16, 108, 97, 116, 0, 1, 0, 0, 0, 16, 108, 110, 103, 0, 0,
+            0, 0, 0, 0, 0, 3, 50, 0, 79, 0, 0, 0, 2, 110, 97, 109, 101, 0, 7, 0, 0, 0, 74, 111, 104, 110, 48, 51, 0, 2, 97, 100,
+            100, 114, 101, 115, 115, 0, 9, 0, 0, 0, 65, 100, 100, 114, 101, 115, 115, 48, 0, 3, 99, 111, 111, 114, 100, 105, 110,
+            97, 116, 101, 0, 23, 0, 0, 0, 16, 108, 97, 116, 0, 1, 0, 0, 0, 16, 108, 110, 103, 0, 0, 0, 0, 0, 0, 0, 3, 51, 0, 79,
+            0, 0, 0, 2, 110, 97, 109, 101, 0, 7, 0, 0, 0, 74, 111, 104, 110, 48, 52, 0, 2, 97, 100, 100, 114, 101, 115, 115, 0, 9,
+            0, 0, 0, 65, 100, 100, 114, 101, 115, 115, 48, 0, 3, 99, 111, 111, 114, 100, 105, 110, 97, 116, 101, 0, 23, 0, 0, 0, 16,
+            108, 97, 116, 0, 1, 0, 0, 0, 16, 108, 110, 103, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 }

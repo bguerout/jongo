@@ -60,6 +60,6 @@ public class YourkitBench {
     @Ignore
     public void decodeWithBsonJongo() throws Exception {
         DecoderBench bench = new DecoderBench();
-        bench.timeDecodeWithDriver(1);
+        bench.timeDecodeWithBsonJongo(1);
     }
 }
