@@ -19,7 +19,7 @@ package org.jongo.query;
 import com.mongodb.DBObject;
 import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.jackson.JacksonQueryMarshaller;
-import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
+import org.jongo.marshall.jackson.JsonEngine;
 import org.junit.Test;
 
 import static junit.framework.Assert.fail;
@@ -27,7 +27,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryTest {
 
-    QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(MappingConfigBuilder.usingJson().build());
+    QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(new JsonEngine());
 
     @Test
     public void shouldConvertToDBObject() throws Exception {

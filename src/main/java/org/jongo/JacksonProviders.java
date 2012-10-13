@@ -26,13 +26,14 @@ public class JacksonProviders {
     }
 
     public static class Builder {
-        private MappingConfigBuilder builder, paramBuilder;
+        private MappingConfigBuilder builder;
+        private Type type;
 
         public Builder(Type type) {
+            this.type = type;
             switch (type) {
                 case BSON:
                     builder = MappingConfigBuilder.usingBson();
-                    paramBuilder = MappingConfigBuilder.usingJson();
                     break;
                 case JSON:
                     builder = MappingConfigBuilder.usingJson();
@@ -41,28 +42,22 @@ public class JacksonProviders {
 
         public Builder addModule(Module module) {
             builder.addModule(module);
-            if (paramBuilder != null)
-                paramBuilder.addModule(module);
             return this;
         }
 
         public <T> Builder addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
             builder.addDeserializer(type, deserializer);
-            if (paramBuilder != null)
-                paramBuilder.addDeserializer(type, deserializer);
             return this;
         }
 
         public <T> Builder addSerializer(Class<T> type, JsonSerializer<T> serializer) {
             builder.addSerializer(type, serializer);
-            if (paramBuilder != null)
-                paramBuilder.addSerializer(type, serializer);
             return this;
         }
 
         public Provider build() {
-            if (paramBuilder != null)
-                return new BsonProvider(builder.build(), paramBuilder.build());
+            if (type == BSON)
+                return new BsonProvider(builder.build());
             else
                 return new JsonProvider(builder.build());
         }

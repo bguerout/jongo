@@ -35,7 +35,7 @@ public class JsonProvider implements Provider {
 
     public JsonProvider(MappingConfig config) {
         engine = new JsonEngine(config);
-        queryMarshaller = new JacksonQueryMarshaller(config);
+        queryMarshaller = new JacksonQueryMarshaller(engine);
     }
 
     public Marshaller getMarshaller() {

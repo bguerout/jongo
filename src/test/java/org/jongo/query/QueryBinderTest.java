@@ -19,8 +19,7 @@ package org.jongo.query;
 import com.google.common.collect.Lists;
 import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.jackson.JacksonQueryMarshaller;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
-import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
+import org.jongo.marshall.jackson.JsonEngine;
 import org.jongo.model.Gender;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
@@ -36,8 +35,7 @@ public class QueryBinderTest {
 
     @Before
     public void setUp() throws Exception {
-        MappingConfig config = MappingConfigBuilder.usingJson().build();
-        QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(config);
+        QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(new JsonEngine());
         binder = new QueryBinder(queryMarshaller);
     }
 
@@ -81,7 +79,7 @@ public class QueryBinderTest {
 
         String query = binder.bind("{test:#}", strings);
 
-        assertThat(query).isEqualTo("{test:[\"1\",\"2\"]}");
+        assertThat(query).isEqualTo("{test:[ \"1\" , \"2\"]}");
     }
 
     @Test
@@ -96,8 +94,7 @@ public class QueryBinderTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        MappingConfig config = MappingConfigBuilder.usingJson().build();
-        QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(config);
+        QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(new JsonEngine());
         QueryBinder binderWithToken = new QueryBinder(queryMarshaller, "@");
 
         String query = binderWithToken.bind("{id:@}", 123);

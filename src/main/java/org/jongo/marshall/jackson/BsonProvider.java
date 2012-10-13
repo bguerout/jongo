@@ -32,12 +32,12 @@ public class BsonProvider implements Provider {
     private final QueryMarshaller queryMarshaller;
 
     public BsonProvider() {
-        this(usingBson().build(), usingJson().build());
+        this(usingBson().build());
     }
 
-    public BsonProvider(MappingConfig mappingConfig, MappingConfig parameterMappingConfig) {
+    public BsonProvider(MappingConfig mappingConfig) {
         engine = new BsonEngine(mappingConfig);
-        queryMarshaller = new JacksonQueryMarshaller(parameterMappingConfig);
+        queryMarshaller = new JacksonQueryMarshaller(engine);
     }
 
     public Marshaller getMarshaller() {

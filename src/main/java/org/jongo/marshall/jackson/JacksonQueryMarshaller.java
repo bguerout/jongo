@@ -20,39 +20,61 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.QueryMarshaller;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES;
 import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
 
 public class JacksonQueryMarshaller implements QueryMarshaller {
 
-    private final MappingConfig config;
+    private final Marshaller marshaller;
     private final ObjectMapper mapper;
     private final static String MONGO_QUERY_OID = "$oid";
 
-    public JacksonQueryMarshaller(MappingConfig config) {
-        this.config = config;
+    public JacksonQueryMarshaller(Marshaller marshaller) {
+        this.marshaller = marshaller;
         mapper = new ObjectMapper();
         mapper.configure(ALLOW_UNQUOTED_FIELD_NAMES, true);
     }
 
     public String marshallParameter(Object parameter) {
+        if (WRAPPERS.contains(parameter.getClass()))
+            return String.valueOf(parameter);
+        else if(parameter instanceof String || parameter instanceof Enum)
+            return "\"" + parameter + "\"";
+        else if (parameter instanceof ObjectId)
+            return "{" + MONGO_QUERY_OID + ":\"" + parameter.toString() + "\"}";
+        else
+            return marshall(parameter);
+    }
+
+    private String marshall(Object parameter) {
         try {
-            Writer writer = new StringWriter();
-            config.getWriter(parameter.getClass()).writeValue(writer, parameter);
-            return writer.toString();
+            DBObject dbObject = marshaller.marshall(parameter);
+            return dbObject.toString();
         } catch (Exception e) {
             String message = String.format("Unable to marshall json from: %s", parameter);
             throw new MarshallingException(message, e);
         }
+    }
+
+    private static Set WRAPPERS;
+    static {
+        WRAPPERS = createSet(Boolean.class, Character.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class);
+    }
+
+    private static Set<Class<?>> createSet(Class... classes) {
+        Set<Class<?>> set = new HashSet<Class<?>>();
+        for(Class<?> clazz : classes)
+            set.add(clazz);
+        return set;
     }
 
     public DBObject marshallQuery(String query) {
