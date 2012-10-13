@@ -17,6 +17,7 @@
 package org.jongo.query;
 
 import com.google.common.collect.Lists;
+import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.jackson.JacksonParameterMarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
@@ -37,7 +38,8 @@ public class QueryBinderTest {
     public void setUp() throws Exception {
         MappingConfig config = MappingConfigBuilder.usingJson().build();
         JacksonParameterMarshaller parameterMarshaller = new JacksonParameterMarshaller(config);
-        binder = new QueryBinder(parameterMarshaller);
+        QueryMarshaller queryMarshaller = new QueryMarshaller(parameterMarshaller, null);
+        binder = new QueryBinder(queryMarshaller);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -97,7 +99,8 @@ public class QueryBinderTest {
 
         MappingConfig config = MappingConfigBuilder.usingJson().build();
         JacksonParameterMarshaller parameterMarshaller = new JacksonParameterMarshaller(config);
-        QueryBinder binderWithToken = new QueryBinder(parameterMarshaller, "@");
+        QueryMarshaller queryMarshaller = new QueryMarshaller(parameterMarshaller, null);
+        QueryBinder binderWithToken = new QueryBinder(queryMarshaller, "@");
 
         String query = binderWithToken.bind("{id:@}", 123);
 

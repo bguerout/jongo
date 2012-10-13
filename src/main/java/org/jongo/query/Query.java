@@ -18,12 +18,13 @@ package org.jongo.query;
 
 import com.mongodb.DBObject;
 import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.QueryMarshaller;
 
 public final class Query {
     private final DBObject dbObject;
 
-    Query(String query, Marshaller<String, DBObject> marshaller) {
-        this.dbObject = marshaller.marshall(query);
+    public Query(String query, QueryMarshaller queryMarshaller) {
+        this.dbObject = queryMarshaller.getQueryMarshaller().marshall(query);
     }
 
     public DBObject toDBObject() {

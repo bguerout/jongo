@@ -18,15 +18,14 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.Unmarshaller;
 
 public interface Provider {
 
     Marshaller<Object, DBObject> getMarshaller();
 
-    Marshaller<Object, String> getParameterMarshaller();
-
-    Marshaller<String, DBObject> getQueryMarshaller();
+    QueryMarshaller getQMarshaller();
 
     Unmarshaller getUnmarshaller();
 

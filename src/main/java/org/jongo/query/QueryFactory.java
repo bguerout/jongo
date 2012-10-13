@@ -18,14 +18,15 @@ package org.jongo.query;
 
 import com.mongodb.DBObject;
 import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.QueryMarshaller;
 
 public final class QueryFactory {
 
     private final QueryBinder binder;
-    private final Marshaller<String, DBObject> queryMarshaller;
+    private final QueryMarshaller queryMarshaller;
 
-    public QueryFactory(Marshaller<Object, String> parameterMarshaller, Marshaller<String, DBObject> queryMarshaller) {
-        this.binder = new QueryBinder(parameterMarshaller);
+    public QueryFactory(QueryMarshaller queryMarshaller) {
+        this.binder = new QueryBinder(queryMarshaller);
         this.queryMarshaller = queryMarshaller;
     }
 

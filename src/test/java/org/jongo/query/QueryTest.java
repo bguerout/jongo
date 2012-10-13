@@ -17,6 +17,7 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
+import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.junit.Test;
 
@@ -26,11 +27,12 @@ import static org.fest.assertions.Assertions.assertThat;
 public class QueryTest {
 
     JacksonQueryMarshaller marshaller = new JacksonQueryMarshaller();
+    QueryMarshaller queryMarshaller = new QueryMarshaller(null, marshaller);
 
     @Test
     public void shouldConvertToDBObject() throws Exception {
 
-        Query query = new Query("{'value':1}", marshaller);
+        Query query = new Query("{'value':1}", queryMarshaller);
 
         DBObject dbObject = query.toDBObject();
 
@@ -42,7 +44,7 @@ public class QueryTest {
     public void shouldThrowExceptionOnInvalidQuery() throws Exception {
 
         try {
-            new Query("{invalid}", marshaller);
+            new Query("{invalid}", queryMarshaller);
             fail();
         } catch (Exception e) {
             assertThat(e).isInstanceOf(IllegalArgumentException.class);

@@ -17,6 +17,7 @@
 package org.jongo.query;
 
 import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.QueryMarshaller;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,14 +27,14 @@ class QueryBinder {
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
     private final Pattern pattern;
-    private final Marshaller<Object, String> parameterMarshaller;
+    private final QueryMarshaller queryMarshaller;
 
-    public QueryBinder(Marshaller<Object, String> parameterMarshaller) {
-        this(parameterMarshaller, DEFAULT_TOKEN);
+    public QueryBinder(QueryMarshaller queryMarshaller) {
+        this(queryMarshaller, DEFAULT_TOKEN);
     }
 
-    public QueryBinder(Marshaller<Object, String> parameterMarshaller, String token) {
-        this.parameterMarshaller = parameterMarshaller;
+    public QueryBinder(QueryMarshaller queryMarshaller, String token) {
+        this.queryMarshaller = queryMarshaller;
         this.token = token;
         this.pattern = Pattern.compile(token);
     }
@@ -56,7 +57,7 @@ class QueryBinder {
     private String bindParamIntoQuery(String query, Object parameter) {
 
         try {
-            String paramAsJson = parameterMarshaller.marshall(parameter);
+            String paramAsJson = queryMarshaller.getParameterMarshaller().marshall(parameter);
             return query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
 
         } catch (RuntimeException e) {
