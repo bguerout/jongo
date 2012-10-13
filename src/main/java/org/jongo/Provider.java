@@ -23,9 +23,9 @@ import org.jongo.marshall.Unmarshaller;
 
 public interface Provider {
 
-    Marshaller<Object, DBObject> getMarshaller();
+    Marshaller getMarshaller();
 
-    QueryMarshaller getQMarshaller();
+    QueryMarshaller getQueryMarshaller();
 
     Unmarshaller getUnmarshaller();
 

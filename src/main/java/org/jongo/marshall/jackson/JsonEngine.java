@@ -30,7 +30,7 @@ import java.io.Writer;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
 
-public class JsonEngine implements Unmarshaller, Marshaller<Object, DBObject> {
+public class JsonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
 

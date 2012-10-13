@@ -20,7 +20,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.QueryMarshaller;
-import org.jongo.marshall.jackson.JacksonParameterMarshaller;
 import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
@@ -33,13 +32,13 @@ import static org.mockito.Mockito.*;
 public class QueryFactoryTest {
 
     private QueryFactory factory;
-    private Marshaller<Object, DBObject> marshaller;
+    private Marshaller marshaller;
 
     @Before
     public void setUp() throws Exception {
         marshaller = mock(Marshaller.class);
         MappingConfig config = MappingConfigBuilder.usingJson().build();
-        factory = new QueryFactory(new QueryMarshaller(new JacksonParameterMarshaller(config), new JacksonQueryMarshaller()));
+        factory = new QueryFactory(new JacksonQueryMarshaller(config));
     }
 
     @Test

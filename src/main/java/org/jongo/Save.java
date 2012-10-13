@@ -25,13 +25,13 @@ import org.jongo.marshall.Marshaller;
 
 class Save {
 
-    private final Marshaller<Object, DBObject> marshaller;
+    private final Marshaller marshaller;
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
     private final Object document;
     private WriteConcern concern;
 
-    Save(DBCollection collection, Marshaller<Object, DBObject> marshaller, ObjectIdUpdater objectIdUpdater, Object document) {
+    Save(DBCollection collection, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object document) {
         this.marshaller = marshaller;
         this.collection = collection;
         this.objectIdUpdater = objectIdUpdater;

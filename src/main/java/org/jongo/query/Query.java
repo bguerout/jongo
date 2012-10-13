@@ -24,7 +24,7 @@ public final class Query {
     private final DBObject dbObject;
 
     public Query(String query, QueryMarshaller queryMarshaller) {
-        this.dbObject = queryMarshaller.getQueryMarshaller().marshall(query);
+        this.dbObject = queryMarshaller.marshallQuery(query);
     }
 
     public DBObject toDBObject() {

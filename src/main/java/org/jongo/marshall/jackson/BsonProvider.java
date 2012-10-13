@@ -16,7 +16,6 @@
 
 package org.jongo.marshall.jackson;
 
-import com.mongodb.DBObject;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
@@ -30,7 +29,7 @@ import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usin
 public class BsonProvider implements Provider {
 
     private final BsonEngine engine;
-    private final QueryMarshaller qMarshaller;
+    private final QueryMarshaller queryMarshaller;
 
     public BsonProvider() {
         this(usingBson().build(), usingJson().build());
@@ -38,18 +37,15 @@ public class BsonProvider implements Provider {
 
     public BsonProvider(MappingConfig mappingConfig, MappingConfig parameterMappingConfig) {
         engine = new BsonEngine(mappingConfig);
-
-        Marshaller<Object, String> parameterMarshaller = new JacksonParameterMarshaller(parameterMappingConfig);
-        Marshaller<String, DBObject> queryMarshaller = new JacksonQueryMarshaller();
-        qMarshaller = new QueryMarshaller(parameterMarshaller, queryMarshaller);
+        queryMarshaller = new JacksonQueryMarshaller(parameterMappingConfig);
     }
 
-    public Marshaller<Object, DBObject> getMarshaller() {
+    public Marshaller getMarshaller() {
         return engine;
     }
 
-    public QueryMarshaller getQMarshaller() {
-        return qMarshaller;
+    public QueryMarshaller getQueryMarshaller() {
+        return queryMarshaller;
     }
 
     public Unmarshaller getUnmarshaller() {

@@ -31,7 +31,7 @@ import java.io.IOException;
 
 import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingBson;
 
-public class BsonEngine implements Unmarshaller, Marshaller<Object, DBObject> {
+public class BsonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
 

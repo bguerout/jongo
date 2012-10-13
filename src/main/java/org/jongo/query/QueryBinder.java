@@ -57,7 +57,7 @@ class QueryBinder {
     private String bindParamIntoQuery(String query, Object parameter) {
 
         try {
-            String paramAsJson = queryMarshaller.getParameterMarshaller().marshall(parameter);
+            String paramAsJson = queryMarshaller.marshallParameter(parameter);
             return query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
 
         } catch (RuntimeException e) {

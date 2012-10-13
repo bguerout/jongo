@@ -20,26 +20,42 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.QueryMarshaller;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES;
 import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
 
-public class JacksonQueryMarshaller implements Marshaller<String, DBObject> {
+public class JacksonQueryMarshaller implements QueryMarshaller {
 
-    private ObjectMapper mapper;
+    private final MappingConfig config;
+    private final ObjectMapper mapper;
     private final static String MONGO_QUERY_OID = "$oid";
 
-    public JacksonQueryMarshaller() {
+    public JacksonQueryMarshaller(MappingConfig config) {
+        this.config = config;
         mapper = new ObjectMapper();
         mapper.configure(ALLOW_UNQUOTED_FIELD_NAMES, true);
     }
 
-    public DBObject marshall(String query) throws MarshallingException {
+    public String marshallParameter(Object parameter) {
+        try {
+            Writer writer = new StringWriter();
+            config.getWriter(parameter.getClass()).writeValue(writer, parameter);
+            return writer.toString();
+        } catch (Exception e) {
+            String message = String.format("Unable to marshall json from: %s", parameter);
+            throw new MarshallingException(message, e);
+        }
+    }
+
+    public DBObject marshallQuery(String query) {
         try {
             Map<String, Object> map = mapper.reader(Map.class).readValue(query.replace('\'', '"'));
             findObjectIds(map);
