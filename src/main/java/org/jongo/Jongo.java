@@ -20,6 +20,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
+import org.jongo.marshall.jackson.configuration.JacksonProviders;
 
 public class Jongo {
 

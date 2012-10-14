@@ -16,36 +16,29 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
-import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
 
 public class JsonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
 
     public JsonEngine() {
-        this(usingJson().build());
-    }
-
-    public JsonEngine(ObjectMapper bsonMapper) {
-        this(new MappingConfigBuilder(bsonMapper).build());
+        this(usingJson().innerConfig());
     }
 
     public JsonEngine(MappingConfig config) {
         this.config = config;
     }
-
 
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
         String json = document.toString();

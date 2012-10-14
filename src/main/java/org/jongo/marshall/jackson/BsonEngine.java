@@ -29,14 +29,14 @@ import org.jongo.marshall.jackson.configuration.MappingConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingBson;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingBson;
 
 public class BsonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
 
     public BsonEngine() {
-        this(usingBson().build());
+        this(usingBson().innerConfig());
     }
 
     public BsonEngine(MappingConfig config) {

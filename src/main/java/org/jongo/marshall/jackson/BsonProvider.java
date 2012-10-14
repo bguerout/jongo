@@ -23,8 +23,7 @@ import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.MappingConfig;
 
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingBson;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingBson;
 
 public class BsonProvider implements Provider {
 
@@ -32,7 +31,7 @@ public class BsonProvider implements Provider {
     private final QueryMarshaller queryMarshaller;
 
     public BsonProvider() {
-        this(usingBson().build());
+        this(usingBson().innerConfig());
     }
 
     public BsonProvider(MappingConfig mappingConfig) {

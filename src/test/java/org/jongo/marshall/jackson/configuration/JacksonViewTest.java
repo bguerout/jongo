@@ -27,15 +27,15 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BSON.bsonify;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
 
 public class JacksonViewTest {
 
-
     private JsonEngine createProcessorWithView(final Class<?> viewClass) {
-        MappingConfig conf = MappingConfigBuilder.usingJson()
+        MappingConfig conf = usingJson()
                 .setReaderCallback(new ViewReaderCallback(viewClass))
                 .setWriterCallback(new ViewWriterCallback(viewClass))
-                .build();
+                .innerConfig();
         return new JsonEngine(conf);
     }
 

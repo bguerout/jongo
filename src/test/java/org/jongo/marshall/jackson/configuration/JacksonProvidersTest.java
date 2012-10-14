@@ -30,17 +30,17 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingJson;
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.usingBson;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingBson;
 
-public class MappingConfigBuilderTest {
+public class JacksonProvidersTest {
 
     @Test
     public void canAddDeserializer() throws Exception {
 
         MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .build();
+                .innerConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -53,7 +53,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig conf = usingJson()
                 .addSerializer(String.class, new DoeJsonSerializer())
-                .build();
+                .innerConfig();
 
         ObjectMapper mapper = conf.getObjectMapper();
 
@@ -66,7 +66,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = usingJson()
                 .addModule(new JsonModule())
-                .build();
+                .innerConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -80,7 +80,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .build();
+                .innerConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -92,9 +92,9 @@ public class MappingConfigBuilderTest {
     @Test
     public void canCreateConfigWithCustomMapper() throws Exception {
 
-        MappingConfig config = new MappingConfigBuilder(new ObjectMapper())
+        MappingConfig config = new JacksonProviders.Builder(new ObjectMapper(), JacksonProviders.Type.JSON)
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .build();
+                .innerConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -107,7 +107,7 @@ public class MappingConfigBuilderTest {
 
         MappingConfig config = usingBson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .build();
+                .innerConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
