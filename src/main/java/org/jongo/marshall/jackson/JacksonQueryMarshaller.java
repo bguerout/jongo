@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES;
-import static org.jongo.MongoCollection.MONGO_DOCUMENT_ID_NAME;
 
 public class JacksonQueryMarshaller implements QueryMarshaller {
 
@@ -90,26 +89,24 @@ public class JacksonQueryMarshaller implements QueryMarshaller {
     private void findObjectIds(Map<String, Object> map) {
         for(String key : map.keySet()) {
             Object value = map.get(key);
-            if(key.equals(MONGO_DOCUMENT_ID_NAME))
-                replaceObjectId(map, value);
+            if (value instanceof Map)
+                findInMap(map, key);
             else if(value instanceof List)
                 deepFindObjectIds(((List)value).toArray());
-            else deepFindObjectIds(value);
         }
+    }
+
+    private void findInMap(Map<String, Object> map, String key) {
+        Map value = (Map)map.get(key);
+        if((value.containsKey(MONGO_QUERY_OID)))
+            map.put(key, new ObjectId((String)value.get(MONGO_QUERY_OID)));
+        else
+            findObjectIds(value);
     }
 
     private void deepFindObjectIds(Object... values) {
         for(Object value : values)
             if (value instanceof Map)
                 findObjectIds((Map<String, Object>) value);
-    }
-
-    private void replaceObjectId(Map<String, Object> map, Object _id) {
-        if(_id instanceof Map) {
-            Map<String, String> oid = (Map)_id;
-            String value = oid.get(MONGO_QUERY_OID);
-            if(value != null)
-                map.put(MONGO_DOCUMENT_ID_NAME, new ObjectId(value));
-        }
     }
 }

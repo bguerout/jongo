@@ -18,6 +18,7 @@ package org.jongo;
 
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
+import org.jongo.model.LinkedFriend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -33,12 +34,12 @@ public class FindByObjectIdTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
+        collection = createEmptyCollection("friends");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("users");
+        dropCollection("friends");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -80,11 +81,11 @@ public class FindByObjectIdTest extends JongoTestCase {
         Friend john = new Friend(id, "John");
         collection.save(john);
 
-        Iterator<Friend> users = collection.find("{_id:{$oid:#}}", id.toString()).as(Friend.class).iterator();
+        Iterator<Friend> friends = collection.find("{_id:{$oid:#}}", id.toString()).as(Friend.class).iterator();
 
         /* then */
-        assertThat(users.hasNext()).isTrue();
-        assertThat(users.next().getId()).isEqualTo(id);
+        assertThat(friends.hasNext()).isTrue();
+        assertThat(friends.next().getId()).isEqualTo(id);
     }
 
     @Test
@@ -105,5 +106,19 @@ public class FindByObjectIdTest extends JongoTestCase {
         for (Friend friend : friends) {
             assertThat(friend.getId()).isIn(id1, id2);
         }
+    }
+
+    @Test
+    public void canFindWithOidNamed() throws Exception {
+        /* given */
+        ObjectId id = new ObjectId();
+        LinkedFriend john = new LinkedFriend(id);
+        collection.save(john);
+
+        Iterator<LinkedFriend> friends = collection.find("{friendRelationId:{$oid:#}}", id.toString()).as(LinkedFriend.class).iterator();
+
+        /* then */
+        assertThat(friends.hasNext()).isTrue();
+        assertThat(friends.next().getRelationId()).isEqualTo(id);
     }
 }

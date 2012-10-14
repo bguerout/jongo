@@ -21,6 +21,8 @@ import org.bson.types.ObjectId;
 public class LinkedFriend extends Friend {
     ObjectId friendRelationId;
 
+    LinkedFriend() {}
+
     public LinkedFriend(ObjectId friendRelationId) {
         this.friendRelationId = friendRelationId;
     }
