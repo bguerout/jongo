@@ -30,7 +30,7 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
+        collection = createEmptyCollection("friends");
     }
 
     @After

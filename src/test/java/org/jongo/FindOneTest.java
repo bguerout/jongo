@@ -34,12 +34,12 @@ public class FindOneTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
+        collection = createEmptyCollection("friends");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("users");
+        dropCollection("friends");
     }
 
     @Test

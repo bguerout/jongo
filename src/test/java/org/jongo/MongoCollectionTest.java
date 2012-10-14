@@ -39,12 +39,12 @@ public class MongoCollectionTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
+        collection = createEmptyCollection("friends");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("users");
+        dropCollection("friends");
     }
 
     @Test
@@ -142,6 +142,6 @@ public class MongoCollectionTest extends JongoTestCase {
 
     @Test
     public void canGetCollectionName() throws Exception {
-        assertThat(collection.getName()).isEqualTo("users");
+        assertThat(collection.getName()).isEqualTo("friends");
     }
 }

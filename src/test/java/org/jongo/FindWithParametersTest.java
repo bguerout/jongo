@@ -32,12 +32,12 @@ public class FindWithParametersTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
+        collection = createEmptyCollection("friends");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("users");
+        dropCollection("friends");
     }
 
     @Test
@@ -58,12 +58,12 @@ public class FindWithParametersTest extends JongoTestCase {
         collection.insert("{name:'John'}");
 
         /* when */
-        Iterator<Friend> users = collection.find("{name:#}", "John").as(Friend.class).iterator();
+        Iterator<Friend> friends = collection.find("{name:#}", "John").as(Friend.class).iterator();
 
         /* then */
-        assertThat(users.hasNext()).isTrue();
-        assertThat(users.next().getName()).isEqualTo("John");
-        assertThat(users.hasNext()).isFalse();
+        assertThat(friends.hasNext()).isTrue();
+        assertThat(friends.next().getName()).isEqualTo("John");
+        assertThat(friends.hasNext()).isFalse();
     }
 
 }

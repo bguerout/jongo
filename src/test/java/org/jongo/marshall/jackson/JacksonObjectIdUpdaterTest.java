@@ -110,7 +110,7 @@ public class JacksonObjectIdUpdaterTest {
     public void whenFriendHasIdShouldDoNothing() throws Exception {
 
         ObjectId oid = new ObjectId();
-        Friend friend = new Friend(oid, "user");
+        Friend friend = new Friend(oid, "John");
 
         updater.setDocumentGeneratedId(friend, new ObjectId());
 

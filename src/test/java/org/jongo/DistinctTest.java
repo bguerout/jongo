@@ -34,13 +34,13 @@ public class DistinctTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
+        collection = createEmptyCollection("friends");
         wallStreetAvenue = "22 Wall Street Avenue";
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("users");
+        dropCollection("friends");
     }
 
     @Test

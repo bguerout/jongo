@@ -37,12 +37,12 @@ public class QuestionsSpikeTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("users");
+        collection = createEmptyCollection("friends");
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("users");
+        dropCollection("friends");
     }
 
     @Test
@@ -57,7 +57,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
                 .or(QueryBuilder.start("key1").in(764).get(), QueryBuilder.start("key2").in(keys).get(),
                         QueryBuilder.start().and("key3").is(3).and("key4").is(64).get()).get();
 
-        getDatabase().getCollection("users").find(query);
+        getDatabase().getCollection("friends").find(query);
     }
 
     @Test
