@@ -30,8 +30,8 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
 import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingBson;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
 
 public class JacksonProvidersTest {
 

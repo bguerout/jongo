@@ -17,7 +17,6 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.QueryMarshaller;
 
 public final class Query {

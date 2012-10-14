@@ -20,7 +20,6 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
-import org.jongo.model.Gender;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;

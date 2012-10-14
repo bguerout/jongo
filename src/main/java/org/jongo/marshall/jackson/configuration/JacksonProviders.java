@@ -1,12 +1,5 @@
 package org.jongo.marshall.jackson.configuration;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.Type.JSON;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.Type.BSON;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
@@ -19,6 +12,13 @@ import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
 
 import java.util.ArrayList;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.Type.BSON;
+import static org.jongo.marshall.jackson.configuration.JacksonProviders.Type.JSON;
 
 public class JacksonProviders {
 

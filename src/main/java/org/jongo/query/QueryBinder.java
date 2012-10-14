@@ -16,7 +16,6 @@
 
 package org.jongo.query;
 
-import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.QueryMarshaller;
 
 import java.util.regex.Matcher;

@@ -26,8 +26,8 @@ import org.jongo.model.Views;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.BSON.bsonify;
 import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
+import static org.jongo.util.BSON.bsonify;
 
 public class JacksonViewTest {
 

@@ -31,7 +31,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.endsWith;
 import static org.mockito.Mockito.mock;
 
 public class MongoCollectionTest extends JongoTestCase {
