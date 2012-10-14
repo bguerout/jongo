@@ -86,6 +86,21 @@ public class RemoveTest extends JongoTestCase {
     }
 
     @Test
+    public void canRemoveAll() throws Exception {
+        /* given */
+        collection.insert("{name:'John'}");
+        collection.insert("{name:'Peter'}");
+
+        /* when */
+        WriteResult writeResult = collection.remove();
+
+        /* then */
+        assertThat(writeResult).isNotNull();
+        Friend friend = collection.findOne().as(Friend.class);
+        assertThat(friend).isNull();
+    }
+
+    @Test
     public void whenNoSpecifyShouldSaveWithCollectionWriteConcern() throws Exception {
 
         Friend john = new Friend("John");

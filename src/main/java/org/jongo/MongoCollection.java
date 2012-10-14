@@ -31,6 +31,7 @@ public class MongoCollection {
 
     public static final String MONGO_DOCUMENT_ID_NAME = "_id";
     private static final Object[] NO_PARAMETERS = {};
+    private static final String ALL = "{}";
 
     private final DBCollection collection;
     private final Marshaller marshaller;
@@ -54,7 +55,7 @@ public class MongoCollection {
     }
 
     public FindOne findOne() {
-        return findOne("{}");
+        return findOne(ALL);
     }
 
     public FindOne findOne(String query) {
@@ -66,7 +67,7 @@ public class MongoCollection {
     }
 
     public Find find() {
-        return find("{}");
+        return find(ALL);
     }
 
     public Find find(String query) {
@@ -114,7 +115,7 @@ public class MongoCollection {
     }
 
     public WriteResult insert(String query) {
-        return insert(query, new Object[0]);
+        return insert(query, NO_PARAMETERS);
     }
 
     public WriteResult insert(String query, Object... parameters) {
@@ -126,8 +127,12 @@ public class MongoCollection {
         return remove("{" + MONGO_DOCUMENT_ID_NAME + ":#}", id);
     }
 
+    public WriteResult remove() {
+        return remove(ALL);
+    }
+
     public WriteResult remove(String query) {
-        return remove(query, new Object[0]);
+        return remove(query, NO_PARAMETERS);
     }
 
     public WriteResult remove(String query, Object... parameters) {
@@ -139,7 +144,7 @@ public class MongoCollection {
     }
 
     public Aggregate aggregate(String pipelineOperator) {
-        return aggregate(pipelineOperator, new Object[0]);
+        return aggregate(pipelineOperator, NO_PARAMETERS);
     }
 
     public Aggregate aggregate(String pipelineOperator, Object... parameters) {
