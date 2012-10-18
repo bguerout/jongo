@@ -16,20 +16,25 @@
 
 package org.jongo.marshall;
 
+import com.google.common.collect.Lists;
+import com.mongodb.DBObject;
 import org.jongo.MongoCollection;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.model.Gender;
+import org.jongo.util.DBObjectResultMapper;
+import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ParameterMarshallingTest extends JongoTestCase {
+public class ParameterQueryBindingTest extends JongoTestCase {
 
     private MongoCollection collection;
 
@@ -45,7 +50,7 @@ public class ParameterMarshallingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldBindBSONPrimitiveParameter() throws Exception {
+    public void shouldBindOneParameter() throws Exception {
 
         long nb = collection.count("{name:#}", "robert");
 
@@ -53,40 +58,55 @@ public class ParameterMarshallingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldBindComplexParameter() throws Exception {
+    public void shouldBindManyParameters() throws Exception {
 
-        collection.update("{name:'robert'}").with("{friend:#}", new Friend("john"));
+        long nb = collection.count("{coordinate.lat:#, coordinate.lng:#}", 2, 3);
 
-        long nb = collection.count("{'friend.name':#}", "john");
+        assertThat(nb).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldBindListOfPrimitive() throws Exception {
+
+        List<String> strings = Lists.newArrayList("1", "2");
+
+        long nb = collection.count("{coordinate.lat:{$in:#}}", strings);
+
         assertThat(nb).isEqualTo(1);
     }
 
     @Test
     public void shouldBindEnumParameter() throws Exception {
-        /* given */
+
         Friend friend = new Friend("John", new Coordinate(2, 31));
         friend.setGender(Gender.FEMALE);
         collection.save(friend);
 
-        /* when */
         Iterator<Friend> results = collection.find("{'gender':#}", Gender.FEMALE).as(Friend.class).iterator();
 
-        /* then */
         assertThat(results.next().getGender()).isEqualTo(Gender.FEMALE);
         assertThat(results.hasNext()).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenNotEnoughParameters() throws Exception {
+    public void shouldFailWithInvalidParameter() throws Exception {
 
-        collection.findOne("{id:#,id2:#}", "123").as(Friend.class);
+        collection.findOne("{id:#}", new ErrorObject()).as(Friend.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenNotTooManyParameters() throws Exception {
+    @Test
+    public void shouldFindWithADynamicFieldName() throws Exception {
 
-        collection.findOne("{id:#}", 123, 456).as(Friend.class);
+        /* given */
+        collection.insert("{name:{1:'John'}}");
+
+        /* when */
+        DBObject result = collection.findOne("{name.#:#}", 1, "John").map(new DBObjectResultMapper());
+
+        /* then */
+        assertThat(result).isNotNull();
+        assertThat(result.get("name")).isInstanceOf(DBObject.class);
+        assertThat(((DBObject) result.get("name")).get("1")).isEqualTo("John");
     }
-
 
 }

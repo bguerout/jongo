@@ -16,38 +16,35 @@
 
 package org.jongo.query;
 
-import com.mongodb.BasicDBObject;
-import org.jongo.marshall.Marshaller;
+import com.mongodb.DBObject;
 import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.jongo.marshall.jackson.JsonEngine;
 import org.junit.Before;
 import org.junit.Test;
 
+import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 public class QueryFactoryTest {
 
     private QueryFactory factory;
-    private Marshaller marshaller;
 
     @Before
     public void setUp() throws Exception {
-        marshaller = mock(Marshaller.class);
-        factory = new QueryFactory(new JacksonQueryMarshaller(new JsonEngine()));
+        JacksonQueryMarshaller marshaller = new JacksonQueryMarshaller(new JsonEngine());
+        factory = new QueryFactory(marshaller);
     }
 
     @Test
-    public void canCreateStaticQuery() throws Exception {
+    public void canCreateQuery() throws Exception {
 
         Query query = factory.createQuery("{value:1}");
 
         assertThat(query.toString()).isEqualTo("{ \"value\" : 1}");
-        verify(marshaller, never()).marshall(any());
     }
 
     @Test
-    public void shouldBindBsonParameterAndCreateQuery() throws Exception {
+    public void shouldBindManyParameterAndCreateQuery() throws Exception {
 
         Query query = factory.createQuery("{value:#}", 123);
 
@@ -55,10 +52,15 @@ public class QueryFactoryTest {
     }
 
     @Test
-    public void canCreateEmptyQuery() throws Exception {
+    public void shouldThrowExceptionOnInvalidQuery() throws Exception {
 
-        Query query = factory.createEmptyQuery();
-
-        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject());
+        try {
+            factory.createQuery("{invalid}");
+            fail();
+        } catch (Exception e) {
+            assertThat(e).isInstanceOf(IllegalArgumentException.class);
+            assertThat(e.getMessage()).contains("{invalid}");
+        }
     }
+
 }

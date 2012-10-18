@@ -16,16 +16,12 @@
 
 package org.jongo.query;
 
-import com.google.common.collect.Lists;
 import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.jongo.marshall.jackson.JsonEngine;
-import org.jongo.model.Gender;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -52,7 +48,7 @@ public class QueryBinderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenNotTooManyParameters() throws Exception {
+    public void shouldFailWhenTooManyParameters() throws Exception {
 
         binder.bind("{id:#}", 123, 456);
     }
@@ -74,24 +70,6 @@ public class QueryBinderTest {
     }
 
     @Test
-    public void shouldSerializeListOfPrimitive() throws Exception {
-        List<String> strings = Lists.newArrayList("1", "2");
-
-        String query = binder.bind("{test:#}", strings);
-
-        assertThat(query).isEqualTo("{test:[ \"1\" , \"2\"]}");
-    }
-
-    @Test
-    public void shouldSerializeEnum() throws Exception {
-
-        String query = binder.bind("{test:#}", Gender.FEMALE);
-
-        assertThat(query).isEqualTo("{test:\"FEMALE\"}");
-    }
-
-
-    @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
         QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(new JsonEngine());
@@ -102,13 +80,6 @@ public class QueryBinderTest {
         assertThat(query).isEqualTo("{id:123}");
     }
 
-    @Test
-    public void shouldBindAQueryWithOnlyAToken() throws Exception {
-
-        String query = binder.bind("#", 123);
-
-        assertThat(query).isEqualTo("123");
-    }
 }
 
 
