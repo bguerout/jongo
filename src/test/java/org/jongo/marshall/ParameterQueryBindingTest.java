@@ -27,6 +27,7 @@ import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -58,6 +59,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
+    @Ignore
     public void shouldBindManyParameters() throws Exception {
 
         long nb = collection.count("{coordinate.lat:#, coordinate.lng:#}", 2, 3);
@@ -66,6 +68,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
+    @Ignore
     public void shouldBindListOfPrimitive() throws Exception {
 
         List<String> strings = Lists.newArrayList("1", "2");
@@ -95,6 +98,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
+    @Ignore
     public void shouldFindWithADynamicFieldName() throws Exception {
 
         /* given */
