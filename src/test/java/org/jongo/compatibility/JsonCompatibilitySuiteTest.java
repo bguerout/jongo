@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.compatibility;
 
+import org.jongo.marshall.jackson.JsonProvider;
 import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
 import org.junit.runner.RunWith;
@@ -23,11 +24,11 @@ import org.junit.runner.RunWith;
 import static org.junit.runners.Parameterized.Parameters;
 
 @RunWith(CompatibilitySuite.class)
-public class BsonCompatibilitySuiteTest {
+public class JsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext("BsonProvider", new BsonProvider());
+        return new TestContext("JsonProvider", new JsonProvider());
     }
 
 }
