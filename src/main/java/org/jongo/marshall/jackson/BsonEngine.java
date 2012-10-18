@@ -47,7 +47,7 @@ public class BsonEngine implements Unmarshaller, Marshaller {
 
         BsonByte stream = BsonByteFactory.fromDBObject(document);
         try {
-            return config.getReader(clazz).readValue(stream.getData(), stream.getOffset(), stream.getSize());
+            return (T) config.getReader(clazz).readValue(stream.getData(), stream.getOffset(), stream.getSize());
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);

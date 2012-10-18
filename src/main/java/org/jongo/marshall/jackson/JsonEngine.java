@@ -43,7 +43,7 @@ public class JsonEngine implements Unmarshaller, Marshaller {
     public <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException {
         String json = document.toString();
         try {
-            return config.getReader(clazz).readValue(json);
+            return (T) config.getReader(clazz).readValue(json);
         } catch (Exception e) {
             String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
             throw new MarshallingException(message, e);
