@@ -24,7 +24,6 @@ import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -77,7 +76,6 @@ public class QuestionsSpikeTest extends JongoTestCase {
     }
 
     @Test
-    @Ignore
     // https://github.com/bguerout/jongo/issues/60
     public void patternParameters() throws Exception {
 
@@ -86,6 +84,8 @@ public class QuestionsSpikeTest extends JongoTestCase {
         assertThat(collection.findOne("{name:#}", Pattern.compile("ab")).as(Friend.class)).isNotNull();
         assertThat(collection.findOne("{name:{$regex: 'ab'}}").as(Friend.class)).isNotNull();
     }
+
+
 
     private static class Friends {
         private List<Friend> friends = new ArrayList<Friend>();
