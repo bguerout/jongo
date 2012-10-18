@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -72,6 +73,16 @@ public class QuestionsSpikeTest extends JongoTestCase {
         collection.update("{}").with("{$push:{friends:" + robert + "}}");
 
         assertThat(collection.count("{ 'friends.name' : 'Robert'}")).isEqualTo(1);
+    }
+
+    @Test
+    // https://github.com/bguerout/jongo/issues/60
+    public void patternParameters() throws Exception {
+
+        collection.save(new Friend("ab"));
+
+        assertThat(collection.findOne("{name:#}", Pattern.compile("ab")).as(Friend.class)).isNotNull();
+        assertThat(collection.findOne("{name:{$regex: 'ab'}}").as(Friend.class)).isNotNull();
     }
 
 
