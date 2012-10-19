@@ -108,20 +108,22 @@ public class FindTest extends JongoTestCase {
     }
 
     @Test
-    public void canFindWithRegex() throws Exception {
+    public void canFindWithOid() throws Exception {
         /* given */
-        collection.insert("{name:'John'}");
-        collection.insert("{name:'Smith'}");
-        collection.insert("{name:'Peter'}");
+        ObjectId id = new ObjectId();
+        Friend john = new Friend(id, "John");
+        collection.save(john);
 
-        /* when */
-        Iterable<Friend> friends = collection.find("{name : {$regex: '.*h$'}}").as(Friend.class);
+        Iterator<Friend> friends = collection.find("{_id:{$oid:#}}", id.toString()).as(Friend.class).iterator();
 
         /* then */
-        assertThat(friends.iterator().hasNext()).isTrue();
-        for (Friend friend : friends) {
-            assertThat(friend.getName()).isIn("Smith");
-        }
+        assertThat(friends.hasNext()).isTrue();
+        assertThat(friends.next().getId()).isEqualTo(id);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectNullObjectId() throws Exception {
+        collection.findOne((ObjectId) null);
     }
 
     @Test

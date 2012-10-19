@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
@@ -64,6 +65,33 @@ public class FindOneTest extends JongoTestCase {
 
         /* then */
         assertThat(friend.getName()).isEqualTo("John");
+    }
+
+    @Test
+    public void canFindOneWithObjectId() throws Exception {
+        /* given */
+        Friend john = new Friend(new ObjectId(), "John");
+        collection.save(john);
+
+        Friend foundFriend = collection.findOne(john.getId()).as(Friend.class);
+
+        /* then */
+        assertThat(foundFriend).isNotNull();
+        assertThat(foundFriend.getId()).isEqualTo(john.getId());
+    }
+
+    @Test
+    public void canFindOneWithOid() throws Exception {
+        /* given */
+        ObjectId id = new ObjectId();
+        Friend john = new Friend(id, "John");
+        collection.save(john);
+
+        Friend foundFriend = collection.findOne("{_id:{$oid:#}}", id.toString()).as(Friend.class);
+
+        /* then */
+        assertThat(foundFriend).isNotNull();
+        assertThat(foundFriend.getId()).isEqualTo(id);
     }
 
     @Test

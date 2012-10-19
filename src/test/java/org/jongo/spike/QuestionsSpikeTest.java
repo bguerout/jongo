@@ -18,6 +18,8 @@ package org.jongo.spike;
 
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+import com.mongodb.util.JSON;
+import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.BsonEngine;
 import org.jongo.model.Friend;
@@ -28,7 +30,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -62,6 +63,14 @@ public class QuestionsSpikeTest extends JongoTestCase {
     }
 
     @Test
+    public void testparse() throws Exception {
+        ObjectId id = ObjectId.get();
+        Object dbo = JSON.parse("{_id:{$oid:'" + id + "'}}");
+
+        assertThat(dbo).isInstanceOf(DBObject.class);
+    }
+
+    @Test
     // https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
     public void pushANonBSONObject() throws Exception {
         Friends friends = new Friends();
@@ -74,18 +83,6 @@ public class QuestionsSpikeTest extends JongoTestCase {
 
         assertThat(collection.count("{ 'friends.name' : 'Robert'}")).isEqualTo(1);
     }
-
-    @Test
-    // https://github.com/bguerout/jongo/issues/60
-    public void patternParameters() throws Exception {
-
-        collection.save(new Friend("ab"));
-
-        assertThat(collection.findOne("{name:#}", Pattern.compile("ab")).as(Friend.class)).isNotNull();
-        assertThat(collection.findOne("{name:{$regex: 'ab'}}").as(Friend.class)).isNotNull();
-    }
-
-
 
     private static class Friends {
         private List<Friend> friends = new ArrayList<Friend>();

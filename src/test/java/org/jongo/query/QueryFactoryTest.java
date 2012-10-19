@@ -16,13 +16,11 @@
 
 package org.jongo.query;
 
-import com.mongodb.DBObject;
 import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.jongo.marshall.jackson.JsonEngine;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryFactoryTest {
@@ -51,16 +49,5 @@ public class QueryFactoryTest {
         assertThat(query.toString()).isEqualTo("{ \"value\" : 123}");
     }
 
-    @Test
-    public void shouldThrowExceptionOnInvalidQuery() throws Exception {
-
-        try {
-            factory.createQuery("{invalid}");
-            fail();
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(IllegalArgumentException.class);
-            assertThat(e.getMessage()).contains("{invalid}");
-        }
-    }
 
 }

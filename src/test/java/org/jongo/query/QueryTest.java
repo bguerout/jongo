@@ -22,7 +22,6 @@ import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.jongo.marshall.jackson.JsonEngine;
 import org.junit.Test;
 
-import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class QueryTest {
@@ -40,15 +39,4 @@ public class QueryTest {
         assertThat(dbObject.get("value")).isEqualTo(1);
     }
 
-    @Test
-    public void shouldThrowExceptionOnInvalidQuery() throws Exception {
-
-        try {
-            new Query("{invalid}", queryMarshaller);
-            fail();
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(IllegalArgumentException.class);
-            assertThat(e.getMessage()).contains("{invalid}");
-        }
-    }
 }
