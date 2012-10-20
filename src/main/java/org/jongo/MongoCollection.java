@@ -30,6 +30,7 @@ import org.jongo.query.QueryFactory;
 public class MongoCollection {
 
     public static final String MONGO_DOCUMENT_ID_NAME = "_id";
+    public static final String MONGO_QUERY_OID = "$oid";
     private static final Object[] NO_PARAMETERS = {};
     private static final String ALL = "{}";
 

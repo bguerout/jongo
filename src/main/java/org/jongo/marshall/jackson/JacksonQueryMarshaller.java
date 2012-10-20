@@ -30,12 +30,12 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES;
+import static org.jongo.MongoCollection.MONGO_QUERY_OID;
 
 public class JacksonQueryMarshaller implements QueryMarshaller {
 
     private final Marshaller marshaller;
     private final ObjectMapper mapper;
-    private final static String MONGO_QUERY_OID = "$oid";
 
     public JacksonQueryMarshaller(Marshaller marshaller) {
         this.marshaller = marshaller;

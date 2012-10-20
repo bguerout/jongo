@@ -20,6 +20,7 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
+import org.jongo.model.OldFriend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -121,5 +122,22 @@ public class FindTest extends JongoTestCase {
         for (Friend friend : friends) {
             assertThat(friend.getName()).isIn("Smith");
         }
+    }
+
+    @Test
+    public void canFindWithStringAsObjectId() {
+        /* given */
+        ObjectId id = new ObjectId();
+        OldFriend friend = new OldFriend(id, "John");
+        collection.save(friend);
+
+        /* when */
+        Iterator<Friend> friends = collection.find(friend.getOid()).as(Friend.class).iterator();
+
+        /* then */
+        Friend john = friends.next();
+        assertThat(john.getId()).isEqualTo(id);
+        assertThat(john.getName()).isEqualTo("John");
+        assertThat(friends.hasNext()).isFalse();
     }
 }

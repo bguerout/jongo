@@ -19,6 +19,7 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.jongo.ObjectIdUpdater;
+import org.jongo.marshall.jackson.id.Id;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -35,12 +36,15 @@ class JacksonObjectIdUpdater implements ObjectIdUpdater {
         }
     }
 
-    protected void updateField(Object target, Object id, Field field) {
+    protected void updateField(Object target, ObjectId id, Field field) {
         try {
 
             field.setAccessible(true);
             if (field.get(target) == null) {
-                field.set(target, id);
+                if (field.getType().equals(ObjectId.class))
+                    field.set(target, id);
+                else
+                    field.set(target, id.toString());
             }
 
         } catch (IllegalAccessException e) {
@@ -49,7 +53,6 @@ class JacksonObjectIdUpdater implements ObjectIdUpdater {
     }
 
     protected Field findFieldOrNull(Class<?> clazz) {
-
         if (idFields.containsKey(clazz)) {
             return idFields.get(clazz);
         }
@@ -60,11 +63,9 @@ class JacksonObjectIdUpdater implements ObjectIdUpdater {
                 return null;
             }
             for (Field f : declaredFields) {
-                if (f.getType().equals(ObjectId.class)) {
-                    if (isId(f.getName()) || isAnnotated(f)) {
-                        idFields.put(clazz, f);
-                        return f;
-                    }
+                if (isId(f.getName()) || isJacksonAnnotated(f) || isIdAnnotated(f)) {
+                    idFields.put(clazz, f);
+                    return f;
                 }
             }
             clazz = clazz.getSuperclass();
@@ -73,9 +74,14 @@ class JacksonObjectIdUpdater implements ObjectIdUpdater {
         return null;
     }
 
-    private boolean isAnnotated(Field f) {
+    private boolean isJacksonAnnotated(Field f) {
         JsonProperty annotation = f.getAnnotation(JsonProperty.class);
         return annotation != null && isId(annotation.value());
+    }
+
+    private boolean isIdAnnotated(Field f) {
+        Id annotation = f.getAnnotation(Id.class);
+        return annotation != null;
     }
 
     private boolean isId(String value) {
