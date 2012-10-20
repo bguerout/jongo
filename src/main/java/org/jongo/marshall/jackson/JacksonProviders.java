@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.configuration;
+package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.undercouch.bson4jackson.BsonFactory;
 import org.jongo.Provider;
-import org.jongo.marshall.jackson.BsonProvider;
-import org.jongo.marshall.jackson.JsonProvider;
 import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
+import org.jongo.marshall.jackson.configuration.JsonModule;
+import org.jongo.marshall.jackson.configuration.MapperModifier;
+import org.jongo.marshall.jackson.configuration.ReaderCallback;
+import org.jongo.marshall.jackson.configuration.WriterCallback;
 
 import java.util.ArrayList;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.Type.BSON;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.Type.JSON;
+import static org.jongo.marshall.jackson.JacksonProviders.Type.BSON;
+import static org.jongo.marshall.jackson.JacksonProviders.Type.JSON;
 
 public class JacksonProviders {
 
@@ -63,8 +65,6 @@ public class JacksonProviders {
             this.mapper = mapper;
             this.module = new SimpleModule("jongo-custom-module");
             this.modifiers = new ArrayList<MapperModifier>();
-            this.readerCallback = new DefaultReaderCallback();
-            this.writerCallback = new DefaultWriterCallback();
             addModule(module);
         }
 
@@ -83,11 +83,20 @@ public class JacksonProviders {
                     .addModifier(new DeserializationModifier());
         }
 
-        public MappingConfig innerConfig() {
+        protected MappingConfig innerConfig() {
             for (MapperModifier modifier : modifiers) {
                 modifier.modify(mapper);
             }
+            setDefaultCallbacksIfNone();
+
             return new MappingConfig(mapper, readerCallback, writerCallback);
+        }
+
+        private void setDefaultCallbacksIfNone() {
+            if (readerCallback == null)
+                readerCallback = new DefaultReaderCallback();
+            if (writerCallback == null)
+                writerCallback = new DefaultWriterCallback();
         }
 
         public Provider build() {
@@ -114,6 +123,12 @@ public class JacksonProviders {
                     mapper.registerModule(module);
                 }
             });
+            return this;
+        }
+
+        public Builder withView(final Class<?> viewClass) {
+            readerCallback = new ViewReaderCallback(viewClass);
+            writerCallback = new ViewWriterCallback(viewClass);
             return this;
         }
 
@@ -144,22 +159,45 @@ public class JacksonProviders {
             }
         }
 
+        private static class ViewReaderCallback implements ReaderCallback {
+            private final Class<?> viewClass;
+
+            public ViewReaderCallback(Class<?> viewClass) {
+                this.viewClass = viewClass;
+            }
+
+            public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
+                return mapper.reader(clazz).withView(viewClass);
+            }
+        }
+
+        private static class ViewWriterCallback implements WriterCallback {
+            private final Class<?> viewClass;
+
+            public ViewWriterCallback(Class<?> viewClass) {
+                this.viewClass = viewClass;
+            }
+
+            public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
+                return mapper.writerWithView(viewClass);
+            }
+        }
+
         public static final class DeserializationModifier implements MapperModifier {
 
             public void modify(ObjectMapper mapper) {
-                mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-                mapper.configure(AUTO_DETECT_SETTERS, false);
+                mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
+                mapper.disable(AUTO_DETECT_SETTERS);
             }
         }
 
         public static final class SerializationModifier implements MapperModifier {
 
             public void modify(ObjectMapper mapper) {
-
-                mapper.configure(AUTO_DETECT_GETTERS, false);
+                mapper.disable(AUTO_DETECT_GETTERS);
                 mapper.setSerializationInclusion(NON_NULL);
                 VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
-                mapper.setVisibilityChecker(checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+                mapper.setVisibilityChecker(checker.withFieldVisibility(ANY));
             }
         }
     }

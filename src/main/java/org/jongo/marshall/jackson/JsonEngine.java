@@ -21,12 +21,11 @@ import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
 
 public class JsonEngine implements Unmarshaller, Marshaller {
 

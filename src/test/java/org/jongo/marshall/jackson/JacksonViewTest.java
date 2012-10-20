@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.configuration;
+package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mongodb.DBObject;
-import org.jongo.marshall.jackson.JsonEngine;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
 import static org.jongo.util.BSON.bsonify;
 
 public class JacksonViewTest {
 
     private JsonEngine createProcessorWithView(final Class<?> viewClass) {
-        MappingConfig conf = usingJson()
-                .setReaderCallback(new ViewReaderCallback(viewClass))
-                .setWriterCallback(new ViewWriterCallback(viewClass))
-                .innerConfig();
+        MappingConfig conf = usingJson().withView(viewClass).innerConfig();
         return new JsonEngine(conf);
     }
 
@@ -89,29 +82,5 @@ public class JacksonViewTest {
         Fox fox = custom.unmarshall(json, Fox.class);
 
         assertThat(fox.getGender()).isEqualTo("female");
-    }
-
-    private static class ViewWriterCallback implements WriterCallback {
-        private final Class<?> viewClass;
-
-        public ViewWriterCallback(Class<?> viewClass) {
-            this.viewClass = viewClass;
-        }
-
-        public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
-            return mapper.writerWithView(viewClass);
-        }
-    }
-
-    private static class ViewReaderCallback implements ReaderCallback {
-        private final Class<?> viewClass;
-
-        public ViewReaderCallback(Class<?> viewClass) {
-            this.viewClass = viewClass;
-        }
-
-        public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
-            return mapper.reader(clazz).withView(viewClass);
-        }
     }
 }

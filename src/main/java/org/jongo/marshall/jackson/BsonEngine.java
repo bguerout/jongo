@@ -24,12 +24,11 @@ import org.jongo.bson.BsonByteFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingBson;
+import static org.jongo.marshall.jackson.JacksonProviders.usingBson;
 
 public class BsonEngine implements Unmarshaller, Marshaller {
 

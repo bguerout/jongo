@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.configuration;
+package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -24,14 +24,15 @@ import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.bson.BsonByte;
 import org.jongo.bson.BsonByteFactory;
+import org.jongo.marshall.jackson.configuration.JsonModule;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingBson;
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.JacksonProviders.usingBson;
+import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
 
 public class JacksonProvidersTest {
 

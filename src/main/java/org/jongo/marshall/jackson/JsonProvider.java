@@ -21,9 +21,8 @@ import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
 
-import static org.jongo.marshall.jackson.configuration.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
 
 public class JsonProvider implements Provider {
 
