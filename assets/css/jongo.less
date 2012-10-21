@@ -1,9 +1,12 @@
 @baseLineHeight: 18px;
+@green: #468847;
+@peach: #f3f4eb;
+@brown: #312113;
 
 body {
-    padding-top: 30px;
+    padding-top: 15px;
     padding-bottom: 60px;
-    background: #F3F4EB;
+    background: @peach;
 }
 
 section{
@@ -28,76 +31,103 @@ h4 {
     font-size: 13px;
 }
 
+ul {
+  margin: 0;
+}
+
 a:hover {
   color: #08C;
   background-color: #bbd8e9;
   text-decoration: none;
 }
 
-.sidebar-nav {
-    padding: 9px 0;
-}
+.nutshell {
+  position: relative;
+  padding: 40px 0;
+  background-color: @green;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 0 30px rgba(0, 0, 0, .075);
+  color: @peach;
+  
+  &.links {
+    background-color: @brown;
+    padding: 4px;
+  }
 
-.navbar{
- .brand{
-    background: url(../img/jongo_small.png) no-repeat left;
-    padding: 3px 20px 6px 25px;
-    color: white;
-    text-shadow: 2px 2px 0 rgba(255, 255, 255, .1), 0 0 30px rgba(255, 255, 255, .125);
- }
- .navbar-inner{
-     height: 30px;
-     min-height: 30px;
-     border-bottom: 4px solid #468847;
-     background-color: rgb(44, 44, 44);
-     background-color: rgba(44, 44, 44, 0.85);
-     background-image: none;
- }
- .nav > li > a {
-  padding: 4px 10px 11px;
- }
- .nav .active > a, .nav .active > a:hover {
-   background-color: #468847;
- }
- .dropdown-menu {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25),inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-    margin-top: 6px;
-    border: 0 none;
-    background-color: #468847;
-    border-radius: 0;
-    min-width: 180px;
-    z-index: -1;
-    top: 28px;
+  a {
+    color: @peach;
+    &:hover {
+      background-color: @green;
+    }
+  }
+
+  .lead {
+    text-align: center;
+    font-size: 26px;
+    margin: 0;
 
     a {
-      color: white;
+      padding: 5px;
     }
-
-    li > a:hover, .active > a, .active > a:hover {
-      background-color: rgb(44, 44, 44);
-     background-color: rgba(44, 44, 44, 0.85);
+    i {
+      font-size: 22px;
+      position: relative;
+      top: -4px;
     }
+  }
 
-    &:before { border: 0 none; }
-    &:after { border: 0 none; }
+  .link {
+    a {
+      padding: 15px 7px 8px 7px;
+    }
+  }
+
+  ul {
+    text-align: center;
+  }
+
+  li {
+    display: inline;
+    list-style-type: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .offset1 {
+    margin-left: 0;
+  }
+  .nutshell {
+    padding: 40px 20px;
+    margin-top: -20px;
+    margin-right: -20px;
+    margin-left: -20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .nutshell {
+    .lead {
+        margin-bottom: 20px;
+    }
   }
 }
 
 #overview{
+  color: @brown;
   h1{
-   margin-bottom: 10px;
+   margin-bottom: 5px;
    text-align: center;
    font-size: 75px;
   }
   img{
     vertical-align: baseline;
+    padding-right: 10px;
   }
 
  .intro{
-     margin-bottom: 30px;
+     margin-bottom: 60px;
      pre.prettyprint.maincode{
        font-size : 16px;
-       background-color: #F3F4EB;
+       background-color: @peach;
        border: 0px;
      }
 
@@ -111,7 +141,7 @@ a:hover {
     line-height:27px;
     margin-bottom: 40px;
 		strong{
-		 color: #468847;
+		 color: @green;
 		}
 	 }
  }
@@ -122,6 +152,7 @@ section#usage{
 }
 
 .label, .badge{
+  color: @peach;
   font-size: 12px;
   text-transform : uppercase;
 }
@@ -129,7 +160,7 @@ section#usage{
 .dl-horizontal dt{
   width: 150px;
   &.strong{
-   color:#468847
+   color: @green;
   }
 }
 .dl-horizontal dd{

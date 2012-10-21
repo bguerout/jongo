@@ -23,6 +23,7 @@
     <link href="assets/img/jongo_favicon.png" rel="shortcut icon">
     <link href="assets/css/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
     <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="assets/css/bootstrap-responsive.min.css" type="text/css" rel="stylesheet"/>
     <link href="assets/css/prettify.css" type="text/css" rel="stylesheet"/>
 
 
@@ -47,49 +48,6 @@
 
 <body data-spy="scroll">
 
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="i-bar"></span>
-                <span class="i-bar"></span>
-                <span class="i-bar"></span>
-            </a>
-            <a class="brand" href="#overview">Jongo</a>
-
-            <div class="nav-collapse">
-                <ul class="nav">
-                    <li><a href="#mapping">Mapping</a></li>
-                    <li><a href="#updating">Updating</a></li>
-                    <li><a href="#querying">Querying</a></li>
-                    <li><a href="#advanced">Advanced</a></li>
-                    <li><a href="#notes">Release notes</a></li>
-                    <li><a href="#maven">Maven</a></li>
-                </ul>
-                <ul class="nav pull-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-user" target="_blank"><i class="icon-envelope icon-white"></i> Ask the mailing list</a></li>
-                            <li><a href="https://github.com/bguerout/jongo" target="_blank"><i class="icon-download-alt icon-white"></i> Grab code on github</a></li>
-                            <li><a href="https://twitter.com/#!/bguerout" target="_blank"><i class="icon-leaf icon-white"></i> Follow @bguerout</a></li>
-                            <li><a href="https://twitter.com/#!/amsellemyves" target="_blank"><i class="icon-leaf icon-white"></i> Follow @amsellemyves</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Versions<b class="caret"></b></a>
-                       <ul class="dropdown-menu">
-                            <li> <a href="/">Current (0.3)</a></li>
-                            <li><a href="/tags/0.1/0.1.html">0.1 Documentation</a></li>
-                            <li><a href="/tags/0.2/0.2.html">0.2 Documentation</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="container">
 
 <section id="overview">
@@ -104,10 +62,10 @@
 
             <div class="row">
                 <div class="span9 offset2">
-                    <span class="label">Shell</span>
+                    <span class="label label-inverse">Shell</span>
                     <pre class="prettyprint maincode">db.friends.find({"age": {$gt: 18}});</pre>
 
-                    <span class="label label-warning">Java Driver</span>
+                    <span class="label label-important">Java Driver</span>
                     <pre class="prettyprint maincode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt", 18)));</pre>
 
                     <span class="label label-success">Jongo</span>
@@ -118,6 +76,32 @@
     </div>
 </section>
 
+</div>
+
+<header class="nutshell">
+  <div class="container">
+    <div class="row">
+    <p class="lead"><strong>Jongo</strong> is an open source library built on top of <strong>Mongo Java Driver</strong></p>
+    <p class="lead">It can query with strings the same way you do in the shell</p>
+    <p class="lead">It can save & find objects into & from collections</p>
+    <p class="lead">It's almost as performant as the driver</p>
+  </div>
+</header>
+
+<header class="nutshell links">
+  <div class="container">
+    <div class="row">
+        <ul>
+            <li class="lead"><a href="http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jongo%22%20AND%20a%3A%22jongo%22" target="_blank"><i>&darr;</i><strong> Download</strong></a></li>
+            <li class="link"><a href="" target="_blank">v0.3</a></li>
+            <li class="link"><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-user" target="_blank">Mailing list</a></li>
+            <li class="link"><a href="https://github.com/bguerout/jongo" target="_blank">GitHub</a></li>
+        </ul>
+  </div>
+</header>
+
+<div class="container">
+
 <section id="usage" class="offset1">
     <div class="page-header">
         <h1>Usage</h1>
@@ -125,8 +109,9 @@
     <div class="row">
         <div class="span9">
 		   <pre class="prettyprint">
-Mongo mongo = new Mongo("127.0.0.1" , 27017);
-Jongo jongo = new Jongo(mongo.getDB("dbname"));
+DB db = new Mongo().getDB("dbname");
+
+Jongo jongo = new Jongo(db);
 MongoCollection friends = jongo.getCollection("friends");
 
 Iterable&lt;Friend&gt; all = friends.find("{name:'John'}").as(Friend.class);
