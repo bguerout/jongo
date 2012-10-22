@@ -145,8 +145,8 @@ public class ParameterQueryBindingTest extends JongoTestCase {
 
         collection.save(new Friend("ab"));
 
-        assertThat(collection.findOne("{name:#}", Pattern.compile("ab")).as(Friend.class)).isNotNull();
         assertThat(collection.findOne("{name:{$regex: 'ab'}}").as(Friend.class)).isNotNull();
+        assertThat(collection.findOne("{name:#}", Pattern.compile("ab")).as(Friend.class)).isNotNull();
     }
 
     @Test

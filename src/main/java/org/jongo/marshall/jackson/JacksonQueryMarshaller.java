@@ -16,97 +16,45 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.bson.types.ObjectId;
+import com.mongodb.util.JSON;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.QueryMarshaller;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES;
-import static org.jongo.MongoCollection.MONGO_QUERY_OID;
+import org.jongo.query.BsonPrimitives;
 
 public class JacksonQueryMarshaller implements QueryMarshaller {
 
     private final Marshaller marshaller;
-    private final ObjectMapper mapper;
 
     public JacksonQueryMarshaller(Marshaller marshaller) {
         this.marshaller = marshaller;
-        mapper = new ObjectMapper();
-        mapper.configure(ALLOW_UNQUOTED_FIELD_NAMES, true);
     }
 
     public String marshallParameter(Object parameter) {
-        if (WRAPPERS.contains(parameter.getClass()))
-            return String.valueOf(parameter);
-        else if(parameter instanceof String || parameter instanceof Enum)
-            return "\"" + parameter + "\"";
-        else if (parameter instanceof ObjectId)
-            return "{" + MONGO_QUERY_OID + ":\"" + parameter.toString() + "\"}";
-        else
-            return marshall(parameter);
+        if (BsonPrimitives.contains(parameter.getClass()))
+            return JSON.serialize(parameter);
+        if (parameter instanceof Enum) {
+            return JSON.serialize(((Enum) parameter).name());
+        } else
+            return marshall(parameter).toString();
     }
 
-    private String marshall(Object parameter) {
+    private DBObject marshall(Object parameter) {
         try {
-            DBObject dbObject = marshaller.marshall(parameter);
-            return dbObject.toString();
+            return marshaller.marshall(parameter);
         } catch (Exception e) {
-            String message = String.format("Unable to marshall json from: %s", parameter);
+            String message = String.format("Unable to marshall parameter: %s", parameter);
             throw new MarshallingException(message, e);
         }
     }
 
-    private static Set WRAPPERS;
-    static {
-        WRAPPERS = createSet(Boolean.class, Character.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class);
-    }
-
-    private static Set<Class<?>> createSet(Class... classes) {
-        Set<Class<?>> set = new HashSet<Class<?>>();
-        for(Class<?> clazz : classes)
-            set.add(clazz);
-        return set;
-    }
-
     public DBObject marshallQuery(String query) {
         try {
-            Map<String, Object> map = mapper.reader(Map.class).readValue(query.replace('\'', '"'));
-            findObjectIds(map);
-            return new BasicDBObject(map);
+            return (DBObject) JSON.parse(query);
         } catch (Exception e) {
             throw new IllegalArgumentException(query + " cannot be parsed", e);
         }
     }
 
-    private void findObjectIds(Map<String, Object> map) {
-        for(String key : map.keySet()) {
-            Object value = map.get(key);
-            if (value instanceof Map)
-                findInMap(map, key);
-            else if(value instanceof List)
-                deepFindObjectIds(((List)value).toArray());
-        }
-    }
-
-    private void findInMap(Map<String, Object> map, String key) {
-        Map value = (Map)map.get(key);
-        if((value.containsKey(MONGO_QUERY_OID)))
-            map.put(key, new ObjectId((String)value.get(MONGO_QUERY_OID)));
-        else
-            findObjectIds(value);
-    }
-
-    private void deepFindObjectIds(Object... values) {
-        for(Object value : values)
-            if (value instanceof Map)
-                findObjectIds((Map<String, Object>) value);
-    }
 }
