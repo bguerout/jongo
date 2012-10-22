@@ -3,6 +3,15 @@
 @peach: #f3f4eb;
 @brown: #312113;
 
+.cleancode() {
+  background-color: @peach;
+  border: 0px;
+}
+
+.shadow() {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 0 30px rgba(0, 0, 0, .075);
+}
+
 body {
     padding-top: 15px;
     padding-bottom: 60px;
@@ -10,7 +19,7 @@ body {
 }
 
 section{
-  padding-top: 30px;
+  padding-top: 20px;
 }
 
 h2 {
@@ -19,6 +28,13 @@ h2 {
     small {
         font-size: 14px;
     }
+    color: @peach;
+    background-color: @brown;
+    padding: 2px 8px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    display: inline-block;
+    .shadow;
 }
 h3 {
     line-height: @baseLineHeight;
@@ -35,18 +51,41 @@ ul {
   margin: 0;
 }
 
+p{
+  line-height:18px;
+  margin-bottom:20px;
+}
+
+footer {
+    img {
+        max-width: none;
+    }
+}
+
 a:hover {
   color: #08C;
   background-color: #bbd8e9;
   text-decoration: none;
 }
 
+.header {
+  h1 {
+    color: @peach;
+    background-color: @green;
+    padding: 8px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    display: inline-block;
+    .shadow;
+  }
+}
+
 .nutshell {
   position: relative;
   padding: 40px 0;
   background-color: @green;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 0 30px rgba(0, 0, 0, .075);
   color: @peach;
+  .shadow;
   
   &.links {
     background-color: @brown;
@@ -91,24 +130,10 @@ a:hover {
   }
 }
 
-@media (max-width: 900px) {
-  .offset1 {
-    margin-left: 0;
-  }
-  .nutshell {
-    padding: 40px 20px;
-    margin-top: -20px;
-    margin-right: -20px;
-    margin-left: -20px;
-  }
-}
-
-@media (max-width: 767px) {
-  .nutshell {
-    .lead {
-        margin-bottom: 20px;
-    }
-  }
+code {
+  .cleancode;
+  color: @green;
+  padding: 0;
 }
 
 #overview{
@@ -127,8 +152,7 @@ a:hover {
      margin-bottom: 60px;
      pre.prettyprint.maincode{
        font-size : 16px;
-       background-color: @peach;
-       border: 0px;
+       .cleancode;
      }
 
      div.row{
@@ -147,8 +171,31 @@ a:hover {
  }
 }
 
-section#usage{
-  padding-top: 0px;
+@media (max-width: 900px) {
+  .offset1 {
+    margin-left: 0;
+  }
+  .nutshell {
+    padding: 40px 20px;
+    margin-top: -20px;
+    margin-right: -20px;
+    margin-left: -20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .nutshell {
+    .lead {
+        margin-bottom: 20px;
+    }
+  }
+  #overview {
+    .intro {
+      pre.prettyprint.maincode{
+       font-size: 14px;
+     }
+    }
+  }
 }
 
 .label, .badge{
@@ -170,15 +217,4 @@ section#usage{
 .small-bs-icon {
   float: left;
   margin: 4px 5px 0 0;
-}
-
-p{
-	line-height:18px;
-	margin-bottom:20px;
-}
-
-footer {
-    img {
-        max-width: none;
-    }
 }
