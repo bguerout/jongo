@@ -19,7 +19,6 @@ package org.jongo.marshall.jackson;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.Unmarshaller;
 
 import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
@@ -27,7 +26,6 @@ import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
 public class JsonProvider implements Provider {
 
     private final JsonEngine engine;
-    private final QueryMarshaller queryMarshaller;
 
     public JsonProvider() {
         this(usingJson().innerConfig());
@@ -35,15 +33,10 @@ public class JsonProvider implements Provider {
 
     public JsonProvider(MappingConfig config) {
         engine = new JsonEngine(config);
-        queryMarshaller = new JacksonQueryMarshaller(engine);
     }
 
     public Marshaller getMarshaller() {
         return engine;
-    }
-
-    public QueryMarshaller getQueryMarshaller() {
-        return queryMarshaller;
     }
 
     public Unmarshaller getUnmarshaller() {

@@ -16,7 +16,6 @@
 
 package org.jongo.query;
 
-import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.jongo.marshall.jackson.JsonEngine;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +28,7 @@ public class QueryFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        JacksonQueryMarshaller marshaller = new JacksonQueryMarshaller(new JsonEngine());
-        factory = new QueryFactory(marshaller);
+        factory = new QueryFactory(new JsonEngine());
     }
 
     @Test

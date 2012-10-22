@@ -17,14 +17,11 @@
 package org.jongo;
 
 import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.QueryMarshaller;
 import org.jongo.marshall.Unmarshaller;
 
 public interface Provider {
 
     Marshaller getMarshaller();
-
-    QueryMarshaller getQueryMarshaller();
 
     Unmarshaller getUnmarshaller();
 

@@ -16,7 +16,10 @@
 
 package org.jongo.query;
 
-import org.jongo.marshall.QueryMarshaller;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.MarshallingException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,14 +29,14 @@ class QueryBinder {
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
     private final Pattern pattern;
-    private final QueryMarshaller queryMarshaller;
+    private final Marshaller marshaller;
 
-    public QueryBinder(QueryMarshaller queryMarshaller) {
-        this(queryMarshaller, DEFAULT_TOKEN);
+    public QueryBinder(Marshaller marshaller) {
+        this(marshaller, DEFAULT_TOKEN);
     }
 
-    public QueryBinder(QueryMarshaller queryMarshaller, String token) {
-        this.queryMarshaller = queryMarshaller;
+    public QueryBinder(Marshaller marshaller, String token) {
+        this.marshaller = marshaller;
         this.token = token;
         this.pattern = Pattern.compile(token);
     }
@@ -56,11 +59,29 @@ class QueryBinder {
     private String bindParamIntoQuery(String query, Object parameter) {
 
         try {
-            String paramAsJson = queryMarshaller.marshallParameter(parameter);
+            String paramAsJson = marshallParameter(parameter);
             return query.replaceFirst(token, getMatcherWithEscapedDollar(paramAsJson));
 
         } catch (RuntimeException e) {
             return handleInvalidBinding(query, parameter, e);
+        }
+    }
+
+    public String marshallParameter(Object parameter) {
+        if (BsonPrimitives.contains(parameter.getClass()))
+            return JSON.serialize(parameter);
+        if (parameter instanceof Enum) {
+            return JSON.serialize(((Enum) parameter).name());
+        } else
+            return marshall(parameter).toString();
+    }
+
+    private DBObject marshall(Object parameter) {
+        try {
+            return marshaller.marshall(parameter);
+        } catch (Exception e) {
+            String message = String.format("Unable to marshall parameter: %s", parameter);
+            throw new MarshallingException(message, e);
         }
     }
 

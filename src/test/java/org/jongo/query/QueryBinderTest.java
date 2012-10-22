@@ -16,8 +16,6 @@
 
 package org.jongo.query;
 
-import org.jongo.marshall.QueryMarshaller;
-import org.jongo.marshall.jackson.JacksonQueryMarshaller;
 import org.jongo.marshall.jackson.JsonEngine;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
@@ -31,8 +29,7 @@ public class QueryBinderTest {
 
     @Before
     public void setUp() throws Exception {
-        QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(new JsonEngine());
-        binder = new QueryBinder(queryMarshaller);
+        binder = new QueryBinder(new JsonEngine());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -72,8 +69,7 @@ public class QueryBinderTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        QueryMarshaller queryMarshaller = new JacksonQueryMarshaller(new JsonEngine());
-        QueryBinder binderWithToken = new QueryBinder(queryMarshaller, "@");
+        QueryBinder binderWithToken = new QueryBinder(new JsonEngine(), "@");
 
         String query = binderWithToken.bind("{id:@}", 123);
 
