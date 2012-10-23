@@ -146,59 +146,59 @@ public class JacksonProviders {
             this.writerCallback = writerCallback;
             return this;
         }
+    }
 
-        private static class DefaultReaderCallback implements ReaderCallback {
-            public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
-                return mapper.reader(clazz);
-            }
+    public static final class SerializationModifier implements MapperModifier {
+
+        public void modify(ObjectMapper mapper) {
+            mapper.disable(AUTO_DETECT_GETTERS);
+            mapper.setSerializationInclusion(NON_NULL);
+            VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
+            mapper.setVisibilityChecker(checker.withFieldVisibility(ANY));
+        }
+    }
+
+    public static final class DeserializationModifier implements MapperModifier {
+
+        public void modify(ObjectMapper mapper) {
+            mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
+            mapper.disable(AUTO_DETECT_SETTERS);
+        }
+    }
+
+    private static class ViewWriterCallback implements WriterCallback {
+        private final Class<?> viewClass;
+
+        public ViewWriterCallback(Class<?> viewClass) {
+            this.viewClass = viewClass;
         }
 
-        private static class DefaultWriterCallback implements WriterCallback {
-            public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
-                return mapper.writer();
-            }
+        public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
+            return mapper.writerWithView(viewClass);
+        }
+    }
+
+    private static class ViewReaderCallback implements ReaderCallback {
+        private final Class<?> viewClass;
+
+        public ViewReaderCallback(Class<?> viewClass) {
+            this.viewClass = viewClass;
         }
 
-        private static class ViewReaderCallback implements ReaderCallback {
-            private final Class<?> viewClass;
-
-            public ViewReaderCallback(Class<?> viewClass) {
-                this.viewClass = viewClass;
-            }
-
-            public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
-                return mapper.reader(clazz).withView(viewClass);
-            }
+        public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
+            return mapper.reader(clazz).withView(viewClass);
         }
+    }
 
-        private static class ViewWriterCallback implements WriterCallback {
-            private final Class<?> viewClass;
-
-            public ViewWriterCallback(Class<?> viewClass) {
-                this.viewClass = viewClass;
-            }
-
-            public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
-                return mapper.writerWithView(viewClass);
-            }
+    private static class DefaultWriterCallback implements WriterCallback {
+        public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
+            return mapper.writer();
         }
+    }
 
-        public static final class DeserializationModifier implements MapperModifier {
-
-            public void modify(ObjectMapper mapper) {
-                mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
-                mapper.disable(AUTO_DETECT_SETTERS);
-            }
-        }
-
-        public static final class SerializationModifier implements MapperModifier {
-
-            public void modify(ObjectMapper mapper) {
-                mapper.disable(AUTO_DETECT_GETTERS);
-                mapper.setSerializationInclusion(NON_NULL);
-                VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
-                mapper.setVisibilityChecker(checker.withFieldVisibility(ANY));
-            }
+    private static class DefaultReaderCallback implements ReaderCallback {
+        public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
+            return mapper.reader(clazz);
         }
     }
 }
