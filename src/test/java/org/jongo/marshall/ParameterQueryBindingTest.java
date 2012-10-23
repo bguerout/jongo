@@ -150,7 +150,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldThrowExceptionOnInvalidQuery() throws Exception {
+    public void shouldThrowArgumentExceptionOnInvalidQuery() throws Exception {
 
         try {
             collection.count("{invalid}");
@@ -162,11 +162,12 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldFailWithInvalidParameter() throws Exception {
+    public void shouldThrowMarshallExceptionOnInvalidParameter() throws Exception {
         try {
             collection.findOne("{id:#}", new ErrorObject()).as(Friend.class);
         } catch (Exception e) {
             assertThat(e).isInstanceOf(IllegalArgumentException.class);
+            assertThat(e.getCause()).isInstanceOf(MarshallingException.class);
             assertThat(e.getMessage()).contains("{id:#}");
         }
     }

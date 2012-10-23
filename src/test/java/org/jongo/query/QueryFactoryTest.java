@@ -16,7 +16,10 @@
 
 package org.jongo.query;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.QueryBuilder;
 import org.jongo.marshall.jackson.JsonEngine;
+import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,20 +34,48 @@ public class QueryFactoryTest {
         factory = new QueryFactory(new JsonEngine());
     }
 
-    @Test
-    public void canCreateQuery() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWithInvalidParameter() throws Exception {
 
-        Query query = factory.createQuery("{value:1}");
+        factory.createQuery("{id:#}", new ErrorObject());
+    }
 
-        assertThat(query.toString()).isEqualTo("{ \"value\" : 1}");
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenNotEnoughParameters() throws Exception {
+
+        factory.createQuery("{id:#,id2:#}", "123");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWhenTooManyParameters() throws Exception {
+
+        factory.createQuery("{id:#}", 123, 456);
     }
 
     @Test
-    public void shouldBindManyParameterAndCreateQuery() throws Exception {
+    public void shouldBindOneParameter() throws Exception {
 
-        Query query = factory.createQuery("{value:#}", 123);
+        Query query = factory.createQuery("{id:#}", 123);
 
-        assertThat(query.toString()).isEqualTo("{ \"value\" : 123}");
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", 123));
+    }
+
+    @Test
+    public void shouldBindManyParameters() throws Exception {
+
+        Query query = factory.createQuery("{id:#, test:#}", 123, 456);
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).and("test").is(456).get());
+    }
+
+    @Test
+    public void shouldBindParameterWithCustomToken() throws Exception {
+
+        QueryFactory factoryWithToken = new QueryFactory(new JsonEngine(), "@");
+
+        Query query = factoryWithToken.createQuery("{id:@}", 123);
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", 123));
     }
 
 

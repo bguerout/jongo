@@ -34,7 +34,6 @@ public final class Query {
         }
     }
 
-
     public DBObject toDBObject() {
         return dbObject;
     }

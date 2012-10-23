@@ -37,7 +37,7 @@ public final class Distinct {
         this.unmarshaller = unmarshaller;
         this.key = key;
         this.queryFactory = queryFactory;
-        this.query = this.queryFactory.createEmptyQuery();
+        this.query = this.queryFactory.createQuery("{}");
     }
 
     public Distinct query(String query) {
