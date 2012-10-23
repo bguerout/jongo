@@ -25,13 +25,13 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class QueryFactoryTest {
+public class JsonQueryFactoryTest {
 
     private QueryFactory factory;
 
     @Before
     public void setUp() throws Exception {
-        factory = new QueryFactory(new JsonEngine());
+        factory = new JsonQueryFactory(new JsonEngine());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -71,7 +71,7 @@ public class QueryFactoryTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        QueryFactory factoryWithToken = new QueryFactory(new JsonEngine(), "@");
+        QueryFactory factoryWithToken = new JsonQueryFactory(new JsonEngine(), "@");
 
         Query query = factoryWithToken.createQuery("{id:@}", 123);
 

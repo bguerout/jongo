@@ -17,29 +17,8 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
-public final class Query {
-    private final DBObject dbObject;
+public interface Query {
 
-    public Query(String query) {
-        this.dbObject = marshallQuery(query);
-    }
-
-    public DBObject marshallQuery(String query) {
-        try {
-            return (DBObject) JSON.parse(query);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(query + " cannot be parsed", e);
-        }
-    }
-
-    public DBObject toDBObject() {
-        return dbObject;
-    }
-
-    @Override
-    public String toString() {
-        return dbObject.toString();
-    }
+    DBObject toDBObject();
 }

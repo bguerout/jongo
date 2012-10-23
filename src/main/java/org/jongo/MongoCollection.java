@@ -23,6 +23,7 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
@@ -45,7 +46,7 @@ public class MongoCollection {
         this.marshaller = provider.getMarshaller();
         this.unmarshaller = provider.getUnmarshaller();
         this.objectIdUpdater = provider.getObjectIdUpdater();
-        this.queryFactory = new QueryFactory(provider.getMarshaller());
+        this.queryFactory = new JsonQueryFactory(provider.getMarshaller());
     }
 
     public FindOne findOne(ObjectId id) {
