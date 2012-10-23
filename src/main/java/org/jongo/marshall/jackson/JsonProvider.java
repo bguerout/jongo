@@ -20,6 +20,8 @@ import org.jongo.ObjectIdUpdater;
 import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.JsonQueryFactory;
+import org.jongo.query.QueryFactory;
 
 import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
 
@@ -45,5 +47,9 @@ public class JsonProvider implements Provider {
 
     public ObjectIdUpdater getObjectIdUpdater() {
         return new JacksonObjectIdUpdater();
+    }
+
+    public QueryFactory getQueryFactory() {
+        return new JsonQueryFactory(engine);
     }
 }

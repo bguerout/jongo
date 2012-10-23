@@ -46,7 +46,7 @@ public class MongoCollection {
         this.marshaller = provider.getMarshaller();
         this.unmarshaller = provider.getUnmarshaller();
         this.objectIdUpdater = provider.getObjectIdUpdater();
-        this.queryFactory = new JsonQueryFactory(provider.getMarshaller());
+        this.queryFactory = provider.getQueryFactory();
     }
 
     public FindOne findOne(ObjectId id) {

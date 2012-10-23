@@ -18,6 +18,7 @@ package org.jongo;
 
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.QueryFactory;
 
 public interface Provider {
 
@@ -26,4 +27,6 @@ public interface Provider {
     Unmarshaller getUnmarshaller();
 
     ObjectIdUpdater getObjectIdUpdater();
+
+    QueryFactory getQueryFactory();
 }
