@@ -55,7 +55,11 @@ public class MongoCollection {
         }
         return new FindOne(collection, unmarshaller, queryFactory, "{_id:#}", id);
     }
-
+    
+    public FindAndModify findAndModify(String query, Object... parameters) {
+        return new FindAndModify(collection, unmarshaller, queryFactory, query, parameters);
+    }
+    
     public FindOne findOne() {
         return findOne(ALL);
     }
