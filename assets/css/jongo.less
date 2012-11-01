@@ -2,6 +2,8 @@
 @green: #468847;
 @peach: #f3f4eb;
 @brown: #312113;
+@lgreen: #699d67;
+@lbrown: #584b3e;
 
 .cleancode() {
   background-color: @peach;
@@ -14,7 +16,6 @@
 
 body {
     padding-top: 15px;
-    padding-bottom: 60px;
     background: @peach;
 }
 
@@ -56,12 +57,6 @@ p{
   margin-bottom:20px;
 }
 
-footer {
-    img {
-        max-width: none;
-    }
-}
-
 a:hover {
   color: #08C;
   background-color: #bbd8e9;
@@ -82,51 +77,42 @@ a:hover {
 
 .nutshell {
   position: relative;
-  padding: 40px 0;
-  background-color: @green;
+  padding: 40px 0 10px 0;
+  background-color: @lgreen;
   color: @peach;
   .shadow;
-  
-  &.links {
-    background-color: @brown;
-    padding: 4px;
-  }
 
   a {
     color: @peach;
     &:hover {
-      background-color: @green;
+      text-decoration: underline;
+      background-color: @lgreen;
     }
   }
 
   .lead {
+    font-size: 19px;
     text-align: center;
-    font-size: 26px;
     margin: 0;
 
-    a {
-      padding: 5px;
-    }
-    i {
+    strong {
       font-size: 22px;
-      position: relative;
-      top: -4px;
     }
-  }
-
-  .link {
-    a {
-      padding: 15px 7px 8px 7px;
-    }
-  }
-
-  ul {
-    text-align: center;
   }
 
   li {
     display: inline;
     list-style-type: none;
+  }
+
+  .span9 {
+    border-top: 1px dashed white; 
+    padding-top: 20px; 
+    margin-top: 25px;
+  }
+
+  code {
+    padding: 0 5px;
   }
 }
 
@@ -149,60 +135,48 @@ code {
   }
 
  .intro{
-     margin-bottom: 60px;
-     pre.prettyprint.maincode{
-       font-size : 16px;
-       .cleancode;
-     }
-
-     div.row{
-       padding: 10px 0px;
-     }
-	 
-	 .pitch{
-		font-size: 22px;
-    text-align: center;
-    line-height:27px;
-    margin-bottom: 40px;
-		strong{
-		 color: @green;
-		}
-	 }
- }
-}
-
-@media (max-width: 900px) {
-  .offset1 {
-    margin-left: 0;
-  }
-  .nutshell {
-    padding: 40px 20px;
-    margin-top: -20px;
-    margin-right: -20px;
-    margin-left: -20px;
-  }
-}
-
-@media (max-width: 767px) {
-  .nutshell {
-    .lead {
-        margin-bottom: 20px;
-    }
-  }
-  #overview {
-    .intro {
+    margin-bottom: 60px;
       pre.prettyprint.maincode{
-       font-size: 14px;
-     }
+      font-size : 16px;
+      .cleancode;
+    }
+
+    div.row{
+      padding: 10px 0px;
+    }
+
+    .pitch{
+      font-size: 22px;
+      text-align: center;
+      line-height:27px;
+      margin-bottom: 40px;
+      strong{
+        color: @green;
+      }
+    }
+ }
+ .label {
+    color: @peach;
+    font-size: 25px;
+    text-transform : uppercase;
+    position: relative;
+    top: 29px;
+    background-color: @peach;
+    color: #999;
+
+    &.shell {
+      left: -88px;
+    }
+    &.driver {
+      left: -172px;
+    }
+    &.jongo {
+      left: -97px;
+      color: @brown;
     }
   }
 }
 
-.label, .badge{
-  color: @peach;
-  font-size: 12px;
-  text-transform : uppercase;
-}
 
 .dl-horizontal dt{
   width: 150px;
@@ -217,4 +191,106 @@ code {
 .small-bs-icon {
   float: left;
   margin: 4px 5px 0 0;
+}
+
+header {
+  .links {
+    text-align: center;
+    padding-top: 20px;
+  }
+  .label {
+    text-transform : uppercase;
+  }
+  .label-download {
+    font-size: 26px;
+    color: @peach;
+    background-color: @brown;
+    border: 1px solid @brown;
+    padding: 9px 29px;
+  }
+  .label-reach {
+    font-size: 13px;
+    color: @brown;
+    background-color: @peach;
+    border: 1px solid @peach;
+    padding: 6px 7px;
+  }
+  a.label:hover {
+    color: @brown;
+    text-decoration: none;
+    border: 1px solid @brown;
+
+  }
+  ul {
+    margin: 20px 0 10px 0;
+  }
+  li:last-child {
+    margin-left: 1px;
+  }
+  a:hover {
+    text-decoration: none;
+  }
+}
+
+footer {
+  color: @peach;
+  margin-top: 30px;
+  font-size: 10px;
+  background-color: @brown;
+  p {
+    margin-top: 25px;
+    line-height: 13px;
+  }
+  img {
+    float: left;
+    padding: 10px;
+  }
+  a {
+    color: @peach;
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 900px) {
+  .offset1 {
+    margin-left: 0;
+  }
+  footer {
+    padding: 10px 0 0 0;
+    margin-right: -20px;
+    margin-left: -20px;
+    p {
+      margin-top: 10px;
+    }
+  }
+  .nutshell {
+    padding: 40px 20px 20px 20px;
+    margin-top: -20px;
+    margin-right: -20px;
+    margin-left: -20px;
+    .lead {
+        margin-bottom: 30px;
+    }
+  }
+
+  #overview {
+    .intro {
+      pre.prettyprint.maincode{
+       font-size: 14px;
+     }
+    }
+    .label {
+      top: 0;
+      font-size: 20px;
+      &.shell {
+      left: 0;
+      }
+      &.driver {
+        left: 0;
+      }
+      &.jongo {
+        left: 0;
+      }
+    }
+  }
 }

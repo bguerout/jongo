@@ -1,6 +1,14 @@
 $(document).ready(function() {
 	prettyPrint();
 
+	$('.links > code').mousedown(function() {
+		$(this).addClass('clicked');
+	});
+
+	$('.links > code').mouseup(function() {
+		$(this).removeClass('clicked');
+	});
+
 	$('a').click(function() {
 		var href = $(this).attr('href');
 
