@@ -15,7 +15,7 @@
  */
 
 var express = require('express');
-var app = express.createServer();
+var app = express();
 app.configure(
     function () {
         app.use(express.logger({ format:':method :url' }));

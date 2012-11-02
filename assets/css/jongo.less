@@ -63,6 +63,12 @@ a:hover {
   text-decoration: none;
 }
 
+.prettyprint, pre {
+  .cleancode;
+  border-left: 4px solid @brown;
+  border-radius: 0;
+}
+
 .header {
   h1 {
     color: @peach;
@@ -136,9 +142,16 @@ code {
 
  .intro{
     margin-bottom: 60px;
-      pre.prettyprint.maincode{
+    pre.prettyprint.maincode, pre.prettyprint.samplecode{
       font-size : 16px;
       .cleancode;
+      .pln, .kwd, .typ, .lit, .pun {color: grey;}
+      .query {
+        .pln, .kwd, .typ, .lit, .pun {color:#D14;}
+      }
+    }
+    pre.prettyprint.maincode {
+      .typ {color: @brown}
     }
 
     div.row{
@@ -251,6 +264,12 @@ footer {
   }
 }
 
+@media (min-width: 900px) {
+  .offset2 {
+    margin-left: 200px;
+  }
+}
+
 @media (max-width: 900px) {
   .offset1 {
     margin-left: 0;
@@ -275,7 +294,7 @@ footer {
 
   #overview {
     .intro {
-      pre.prettyprint.maincode{
+      pre.prettyprint.maincode, pre.prettyprint.samplecode{
        font-size: 14px;
      }
     }
