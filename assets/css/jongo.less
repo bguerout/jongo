@@ -57,10 +57,18 @@ p{
   margin-bottom:20px;
 }
 
+a {
+  color: #1E347B;
+  text-decoration: underline;
+  padding: 0 1px;
+}
+
 a:hover {
-  color: #08C;
-  background-color: #bbd8e9;
+  color: @peach;
+  background-color: #1E347B;
   text-decoration: none;
+  padding: 0 1px;
+  border-radius: 2px;
 }
 
 .prettyprint, pre {
@@ -90,6 +98,7 @@ a:hover {
 
   a {
     color: @peach;
+    text-decoration: none;
     &:hover {
       text-decoration: underline;
       background-color: @lgreen;
@@ -232,13 +241,12 @@ header {
     color: @brown;
     text-decoration: none;
     border: 1px solid @brown;
-
   }
   ul {
     margin: 20px 0 10px 0;
-  }
-  li:last-child {
-    margin-left: 1px;
+    li:last-child {
+      margin-left:1px;
+    }
   }
   a:hover {
     text-decoration: none;
@@ -287,8 +295,16 @@ footer {
     margin-top: -20px;
     margin-right: -20px;
     margin-left: -20px;
-    .lead {
-        margin-bottom: 30px;
+    .row:first-child {
+      position: relative;
+      left: 50%;
+      margin-left: -380px;
+      .span3 {
+        float: left;
+        min-height: 1px;
+        margin-left: 20px;
+        width: 220px;
+      }
     }
   }
 
@@ -309,6 +325,22 @@ footer {
       }
       &.jongo {
         left: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .nutshell {
+    .row:first-child {
+      position: static;
+      margin-left: 0px;
+      .span3 {
+        width: 100%;
+        margin: 0 0 30px 0;
+      }
+      .span3:last-child {
+        margin-bottom: 0;
       }
     }
   }

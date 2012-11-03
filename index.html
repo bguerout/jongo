@@ -111,7 +111,7 @@
                 <ul>
                     <li><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-Friend" target="_blank" class="label label-reach">Mailing list</a></li>
                     <li><a href="https://github.com/bguerout/jongo" target="_blank" class="label label-reach">GitHub</a></li>
-                    <li><span class="label label-reach">0.3</span></li>
+                    <li><a href="https://github.com/bguerout/jongo" target="_blank" class="label label-reach">0.3</a></li>
                 </ul>
             </div>
         </div>
@@ -191,7 +191,7 @@ friends.remove(new ObjectId("4c...e"));</pre>
             </p>
 
             <p>
-                Careful, saving a document with a custom <code>_id</code> type <i>(ie: any Java type, other than array, so long as it is unique)</i> always involves to set it before persisting.
+                Careful, saving a document with a custom <code>_id</code> <i>(ie: any Java type, other than array, so long as it is unique)</i> always involves to set it before persisting.
             </p>
         </div>
     </div>
@@ -223,7 +223,7 @@ public class Friend {
     <div class="row">
         <div class="span9">
             <p>
-                <code>JSON</code> properties are automatically mapped to their equivalent object attributes (<i>and complex ones mapped as sub-attributes</i>). <strong>No extra annotations needed</strong>. For fine grained control over (un)marshalling, configure Jongo underlying mapper (<i>see <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a></i>) or use <a href="#advanced">your own (un)marshaller</a>.
+                <code>JSON</code> properties are automatically mapped to their equivalent object attributes (<i>and complex ones mapped as sub-attributes</i>). <strong>No extra annotations needed</strong>. For fine grained control over (un)marshalling, configure <a href="#advanced">Jongo underlying mapper</a> or <a href="#advanced">use your own (un)marshaller</a>.
             </p>
 
             <h2>Handling polymorphism</h2>
@@ -416,6 +416,10 @@ public class Views {
                 Once Jongo is configured to use the <code>Public</code> view, the <code>gender</code> attribute will be ignored for every (un)marshall, even if it already exists in Mongo. Careful, when no view is defined, Jackson ignore the annotations which means every attributes is visible. Views can be used for marshalling-only or unmarshalling-only if needed.
             </p>
 
+            <p>
+                For more options, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a>.
+            </p>
+
             <h2>Using a custom result mapper</h2>
 
             <p>
@@ -452,9 +456,9 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonProvider());
 </pre>
             <h2>Using Jongo objects with Jersey</h2>
 
-            <p>Because Jongo uses Jackson by default, the same objects cannot be exposed with Jersey if they have an <code>ObjectId</code>. To make Jongo and Jersey work together, use <a href="https://gist.github.com/3155831">this custom Jackson Provider</a>, it exposes <code>ObjectId</code> as <code>String</code>.</p>
-
-            <p>If in doubt, <a href="https://github.com/yamsellem/jongo-jersey">this full working sample</a> put everything together.</p>
+            <p>
+                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey. But if some have an <code>ObjectId</code> use <a href="https://gist.github.com/3155831">this custom Jackson Provider</a>, it exposes <code>ObjectId</code> as <code>String</code>. Using <code>String</code> instead of <code>ObjectId</code> — thanks to the <code>@Id</code> annotation — avoid this problem.
+            </p>
 
             <h2>Performance</h2>
 
