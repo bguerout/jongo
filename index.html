@@ -65,7 +65,7 @@
                     <span class="label shell">Shell</span>
                     <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
 
-                    <span class="label driver">Java Driver</span>
+                    <span class="label label-important">Java Driver</span>
                     <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt", 18)))</pre>
 
                     <span class="label jongo">Jongo</span>
@@ -95,7 +95,7 @@
         <div class="row">
             <div class="span9">
                 <p>
-                    Mongo query language brevity — <code>{age: {$gt: 18}}</code> — cannot be used by Mongo Java driver. One have to build a <code>DBObject</code> — a key/value Map representing a query — to find documents.
+                    Mongo query language brevity, <code>{age: {$gt: 18}}</code>, cannot be used by Mongo Java driver. One have to build a <code>DBObject</code> — a key/value Map representing a query — to find documents.
                 </p>
                 <p>
                     Jongo brings Mongo query language to Java. It's an open source library built on top of Mongo Java Driver. It can query with strings the same way you do in the shell. It can save & find objects into & from collections.

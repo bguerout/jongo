@@ -4,6 +4,7 @@
 @brown: #312113;
 @lgreen: #699d67;
 @lbrown: #584b3e;
+@lred: #B94A48;
 
 .cleancode() {
   background-color: @peach;
@@ -30,7 +31,7 @@ h2 {
         font-size: 14px;
     }
     color: @peach;
-    background-color: @brown;
+    background-color: @lbrown;
     padding: 2px 8px;
     margin-bottom: 20px;
     border-radius: 6px;
@@ -73,7 +74,7 @@ a:hover {
 
 .prettyprint, pre {
   .cleancode;
-  border-left: 4px solid @brown;
+  border-left: 4px solid @lbrown;
   border-radius: 0;
 }
 
@@ -81,6 +82,8 @@ a:hover {
   h1 {
     color: @peach;
     background-color: @green;
+    font-size: 30px;
+    line-height: 30px;
     padding: 8px;
     margin-bottom: 20px;
     border-radius: 6px;
@@ -127,7 +130,9 @@ a:hover {
   }
 
   code {
-    padding: 0 5px;
+    padding: 0 1px;
+    background-color: #498a49;
+    color: @peach;
   }
 }
 
@@ -140,9 +145,10 @@ code {
 #overview{
   color: @brown;
   h1{
-   margin-bottom: 5px;
-   text-align: center;
-   font-size: 75px;
+    text-shadow: -4px -2px 15px rgba(88, 75, 62, 0.3);
+    margin-bottom: 5px;
+    text-align: center;
+    font-size: 75px;
   }
   img{
     vertical-align: baseline;
@@ -150,7 +156,7 @@ code {
   }
 
  .intro{
-    margin-bottom: 60px;
+    margin-bottom: 30px;
     pre.prettyprint.maincode, pre.prettyprint.samplecode{
       font-size : 16px;
       .cleancode;
@@ -171,7 +177,7 @@ code {
       font-size: 22px;
       text-align: center;
       line-height:27px;
-      margin-bottom: 40px;
+      margin-bottom: 70px;
       strong{
         color: @green;
       }
@@ -179,22 +185,15 @@ code {
  }
  .label {
     color: @peach;
-    font-size: 25px;
+    font-size: 15px;
     text-transform : uppercase;
     position: relative;
-    top: 29px;
-    background-color: @peach;
-    color: #999;
 
     &.shell {
-      left: -88px;
-    }
-    &.driver {
-      left: -172px;
+      background-color: grey;
     }
     &.jongo {
-      left: -97px;
-      color: @brown;
+      background-color: @green;
     }
   }
 }
@@ -272,7 +271,7 @@ footer {
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
   .offset2 {
     margin-left: 200px;
   }
@@ -316,16 +315,7 @@ footer {
     }
     .label {
       top: 0;
-      font-size: 20px;
-      &.shell {
-      left: 0;
-      }
-      &.driver {
-        left: 0;
-      }
-      &.jongo {
-        left: 0;
-      }
+      font-size: 13px;
     }
   }
 }
