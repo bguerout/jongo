@@ -21,6 +21,7 @@ import com.mongodb.DBCollection;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.JacksonProviders;
+import org.jongo.query.Query;
 
 public class Jongo {
 
@@ -46,5 +47,9 @@ public class Jongo {
 
     public DB getDatabase() {
         return database;
+    }
+
+    public Query createQuery(String query, Object... parameters){
+        return provider.getQueryFactory().createQuery(query, parameters);
     }
 }
