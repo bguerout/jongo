@@ -6,9 +6,11 @@ $(document).ready(function() {
 
 		$('html, body').animate({
 			scrollTop: $(href).offset().top
-		}, {
-			duration: 450,
-			easing: 'swing'
-		});
+		}, 
+			'slow', 
+			'swing', 
+			function() { location.hash = href; }
+		);
+		return false;
 	});
 });
