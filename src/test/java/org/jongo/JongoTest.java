@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import org.jongo.query.Query;
 import org.jongo.util.JongoTestCase;
 import org.junit.Test;
 
@@ -32,5 +33,15 @@ public class JongoTest extends JongoTestCase {
 
         assertThat(collection).isNotNull();
         assertThat(collection.getName()).isEqualTo("collection-name");
+    }
+
+    @Test
+    public void canCreateQuery() throws Exception {
+
+        Jongo jongo = new Jongo(getDatabase());
+
+        Query query = jongo.createQuery("{test:1}");
+
+        assertThat(query.toDBObject().get("test")).isEqualTo(1);
     }
 }
