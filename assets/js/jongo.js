@@ -10,6 +10,5 @@ $(document).ready(function() {
 			duration: 450,
 			easing: 'swing'
 		});
-		return false;
 	});
 });
