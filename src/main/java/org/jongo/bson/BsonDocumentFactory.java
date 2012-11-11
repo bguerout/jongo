@@ -28,14 +28,10 @@ public final class BsonDocumentFactory {
         return new SimpleBsonDocument(dbo);
     }
 
-    private BsonDocumentFactory() {
-    }
-
     public static BsonDocument fromByteArray(byte[] bytes) {
-        return fromByteArray(bytes, 0);
+        return new ReadonlyBsonDocument(bytes, 0, new LazyBSONCallback());
     }
 
-    public static BsonDocument fromByteArray(byte[] bytes, int offset) {
-        return new LazyBsonDocument(bytes, offset, new LazyBSONCallback());
+    private BsonDocumentFactory() {
     }
 }

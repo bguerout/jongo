@@ -20,9 +20,9 @@ import com.mongodb.DBObject;
 import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
 
-class LazyBsonDocument extends LazyWriteableDBObject implements BsonDocument {
+class ReadonlyBsonDocument extends LazyWriteableDBObject implements BsonDocument {
 
-    LazyBsonDocument(byte[] data, int offset, LazyBSONCallback cbk) {
+    ReadonlyBsonDocument(byte[] data, int offset, LazyBSONCallback cbk) {
         super(data, offset, cbk);
     }
 

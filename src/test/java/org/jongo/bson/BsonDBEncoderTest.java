@@ -31,7 +31,7 @@ public class BsonDBEncoderTest {
         DBEncoder encoder = BsonDBEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
-        encoder.writeObject(buffer, new LazyBsonDocument(new byte[]{5, 0, 0, 0, 0}, 0, null));
+        encoder.writeObject(buffer, new ReadonlyBsonDocument(new byte[]{5, 0, 0, 0, 0}, 0, null));
 
         assertThat(buffer.toByteArray()).isEqualTo(new byte[]{5, 0, 0, 0, 0});
 

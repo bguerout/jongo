@@ -47,20 +47,19 @@ public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
             this.db = collection == null ? null : collection.getDB();
         }
 
-        private DBObject createBsonDocument(byte[] data) {
-            BsonDocument bsonDocument = BsonDocumentFactory.fromByteArray(data);
-            return bsonDocument.toDBObject();
-        }
-
         @Override
         public Object createObject(byte[] data, int offset) {
-            DBObject dbo = createBsonDocument(data);
+            DBObject dbo = createDBObject(data);
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {
                 return new DBRef(db, dbo);
             }
             return dbo;
+        }
+
+        private DBObject createDBObject(byte[] data) {
+            return BsonDocumentFactory.fromByteArray(data).toDBObject();
         }
     }
 }
