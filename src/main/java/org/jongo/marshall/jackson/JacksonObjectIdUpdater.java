@@ -29,27 +29,32 @@ class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
 
-    public void setDocumentGeneratedId(Object target, ObjectId id) {
+    public boolean setDocumentGeneratedId(Object target, ObjectId id) {
         Field field = findFieldOrNull(target.getClass());
         if (field != null) {
-            updateField(target, id, field);
+            return updateField(target, id, field);
         }
+        return false;
     }
 
-    protected void updateField(Object target, ObjectId id, Field field) {
+    protected boolean updateField(Object target, ObjectId id, Field field) {
+        boolean hasBeenUpdated = false;
         try {
-
             field.setAccessible(true);
             if (field.get(target) == null) {
-                if (field.getType().equals(ObjectId.class))
+                if (field.getType().equals(ObjectId.class)) {
                     field.set(target, id);
-                else
+                    hasBeenUpdated = true;
+                } else if (field.getType().equals(String.class)) {
                     field.set(target, id.toString());
+                    hasBeenUpdated = true;
+                }
             }
 
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
         }
+        return hasBeenUpdated;
     }
 
     protected Field findFieldOrNull(Class<?> clazz) {

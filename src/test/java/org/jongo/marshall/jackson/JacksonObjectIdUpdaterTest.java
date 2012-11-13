@@ -101,9 +101,34 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend();
 
-        updater.setDocumentGeneratedId(friend, oid);
+        boolean hasBeenUpdated = updater.setDocumentGeneratedId(friend, oid);
 
         assertThat(friend.getId()).isEqualTo(oid);
+        assertThat(hasBeenUpdated).isTrue();
+    }
+
+    @Test
+    public void shouldUpdateStringIdWithObjectId() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        WithIdAsString target = new WithIdAsString();
+
+        boolean hasBeenUpdated = updater.setDocumentGeneratedId(target, oid);
+
+        assertThat(target._id).isEqualTo(oid.toString());
+        assertThat(hasBeenUpdated).isTrue();
+    }
+
+    @Test
+    public void shouldNotUpdateNonSupportedId() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        WithIdAsInteger target = new WithIdAsInteger();
+
+        boolean hasBeenUpdated = updater.setDocumentGeneratedId(target, oid);
+
+        assertThat(target._id).isNull();
+        assertThat(hasBeenUpdated).isFalse();
     }
 
     @Test
@@ -112,9 +137,10 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend(oid, "John");
 
-        updater.setDocumentGeneratedId(friend, new ObjectId());
+        boolean hasBeenUpdated = updater.setDocumentGeneratedId(friend, new ObjectId());
 
         assertThat(friend.getId()).isEqualTo(oid);
+        assertThat(hasBeenUpdated).isFalse();
     }
 
     private static class WithAnnotation {
@@ -129,6 +155,14 @@ public class JacksonObjectIdUpdaterTest {
 
     private static class WithName {
         ObjectId _id;
+    }
+
+    private static class WithIdAsString {
+        String _id;
+    }
+
+    private static class WithIdAsInteger {
+        Integer _id;
     }
 
     private static class WithOtherName {
