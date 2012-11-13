@@ -44,6 +44,12 @@ public class JacksonObjectIdUpdaterTest {
         assertThat(field).isNull();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnInvalidCall() throws Exception {
+
+        updater.setDocumentGeneratedId(new Object(), ObjectId.get());
+    }
+
     @Test
     public void whenNoObjectdIdShouldReturnNull() throws Exception {
 
@@ -101,10 +107,9 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend();
 
-        boolean hasBeenUpdated = updater.setDocumentGeneratedId(friend, oid);
+        updater.setDocumentGeneratedId(friend, oid);
 
         assertThat(friend.getId()).isEqualTo(oid);
-        assertThat(hasBeenUpdated).isTrue();
     }
 
     @Test
@@ -113,10 +118,9 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         WithIdAsString target = new WithIdAsString();
 
-        boolean hasBeenUpdated = updater.setDocumentGeneratedId(target, oid);
+        updater.setDocumentGeneratedId(target, oid);
 
         assertThat(target._id).isEqualTo(oid.toString());
-        assertThat(hasBeenUpdated).isTrue();
     }
 
     @Test
@@ -125,22 +129,30 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         WithIdAsInteger target = new WithIdAsInteger();
 
-        boolean hasBeenUpdated = updater.setDocumentGeneratedId(target, oid);
+        updater.setDocumentGeneratedId(target, oid);
 
         assertThat(target._id).isNull();
-        assertThat(hasBeenUpdated).isFalse();
     }
 
     @Test
-    public void whenFriendHasIdShouldDoNothing() throws Exception {
+    public void canUpdateObjectId() throws Exception {
+
+        Friend friend = new Friend();
+
+        boolean canUpdate = updater.canSetObjectId(friend);
+
+        assertThat(canUpdate).isTrue();
+    }
+
+    @Test
+    public void whenFriendHasIdThenCannotSetIt() throws Exception {
 
         ObjectId oid = new ObjectId();
         Friend friend = new Friend(oid, "John");
 
-        boolean hasBeenUpdated = updater.setDocumentGeneratedId(friend, new ObjectId());
+        boolean canUpdate = updater.canSetObjectId(friend);
 
-        assertThat(friend.getId()).isEqualTo(oid);
-        assertThat(hasBeenUpdated).isFalse();
+        assertThat(canUpdate).isFalse();
     }
 
     private static class WithAnnotation {

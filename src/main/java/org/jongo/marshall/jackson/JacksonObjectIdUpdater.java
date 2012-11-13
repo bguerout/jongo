@@ -29,32 +29,44 @@ class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
 
-    public boolean setDocumentGeneratedId(Object target, ObjectId id) {
+    public void setDocumentGeneratedId(Object target, ObjectId id) {
         Field field = findFieldOrNull(target.getClass());
-        if (field != null) {
-            return updateField(target, id, field);
+        if (field == null) {
+            throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
         }
-        return false;
+        updateField(target, id, field);
     }
 
-    protected boolean updateField(Object target, ObjectId id, Field field) {
-        boolean hasBeenUpdated = false;
-        try {
-            field.setAccessible(true);
-            if (field.get(target) == null) {
+    public boolean canSetObjectId(Object target) {
+        Field field = findFieldOrNull(target.getClass());
+        return field != null && getTargetValue(target, field) == null;
+    }
+
+    private void updateField(Object target, ObjectId id, Field field) {
+        Object value = getTargetValue(target, field);
+        if (value == null) {
+            try {
                 if (field.getType().equals(ObjectId.class)) {
                     field.set(target, id);
-                    hasBeenUpdated = true;
                 } else if (field.getType().equals(String.class)) {
                     field.set(target, id.toString());
-                    hasBeenUpdated = true;
                 }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
             }
-
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
         }
-        return hasBeenUpdated;
+    }
+
+    private Object getTargetValue(Object target, Field field) {
+        try {
+            if (field != null) {
+                field.setAccessible(true);
+                return field.get(target);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to obtain value from field" + field.getName() + ", class: " + target.getClass(), e);
+        }
+        return null;
     }
 
     protected Field findFieldOrNull(Class<?> clazz) {

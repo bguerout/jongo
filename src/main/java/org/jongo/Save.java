@@ -44,12 +44,16 @@ class Save {
     }
 
     public WriteResult execute() {
-        ObjectId id = ObjectId.get();
-        boolean idHasBeenSet = objectIdUpdater.setDocumentGeneratedId(document, id);
-        DBObject dbObject = marshallDocument();
-        if (idHasBeenSet) {
+        DBObject dbObject;
+        if (objectIdUpdater.canSetObjectId(document)) {
+            ObjectId id = ObjectId.get();
+            objectIdUpdater.setDocumentGeneratedId(document, id);
+            dbObject = marshallDocument();
             dbObject.put("_id", id);
+        } else {
+            dbObject = marshallDocument();
         }
+
         return collection.save(dbObject, determineWriteConcern());
     }
 

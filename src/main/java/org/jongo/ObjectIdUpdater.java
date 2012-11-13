@@ -20,5 +20,6 @@ import org.bson.types.ObjectId;
 
 public interface ObjectIdUpdater {
 
-    boolean setDocumentGeneratedId(Object target, ObjectId id);
+    void setDocumentGeneratedId(Object target, ObjectId id);
+    boolean canSetObjectId(Object target);
 }
