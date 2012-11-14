@@ -29,14 +29,14 @@ class Save {
     private final Marshaller marshaller;
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
-    private final Object document;
+    private final Object pojo;
     private WriteConcern concern;
 
-    Save(DBCollection collection, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object document) {
+    Save(DBCollection collection, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object pojo) {
         this.marshaller = marshaller;
         this.collection = collection;
         this.objectIdUpdater = objectIdUpdater;
-        this.document = document;
+        this.pojo = pojo;
     }
 
     public Save concern(WriteConcern concern) {
@@ -46,9 +46,9 @@ class Save {
 
     public WriteResult execute() {
         DBObject dbObject;
-        if (objectIdUpdater.canSetObjectId(document)) {
+        if (objectIdUpdater.canSetObjectId(pojo)) {
             ObjectId id = ObjectId.get();
-            objectIdUpdater.setDocumentGeneratedId(document, id);
+            objectIdUpdater.setDocumentGeneratedId(pojo, id);
             dbObject = marshallDocument().toDBObject();
             dbObject.put("_id", id);
         } else {
@@ -60,9 +60,9 @@ class Save {
 
     private BsonDocument marshallDocument() {
         try {
-            return marshaller.marshall(document);
+            return marshaller.marshall(pojo);
         } catch (Exception e) {
-            String message = String.format("Unable to save object %s due to a marshalling error", document);
+            String message = String.format("Unable to save object %s due to a marshalling error", pojo);
             throw new IllegalArgumentException(message, e);
         }
     }

@@ -78,8 +78,8 @@ public class QuestionsSpikeTest extends JongoTestCase {
         friends.add(new Friend("peter"));
         collection.save(friends);
 
-        String robert = new BsonEngine().marshall(new Friend("Robert")).toString();
-        collection.update("{}").with("{$push:{friends:" + robert + "}}");
+        DBObject robert = new BsonEngine().marshall(new Friend("Robert")).toDBObject();
+        collection.update("{}").with("{$push:{friends:" + robert.toString() + "}}");
 
         assertThat(collection.count("{ 'friends.name' : 'Robert'}")).isEqualTo(1);
     }

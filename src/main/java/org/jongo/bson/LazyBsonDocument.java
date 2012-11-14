@@ -16,38 +16,27 @@
 
 package org.jongo.bson;
 
-import com.mongodb.DBEncoder;
 import com.mongodb.DBObject;
-import com.mongodb.DefaultDBEncoder;
-import org.bson.BSONObject;
-import org.bson.io.BasicOutputBuffer;
-import org.bson.io.OutputBuffer;
+import com.mongodb.LazyWriteableDBObject;
+import org.bson.LazyBSONCallback;
 
-class SimpleBsonDocument implements BsonDocument {
+class LazyBsonDocument implements BsonDocument {
 
-    private final OutputBuffer buffer;
-    private final DBObject dbo;
+    private final byte[] bytes;
 
-    SimpleBsonDocument(DBObject dbo) {
-        this.buffer = new BasicOutputBuffer();
-        this.dbo = dbo;
-        encode(this.dbo);
-    }
-
-    private void encode(BSONObject dbo) {
-        DBEncoder dbEncoder = DefaultDBEncoder.FACTORY.create();
-        dbEncoder.writeObject(buffer, dbo);
+    LazyBsonDocument(byte[] bytes) {
+        this.bytes = bytes;
     }
 
     public int getSize() {
-        return buffer.size();
+        return bytes.length;//TODO wrong
     }
 
     public byte[] toByteArray() {
-        return buffer.toByteArray();
+        return bytes;
     }
 
     public DBObject toDBObject() {
-        return dbo;
+        return new LazyWriteableDBObject(bytes, new LazyBSONCallback());
     }
 }

@@ -17,7 +17,6 @@
 package org.jongo.bson;
 
 import com.mongodb.DBObject;
-import org.bson.LazyBSONCallback;
 
 public final class BsonDocumentFactory {
 
@@ -25,11 +24,11 @@ public final class BsonDocumentFactory {
         if (dbo instanceof BsonDocument) {
             return (BsonDocument) dbo;
         }
-        return new SimpleBsonDocument(dbo);
+        return new BufferedBsonDocument(dbo);
     }
 
     public static BsonDocument fromByteArray(byte[] bytes) {
-        return new ReadonlyBsonDocument(bytes, 0, new LazyBSONCallback());
+        return new LazyBsonDocument(bytes);
     }
 
     private BsonDocumentFactory() {
