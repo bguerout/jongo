@@ -16,13 +16,14 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import com.mongodb.*;
+import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
+
+import java.util.HashSet;
+import java.util.Set;
 
 class Save {
 
@@ -47,15 +48,28 @@ class Save {
     public WriteResult execute() {
         DBObject dbObject;
         if (objectIdUpdater.canSetObjectId(pojo)) {
-            ObjectId id = ObjectId.get();
-            objectIdUpdater.setDocumentGeneratedId(pojo, id);
-            dbObject = marshallDocument().toDBObject();
-            dbObject.put("_id", id);
+            dbObject = createDBObjectToInsert();
         } else {
-            dbObject = marshallDocument().toDBObject();
+            dbObject = createDBObjectToUpdate();
         }
 
         return collection.save(dbObject, determineWriteConcern());
+    }
+
+    private DBObject createDBObjectToUpdate() {
+        BsonDocument document = marshallDocument();
+        return new UncheckableDBObject(document.toByteArray());
+    }
+
+    private DBObject createDBObjectToInsert() {
+        ObjectId id = ObjectId.get();
+        objectIdUpdater.setDocumentGeneratedId(pojo, id);
+
+        BsonDocument document = marshallDocument();
+        DBObject dbo = new UncheckableDBObject(document.toByteArray());
+        dbo.put("_id", id);
+
+        return dbo;
     }
 
     private BsonDocument marshallDocument() {
@@ -69,5 +83,20 @@ class Save {
 
     private WriteConcern determineWriteConcern() {
         return concern == null ? collection.getWriteConcern() : concern;
+    }
+
+    private static class UncheckableDBObject extends LazyWriteableDBObject {
+
+        private final HashSet<String> keys;
+
+        private UncheckableDBObject(byte[] data) {
+            super(data, new LazyBSONCallback());
+            this.keys = new HashSet<String>();
+        }
+
+        @Override
+        public Set<String> keySet() {
+            return keys;
+        }
     }
 }
