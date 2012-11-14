@@ -66,7 +66,7 @@
                     <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
 
                     <span class="label driver">Java Driver</span>
-                    <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt", 18)))</pre>
+                    <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
 
                     <span class="label jongo">Jongo</span>
                     <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class)</pre>
@@ -83,32 +83,32 @@
     <div class="offset1">
         <div class="row">
             <div class="span3">
-                <p class="lead"><strong>True</strong></br>Faithful to the original Mongo experience</p>
+                <p class="lead">
+                    <img src="assets/img/faithful.png">
+                    <strong>Faithful experience</strong>Mongo query language cannot be used by Java driver, Jongo fixes that, using queries as strings.
+                </p>
             </div>
             <div class="span3">
-                <p class="lead"><strong>Solid</strong></br>Fully tested & made of popular librairies</p>
+                <p class="lead">
+                    <img src="assets/img/objects.png">
+                    <strong>Object oriented</strong>Save & find objects into & from collections. Underlying Jackson is configurable and disengageable.
+                </p>
             </div>
             <div class="span3">
-                <p class="lead"><strong>Fast</strong></br>No extra cost, almost the driver's speed</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span9">
-                <p>
-                    Mongo query language brevity, <code>{age: {$gt: 18}}</code>, cannot be used by Mongo Java driver. One have to build a <code>DBObject</code> — a key/value Map representing a query — to find documents.
-                </p>
-                <p>
-                    Jongo brings Mongo query language to Java. It's an open source library built on top of Mongo Java Driver. It can query with strings the same way you do in the shell. It can save & find objects into & from collections.
-                </p>
-                <p>
-                    Besides, <code>find(..)</code> and <code>findOne(..)</code> methods use <code>.as(Class&lt;?&gt;)</code> to unmarshall results as desired. This process relies on <a href="https://github.com/FasterXML/jackson-databind" target="_blank">Jackson</a> — a powerful parsing library. It is configurable and disengageable.
+                <p class="lead">
+                    <img src="assets/img/wood.png">
+                    <strong>Wood solid</strong>No extra cost, almost the driver's speed. Open source, fully tested & made of popular librairies. 
                 </p>
             </div>
         </div>
+    </div>
+</header>
+<div class="nutshell links">
+    <div class="container">
         <div class="row">
-            <div class="span3 offset3 links">
-                <a href="#maven" class="label label-download">Download</a>
+            <div class="span4 offset4 links">
                 <ul>
+                    <li><a href="#maven" class="label label-download">Download</a></li>
                     <li><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-user" target="_blank" class="label label-reach">Mailing list</a></li>
                     <li><a href="https://github.com/bguerout/jongo" target="_blank" class="label label-reach">GitHub</a></li>
                     <li><a href="https://github.com/bguerout/jongo" target="_blank" class="label label-reach">0.3</a></li>
@@ -116,7 +116,7 @@
             </div>
         </div>
     </div>
-</header>
+</div>
 
 <div class="container">
 
