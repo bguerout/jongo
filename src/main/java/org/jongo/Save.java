@@ -58,7 +58,7 @@ class Save {
 
     private DBObject createDBObjectToUpdate() {
         BsonDocument document = marshallDocument();
-        return new UncheckableDBObject(document.toByteArray());
+        return new AlreadyCheckedDBObject(document.toByteArray());
     }
 
     private DBObject createDBObjectToInsert() {
@@ -66,7 +66,7 @@ class Save {
         objectIdUpdater.setDocumentGeneratedId(pojo, id);
 
         BsonDocument document = marshallDocument();
-        DBObject dbo = new UncheckableDBObject(document.toByteArray());
+        DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray());
         dbo.put("_id", id);
 
         return dbo;
@@ -85,11 +85,11 @@ class Save {
         return concern == null ? collection.getWriteConcern() : concern;
     }
 
-    private static class UncheckableDBObject extends LazyWriteableDBObject {
+    private static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
 
         private final HashSet<String> keys;
 
-        private UncheckableDBObject(byte[] data) {
+        private AlreadyCheckedDBObject(byte[] data) {
             super(data, new LazyBSONCallback());
             this.keys = new HashSet<String>();
         }
