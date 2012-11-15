@@ -21,4 +21,5 @@ import org.bson.types.ObjectId;
 public interface ObjectIdUpdater {
 
     void setDocumentGeneratedId(Object target, ObjectId id);
+    boolean canSetObjectId(Object target);
 }

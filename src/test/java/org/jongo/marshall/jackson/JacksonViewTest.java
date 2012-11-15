@@ -17,6 +17,7 @@
 package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
+import org.jongo.bson.BsonDocument;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;
@@ -39,8 +40,9 @@ public class JacksonViewTest {
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
-        DBObject result = custom.marshall(vixen);
+        BsonDocument doc = custom.marshall(vixen);
 
+        DBObject result = doc.toDBObject();
         assertThat(result.get("gender")).isNull();
         assertThat(result.get("_class")).isEqualTo("org.jongo.model.Fox");
         assertThat(result.get("name")).isEqualTo("fantastic");
@@ -54,8 +56,9 @@ public class JacksonViewTest {
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
-        DBObject result = custom.marshall(vixen);
+        BsonDocument doc = custom.marshall(vixen);
 
+        DBObject result = doc.toDBObject();
         assertThat(result.get("_class")).isEqualTo("org.jongo.model.Fox");
         assertThat(result.get("name")).isEqualTo("fantastic");
         assertThat(result.get("color")).isEqualTo("roux");
@@ -65,10 +68,10 @@ public class JacksonViewTest {
     @Test
     public void respectsJsonPublicViewOnUnmarshall() throws Exception {
 
-        DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
+        BsonDocument doc  = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
         JsonEngine custom = createProcessorWithView(Views.Public.class);
 
-        Fox fox = custom.unmarshall(json, Fox.class);
+        Fox fox = custom.unmarshall(doc, Fox.class);
 
         assertThat(fox.getGender()).isNull();
     }
@@ -76,10 +79,10 @@ public class JacksonViewTest {
     @Test
     public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
 
-        DBObject json = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
+        BsonDocument doc = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
         JsonEngine custom = createProcessorWithView(Views.Private.class);
 
-        Fox fox = custom.unmarshall(json, Fox.class);
+        Fox fox = custom.unmarshall(doc, Fox.class);
 
         assertThat(fox.getGender()).isEqualTo("female");
     }

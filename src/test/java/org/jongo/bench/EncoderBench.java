@@ -48,14 +48,14 @@ public class EncoderBench extends SimpleBenchmark {
 
     public void timeEncodeWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject friend = jsonEngine.marshall(createFriend(i));
+            DBObject friend = jsonEngine.marshall(createFriend(i)).toDBObject();
             dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }
 
     public void timeEncodeWithBsonJongo(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject friend = bsonEngine.marshall(createFriend(i));
+            DBObject friend = bsonEngine.marshall(createFriend(i)).toDBObject();
             dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }

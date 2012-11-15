@@ -60,7 +60,10 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'number' : 100 , 'string' : 'value' , 'bool' : false , 'anEnum' : 'TEST'"));
+        assertHasBeenPersistedAs(jsonify("'number' : 100"));
+        assertHasBeenPersistedAs(jsonify("'string' : 'value'"));
+        assertHasBeenPersistedAs(jsonify("'bool' : false"));
+        assertHasBeenPersistedAs(jsonify("'anEnum' : 'TEST'"));
         JavaNativeType result = collection.findOne("{}").as(JavaNativeType.class);
         assertThat(result.bool).isFalse();
         assertThat(result.string).isEqualTo("value");
@@ -77,7 +80,8 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'minKey' : { '$minKey' : 1} , 'maxKey' : { '$maxKey' : 1}"));
+        assertHasBeenPersistedAs(jsonify("'minKey' : { '$minKey' : 1}"));
+        assertHasBeenPersistedAs(jsonify("'maxKey' : { '$maxKey' : 1}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.minKey).isNotNull();
         assertThat(result.maxKey).isNotNull();
@@ -118,7 +122,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'timestamp' : { '$ts' : 1 , '$inc' : 2}}"));
+        assertHasBeenPersistedAs(jsonify("'timestamp' : { '$ts' : 1 , '$inc' : 2}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.timestamp).isEqualTo(new BSONTimestamp(1, 2));
     }
@@ -139,7 +143,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
     @Test
     public void canHandleNonIsoDate() throws IOException {
 
-        collection.insert("{date:#}",1340714101235L);
+        collection.insert("{date:#}", 1340714101235L);
 
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
 
@@ -289,7 +293,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
         Parameter anEnum;
     }
 
-    private static enum Parameter{
+    private static enum Parameter {
         TEST,
         TEST2
     }

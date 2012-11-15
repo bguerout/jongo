@@ -17,6 +17,7 @@
 package org.jongo.bson;
 
 import com.mongodb.*;
+import org.bson.LazyBSONCallback;
 
 import java.util.Iterator;
 
@@ -38,7 +39,7 @@ public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
         }
     }
 
-    private static class BsonDBCallback extends LazyDBCallback  {
+    private static class BsonDBCallback extends LazyDBCallback {
 
         private final DB db;
 
@@ -49,13 +50,33 @@ public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            DBObject dbo = new LazyBsonByte(data, offset, this);
+            DBObject dbo = new RelaxedLazyDBObject(data, new LazyBSONCallback());
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {
                 return new DBRef(db, dbo);
             }
             return dbo;
+        }
+
+    }
+
+    private static class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument{
+
+        public RelaxedLazyDBObject(byte[] data, LazyBSONCallback cbk) {
+            super(data, cbk);
+        }
+
+        public byte[] toByteArray() {
+            return _input.array();
+        }
+
+        public DBObject toDBObject() {
+            return this;
+        }
+
+        public int getSize() {
+            return getBSONSize();
         }
     }
 }

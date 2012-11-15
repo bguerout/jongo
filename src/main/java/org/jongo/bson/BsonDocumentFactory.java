@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package org.jongo.util;
+package org.jongo.bson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.jongo.bson.BsonDocument;
-import org.jongo.bson.BsonDocumentFactory;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+public final class BsonDocumentFactory {
 
-public class BSON {
-
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    public static BsonDocument bsonify(String json) throws IOException {
-        Map map = OBJECT_MAPPER.readValue(jsonify(json), HashMap.class);
-        DBObject dbo = new BasicDBObject();
-        dbo.putAll(map);
-        return BsonDocumentFactory.fromDBObject(dbo);
+    public static BsonDocument fromDBObject(DBObject dbo) {
+        if (dbo instanceof BsonDocument) {
+            return (BsonDocument) dbo;
+        }
+        return new BufferedBsonDocument(dbo);
     }
 
-    public static String jsonify(String json) {
-        return json.replace("'", "\"");
+    public static BsonDocument fromByteArray(byte[] bytes) {
+        return new LazyBsonDocument(bytes);
+    }
+
+    private BsonDocumentFactory() {
     }
 }

@@ -17,6 +17,8 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
+import org.jongo.bson.BsonDocument;
+import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.Unmarshaller;
 
 class ResultMapperFactory {
@@ -37,7 +39,8 @@ class ResultMapperFactory {
         }
 
         public T map(DBObject result) {
-            return unmarshaller.unmarshall(result, clazz);
+            BsonDocument bsonDocument = BsonDocumentFactory.fromDBObject(result);
+            return unmarshaller.unmarshall(bsonDocument, clazz);
         }
     }
 
