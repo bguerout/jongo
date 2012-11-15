@@ -55,7 +55,7 @@ public class SaveBench extends SimpleBenchmark {
         }
     }
 
-    public void timeSaveWithDefaultJongo(int reps) {
+    public void ignore_timeSaveWithDefaultJongo(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
                 jsonCollection.save(createFriend(reps + j), concern);
@@ -72,6 +72,6 @@ public class SaveBench extends SimpleBenchmark {
     }
 
     public static void main(String[] args) {
-        Runner.main(SaveBench.class, new String[]{"-Dsize=1", "-Dconcern=SAFE"});
+        Runner.main(SaveBench.class, new String[]{"-Dsize=1000,10000", "-Dconcern=SAFE"});
     }
 }

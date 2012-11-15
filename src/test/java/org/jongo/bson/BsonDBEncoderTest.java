@@ -18,6 +18,7 @@ package org.jongo.bson;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBEncoder;
+import com.mongodb.LazyDBObject;
 import org.bson.io.BasicOutputBuffer;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class BsonDBEncoderTest {
         DBEncoder encoder = BsonDBEncoder.FACTORY.create();
         BasicOutputBuffer buffer = new BasicOutputBuffer();
 
-        encoder.writeObject(buffer, new LazyBsonByte(new byte[]{5, 0, 0, 0, 0}, 0, null));
+        encoder.writeObject(buffer, new LazyDBObject(new byte[]{5, 0, 0, 0, 0}, null));
 
         assertThat(buffer.toByteArray()).isEqualTo(new byte[]{5, 0, 0, 0, 0});
 

@@ -16,10 +16,10 @@
 
 package org.jongo.marshall;
 
-import com.mongodb.DBObject;
+import org.jongo.bson.BsonDocument;
 
 public interface Unmarshaller {
 
-    <T> T unmarshall(DBObject document, Class<T> clazz) throws MarshallingException;
+    <T> T unmarshall(BsonDocument document, Class<T> clazz) throws MarshallingException;
 
 }

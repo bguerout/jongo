@@ -16,17 +16,14 @@
 
 package org.jongo.bson;
 
+
 import com.mongodb.DBObject;
 
-public final class BsonByteFactory {
+public interface BsonDocument {
 
-    public static BsonByte fromDBObject(DBObject dbo) {
-        if (dbo instanceof BsonByte) {
-            return (BsonByte) dbo;
-        }
-        return new SimpleBsonByte(dbo);
-    }
+    byte[] toByteArray();
 
-    private BsonByteFactory() {
-    }
+    DBObject toDBObject();
+
+    int getSize();
 }

@@ -20,6 +20,8 @@ import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
 import com.mongodb.*;
 import org.jongo.bson.BsonDBDecoder;
+import org.jongo.bson.BsonDocument;
+import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.jackson.BsonEngine;
 import org.jongo.marshall.jackson.JsonEngine;
 import org.jongo.model.Coordinate;
@@ -41,11 +43,12 @@ public class DecoderBench extends SimpleBenchmark {
         }
     }
 
-    public void XXtimeDecodeWithDefaultJongo(int reps) {
+    public void ignore_timeDecodeWithDefaultJongo(int reps) {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
             DBObject dbo = decode(BsonDBDecoder.FACTORY);
-            Friend f = jsonEngine.unmarshall(dbo, Friend.class);
+            BsonDocument document = BsonDocumentFactory.fromDBObject(dbo);
+            Friend f = jsonEngine.unmarshall(document, Friend.class);
         }
     }
 
@@ -53,7 +56,8 @@ public class DecoderBench extends SimpleBenchmark {
 
         for (int docIndex = 0; docIndex < reps; docIndex++) {
             DBObject dbo = decode(BsonDBDecoder.FACTORY);
-            Friend f = bsonEngine.unmarshall(dbo, Friend.class);
+            BsonDocument document = BsonDocumentFactory.fromDBObject(dbo);
+            Friend f = bsonEngine.unmarshall(document, Friend.class);
         }
     }
 

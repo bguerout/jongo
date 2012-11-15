@@ -16,26 +16,28 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import com.mongodb.*;
+import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
+import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
+
+import java.util.HashSet;
+import java.util.Set;
 
 class Save {
 
     private final Marshaller marshaller;
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
-    private final Object document;
+    private final Object pojo;
     private WriteConcern concern;
 
-    Save(DBCollection collection, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object document) {
+    Save(DBCollection collection, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object pojo) {
         this.marshaller = marshaller;
         this.collection = collection;
         this.objectIdUpdater = objectIdUpdater;
-        this.document = document;
+        this.pojo = pojo;
     }
 
     public Save concern(WriteConcern concern) {
@@ -44,20 +46,57 @@ class Save {
     }
 
     public WriteResult execute() {
-        objectIdUpdater.setDocumentGeneratedId(document, ObjectId.get());
-        return collection.save(marshallDocument(), determineWriteConcern());
+        DBObject dbObject;
+        if (objectIdUpdater.canSetObjectId(pojo)) {
+            dbObject = createDBObjectToInsert();
+        } else {
+            dbObject = createDBObjectToUpdate();
+        }
+
+        return collection.save(dbObject, determineWriteConcern());
     }
 
-    private DBObject marshallDocument() {
+    private DBObject createDBObjectToUpdate() {
+        BsonDocument document = marshallDocument();
+        return new AlreadyCheckedDBObject(document.toByteArray());
+    }
+
+    private DBObject createDBObjectToInsert() {
+        ObjectId id = ObjectId.get();
+        objectIdUpdater.setDocumentGeneratedId(pojo, id);
+
+        BsonDocument document = marshallDocument();
+        DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray());
+        dbo.put("_id", id);
+
+        return dbo;
+    }
+
+    private BsonDocument marshallDocument() {
         try {
-            return marshaller.marshall(document);
+            return marshaller.marshall(pojo);
         } catch (Exception e) {
-            String message = String.format("Unable to save object %s due to a marshalling error", document);
+            String message = String.format("Unable to save object %s due to a marshalling error", pojo);
             throw new IllegalArgumentException(message, e);
         }
     }
 
     private WriteConcern determineWriteConcern() {
         return concern == null ? collection.getWriteConcern() : concern;
+    }
+
+    private static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
+
+        private final HashSet<String> keys;
+
+        private AlreadyCheckedDBObject(byte[] data) {
+            super(data, new LazyBSONCallback());
+            this.keys = new HashSet<String>();
+        }
+
+        @Override
+        public Set<String> keySet() {
+            return keys;
+        }
     }
 }

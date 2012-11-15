@@ -31,25 +31,42 @@ class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     public void setDocumentGeneratedId(Object target, ObjectId id) {
         Field field = findFieldOrNull(target.getClass());
-        if (field != null) {
-            updateField(target, id, field);
+        if (field == null) {
+            throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
+        }
+        updateField(target, id, field);
+    }
+
+    public boolean canSetObjectId(Object target) {
+        Field field = findFieldOrNull(target.getClass());
+        return field != null && getTargetValue(target, field) == null;
+    }
+
+    private void updateField(Object target, ObjectId id, Field field) {
+        Object value = getTargetValue(target, field);
+        if (value == null) {
+            try {
+                if (field.getType().equals(ObjectId.class)) {
+                    field.set(target, id);
+                } else if (field.getType().equals(String.class)) {
+                    field.set(target, id.toString());
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
+            }
         }
     }
 
-    protected void updateField(Object target, ObjectId id, Field field) {
+    private Object getTargetValue(Object target, Field field) {
         try {
-
-            field.setAccessible(true);
-            if (field.get(target) == null) {
-                if (field.getType().equals(ObjectId.class))
-                    field.set(target, id);
-                else
-                    field.set(target, id.toString());
+            if (field != null) {
+                field.setAccessible(true);
+                return field.get(target);
             }
-
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
+            throw new RuntimeException("Unable to obtain value from field" + field.getName() + ", class: " + target.getClass(), e);
         }
+        return null;
     }
 
     protected Field findFieldOrNull(Class<?> clazz) {

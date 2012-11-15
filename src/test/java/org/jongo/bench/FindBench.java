@@ -64,7 +64,7 @@ public class FindBench extends SimpleBenchmark {
         return insertions;
     }
 
-    public int timeFindWithDefaultJongo(int reps) {
+    public int ignore_timeFindWithDefaultJongo(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
             for (Friend friend : jsonCollection.find().limit(size).as(Friend.class)) {
@@ -85,6 +85,6 @@ public class FindBench extends SimpleBenchmark {
     }
 
     public static void main(String[] args) {
-        Runner.main(FindBench.class, new String[]{"-Dsize=1"});
+        Runner.main(FindBench.class, new String[]{"-Dsize=1000,10000"});
     }
 }

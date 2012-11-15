@@ -22,8 +22,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
-import org.jongo.bson.BsonByte;
-import org.jongo.bson.BsonByteFactory;
+import org.jongo.bson.BsonDocument;
+import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.jackson.configuration.JsonModule;
 import org.jongo.model.Friend;
 import org.junit.Test;
@@ -112,8 +112,8 @@ public class JacksonProvidersTest {
 
         ObjectMapper mapper = config.getObjectMapper();
 
-        BsonByte stream = BsonByteFactory.fromDBObject(new BasicDBObject("name", "robert"));
-        Friend friend = mapper.readValue(stream.getData(), Friend.class);
+        BsonDocument document = BsonDocumentFactory.fromDBObject(new BasicDBObject("name", "robert"));
+        Friend friend = mapper.readValue(document.toByteArray(), Friend.class);
         assertThat(friend.getName()).isEqualTo("Doe");
     }
 

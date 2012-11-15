@@ -44,6 +44,12 @@ public class JacksonObjectIdUpdaterTest {
         assertThat(field).isNull();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnInvalidCall() throws Exception {
+
+        updater.setDocumentGeneratedId(new Object(), ObjectId.get());
+    }
+
     @Test
     public void whenNoObjectdIdShouldReturnNull() throws Exception {
 
@@ -107,14 +113,46 @@ public class JacksonObjectIdUpdaterTest {
     }
 
     @Test
-    public void whenFriendHasIdShouldDoNothing() throws Exception {
+    public void shouldUpdateStringIdWithObjectId() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        WithIdAsString target = new WithIdAsString();
+
+        updater.setDocumentGeneratedId(target, oid);
+
+        assertThat(target._id).isEqualTo(oid.toString());
+    }
+
+    @Test
+    public void shouldNotUpdateNonSupportedId() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        WithIdAsInteger target = new WithIdAsInteger();
+
+        updater.setDocumentGeneratedId(target, oid);
+
+        assertThat(target._id).isNull();
+    }
+
+    @Test
+    public void canUpdateObjectId() throws Exception {
+
+        Friend friend = new Friend();
+
+        boolean canUpdate = updater.canSetObjectId(friend);
+
+        assertThat(canUpdate).isTrue();
+    }
+
+    @Test
+    public void whenFriendHasIdThenCannotSetIt() throws Exception {
 
         ObjectId oid = new ObjectId();
         Friend friend = new Friend(oid, "John");
 
-        updater.setDocumentGeneratedId(friend, new ObjectId());
+        boolean canUpdate = updater.canSetObjectId(friend);
 
-        assertThat(friend.getId()).isEqualTo(oid);
+        assertThat(canUpdate).isFalse();
     }
 
     private static class WithAnnotation {
@@ -129,6 +167,14 @@ public class JacksonObjectIdUpdaterTest {
 
     private static class WithName {
         ObjectId _id;
+    }
+
+    private static class WithIdAsString {
+        String _id;
+    }
+
+    private static class WithIdAsInteger {
+        Integer _id;
     }
 
     private static class WithOtherName {
