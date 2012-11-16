@@ -33,7 +33,7 @@ import static org.jongo.bench.BenchUtil.getCollectionFromJongo;
 
 public class FindBench extends SimpleBenchmark {
 
-    private static final int NB_DOCUMENTS = 10000;
+    private static final int NB_DOCUMENTS = 100000;
     @Param({"1"})
     int size = 1;
     private MongoCollection jsonCollection;
@@ -85,6 +85,6 @@ public class FindBench extends SimpleBenchmark {
     }
 
     public static void main(String[] args) {
-        Runner.main(FindBench.class, new String[]{"-Dsize=1000,10000"});
+        Runner.main(FindBench.class, new String[]{"-Dsize=1000,10000,50000,100000"});
     }
 }

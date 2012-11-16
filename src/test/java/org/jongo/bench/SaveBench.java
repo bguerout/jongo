@@ -72,6 +72,6 @@ public class SaveBench extends SimpleBenchmark {
     }
 
     public static void main(String[] args) {
-        Runner.main(SaveBench.class, new String[]{"-Dsize=1000,10000", "-Dconcern=SAFE"});
+        Runner.main(SaveBench.class, new String[]{"-Dsize=1000,10000,50000", "-Dconcern=SAFE"});
     }
 }
