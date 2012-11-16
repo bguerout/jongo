@@ -72,10 +72,7 @@ public final class Update {
         try {
             return this.queryFactory.createQuery(query, parameters);
         } catch (Exception e) {
-            String message = String.format("Unable to create Update query %s, please check cause exception. " +
-                    "Beware 'update(String query, String modifier)' has been replaced by " +
-                    "'update(String query, Object... parameters)' in v0.2. To specify modifier please use: " +
-                    "'update(String query).with(String modifier)'", query);
+            String message = String.format("Unable execute update operation using query %s", query);
             throw new IllegalArgumentException(message, e);
         }
     }

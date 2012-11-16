@@ -43,17 +43,13 @@ public class UpdateTest extends JongoTestCase {
     }
 
     @Test
-    public void canUpdateMultiDeprecated() throws Exception {
-        /* given */
-        collection.save(new Friend("John"));
-        collection.save(new Friend("John"));
-
+    public void onInvalidArgumentsShouldFail() throws Exception {
         try {
-            collection.update("{name:'John'}", "{$unset:{name:1}}");
+            collection.update("{name:'John'}", new Object());
             fail();
         } catch (Exception e) {
             assertThat(e).isInstanceOf(IllegalArgumentException.class);
-            assertThat(e.getMessage()).contains("Beware 'update(String query, String modifier)' has been replaced");
+            assertThat(e.getMessage()).contains("{name:'John'}");
             assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
         }
     }
