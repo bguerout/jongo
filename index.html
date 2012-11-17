@@ -14,20 +14,20 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->
+-->
 
 <head>
-    <meta charset="utf-8">
-    <title>Jongo {mongo-java-driver: 'with ease'}</title>
+  <meta charset="utf-8">
+  <title>Jongo {mongo-java-driver: 'with ease'}</title>
 
-    <link href="assets/img/jongo_favicon.png" rel="shortcut icon">
-    <link href="assets/css/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
-    <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
-    <link href="assets/css/bootstrap-responsive.min.css" type="text/css" rel="stylesheet"/>
-    <link href="assets/css/prettify.css" type="text/css" rel="stylesheet"/>
+  <link href="assets/img/jongo_favicon.png" rel="shortcut icon">
+  <link href="assets/css/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
+  <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+  <link href="assets/css/bootstrap-responsive.min.css" type="text/css" rel="stylesheet"/>
+  <link href="assets/css/prettify.css" type="text/css" rel="stylesheet"/>
 
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+  <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
     <![endif]-->
@@ -35,6 +35,9 @@
     <script type="text/javascript" src="assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap-scrollspy.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap-dropdown.js"></script>
+    <script type="text/javascript" src="assets/js/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="assets/js/bootstrap-collapse.js"></script>
+    <script type="text/javascript" src="assets/js/bootstrap-affix.js"></script>
     <script type="text/javascript" src="assets/js/prettify.js"></script>
     <script type="text/javascript" src="assets/js/jongo.js"></script>
 
@@ -42,92 +45,97 @@
     <meta http-equiv="pragma" content="no-cache">
     <meta charset="utf-8">
     <meta name="description"
-          content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)"/>
+    content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)"/>
 
-</head>
+  </head>
 
-<body data-spy="scroll">
+  <body data-spy="scroll">
 
-<div class="container">
-
-<section id="overview">
-    <div class="row">
-        <div class="span12 intro">
-
+    <div class="container">
+      <section id="overview">
+        <div class="row">
+          <div class="span12 intro">
             <h1><img src="assets/img/jongo_big.png">Jongo</h1>
 
             <div class="row">
-                <div class="span12 pitch">Query in <strong>Java</strong> as in <strong>Mongo</strong> shell</div>
+              <div class="span12 pitch">Query in <strong>Java</strong> as in <strong>Mongo</strong> shell</div>
             </div>
-
             <div class="row">
-                <div class="span9 offset2">
-                    <span class="label shell">Shell</span>
-                    <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
+              <div class="span9 offset2">
+                <span class="label shell">Shell</span>
+                <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
 
-                    <span class="label driver">Java Driver</span>
-                    <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
+                <span class="label driver">Java Driver</span>
+                <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
 
-                    <span class="label jongo">Jongo</span>
-                    <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class)</pre>
-                </div>
+                <span class="label jongo">Jongo</span>
+                <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class)</pre>
+              </div>
             </div>
+          </div>
         </div>
+      </section>
     </div>
-</section>
 
-</div>
-
-<header class="nutshell">
-  <div class="container">
-    <div class="offset1">
-        <div class="row">
+    <header class="nutshell">
+      <div class="container">
+        <div class="offset1">
+          <div class="row">
             <div class="span3">
-                <p class="lead">
-                    <img src="assets/img/faithful.png">
-                    <strong>Faithful experience</strong>Mongo query language cannot be used by Java driver, Jongo fixes that, using queries as strings.
-                </p>
-            </div>
-            <div class="span3">
-                <p class="lead">
-                    <img src="assets/img/objects.png">
-                    <strong>Object oriented</strong>Save & find objects into & from collections. Underlying Jackson is configurable and disengageable.
-                </p>
+              <p class="lead">
+                <img src="assets/img/faithful.png">
+                <strong>Faithful experience</strong>Mongo query language isn't available in Java, Jongo fixes that. Copy/paste your queries to string.
+              </p>
             </div>
             <div class="span3">
-                <p class="lead">
-                    <img src="assets/img/wood.png">
-                    <strong>Wood solid</strong>No extra cost, almost the driver's speed. Open source, fully tested & made of popular librairies. 
-                </p>
+              <p class="lead">
+                <img src="assets/img/objects.png">
+                <strong>Object oriented</strong>Save & find objects into & from collections. Use embedded Jackson marshalling or your own.
+              </p>
             </div>
-        </div>
-    </div>
-</header>
-<div class="nutshell links">
-    <div class="container">
-        <div class="row">
-            <div class="span4 offset4 links">
-                <ul>
-                    <li><a href="#maven" class="label label-download">Download</a></li>
-                    <li><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-user" target="_blank" class="label label-reach">Mailing list</a></li>
-                    <li><a href="https://github.com/bguerout/jongo" target="_blank" class="label label-reach">GitHub</a></li>
-                    <li><a href="https://github.com/bguerout/jongo" target="_blank" class="label label-reach">0.3</a></li>
-                </ul>
+            <div class="span3">
+              <p class="lead">
+                <img src="assets/img/wood.png">
+                <strong>Wood solid</strong>As fast as Mongo Java driver. Open source, fully tested & made of rock solid librairies. 
+              </p>
             </div>
+          </div>
         </div>
-    </div>
-</div>
+      </header>
 
-<div class="container">
+      <div class="navbar navbar-static-top">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand" href="#">Jongo</a>
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </a>
 
-<section id="usage" class="offset1">
-    <div class="row">
-        <div class="span9 header"><h1>Set up</h1></div>
-        <div class="span9">
-            <p>
+            <div class="nav-collapse collapse">
+              <ul class="nav">
+                <li><a href="#updating">Updating</a></li>
+                <li><a href="#mapping">Mapping</a></li>
+                <li><a href="#querying">Querying</a></li>
+                <li><a href="#advanced">Advanced</a></li>
+              </ul>
+              <ul class="nav pull-right">
+                <li><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-user" target="_blank"><i class="icon-envelope icon-white"></i> Mailing list</a></li>
+                <li><a href="#maven"><i class="icon-arrow-down icon-white"></i> Download</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <section id="usage" class="offset1">
+          <div class="row">
+            <div class="span9 header"><h1>Set up</h1></div>
+            <div class="span9">
+              <p>
                 First <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="_blank">install Mongo</a>, then <a href="#maven">download Jongo</a> and you're all set.
-            </p>
-            <pre class="prettyprint">
+              </p>
+              <pre class="prettyprint">
 DB db = new Mongo().getDB("dbname");
 
 Jongo jongo = new Jongo(db);
@@ -136,269 +144,265 @@ MongoCollection friends = jongo.getCollection("friends");
 Iterable&lt;Friend&gt; all = friends.find("{name:'John'}").as(Friend.class);
 Friend one = friends.findOne("{name:'John'}").as(Friend.class);</pre>
 
-</section>
+              </section>
 
-<section id="updating" class="offset1">
-    <div class="row">
-        <div class="span9 header"><h1>Updating</h1></div>
-        <div class="span9">
-            <h2>Save</h2>
+              <section id="updating" class="offset1">
+                <div class="row">
+                  <div class="span9 header"><h1>Updating</h1></div>
+                  <div class="span9">
+                    <h2>Save</h2>
 
-            <p>Passing an object to the <code>save(...)</code> method will do the job. See <a href="#mapping">mapping section</a> for objects defintion.
-            </p>
-            <pre class="prettyprint">friends.save(new Friend("Joe", 27));</pre>
+                    <p>Passing an object to the <code>save(...)</code> method will do the job. See <a href="#mapping">mapping section</a> for objects defintion.
+                    </p>
+                    <pre class="prettyprint">friends.save(new Friend("Joe", 27));</pre>
 
-            <h2>Update</h2>
+                    <h2>Update</h2>
 
-            <p>Update syntax is a bit different than in Mongo shell: 'modifier' query has to be passed using <code>with(...)</code>.
-            </p>
-            <pre class="prettyprint">
+                    <p>Update syntax is a bit different than in Mongo shell: 'modifier' query has to be passed using <code>with(...)</code>.
+                    </p>
+                    <pre class="prettyprint">
 friends.update("{name: 'Joe'}").with("{$inc: {age: 1}}");
 friends.update("{name: 'Joe'}").with("{$set: {address: #}}", new Address('..'));
 
 friends.update("{name: 'Joe'}").upsert().multi().with("{$inc: {age: 1}}");
 friends.update("{name: #}", "Joe").upsert().with("{$inc: {#:#}}", "age", 1);</pre>
 
-            <p><code>#</code> helps to parametrized strings. It handles lists, simple and complex objects.
-            </p>
+                      <p><code>#</code> helps to parametrized strings. It handles lists, simple and complex objects.
+                      </p>
 
-            <h2>Insert</h2>
+                      <h2>Insert</h2>
 
-            <p>Insert works as in Mongo shell.</p>
-<pre class="prettyprint">
-friends.insert("{name: 'Joe', age: 18}");
-</pre>
+                      <p>Insert works as in Mongo shell.</p>
+                      <pre class="prettyprint">friends.insert("{name: 'Joe', age: 18}");</pre>
 
-            <h2>Remove</h2>
+                      <h2>Remove</h2>
 
-            <p>Remove works as in Mongo shell.</p>
-<pre class="prettyprint">
+                      <p>Remove works as in Mongo shell.</p>
+                      <pre class="prettyprint">
 friends.remove("{name: 'Joe'}");
 friends.remove(new ObjectId("4c...e"));</pre>
-        </div>
-    </div>
-</section>
+                      </div>
+                    </div>
+                  </section>
 
-<section id="mapping" class="offset1">
-    <div class="row">
-        <div class="span9 header"><h1>Object Mapping</h1></div>
-        <div class="span9">
-            <p>
-                Query results are automatically mapped into objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg constructor, even private</strong>. If the object has to be immutable, <code>@JsonCreator</code> annotation can be use instead.
-            </p>
-            <p>
-                <code>_id</code> is a unique identifier available on every Mongo document. <strong>If it isn't setted, it is generated</strong>. It can be handled with the dedicated <code>ObjectId</code> class — named <code>_id</code> or annotated <code>@JsonProperty("_id")</code> — or with a simple <code>String</code> — annotated <code>@Id</code>.
-            </p>
+                  <section id="mapping" class="offset1">
+                    <div class="row">
+                      <div class="span9 header"><h1>Object Mapping</h1></div>
+                      <div class="span9">
+                        <p>
+                          Query results are automatically mapped into objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg constructor, even private</strong>. If the object has to be immutable, <code>@JsonCreator</code> annotation can be use instead.
+                        </p>
+                        <p>
+                          <code>_id</code> is a unique identifier available on every Mongo document. <strong>If it isn't setted, it is generated</strong>. It can be handled with the dedicated <code>ObjectId</code> class — named <code>_id</code> or annotated <code>@JsonProperty("_id")</code> — or with a simple <code>String</code> — annotated <code>@Id</code>.
+                        </p>
 
-            <p>
-                Careful, saving a document with a custom <code>_id</code> <i>(ie: any Java type, other than array, so long as it is unique)</i> always involves to set it before persisting.
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="span3">
-            <pre class="prettyprint">
+                        <p>
+                          Careful, saving a document with a custom <code>_id</code> <i>(ie: any Java type, other than array, so long as it is unique)</i> always involves to set it before persisting.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="span3">
+                        <pre class="prettyprint">
 public class Friend {
-    @Id
+@Id
     private String key;
-}
-</pre>
-        </div>
-        <div class="span3">
-            <pre class="prettyprint">
+}</pre>
+                    </div>
+                    <div class="span3">
+                      <pre class="prettyprint">
 public class Friend {
     // generate it!
     private long _id;
 }</pre>
-        </div>
-        <div class="span3">
-            <pre class="prettyprint">
+                    </div>
+                    <div class="span3">
+                      <pre class="prettyprint">
 public class Friend {
     @JsonProperty("_id")
     private ObjectId key;
 }</pre>
 
-        </div>
-    </div>
-    <div class="row">
-        <div class="span9">
-            <p>
-                <code>JSON</code> properties are automatically mapped to their equivalent object attributes (<i>and complex ones mapped as sub-attributes</i>). <strong>No extra annotations needed</strong>. For fine grained control over (un)marshalling, configure <a href="#advanced">Jongo underlying mapper</a> or <a href="#advanced">use your own (un)marshaller</a>.
-            </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="span9">
+                      <p>
+                        <code>JSON</code> properties are automatically mapped to their equivalent object attributes (<i>and complex ones mapped as sub-attributes</i>). <strong>No extra annotations needed</strong>. For fine grained control over (un)marshalling, configure <a href="#advanced">Jongo underlying mapper</a> or <a href="#advanced">use your own (un)marshaller</a>.
+                      </p>
 
-            <h2>Handling polymorphism</h2>
+                      <h2>Handling polymorphism</h2>
 
-            <p>
-                To handle polymorphism of Java objects, a field containing the class name must be set into the Mongo
-                document. One can persist a <code>Fox</code> (<i>sub-class of <code>Friend</code></i>) and manipulate it
-                as a <code>Friend</code>. This feature is provided out-of-the-box by Jackson. Using another
-                (un)marshaller implies extra work.
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="span5">
-<pre class="prettyprint">
+                      <p>
+                        To handle polymorphism of Java objects, a field containing the class name must be set into the Mongo
+                        document. One can persist a <code>Fox</code> (<i>sub-class of <code>Friend</code></i>) and manipulate it
+                        as a <code>Friend</code>. This feature is provided out-of-the-box by Jackson. Using another
+                        (un)marshaller implies extra work.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="span5">
+                      <pre class="prettyprint">
 @JsonTypeInfo(use=Id.CLASS,property="_class")
-public class Friend {
+    public class Friend {
     int age;
 }</pre>
-        </div>
-        <div class="span4">
-<pre class="prettyprint">
+                    </div>
+                    <div class="span4">
+                      <pre class="prettyprint">
 public class Fox extends Friend {
     String name, color;
-}
-</pre>
-        </div>
-    </div>
-    <div class="row">
-        <div class="span9">
-<pre class="prettyprint">
+}</pre>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="span9">
+                    <pre class="prettyprint">
 friends.save(new Fox("fantastic", "red-haired"));
 Friend friend = friends.findOne("{name:'fantastic'}").as(Friend.class);
 Fox fantastic = (Fox)friend;</pre>
 
-            <p>
-                Using a singular <strong>reserved name</strong>, like <code>_class</code>, for this field is a good idea.
-            </p>
-        </div>
-    </div>
-</section>
+                      <p>
+                        Using a singular <strong>reserved name</strong>, like <code>_class</code>, for this field is a good idea.
+                      </p>
+                    </div>
+                  </div>
+                </section>
 
-<section id="querying" class="offset1">
-    <div class="row">
-        <div class="span9 header"><h1>Querying</h1></div>
-        <div class="span9">
+                <section id="querying" class="offset1">
+                  <div class="row">
+                    <div class="span9 header"><h1>Querying</h1></div>
+                    <div class="span9">
 
-            <h2>Find & FindOne</h2>
+                      <h2>Find & FindOne</h2>
 
-            <p>
-                Query syntax is almost the same as in Mongo shell: copy/paste, it just works.
-                <br>Strings have to be escaped with single quotes <code>"{name: 'John'}"</code>, numbers don't <code>"{age:
-                18}"</code>.
-            </p>
+                      <p>
+                        Query syntax is almost the same as in Mongo shell: copy/paste, it just works.
+                        <br>Strings have to be escaped with single quotes <code>"{name: 'John'}"</code>, numbers don't <code>"{age:
+                        18}"</code>.
+                      </p>
 
-<pre class="prettyprint">
+                      <pre class="prettyprint">
 Iterable&lt;Friend&gt; all = friends.find("{name: 'John'}").as(Friend.class);
 
 Friend john = friends.findOne("{name: 'John'}").as(Friend.class);
 Friend john = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
 
-            <p>
-                Field names only need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
-            </p>
+                        <p>
+                          Field names only need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
+                        </p>
 
-            <h3>Field selection</h3>
-            <p>
-                Field selection aka. partial loading is not written as in Mongo shell:
-                Jongo exposes a <code>fields(...)</code> method. A json selector must be provided: <code>{field:
-                1}</code> to include it, <code>{field: 0}</code> to exclude it.
-            </p>
-            <pre class="prettyprint">friends.find().fields("{lastname: 1, address: 1}").as(Friend.class);</pre>
+                        <h3>Field selection</h3>
+                        <p>
+                          Field selection aka. partial loading is not written as in Mongo shell:
+                          Jongo exposes a <code>fields(...)</code> method. A json selector must be provided: <code>{field:
+                          1}</code> to include it, <code>{field: 0}</code> to exclude it.
+                        </p>
+                        <pre class="prettyprint">friends.find().fields("{lastname: 1, address: 1}").as(Friend.class);</pre>
 
-            <h3>Sorting</h3>
-            <p>Documents can be sorted in ascending or descending order using a json selector: <code>{field: 1}</code>
-                for ascending, <code>{field: -1}</code> for descending.
-            </p>
-            <pre class="prettyprint">
+                        <h3>Sorting</h3>
+                        <p>Documents can be sorted in ascending or descending order using a json selector: <code>{field: 1}</code>
+                          for ascending, <code>{field: -1}</code> for descending.
+                        </p>
+                        <pre class="prettyprint">
 friends.find().sort("{firstname: 1}").as(Friend.class);
 friends.find().sort("{lasttname: -1}").as(Friend.class);</pre>
 
-            <h3>Skip and Limit</h3>
-            <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html">DBCursor</a>.</p>
-<pre class="prettyprint">
+                          <h3>Skip and Limit</h3>
+                          <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html">DBCursor</a>.</p>
+                          <pre class="prettyprint">
 friends.find().skip(20).as(Friend.class);
 friends.find().limit(10).as(Friend.class);</pre>
 
-            <h2>Query templating</h2>
+                            <h2>Query templating</h2>
 
-            <p>
-                Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters can be <a
-                    href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
-                Primitives</a> or any complex type made of those.
-            </p>
+                            <p>
+                              Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters can be <a
+                              href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
+                              Primitives</a> or any complex type made of those.
+                            </p>
 
-            <pre class="prettyprint">friends.find("{name:#, age:#}", "John", 18); //&rarr; will produce {name: 'John', age: 18}</pre>
-<pre class="prettyprint">
+                            <pre class="prettyprint">friends.find("{name:#, age:#}", "John", 18); //&rarr; will produce {name: 'John', age: 18}</pre>
+                            <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
 friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}</pre>
 
-            <h2>Count</h2>
-            <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.</p>
-            <pre class="prettyprint">friends.count("{name: 'John'}");</pre>
+                              <h2>Count</h2>
+                              <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.</p>
+                              <pre class="prettyprint">friends.count("{name: 'John'}");</pre>
 
-            <h2>Aggregation</h2>
+                              <h2>Aggregation</h2>
 
-            <h3>Distinct</h3>
-            <p>Distinct syntax is almost the same as Find/FindOne operations. Optional query can be setted using <code>query(...)</code> method</p>
-            <pre class="prettyprint">List&lt;String&gt; names = friends.distinct("name").as(String.class);</pre>
-            <pre class="prettyprint">List&lt;Address&gt; addresses = friends.distinct("address").query("{name: 'John'}").as(Address.class);</pre>
+                              <h3>Distinct</h3>
+                              <p>Distinct syntax is almost the same as Find/FindOne operations. Optional query can be setted using <code>query(...)</code> method</p>
+                              <pre class="prettyprint">List&lt;String&gt; names = friends.distinct("name").as(String.class);</pre>
+                              <pre class="prettyprint">List&lt;Address&gt; addresses = friends.distinct("address").query("{name: 'John'}").as(Address.class);</pre>
 
-            <h3>New Aggregation Framework</h3>
-            <p>Careful, this feature is only available in the Mongo v2.2 release. All aggregation operators are supported <code>$project, $match, $limit, $skip, $unwind, $group, $sort</code> and can be piped using <code>and(...)</code> method</p>
-            <pre class="prettyprint">
+                              <h3>New Aggregation Framework</h3>
+                              <p>Careful, this feature is only available in the Mongo v2.2 release. All aggregation operators are supported <code>$project, $match, $limit, $skip, $unwind, $group, $sort</code> and can be piped using <code>and(...)</code> method</p>
+                              <pre class="prettyprint">
 collection.aggregate("{$project:{sender:1}}")
           .and("{$match:{tags:'read'}}")
           .and("{$limit:10}")
           .as(Email.class);</pre>
 
-            <h2>Advanced query</h2>
+                                <h2>Advanced query</h2>
 
-            <h3>Geospacial indexing</h3>
-            <p>Using <a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing" target="_blank">Mongo geospacial capacities</a> requires an index and some BSON operators.</p>
-<pre class="prettyprint">
+                                <h3>Geospacial indexing</h3>
+                                <p>Using <a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing" target="_blank">Mongo geospacial capacities</a> requires an index and some BSON operators.</p>
+                                <pre class="prettyprint">
 friends.ensureIndex("{address: '2d'}");
 friends.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</pre>
 
-            <h3>Complete query syntax</h3>
-            <p>Mongo uses a <a href="http://www.mongodb.org/display/DOCS/Mongo+Query+Language">behind the scenes
-                syntactic sugar</a> for methods like <code>sort(...)</code>, <code>limit(...)</code> and others. The
-                complete expression can also be used in Jongo.
-            </p>
-             <pre class="prettyprint">
+                                  <h3>Complete query syntax</h3>
+                                  <p>Mongo uses a <a href="http://www.mongodb.org/display/DOCS/Mongo+Query+Language">behind the scenes
+                                    syntactic sugar</a> for methods like <code>sort(...)</code>, <code>limit(...)</code> and others. The
+                                    complete expression can also be used in Jongo.
+                                  </p>
+                                  <pre class="prettyprint">
 friends.find("{$query: {}, $maxScan: 2}").as(Friend.class);
 friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
-        </div>
-    </div>
-</section>
+                                  </div>
+                                </div>
+                              </section>
 
-<section id="advanced" class="offset1">
-    <div class="row">
-        <div class="span9 header"><h1>Advanced</h1></div>
-        <div class="span9">
-            <h2>Configuring Jackson</h2>
+                              <section id="advanced" class="offset1">
+                                <div class="row">
+                                  <div class="span9 header"><h1>Advanced</h1></div>
+                                  <div class="span9">
+                                    <h2>Configuring Jackson</h2>
 
-            <p>
-                Jongo comes with a custom Jackson configuration that can be extended.
-            </p>
+                                    <p>
+                                      Jongo comes with a custom Jackson configuration that can be extended.
+                                    </p>
 
-<pre class="prettyprint">
+                                    <pre class="prettyprint">
 DB db = new Mongo().getDB("dbname");
 
 Jongo jongo = new Jongo(db, 
-    JacksonProviders.usingBson()
-    .addModule(new JodaModule())
-    .withView(Views.Public.class)
-    .build()
+JacksonProviders.usingBson()
+                .addModule(new JodaModule())
+                .withView(Views.Public.class)
+                .build()
 );</pre>
 
-            <h3>usingBson / usingJson</h3>
-            <p>
-                Since 0.3, Jongo uses Mongo Java driver as a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it uses <code>byte[]</code>. So, <code>usingJson()</code> is the old way and <code>usingBson()</code> the new, optimized one. Both have been kept to compare performances.
-            </p>
+                                      <h3>usingBson / usingJson</h3>
+                                      <p>
+                                        Since 0.3, Jongo uses Mongo Java driver as a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it uses <code>byte[]</code>. So, <code>usingJson()</code> is the old way and <code>usingBson()</code> the new, optimized one. Both have been kept to compare performances.
+                                      </p>
 
-            <h3>Joda module</h3>
-            <p>
-                The previous example shows how to handle Joda thanks to a <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">provided Jackson module</a>.
-            </p>
+                                      <h3>Joda module</h3>
+                                      <p>
+                                        The previous example shows how to handle Joda thanks to a <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">provided Jackson module</a>.
+                                      </p>
 
-            <h3>Json view</h3>
-            <p>
-                Jackson <code>@JsonView</code> allows to filter an object attributes on (un)marshalling. It can be configured that way:
-            </p>
+                                      <h3>Json view</h3>
+                                      <p>
+                                        Jackson <code>@JsonView</code> allows to filter an object attributes on (un)marshalling. It can be configured that way:
+                                      </p>
 
-<pre class="prettyprint">
+                                      <pre class="prettyprint">
 public class Friend {
     private String _id;
 
@@ -409,25 +413,24 @@ public class Friend {
 public class Views {
     public static class Public {}
     public static class Private extends Public {}
-}
-</pre>
+}</pre>
 
-            <p>
-                Once Jongo is configured to use the <code>Public</code> view, the <code>gender</code> attribute will be ignored for every (un)marshall, even if it already exists in Mongo. Careful, when no view is defined, Jackson ignore the annotations which means every attributes is visible. Views can be used for marshalling-only or unmarshalling-only if needed.
-            </p>
+                                  <p>
+                                    Once Jongo is configured to use the <code>Public</code> view, the <code>gender</code> attribute will be ignored for every (un)marshall, even if it already exists in Mongo. Careful, when no view is defined, Jackson ignore the annotations which means every attributes is visible. Views can be used for marshalling-only or unmarshalling-only if needed.
+                                  </p>
 
-            <p>
-                For more options, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a>.
-            </p>
+                                  <p>
+                                    For more options, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a>.
+                                  </p>
 
-            <h2>Using a custom result mapper</h2>
+                                  <h2>Using a custom result mapper</h2>
 
-            <p>
-                If one prefers to manually map objects (<i>ie. without unmarshaller</i>), he can implements
-                <code>ResultMapper</code>. Each result entity will be passed to the inherited <code>map(DBObject result)</code> method.
-            </p>
-            
-<pre class="prettyprint">
+                                  <p>
+                                    If one prefers to manually map objects (<i>ie. without unmarshaller</i>), he can implements
+                                    <code>ResultMapper</code>. Each result entity will be passed to the inherited <code>map(DBObject result)</code> method.
+                                  </p>
+
+                                  <pre class="prettyprint">
 Iterable&lt;Integer&gt; ages = col.find("{'name':'John'}").map(
     new ResultMapper&lt;Integer&gt;() {
         @Override
@@ -435,16 +438,15 @@ Iterable&lt;Integer&gt; ages = col.find("{'name':'John'}").map(
             //do manual stuff here
             return result.get("age");
         }
-    }
-);</pre>
+});</pre>
 
-            <h2>Using a custom (un)marshaller</h2>
+                                <h2>Using a custom (un)marshaller</h2>
 
-            <p>
-                Instead of Jackson, one can provide his own implementation of <code>Provider</code>.
-            </p>
+                                <p>
+                                  Instead of Jackson, one can provide his own implementation of <code>Provider</code>.
+                                </p>
 
-<pre class="prettyprint">
+                                <pre class="prettyprint">
 public class GsonProvider extends Provider {
     Marshaller getMarshaller() { ... }
     Unmarshaller getUnmarshaller() { ... }
@@ -452,87 +454,86 @@ public class GsonProvider extends Provider {
     QueryFactory getQueryFactory() { ... }
 }
 
-Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonProvider());
-</pre>
-            <h2>Using Jongo objects with Jersey</h2>
+Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonProvider());</pre>
+                              <h2>Using Jongo objects with Jersey</h2>
 
-            <p>
-                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey. But if some have an <code>ObjectId</code> use <a href="https://gist.github.com/3155831">this custom Jackson Provider</a>, it exposes <code>ObjectId</code> as <code>String</code>. Using <code>String</code> instead of <code>ObjectId</code> — thanks to the <code>@Id</code> annotation — avoid this problem.
-            </p>
+                              <p>
+                                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey. But if some have an <code>ObjectId</code> use <a href="https://gist.github.com/3155831">this custom Jackson Provider</a>, it exposes <code>ObjectId</code> as <code>String</code>. Using <code>String</code> instead of <code>ObjectId</code> — thanks to the <code>@Id</code> annotation — avoid this problem.
+                              </p>
 
-            <h2>Performance</h2>
+                              <h2>Performance</h2>
 
-            <p>Jongo is lighting fast. Not because it is made of ancient wood and magic stones, but because it binds
-                Jackson — the fastest Java json (un)marshalling library — to Mongo Java driver with the slightest glue
-                code possible.</p>
+                              <p>Jongo is lighting fast. Not because it is made of ancient wood and magic stones, but because it binds
+                                Jackson — the fastest Java json (un)marshalling library — to Mongo Java driver with the slightest glue
+                                code possible.</p>
 
-            <p>Jongo's performance is currently under our microscope and we already noticed some great improvements over
-                our main competitor: Morphia. Keep tuned.</p>
-        </div>
-    </div>
-</section>
+                                <p>Jongo's performance is currently under our microscope and we already noticed some great improvements over
+                                  our main competitor: Morphia. Keep tuned.</p>
+                                </div>
+                              </div>
+                            </section>
 
-<section id="notes" class="offset1">
-    <div class="row">
-        <div class="span9 header"><h1>Release notes (0.1&rarr;0.2)</h1></div>
-        <div class="span9">
-            <dl class="dl-horizontal">
-                <dt class="strong">Aggregation Framework</dt><dd>support for the brand new aggregation framework, see <a href="#querying">querying</a> for more details</dd>
-                <dt>WriteConcern</dt><dd><code>save()</code> and <code>update()</code> can be configured with a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html" target="_blank">WriteConcern</a></dd>
-                <dt>WriteResult</dt><dd><code>save()</code>, <code>insert()</code>, <code>update()</code> and <code>remove()</code> return a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteResult.html" target="_blank">WriteResult</a> for every call</dd>
-                <dt>marshalling</dt><dd>move to Jackson 2.0 (<i>no conflict with olders Jackson versions</i>)</dd>
-                <dt>save</dt><dd>when an <code>ObjectId</code> is generated Mongo-side, it is setted in the object <a href="#mapping">_id attribute</a></dd>
-                <dt>update</dt><dd>breaking change <i class="icon-exclamation-sign"></i> <code>update(String, String)</code> becomes <code>update(String).with(String)</code></dd>
-                <dt>remove</dt><dd>documents can be removed by id</dd>
-                <dt>distinct</dt><dd>to be faithful to the driver, <code>distinct()</code> returns <code>List&lt;T&gt;</code> instead of <code>Iterable&lt;T&gt;</code></dd>
-                <dt>find</dt><dd>query without filter can be writen with empty <code>find()</code> and <code>findOne()</code></dd>
-            </dl>
-        </div>
-    </div>
-</section>
+                            <section id="notes" class="offset1">
+                              <div class="row">
+                                <div class="span9 header"><h1>Release notes (0.1&rarr;0.2)</h1></div>
+                                <div class="span9">
+                                  <dl class="dl-horizontal">
+                                    <dt class="strong">Aggregation Framework</dt><dd>support for the brand new aggregation framework, see <a href="#querying">querying</a> for more details</dd>
+                                    <dt>WriteConcern</dt><dd><code>save()</code> and <code>update()</code> can be configured with a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html" target="_blank">WriteConcern</a></dd>
+                                    <dt>WriteResult</dt><dd><code>save()</code>, <code>insert()</code>, <code>update()</code> and <code>remove()</code> return a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteResult.html" target="_blank">WriteResult</a> for every call</dd>
+                                    <dt>marshalling</dt><dd>move to Jackson 2.0 (<i>no conflict with olders Jackson versions</i>)</dd>
+                                    <dt>save</dt><dd>when an <code>ObjectId</code> is generated Mongo-side, it is setted in the object <a href="#mapping">_id attribute</a></dd>
+                                    <dt>update</dt><dd>breaking change <i class="icon-exclamation-sign"></i> <code>update(String, String)</code> becomes <code>update(String).with(String)</code></dd>
+                                    <dt>remove</dt><dd>documents can be removed by id</dd>
+                                    <dt>distinct</dt><dd>to be faithful to the driver, <code>distinct()</code> returns <code>List&lt;T&gt;</code> instead of <code>Iterable&lt;T&gt;</code></dd>
+                                    <dt>find</dt><dd>query without filter can be writen with empty <code>find()</code> and <code>findOne()</code></dd>
+                                  </dl>
+                                </div>
+                              </div>
+                            </section>
 
-<section id="maven" class="offset1">
-    <div class="row">
-        <div class="span9 header"><h1>Maven</h1></div>
-        <div class="span9">
-            <p>Jongo is deployed into OSS Sonatype (<i>Maven repository hosting service for open source projects</i>).</p>
+                            <section id="maven" class="offset1">
+                              <div class="row">
+                                <div class="span9 header"><h1>Download</h1></div>
+                                <div class="span9">
+                                  <p>Jongo is deployed into OSS Sonatype (<i>Maven repository hosting service for open source projects</i>).</p>
 
-            <h5>Add the following dependency to your pom.xml</h5>
+                                  <h5>Add the following dependency to your pom.xml / <i>or look at the <a href="" target="_blanck">previous releases</a></i></h5>
 
-            <pre class="linenums">
+                                  <pre class="linenums">
 &lt;dependency&gt;
     &lt;groupId&gt;org.jongo&lt;/groupId&gt;
     &lt;artifactId&gt;jongo&lt;/artifactId&gt;
-    &lt;version&gt;0.2&lt;/version&gt;
+    &lt;version&gt;0.3&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 
-        </div>
-    </div>
-</section>
+                                  </div>
+                                </div>
+                              </section>
 
-</div>
+                            </div>
 
-<footer>
-    <div class="container">
-        <div class="offset1">
-            <div class="row">
-                <div class="span2">
-                    <a href="https://jongo.ci.cloudbees.com/" target="_blank"><img src="assets/img/cloudbees-2.png"></a>
-                </div>
-                <div class="span7">
-                    <p>
-                        <a href="http://www.yourkit.com/" target="_blank"><img src="assets/img/yourkit-2.png"></a>
-                        YourKit is kindly supporting open source projects with its full-featured Java Profiler.
-                        YourKit, LLC is the creator of innovative and intelligent tools for profiling
-                        Java and .NET applications. Take a look at YourKit's leading software products:
-                        <a href="http://www.yourkit.com/java/profiler/index.jsp" target="_blank">YourKit Java Profiler</a> and
-                        <a href="http://www.yourkit.com/.net/profiler/index.jsp" target="_blank">YourKit .NET Profiler</a>.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+                            <footer>
+                              <div class="container">
+                                <div class="offset1">
+                                  <div class="row">
+                                    <div class="span2">
+                                      <a href="https://jongo.ci.cloudbees.com/" target="_blank"><img src="assets/img/cloudbees-nb.png"></a>
+                                    </div>
+                                    <div class="span7">
+                                      <p>
+                                        <a href="http://www.yourkit.com/" target="_blank"><img src="assets/img/yourkit-nb.png"></a>
+                                        YourKit is kindly supporting open source projects with its full-featured Java Profiler.
+                                        YourKit, LLC is the creator of innovative and intelligent tools for profiling
+                                        Java and .NET applications. Take a look at YourKit's leading software products:
+                                        <a href="http://www.yourkit.com/java/profiler/index.jsp" target="_blank">YourKit Java Profiler</a> and
+                                        <a href="http://www.yourkit.com/.net/profiler/index.jsp" target="_blank">YourKit .NET Profiler</a>.
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </footer>
 
-</body>
-</html>
+                          </body>
+                          </html>

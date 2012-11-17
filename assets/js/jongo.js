@@ -1,16 +1,25 @@
 $(document).ready(function() {
-	prettyPrint();
+  prettyPrint();
 
-	$('a').click(function() {
-		var href = $(this).attr('href');
+  $('.navbar').affix({
+    offset: {
+      top: function () { return $(window).width() > 750 ? 705 : 1076 }
+    }
+  });
 
-		$('html, body').animate({
-			scrollTop: $(href).offset().top
-		}, 
-			'slow', 
-			'swing', 
-			function() { location.hash = href; }
-		);
-		return false;
-	});
+  $('a').click(function() {
+    var href = $(this).attr('href');
+
+    var offset = $(href).offset();
+    if(offset) {
+      $('html, body').animate({
+        scrollTop: offset.top
+      }, 
+        'slow', 
+        'swing', 
+        function() { location.hash = href; }
+      );
+      return false;
+    }
+  });
 });
