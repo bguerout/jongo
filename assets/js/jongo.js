@@ -3,7 +3,7 @@ $(document).ready(function() {
 
   $('.navbar').affix({
     offset: {
-      top: function () { return $(window).width() > 750 ? 705 : 1076 }
+      top: function () { return $(window).width() > 750 ? 705 : 1036 }
     }
   });
 
