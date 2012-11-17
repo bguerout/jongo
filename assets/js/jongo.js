@@ -17,7 +17,7 @@ $(document).ready(function() {
       }, 
         'slow', 
         'swing', 
-        function() { location.hash = href; }
+        function() { if(href === '#jongo') href = ''; location.hash = href; } 
       );
       return false;
     }

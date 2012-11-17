@@ -151,9 +151,10 @@ a:hover {
     background-color: @dgreen;
     background-image: none;
     border-bottom: 3px solid @lgreen;
+    
     ul { 
-      margin-left: 85px;
       li a {
+        .transition(all .15s linear);
         color: @lgreen;
         text-shadow: none;
       }
@@ -178,9 +179,6 @@ a:hover {
   }
 
   .brand {
-    padding-right: 0;
-    padding-left: 0;
-    
     font-weight: bold;
     color: black;
     text-decoration: none;
@@ -188,6 +186,7 @@ a:hover {
     .transition(all .2s linear);
     
     &:hover {
+      color: @peach;
       background-color: @dgreen;
     }
   }
@@ -301,12 +300,6 @@ footer {
 
   + div {
     margin-top: 44px;
-  }
-}
-
-@media (min-width: 980px) {
-  .navbar .brand {
-    display: none;
   }
 }
 
