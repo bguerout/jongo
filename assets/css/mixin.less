@@ -46,3 +46,10 @@
 	-o-transition: @transition1;
 	transition: @transition1;
 }
+.drop-shadow (@shadow) {
+	-webkit-filter: drop-shadow(@arguments);
+	-moz-filter: drop-shadow(@arguments);
+	-ms-filter: drop-shadow(@arguments);
+	-o-filter: drop-shadow(@arguments);
+	filter: drop-shadow(@arguments);
+}

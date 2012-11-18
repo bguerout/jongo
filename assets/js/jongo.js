@@ -1,6 +1,8 @@
 $(document).ready(function() {
   prettyPrint();
 
+  $('.nav-collapse').scrollspy();
+
   $('.navbar').affix({
     offset: {
       top: function () { return $(window).width() > 750 ? 705 : 1036 }
