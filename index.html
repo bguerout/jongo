@@ -49,24 +49,25 @@
 
     <div class="container">
       <section id="overview">
-        <div class="row">
-          <div class="span12 intro">
-            <h1><img src="assets/img/jongo_big.png">Jongo</h1>
-
-            <div class="row">
-              <div class="span12 pitch">Query in <strong>Java</strong> as in <strong>Mongo</strong> shell</div>
+        <div class="intro">
+          <div class="row">
+            <div class="span12">
+              <h1><img src="assets/img/jongo_big.png">Jongo</h1>
             </div>
-            <div class="row">
-              <div class="span9 offset2">
-                <span class="label shell">Shell</span>
-                <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
+          </div>
+          <div class="row">
+            <div class="span12 pitch">Query in <strong>Java</strong> as in <strong>Mongo</strong> shell</div>
+          </div>
+          <div class="row">
+            <div class="span9 offset2">
+              <span class="label shell">Shell</span>
+              <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
 
-                <span class="label driver">Java Driver</span>
-                <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
+              <span class="label driver">Java Driver</span>
+              <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
 
-                <span class="label jongo">Jongo</span>
-                <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class)</pre>
-              </div>
+              <span class="label jongo">Jongo</span>
+              <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class)</pre>
             </div>
           </div>
         </div>
