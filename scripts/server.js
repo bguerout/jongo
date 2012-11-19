@@ -16,6 +16,7 @@
 
 var express = require('express');
 var app = express();
+app.set('domain', '0.0.0.0');
 app.configure(
     function () {
         app.use(express.logger({ format:':method :url' }));
