@@ -127,8 +127,8 @@ public class JacksonProviders {
         }
 
         public Builder withView(final Class<?> viewClass) {
-            readerCallback = new ViewReaderCallback(viewClass);
-            writerCallback = new ViewWriterCallback(viewClass);
+            setReaderCallback(new ViewReaderCallback(viewClass));
+            setWriterCallback(new ViewWriterCallback(viewClass));
             return this;
         }
 
