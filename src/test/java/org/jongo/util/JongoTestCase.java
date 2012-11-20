@@ -17,8 +17,6 @@
 package org.jongo.util;
 
 import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.MongoURI;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.Provider;
@@ -28,11 +26,8 @@ import java.net.UnknownHostException;
 
 public abstract class JongoTestCase {
 
-    public static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
-
     private Jongo jongo;
-    private static Mongo mongo;
-    
+
     public JongoTestCase() {
         this.jongo = new Jongo(findDatabase(), new BsonProvider());
     }
@@ -51,40 +46,15 @@ public abstract class JongoTestCase {
         return jongo.getDatabase();
     }
 
-    private static DB findDatabase() {
-        try {
-
-            if (mustRunTestsAgainstMongoHQ()) {
-                return getDBFromMongoHQ();
-            }
-            return getLocalDB();
-
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("Unable to reach mongo database test instance", e);
-        }
-    }
-
-    private static boolean mustRunTestsAgainstMongoHQ() {
-        return System.getProperty(MONGOHQ_FLAG) != null;
-    }
-
-    private static DB getDBFromMongoHQ() throws UnknownHostException {
-        String uri = System.getProperty(MONGOHQ_FLAG);
-        MongoURI mongoURI = new MongoURI(uri);
-        DB db = mongoURI.connectDB();
-        db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
-        return db;
-    }
-
-    private static DB getLocalDB() throws UnknownHostException {
-    	if(mongo == null) {
-    		mongo = new Mongo("127.0.0.1");
-    	}
-    	return mongo.getDB("jongo");
-    }
-
     public void prepareMarshallingStrategy(Provider provider) {
         this.jongo = new Jongo(findDatabase(), provider);
     }
 
+    private static DB findDatabase() {
+        try {
+            return MongoHolder.getInstance().getDB("jongo");
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Unable to reach mongo database test instance", e);
+        }
+    }
 }
