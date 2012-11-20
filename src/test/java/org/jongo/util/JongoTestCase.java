@@ -31,7 +31,8 @@ public abstract class JongoTestCase {
     public static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
 
     private Jongo jongo;
-
+    private static Mongo mongo;
+    
     public JongoTestCase() {
         this.jongo = new Jongo(findDatabase(), new BsonProvider());
     }
@@ -76,7 +77,10 @@ public abstract class JongoTestCase {
     }
 
     private static DB getLocalDB() throws UnknownHostException {
-        return new Mongo("127.0.0.1").getDB("jongo");
+    	if(mongo == null) {
+    		mongo = new Mongo("127.0.0.1");
+    	}
+    	return mongo.getDB("jongo");
     }
 
     public void prepareMarshallingStrategy(Provider provider) {
