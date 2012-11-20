@@ -25,36 +25,45 @@ import java.net.UnknownHostException;
 class MongoHolder {
 
     private static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
-    private static volatile Mongo MONGO;
 
     public static Mongo getInstance() throws UnknownHostException {
-        if (MONGO == null) {
-            setInstance();
-        }
-        return MONGO;
-    }
-
-    private synchronized static void setInstance() throws UnknownHostException {
         if (mustRunTestsAgainstMongoHQ()) {
-            MONGO = getMongoHQ();
-        } else {
-            MONGO = getLocalMongo();
+            return MongoHQ.instance;
         }
+        return LocalMongo.instance;
     }
 
     private static boolean mustRunTestsAgainstMongoHQ() {
         return System.getProperty(MONGOHQ_FLAG) != null;
     }
 
-    private static Mongo getMongoHQ() throws UnknownHostException {
-        String uri = System.getProperty(MONGOHQ_FLAG);
-        MongoURI mongoURI = new MongoURI(uri);
-        DB db = mongoURI.connectDB();
-        db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
-        return db.getMongo();
+    private static class MongoHQ {
+
+        private static Mongo instance = getAuthenticatedInstance();
+
+        private static Mongo getAuthenticatedInstance() {
+            try {
+                String uri = System.getProperty(MONGOHQ_FLAG);
+                MongoURI mongoURI = new MongoURI(uri);
+                DB db = mongoURI.connectDB();
+                db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
+                return db.getMongo();
+            } catch (UnknownHostException e) {
+                throw new RuntimeException("Unable to reach mongo database test instance", e);
+            }
+        }
     }
 
-    private static Mongo getLocalMongo() throws UnknownHostException {
-        return new Mongo("127.0.0.1");
+    private static class LocalMongo {
+
+        private static Mongo instance = getLocalInstance();
+
+        private static Mongo getLocalInstance() {
+            try {
+                return new Mongo("127.0.0.1");
+            } catch (UnknownHostException e) {
+                throw new RuntimeException("Unable to reach mongo database test instance", e);
+            }
+        }
     }
 }
