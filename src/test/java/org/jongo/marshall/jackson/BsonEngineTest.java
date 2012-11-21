@@ -18,7 +18,6 @@ package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
-import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -30,7 +29,7 @@ import java.io.IOException;
 
 import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.BSON.bsonify;
+import static org.jongo.util.BsonUtil.bsonify;
 
 public class BsonEngineTest {
 

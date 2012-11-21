@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.query;
+package org.jongo.bson;
 
 import com.mongodb.DBObject;
 import com.mongodb.DBRefBase;

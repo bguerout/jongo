@@ -18,8 +18,8 @@ package org.jongo.marshall.jackson;
 
 import com.mongodb.Bytes;
 import org.bson.BSON;
+import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
-import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
@@ -59,7 +59,7 @@ public class BsonEngine implements Unmarshaller, Marshaller {
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }
-        return BsonDocumentFactory.fromByteArray(output.toByteArray(), getObjectBsonType(obj));
+        return Bson.createDocument(output.toByteArray(), getObjectBsonType(obj));
     }
 
     private byte getObjectBsonType(Object obj) {

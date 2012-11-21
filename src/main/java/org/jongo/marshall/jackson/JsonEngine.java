@@ -18,8 +18,8 @@ package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
-import org.jongo.bson.BsonDocumentFactory;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
@@ -56,7 +56,7 @@ public class JsonEngine implements Unmarshaller, Marshaller {
             Writer writer = new StringWriter();
             config.getWriter(obj.getClass()).writeValue(writer, obj);
             DBObject dbObject = createDBObjectWithDriver(writer.toString());
-            return BsonDocumentFactory.fromDBObject(dbObject);
+            return Bson.createDocument(dbObject);
         } catch (Exception e) {
             String message = String.format("Unable to marshall json from: %s", obj);
             throw new MarshallingException(message, e);

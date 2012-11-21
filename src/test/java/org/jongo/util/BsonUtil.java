@@ -20,13 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
-import org.jongo.bson.BsonDocumentFactory;
+import org.jongo.bson.Bson;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BSON {
+public class BsonUtil {
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -34,7 +34,7 @@ public class BSON {
         Map map = OBJECT_MAPPER.readValue(jsonify(json), HashMap.class);
         DBObject dbo = new BasicDBObject();
         dbo.putAll(map);
-        return BsonDocumentFactory.fromDBObject(dbo);
+        return Bson.createDocument(dbo);
     }
 
     public static String jsonify(String json) {

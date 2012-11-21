@@ -18,7 +18,7 @@ package org.jongo.query;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import org.jongo.bson.BsonDocument;
+import org.jongo.bson.Bson;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
@@ -73,7 +73,7 @@ public final class JsonQueryFactory implements QueryFactory {
 
     protected String marshallParameterAsJson(Object parameter) {
         try {
-            if (BsonPrimitives.contains(parameter.getClass()))
+            if (Bson.isPrimitive(parameter))
                 return JSON.serialize(parameter);
             if (parameter instanceof Enum) {
                 return JSON.serialize(((Enum) parameter).name());

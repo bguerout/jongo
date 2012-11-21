@@ -16,25 +16,15 @@
 
 package org.jongo.bson;
 
-import com.mongodb.DBObject;
-import org.bson.BSON;
+import org.junit.Test;
 
-public final class BsonDocumentFactory {
+import static org.fest.assertions.Assertions.assertThat;
 
-    public static BsonDocument fromDBObject(DBObject dbo) {
-        if (dbo instanceof BsonDocument) {
-            return (BsonDocument) dbo;
-        }
-        return new BufferedBsonDocument(dbo);
-    }
+public class BsonPrimitivesTest {
 
-    public static BsonDocument fromByteArray(byte[] bytes, byte documentType) {
-        if (documentType == BSON.ARRAY) {
-            return new ArrayBsonDocument(bytes);
-        }
-        return new LazyBsonDocument(bytes);
-    }
-
-    private BsonDocumentFactory() {
+    @Test
+    public void shouldContainsClassAndSubclasses() throws Exception {
+        assertThat(BsonPrimitives.contains(Number.class)).isTrue();
+        assertThat(BsonPrimitives.contains(Integer.class)).isTrue();
     }
 }

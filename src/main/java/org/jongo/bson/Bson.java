@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-package org.jongo.query;
+package org.jongo.bson;
 
-import org.junit.Test;
+import com.mongodb.DBObject;
+import org.bson.BSON;
 
-import static org.fest.assertions.Assertions.assertThat;
+public final class Bson {
 
-public class BsonPrimitivesTest {
+    public static boolean isPrimitive(Object obj) {
+        return BsonPrimitives.contains(obj.getClass());
+    }
 
-    @Test
-    public void shouldContainsClassAndSubclasses() throws Exception {
-        assertThat(BsonPrimitives.contains(Number.class)).isTrue();
-        assertThat(BsonPrimitives.contains(Integer.class)).isTrue();
+    public static BsonDocument createDocument(DBObject dbo) {
+        if (dbo instanceof BsonDocument) {
+            return (BsonDocument) dbo;
+        }
+        return new BufferedBsonDocument(dbo);
+    }
+
+    public static BsonDocument createDocument(byte[] bytes, byte documentType) {
+        if (documentType == BSON.ARRAY) {
+            return new ArrayBsonDocument(bytes);
+        }
+        return new LazyBsonDocument(bytes);
+    }
+
+    private Bson() {
     }
 }
