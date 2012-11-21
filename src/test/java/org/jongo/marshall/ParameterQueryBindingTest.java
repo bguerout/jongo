@@ -206,6 +206,28 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         assertThat(friends.next().getRelationId()).isEqualTo(id);
     }
 
+    @Test
+    public void canFindWithAListAsParameter() throws Exception {
+        collection.insert("{type:'cool', properties:['p1','p2']}");
+        List<String> properties = Lists.newArrayList("p1", "p2");
+
+        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
+    }
+
+    @Test
+    public void canFindWithAnArrayAsParameter() throws Exception {
+        collection.insert("{type:'cool', properties:['p1','p2']}");
+        String[] properties = new String[2];
+        properties[0] = "p1";
+        properties[1] = "p2";
+
+        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
+    }
+
     private static class Buddies {
         private List<Friend> friends = new ArrayList<Friend>();
 
