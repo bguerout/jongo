@@ -22,6 +22,8 @@ import org.jongo.bson.Bson;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +65,7 @@ public final class JsonQueryFactory implements QueryFactory {
 
     private String bindParameter(String query, Object parameter) {
         try {
-            String jsonParam = marshallParameterAsJson(parameter);
+            String jsonParam = marshallParameter(parameter).toString();
             return query.replaceFirst(token, getMatcherWithEscapedDollar(jsonParam));
         } catch (RuntimeException e) {
             String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
@@ -71,19 +73,36 @@ public final class JsonQueryFactory implements QueryFactory {
         }
     }
 
-    protected String marshallParameterAsJson(Object parameter) {
+    protected Object marshallParameter(Object parameter) {
         try {
             if (Bson.isPrimitive(parameter))
                 return JSON.serialize(parameter);
             if (parameter instanceof Enum) {
                 return JSON.serialize(((Enum) parameter).name());
             }
-            DBObject dbObject = marshaller.marshall(parameter).toDBObject();
-            return dbObject.toString();
+            if (parameter instanceof List) {
+                return marshallArray(((List) parameter).toArray());
+            }
+            if (parameter instanceof Object[]) {
+                return marshallArray((Object[]) parameter);
+            }
+            return marshallDocument(parameter);
         } catch (Exception e) {
             String message = String.format("Unable to marshall parameter: %s", parameter);
             throw new MarshallingException(message, e);
         }
+    }
+
+    private List<Object> marshallArray(Object[] parameter) {
+        List<Object> newParameterList = new ArrayList<Object>();
+        for (Object p : parameter) {
+            newParameterList.add(marshallParameter(p));
+        }
+        return newParameterList;
+    }
+
+    private DBObject marshallDocument(Object parameter) {
+        return marshaller.marshall(parameter).toDBObject();
     }
 
     private void assertThatParamsCanBeBound(String template, Object[] parameters) {

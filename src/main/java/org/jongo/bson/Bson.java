@@ -17,7 +17,6 @@
 package org.jongo.bson;
 
 import com.mongodb.DBObject;
-import org.bson.BSON;
 
 public final class Bson {
 
@@ -32,10 +31,7 @@ public final class Bson {
         return new BufferedBsonDocument(dbo);
     }
 
-    public static BsonDocument createDocument(byte[] bytes, byte documentType) {
-        if (documentType == BSON.ARRAY) {
-            return new ArrayBsonDocument(bytes);
-        }
+    public static BsonDocument createDocument(byte[] bytes) {
         return new LazyBsonDocument(bytes);
     }
 
