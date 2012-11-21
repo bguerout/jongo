@@ -16,10 +16,9 @@
 
 package org.jongo.spike;
 
+import com.google.common.collect.Lists;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
-import com.mongodb.util.JSON;
-import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.BsonEngine;
 import org.jongo.model.Friend;
@@ -63,14 +62,6 @@ public class QuestionsSpikeTest extends JongoTestCase {
     }
 
     @Test
-    public void testparse() throws Exception {
-        ObjectId id = ObjectId.get();
-        Object dbo = JSON.parse("{_id:{$oid:'" + id + "'}}");
-
-        assertThat(dbo).isInstanceOf(DBObject.class);
-    }
-
-    @Test
     // https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
     public void pushANonBSONObject() throws Exception {
         Friends friends = new Friends();
@@ -82,6 +73,29 @@ public class QuestionsSpikeTest extends JongoTestCase {
         collection.update("{}").with("{$push:{friends:" + robert.toString() + "}}");
 
         assertThat(collection.count("{ 'friends.name' : 'Robert'}")).isEqualTo(1);
+    }
+
+    @Test
+    //https://github.com/bguerout/jongo/issues/75
+    public void unableToUseAListAsParameter() throws Exception {
+        collection.insert("{type:'cool', properties:['p1','p2']}");
+        List<String> properties = Lists.newArrayList("p1", "p2");
+
+        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
+    }
+
+    @Test
+    public void unableToUseArrayAsParameter() throws Exception {
+        collection.insert("{type:'cool', properties:['p1','p2']}");
+        String[] properties = new String[2];
+        properties[0] = "p1";
+        properties[1] = "p2";
+
+        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
     }
 
     private static class Friends {

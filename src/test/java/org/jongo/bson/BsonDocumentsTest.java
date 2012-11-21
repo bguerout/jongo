@@ -16,25 +16,23 @@
 
 package org.jongo.bson;
 
-import com.mongodb.DBObject;
-import org.bson.BSON;
+import org.junit.Test;
 
-public final class BsonDocumentFactory {
+import static org.fest.assertions.Assertions.assertThat;
 
-    public static BsonDocument fromDBObject(DBObject dbo) {
-        if (dbo instanceof BsonDocument) {
-            return (BsonDocument) dbo;
-        }
-        return new BufferedBsonDocument(dbo);
+public class BsonDocumentsTest {
+
+    @Test
+    public void shouldUseBsonSize() throws Exception {
+        LazyBsonDocument document = new LazyBsonDocument(new byte[]{6, 0, 0, 0, 0});
+
+        assertThat(document.getSize()).isEqualTo(6);
     }
 
-    public static BsonDocument fromByteArray(byte[] bytes, byte documentType) {
-        if (documentType == BSON.ARRAY) {
-            return new ArrayBsonDocument(bytes);
-        }
-        return new LazyBsonDocument(bytes);
-    }
+    @Test
+    public void shouldUseArrayBsonSize() throws Exception {
+        ArrayBsonDocument document = new ArrayBsonDocument(new byte[]{6, 0, 0, 0, 0});
 
-    private BsonDocumentFactory() {
+        assertThat(document.getSize()).isEqualTo(6);
     }
 }

@@ -16,16 +16,27 @@
 
 package org.jongo.bson;
 
-import org.junit.Test;
+import com.mongodb.DBObject;
+import org.bson.LazyBSONCallback;
+import org.bson.LazyDBList;
 
-import static org.fest.assertions.Assertions.assertThat;
+class ArrayBsonDocument implements BsonDocument {
 
-public class LazyBsonDocumentTest {
+    private final byte[] bytes;
 
-    @Test
-    public void shouldUseBsonSize() throws Exception {
-        LazyBsonDocument document = new LazyBsonDocument(new byte[]{6, 0, 0, 0, 0});
+    ArrayBsonDocument(byte[] bytes) {
+        this.bytes = bytes;
+    }
 
-        assertThat(document.getSize()).isEqualTo(6);
+    public byte[] toByteArray() {
+        return bytes;
+    }
+
+    public DBObject toDBObject() {
+        return new LazyDBList(bytes, new LazyBSONCallback());
+    }
+
+    public int getSize() {
+        return bytes[0];
     }
 }
