@@ -21,7 +21,7 @@ import com.mongodb.DBObject;
 public final class Bson {
 
     public static boolean isPrimitive(Object obj) {
-        return BsonPrimitives.contains(obj.getClass());
+        return Primitives.contains(obj.getClass());
     }
 
     public static BsonDocument createDocument(DBObject dbo) {

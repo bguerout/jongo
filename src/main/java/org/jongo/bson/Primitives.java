@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-class BsonPrimitives {
+class Primitives {
 
     private static final Set<Class<?>> PRIMITIVES;
 
@@ -47,7 +47,6 @@ class BsonPrimitives {
         PRIMITIVES.add(DBRefBase.class);
         PRIMITIVES.add(CodeWScope.class);
         PRIMITIVES.add(Binary.class);
-        PRIMITIVES.add(Binary.class);
     }
 
     public static <T> boolean contains(Class<T> clazz) {
@@ -62,6 +61,6 @@ class BsonPrimitives {
         return false;
     }
 
-    private BsonPrimitives() {
+    private Primitives() {
     }
 }

@@ -20,11 +20,11 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class BsonPrimitivesTest {
+public class PrimitivesTest {
 
     @Test
     public void shouldContainsClassAndSubclasses() throws Exception {
-        assertThat(BsonPrimitives.contains(Number.class)).isTrue();
-        assertThat(BsonPrimitives.contains(Integer.class)).isTrue();
+        assertThat(Primitives.contains(Number.class)).isTrue();
+        assertThat(Primitives.contains(Integer.class)).isTrue();
     }
 }
