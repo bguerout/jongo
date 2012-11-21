@@ -32,6 +32,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @JsonInclude(NON_NULL)
 @JsonProperty("_id")
-@JsonSerialize(using=ObjectIdSerializer.class)
-@JsonDeserialize(using=ObjectIdDeserializer.class)
-public @interface Id {}
+@JsonSerialize(using = ObjectIdSerializer.class)
+@JsonDeserialize(using = ObjectIdDeserializer.class)
+public @interface Id {
+}

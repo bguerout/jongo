@@ -68,7 +68,7 @@ public class JacksonViewTest {
     @Test
     public void respectsJsonPublicViewOnUnmarshall() throws Exception {
 
-        BsonDocument doc  = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
+        BsonDocument doc = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
         JsonEngine custom = createProcessorWithView(Views.Public.class);
 
         Fox fox = custom.unmarshall(doc, Fox.class);

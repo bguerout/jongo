@@ -32,7 +32,7 @@ public class ObjectIdDeserializer extends JsonDeserializer<String> {
     public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         TreeNode treeNode = jp.readValueAsTree();
         JsonNode oid = ((JsonNode) treeNode).get(MONGO_QUERY_OID);
-        if(oid != null)
+        if (oid != null)
             return oid.asText();
         else
             return treeNode.toString();

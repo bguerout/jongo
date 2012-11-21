@@ -61,7 +61,7 @@ public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
     }
 
-    private static class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument{
+    private static class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument {
 
         public RelaxedLazyDBObject(byte[] data, LazyBSONCallback cbk) {
             super(data, cbk);

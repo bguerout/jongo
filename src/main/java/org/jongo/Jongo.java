@@ -49,7 +49,7 @@ public class Jongo {
         return database;
     }
 
-    public Query createQuery(String query, Object... parameters){
+    public Query createQuery(String query, Object... parameters) {
         return provider.getQueryFactory().createQuery(query, parameters);
     }
 }

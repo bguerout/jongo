@@ -17,8 +17,8 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
-import org.jongo.bson.BsonDocument;
 import org.jongo.bson.Bson;
+import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Unmarshaller;
 
 class ResultMapperFactory {

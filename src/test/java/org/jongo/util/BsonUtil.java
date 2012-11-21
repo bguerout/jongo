@@ -19,8 +19,8 @@ package org.jongo.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.jongo.bson.BsonDocument;
 import org.jongo.bson.Bson;
+import org.jongo.bson.BsonDocument;
 
 import java.io.IOException;
 import java.util.HashMap;

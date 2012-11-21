@@ -36,7 +36,7 @@ public class JsonEngine implements Unmarshaller, Marshaller {
     public JsonEngine() {
         this(usingJson().innerConfig());
     }
-    
+
     public JsonEngine(MappingConfig config) {
         this.config = config;
     }
@@ -62,7 +62,7 @@ public class JsonEngine implements Unmarshaller, Marshaller {
             throw new MarshallingException(message, e);
         }
     }
-    
+
     protected DBObject createDBObjectWithDriver(String json) {
         return (DBObject) JSON.parse(json);
     }

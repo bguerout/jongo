@@ -23,7 +23,6 @@ import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
@@ -41,7 +40,7 @@ public class MongoCollection {
     private final QueryFactory queryFactory;
     private final ObjectIdUpdater objectIdUpdater;
 
-    public MongoCollection(DBCollection dbCollection,Provider provider) {
+    public MongoCollection(DBCollection dbCollection, Provider provider) {
         this.collection = dbCollection;
         this.marshaller = provider.getMarshaller();
         this.unmarshaller = provider.getUnmarshaller();
