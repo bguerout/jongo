@@ -73,10 +73,11 @@ public final class JsonQueryFactory implements QueryFactory {
         }
     }
 
-    protected Object marshallParameter(Object parameter) {
+    private Object marshallParameter(Object parameter) {
         try {
-            if (Bson.isPrimitive(parameter))
+            if (Bson.isPrimitive(parameter)) {
                 return JSON.serialize(parameter);
+            }
             if (parameter instanceof Enum) {
                 return JSON.serialize(((Enum) parameter).name());
             }
@@ -93,10 +94,10 @@ public final class JsonQueryFactory implements QueryFactory {
         }
     }
 
-    private List<Object> marshallArray(Object[] parameter) {
+    private List<Object> marshallArray(Object[] parameters) {
         List<Object> newParameterList = new ArrayList<Object>();
-        for (Object p : parameter) {
-            newParameterList.add(marshallParameter(p));
+        for (Object param : parameters) {
+            newParameterList.add(marshallParameter(param));
         }
         return newParameterList;
     }
@@ -130,29 +131,4 @@ public final class JsonQueryFactory implements QueryFactory {
         return count;
     }
 
-    private static class JsonQuery implements Query {
-
-        private final DBObject dbo;
-
-        public JsonQuery(String query) {
-            this.dbo = marshallQuery(query);
-        }
-
-        private DBObject marshallQuery(String query) {
-            try {
-                return (DBObject) JSON.parse(query);
-            } catch (Exception e) {
-                throw new IllegalArgumentException(query + " cannot be parsed", e);
-            }
-        }
-
-        public DBObject toDBObject() {
-            return dbo;
-        }
-
-        @Override
-        public String toString() {
-            return dbo.toString();
-        }
-    }
 }
