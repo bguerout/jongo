@@ -31,7 +31,7 @@ public class Jongo {
 
     public Jongo(DB database) {
         this.database = database;
-        this.provider = new BsonProvider(JacksonConfig.usingBson().innerConfig());
+        this.provider = new BsonProvider(JacksonConfig.defaultConfig());
     }
 
     public Jongo(DB database, Provider provider) {

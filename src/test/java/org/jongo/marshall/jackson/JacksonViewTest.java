@@ -29,7 +29,7 @@ import static org.jongo.util.BsonUtil.bsonify;
 public class JacksonViewTest {
 
     private BsonEngine createProcessorWithView(final Class<?> viewClass) {
-        MappingConfig conf = usingBson().withView(viewClass).innerConfig();
+        MappingConfig conf = usingBson().withView(viewClass).build();
         return new BsonEngine(conf);
     }
 

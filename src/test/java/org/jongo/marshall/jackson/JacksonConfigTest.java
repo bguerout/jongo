@@ -41,7 +41,7 @@ public class JacksonConfigTest {
 
         MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -54,7 +54,7 @@ public class JacksonConfigTest {
 
         MappingConfig conf = usingJson()
                 .addSerializer(String.class, new DoeJsonSerializer())
-                .innerConfig();
+                .build();
 
         ObjectMapper mapper = conf.getObjectMapper();
 
@@ -67,7 +67,7 @@ public class JacksonConfigTest {
 
         MappingConfig config = usingJson()
                 .addModule(new JsonModule())
-                .innerConfig();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -81,7 +81,7 @@ public class JacksonConfigTest {
 
         MappingConfig config = usingJson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -95,7 +95,7 @@ public class JacksonConfigTest {
 
         MappingConfig config = new JacksonConfig(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -108,7 +108,7 @@ public class JacksonConfigTest {
 
         MappingConfig config = usingBson()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
+                .build();
 
         ObjectMapper mapper = config.getObjectMapper();
 

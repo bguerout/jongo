@@ -25,7 +25,7 @@ import org.jongo.marshall.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.jongo.marshall.jackson.JacksonConfig.usingBson;
+import static org.jongo.marshall.jackson.JacksonConfig.defaultConfig;
 
 
 public class BsonEngine implements Unmarshaller, Marshaller {
@@ -33,7 +33,7 @@ public class BsonEngine implements Unmarshaller, Marshaller {
     private final MappingConfig config;
 
     public BsonEngine() {
-        this(usingBson().innerConfig());
+        this(defaultConfig());
     }
 
     public BsonEngine(MappingConfig config) {

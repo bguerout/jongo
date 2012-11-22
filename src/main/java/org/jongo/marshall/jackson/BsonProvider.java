@@ -28,7 +28,7 @@ public class BsonProvider implements Provider {
     private final BsonEngine engine;
 
     public BsonProvider() {
-        this(JacksonConfig.usingBson().innerConfig());
+        this(JacksonConfig.defaultConfig());
     }
 
     public BsonProvider(MappingConfig mappingConfig) {

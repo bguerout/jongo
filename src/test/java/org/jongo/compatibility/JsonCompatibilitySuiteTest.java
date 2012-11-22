@@ -29,7 +29,7 @@ public class JsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext("JsonProvider", new JsonProvider(JacksonConfig.usingJson().innerConfig()));
+        return new TestContext("JsonProvider", new JsonProvider(JacksonConfig.usingJson().build()));
     }
 
 }

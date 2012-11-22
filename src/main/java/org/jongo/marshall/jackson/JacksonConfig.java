@@ -49,6 +49,10 @@ public class JacksonConfig {
         addModule(module);
     }
 
+    public static MappingConfig defaultConfig() {
+        return usingBson().build();
+    }
+
     public static JacksonConfig usingJson() {
         return new JacksonConfig(new ObjectMapper())
                 .addModule(new JsonModule())
@@ -64,7 +68,7 @@ public class JacksonConfig {
                 .addModifier(new DeserializationModifier());
     }
 
-    public MappingConfig innerConfig() {
+    public MappingConfig build() {
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
         }
