@@ -55,7 +55,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldBindOneParameter() throws Exception {
+    public void canBindOneParameter() throws Exception {
 
         long nb = collection.count("{name:#}", "robert");
 
@@ -63,7 +63,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldBindManyParameter() throws Exception {
+    public void canBindManyParameter() throws Exception {
 
         long nb = collection.count("{name:#,address:#}", "robert", "Wall Street");
 
@@ -71,19 +71,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldBindListOfPrimitive() throws Exception {
-
-        collection.insert("{index:1}");
-
-        List<Integer> indexes = Lists.newArrayList(1, 2);
-
-        long nb = collection.count("{index:{$in:#}}", indexes);
-
-        assertThat(nb).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldBindParametersOnNestedFields() throws Exception {
+    public void canBindANestedField() throws Exception {
 
         long nb = collection.count("{coordinate.lat:#}", 2);
 
@@ -91,7 +79,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldBindAPojo() throws Exception {
+    public void canBindAPojo() throws Exception {
 
         long nb = collection.count("#", new Friend("robert", "Wall Street", new Coordinate(2, 3)));
 
@@ -99,35 +87,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    // https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
-    public void shouldBindAListOfPojo() throws Exception {
-
-        Buddies buddies = new Buddies();
-        buddies.add(new Friend("john"));
-        collection.save(buddies);
-
-        collection.update("{}").with("{$push:{friends:#}}", new Friend("peter"));
-
-        assertThat(collection.count("{ friends.name : 'peter'}")).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldBindAFieldName() throws Exception {
-
-        /* given */
-        collection.insert("{name:{1:'John'}}");
-
-        /* when */
-        DBObject result = collection.findOne("{name.#:#}", 1, "John").map(new DBObjectResultMapper());
-
-        /* then */
-        assertThat(result).isNotNull();
-        assertThat(result.get("name")).isInstanceOf(DBObject.class);
-        assertThat(((DBObject) result.get("name")).get("1")).isEqualTo("John");
-    }
-
-    @Test
-    public void shouldBindEnumParameter() throws Exception {
+    public void canBindEnum() throws Exception {
 
         Friend friend = new Friend("John", new Coordinate(2, 31));
         friend.setGender(Gender.FEMALE);
@@ -140,14 +100,162 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
+    public void canBindAFieldName() throws Exception {
+
+        /* given */
+        collection.insert("{name:{1:'John'}}");
+
+        /* when */
+        DBObject result = collection.findOne("{name.#:'John'}", 1).map(new DBObjectResultMapper());
+
+        /* then */
+        assertThat(result).isNotNull();
+        assertThat(result.get("name")).isInstanceOf(DBObject.class);
+        assertThat(((DBObject) result.get("name")).get("1")).isEqualTo("John");
+    }
+
+    @Test
     // https://github.com/bguerout/jongo/issues/60
-    public void shouldBindPatterns() throws Exception {
+    public void canBindPattern() throws Exception {
 
         collection.save(new Friend("ab"));
 
         assertThat(collection.findOne("{name:#}", Pattern.compile("ab")).as(Friend.class)).isNotNull();
         assertThat(collection.findOne("{name:{$regex: 'ab'}}").as(Friend.class)).isNotNull();
     }
+
+    @Test
+    public void canBindTwoOidInSameQuery() throws Exception {
+        /* given */
+        ObjectId id1 = new ObjectId();
+        Friend john = new Friend(id1, "John");
+        ObjectId id2 = new ObjectId();
+        Friend peter = new Friend(id2, "Peter");
+
+        collection.save(john);
+        collection.save(peter);
+
+        Iterable<Friend> friends = collection.find("{$or :[{_id:{$oid:#}},{_id:{$oid:#}}]}", id1.toString(), id2.toString()).as(Friend.class);
+
+        /* then */
+        assertThat(friends.iterator().hasNext()).isTrue();
+        for (Friend friend : friends) {
+            assertThat(friend.getId()).isIn(id1, id2);
+        }
+    }
+
+    @Test
+    public void canBindOidWithASpecificName() throws Exception {
+        /* given */
+        ObjectId id = new ObjectId();
+        LinkedFriend john = new LinkedFriend(id);
+        collection.save(john);
+
+        Iterator<LinkedFriend> friends = collection.find("{friendRelationId:{$oid:#}}", id.toString()).as(LinkedFriend.class).iterator();
+
+        /* then */
+        assertThat(friends.hasNext()).isTrue();
+        assertThat(friends.next().getRelationId()).isEqualTo(id);
+    }
+
+    @Test
+    public void canUseParameterWith$in() throws Exception {
+
+        collection.insert("{value:1}");
+
+        long nb = collection.count("{value:{$in:#}}", Lists.newArrayList(1, 2));
+
+        assertThat(nb).isEqualTo(1);
+    }
+
+    @Test
+    public void canUseParameterWith$nin() throws Exception {
+
+        collection.insert("{value:1}");
+
+        long nb = collection.count("{value:{$nin:#}}", Lists.newArrayList(1, 2));
+
+        assertThat(nb).isEqualTo(1);
+    }
+
+    @Test
+    // https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
+    public void canUseParameterWith$push() throws Exception {
+
+        Buddies buddies = new Buddies();
+        buddies.add(new Friend("john"));
+        collection.save(buddies);
+
+        collection.update("{}").with("{$push:{friends:#}}", new Friend("peter"));
+
+        assertThat(collection.count("{ friends.name : 'peter'}")).isEqualTo(1);
+    }
+
+    @Test
+    public void canUseListParameterWith$all() throws Exception {
+        collection.insert("{type:'cool', properties:['p1','p2']}");
+        List<String> properties = Lists.newArrayList("p1", "p2");
+
+        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
+    }
+
+    @Test
+    public void canUseArrayParameterWith$all() throws Exception {
+        collection.insert("{type:'cool', properties:['p1','p2']}");
+        String[] properties = new String[]{"p1", "p2"};
+
+        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
+    }
+
+    @Test
+    public void canUseArrayParameterWith$mod() throws Exception {
+        collection.insert("{value:10}");
+
+        assertThat(collection.count("{value:{ $mod : # }}", Lists.newArrayList(10, 0))).isEqualTo(1);
+    }
+
+    @Test
+    public void canUseArrayParameterWith$elemMatch() throws Exception {
+        collection.insert("{x:[ { a : 1, b : 3 }, 7, { b : 99 }, { a : 11 }]}");
+
+        assertThat(collection.count("{ x : { $elemMatch : { a : #, b : { $gt : 1 } } } }", 1)).isEqualTo(1);
+    }
+
+
+    @Test
+    public void canUseParameterWith$exists() throws Exception {
+
+        collection.insert("{name:'John'}");
+
+        assertThat(collection.count("{name:{$exists:true}}")).isEqualTo(2);
+    }
+
+
+    @Test
+    public void canUseListOfPojosParameterWith$or() throws Exception {
+        collection.insert("{name:'John'}");
+        collection.insert("{name:'Robert'}");
+        List<Friend> friends = Lists.newArrayList(new Friend("John"), new Friend("Robert"));
+
+        Iterable<Friend> results = collection.find("{$or : #}", friends).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
+    }
+
+    @Test
+    public void canUseListOfPojosParameterWith$and() throws Exception {
+        collection.insert("{ name: ['John', 'Robert' ] }");
+        List<Friend> friends = Lists.newArrayList(new Friend("John"), new Friend("Robert"));
+
+        Iterable<Friend> results = collection.find("{ $and: # }", friends).as(Friend.class);
+
+        assertThat(results.iterator().hasNext()).isTrue();
+    }
+
 
     @Test
     public void shouldThrowArgumentExceptionOnInvalidQuery() throws Exception {
@@ -170,62 +278,6 @@ public class ParameterQueryBindingTest extends JongoTestCase {
             assertThat(e.getCause()).isInstanceOf(MarshallingException.class);
             assertThat(e.getMessage()).contains("{id:#}");
         }
-    }
-
-    @Test
-    public void canFindWithTwoOid() throws Exception {
-        /* given */
-        ObjectId id1 = new ObjectId();
-        Friend john = new Friend(id1, "John");
-        ObjectId id2 = new ObjectId();
-        Friend peter = new Friend(id2, "Peter");
-
-        collection.save(john);
-        collection.save(peter);
-
-        Iterable<Friend> friends = collection.find("{$or :[{_id:{$oid:#}},{_id:{$oid:#}}]}", id1.toString(), id2.toString()).as(Friend.class);
-
-        /* then */
-        assertThat(friends.iterator().hasNext()).isTrue();
-        for (Friend friend : friends) {
-            assertThat(friend.getId()).isIn(id1, id2);
-        }
-    }
-
-    @Test
-    public void canFindWithOidNamed() throws Exception {
-        /* given */
-        ObjectId id = new ObjectId();
-        LinkedFriend john = new LinkedFriend(id);
-        collection.save(john);
-
-        Iterator<LinkedFriend> friends = collection.find("{friendRelationId:{$oid:#}}", id.toString()).as(LinkedFriend.class).iterator();
-
-        /* then */
-        assertThat(friends.hasNext()).isTrue();
-        assertThat(friends.next().getRelationId()).isEqualTo(id);
-    }
-
-    @Test
-    public void canFindWithAListAsParameter() throws Exception {
-        collection.insert("{type:'cool', properties:['p1','p2']}");
-        List<String> properties = Lists.newArrayList("p1", "p2");
-
-        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
-
-        assertThat(results.iterator().hasNext()).isTrue();
-    }
-
-    @Test
-    public void canFindWithAnArrayAsParameter() throws Exception {
-        collection.insert("{type:'cool', properties:['p1','p2']}");
-        String[] properties = new String[2];
-        properties[0] = "p1";
-        properties[1] = "p2";
-
-        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
-
-        assertThat(results.iterator().hasNext()).isTrue();
     }
 
     private static class Buddies {
