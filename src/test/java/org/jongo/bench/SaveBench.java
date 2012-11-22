@@ -23,7 +23,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.WriteConcern;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.BsonProvider;
-import org.jongo.marshall.jackson.JsonProvider;
 
 import static org.jongo.bench.BenchUtil.*;
 
@@ -34,31 +33,21 @@ public class SaveBench extends SimpleBenchmark {
     @Param("NORMAL")
     WriteConcern concern = WriteConcern.NORMAL;
 
-    private MongoCollection jsonCollection;
     private DBCollection dbCollection;
     private MongoCollection bsonCollection;
 
     protected void setUp() throws Exception {
 
-        jsonCollection = getCollectionFromJongo(new JsonProvider());
         bsonCollection = getCollectionFromJongo(new BsonProvider());
         dbCollection = getCollectionFromDriver();
 
-        jsonCollection.drop();
+        bsonCollection.drop();
     }
 
     public void timeSaveWithDriver(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
                 dbCollection.save(createDBOFriend(reps + j), concern);
-            }
-        }
-    }
-
-    public void ignore_timeSaveWithDefaultJongo(int reps) {
-        for (int i = 0; i < reps; i++) {
-            for (int j = 0; j < size; j++) {
-                jsonCollection.save(createFriend(reps + j), concern);
             }
         }
     }

@@ -23,20 +23,20 @@ import org.jongo.model.Views;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.JacksonConfig.usingBson;
 import static org.jongo.util.BsonUtil.bsonify;
 
 public class JacksonViewTest {
 
-    private JsonEngine createProcessorWithView(final Class<?> viewClass) {
-        MappingConfig conf = usingJson().withView(viewClass).innerConfig();
-        return new JsonEngine(conf);
+    private BsonEngine createProcessorWithView(final Class<?> viewClass) {
+        MappingConfig conf = usingBson().withView(viewClass).innerConfig();
+        return new BsonEngine(conf);
     }
 
     @Test
     public void shouldRespectJsonPublicViewOnMarshall() throws Exception {
 
-        JsonEngine custom = createProcessorWithView(Views.Public.class);
+        BsonEngine custom = createProcessorWithView(Views.Public.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -52,7 +52,7 @@ public class JacksonViewTest {
     @Test
     public void shouldRespectJsonPrivateViewOnMarshall() throws Exception {
 
-        JsonEngine custom = createProcessorWithView(Views.Private.class);
+        BsonEngine custom = createProcessorWithView(Views.Private.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -69,7 +69,7 @@ public class JacksonViewTest {
     public void respectsJsonPublicViewOnUnmarshall() throws Exception {
 
         BsonDocument doc = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        JsonEngine custom = createProcessorWithView(Views.Public.class);
+        BsonEngine custom = createProcessorWithView(Views.Public.class);
 
         Fox fox = custom.unmarshall(doc, Fox.class);
 
@@ -80,7 +80,7 @@ public class JacksonViewTest {
     public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
 
         BsonDocument doc = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        JsonEngine custom = createProcessorWithView(Views.Private.class);
+        BsonEngine custom = createProcessorWithView(Views.Private.class);
 
         Fox fox = custom.unmarshall(doc, Fox.class);
 

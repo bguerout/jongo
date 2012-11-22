@@ -20,7 +20,7 @@ import com.mongodb.*;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.Provider;
-import org.jongo.marshall.jackson.JsonProvider;
+import org.jongo.marshall.jackson.BsonProvider;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -62,7 +62,7 @@ class BenchUtil {
     }
 
     public static void injectFriendsIntoDB(int nbDocuments) throws UnknownHostException {
-        MongoCollection collection = getCollectionFromJongo(new JsonProvider());
+        MongoCollection collection = getCollectionFromJongo(new BsonProvider());
         collection.drop();
         for (int i = 0; i < nbDocuments; i++) {
             collection.save(createFriend(i), WriteConcern.SAFE);

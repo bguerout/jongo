@@ -23,15 +23,9 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
-
 public class JsonProvider implements Provider {
 
     private final JsonEngine engine;
-
-    public JsonProvider() {
-        this(usingJson().innerConfig());
-    }
 
     public JsonProvider(MappingConfig config) {
         engine = new JsonEngine(config);

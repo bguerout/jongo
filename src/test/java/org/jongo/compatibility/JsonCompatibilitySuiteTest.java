@@ -16,6 +16,7 @@
 
 package org.jongo.compatibility;
 
+import org.jongo.marshall.jackson.JacksonConfig;
 import org.jongo.marshall.jackson.JsonProvider;
 import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
@@ -28,7 +29,7 @@ public class JsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext("JsonProvider", new JsonProvider());
+        return new TestContext("JsonProvider", new JsonProvider(JacksonConfig.usingJson().innerConfig()));
     }
 
 }

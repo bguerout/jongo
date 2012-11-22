@@ -25,7 +25,8 @@ import org.jongo.marshall.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.jongo.marshall.jackson.JacksonProviders.usingBson;
+import static org.jongo.marshall.jackson.JacksonConfig.usingBson;
+
 
 public class BsonEngine implements Unmarshaller, Marshaller {
 

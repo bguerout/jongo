@@ -23,14 +23,12 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.marshall.jackson.JacksonProviders.usingBson;
-
 public class BsonProvider implements Provider {
 
     private final BsonEngine engine;
 
     public BsonProvider() {
-        this(usingBson().innerConfig());
+        this(JacksonConfig.usingBson().innerConfig());
     }
 
     public BsonProvider(MappingConfig mappingConfig) {

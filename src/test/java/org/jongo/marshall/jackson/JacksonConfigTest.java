@@ -31,10 +31,10 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonProviders.usingBson;
-import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.JacksonConfig.usingBson;
+import static org.jongo.marshall.jackson.JacksonConfig.usingJson;
 
-public class JacksonProvidersTest {
+public class JacksonConfigTest {
 
     @Test
     public void canAddDeserializer() throws Exception {
@@ -93,7 +93,7 @@ public class JacksonProvidersTest {
     @Test
     public void canCreateConfigWithCustomMapper() throws Exception {
 
-        MappingConfig config = new JacksonConfig(new ObjectMapper(), JacksonProviders.Type.JSON)
+        MappingConfig config = new JacksonConfig(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .innerConfig();
 

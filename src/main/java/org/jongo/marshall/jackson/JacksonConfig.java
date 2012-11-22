@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.undercouch.bson4jackson.BsonFactory;
-import org.jongo.Provider;
 import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
 import org.jongo.marshall.jackson.configuration.JsonModule;
@@ -35,19 +34,15 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
-import static org.jongo.marshall.jackson.JacksonProviders.Type.BSON;
-import static org.jongo.marshall.jackson.JacksonProviders.Type.JSON;
 
 public class JacksonConfig {
-    private final JacksonProviders.Type type;
     private final SimpleModule module;
     private final ArrayList<MapperModifier> modifiers;
     private final ObjectMapper mapper;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    public JacksonConfig(ObjectMapper mapper, JacksonProviders.Type type) {
-        this.type = type;
+    public JacksonConfig(ObjectMapper mapper) {
         this.mapper = mapper;
         this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
@@ -55,7 +50,7 @@ public class JacksonConfig {
     }
 
     public static JacksonConfig usingJson() {
-        return new JacksonConfig(new ObjectMapper(), JSON)
+        return new JacksonConfig(new ObjectMapper())
                 .addModule(new JsonModule())
                 .addModifier(new SerializationModifier())
                 .addModifier(new DeserializationModifier());
@@ -63,13 +58,13 @@ public class JacksonConfig {
 
     public static JacksonConfig usingBson() {
         BsonFactory bsonFactory = MongoBsonFactory.createFactory();
-        return new JacksonConfig(new ObjectMapper(bsonFactory), BSON)
+        return new JacksonConfig(new ObjectMapper(bsonFactory))
                 .addModule(new BsonModule())
                 .addModifier(new SerializationModifier())
                 .addModifier(new DeserializationModifier());
     }
 
-    protected MappingConfig innerConfig() {
+    public MappingConfig innerConfig() {
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
         }
@@ -85,13 +80,6 @@ public class JacksonConfig {
             writerCallback = new DefaultWriterCallback();
     }
 
-    public Provider build() {
-        MappingConfig config = innerConfig();
-        if (type == BSON)
-            return new BsonProvider(config);
-        else
-            return new JsonProvider(config);
-    }
 
     public <T> JacksonConfig addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
         module.addDeserializer(type, deserializer);

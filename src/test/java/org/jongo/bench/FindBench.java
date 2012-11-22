@@ -24,7 +24,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.BsonProvider;
-import org.jongo.marshall.jackson.JsonProvider;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -36,12 +35,10 @@ public class FindBench extends SimpleBenchmark {
     private static final int NB_DOCUMENTS = 100000;
     @Param({"1"})
     int size = 1;
-    private MongoCollection jsonCollection;
     private MongoCollection bsonCollection;
     private DBCollection dbCollection;
 
     protected void setUp() throws Exception {
-        jsonCollection = getCollectionFromJongo(new JsonProvider());
         bsonCollection = getCollectionFromJongo(new BsonProvider());
         dbCollection = getCollectionFromDriver();
 
@@ -58,16 +55,6 @@ public class FindBench extends SimpleBenchmark {
                 DBObject coord = (DBObject) dbo.get("coordinate");
                 Coordinate coordinate = new Coordinate((Integer) coord.get("lat"), (Integer) coord.get("lng"));
                 Friend f = new Friend((String) dbo.get("name"), (String) dbo.get("address"), coordinate);
-                insertions++;
-            }
-        }
-        return insertions;
-    }
-
-    public int ignore_timeFindWithDefaultJongo(int reps) {
-        int insertions = 0;
-        for (int i = 0; i < reps; i++) {
-            for (Friend friend : jsonCollection.find().limit(size).as(Friend.class)) {
                 insertions++;
             }
         }

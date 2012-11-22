@@ -27,15 +27,9 @@ import org.jongo.marshall.Unmarshaller;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
-
 public class JsonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
-
-    public JsonEngine() {
-        this(usingJson().innerConfig());
-    }
 
     public JsonEngine(MappingConfig config) {
         this.config = config;
