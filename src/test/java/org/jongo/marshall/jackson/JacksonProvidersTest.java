@@ -93,7 +93,7 @@ public class JacksonProvidersTest {
     @Test
     public void canCreateConfigWithCustomMapper() throws Exception {
 
-        MappingConfig config = new JacksonProviders.Builder(new ObjectMapper(), JacksonProviders.Type.JSON)
+        MappingConfig config = new JacksonConfig(new ObjectMapper(), JacksonProviders.Type.JSON)
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .innerConfig();
 
