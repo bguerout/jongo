@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.compatibility;
 
 import org.jongo.ObjectIdUpdater;
 import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
+import org.jongo.marshall.jackson.MappingConfig;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
-public class JsonProvider implements Provider {
+class JsonProvider implements Provider {
 
     private final JsonEngine engine;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.compatibility;
 
 import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
@@ -37,7 +37,7 @@ public class JsonEngineTest {
 
     @Before
     public void setUp() throws Exception {
-        this.engine = new JsonEngine(JacksonConfig.usingJson().build());
+        this.engine = new JsonEngine(JsonCompatibilitySuiteTest.createConfig());
     }
 
     @Test(expected = MarshallingException.class)

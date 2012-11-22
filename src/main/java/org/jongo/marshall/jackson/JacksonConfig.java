@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.undercouch.bson4jackson.BsonFactory;
 import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
-import org.jongo.marshall.jackson.configuration.JsonModule;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.marshall.jackson.configuration.ReaderCallback;
 import org.jongo.marshall.jackson.configuration.WriterCallback;
@@ -42,7 +41,7 @@ public class JacksonConfig {
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    public JacksonConfig(ObjectMapper mapper) {
+    private JacksonConfig(ObjectMapper mapper) {
         this.mapper = mapper;
         this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
@@ -53,11 +52,8 @@ public class JacksonConfig {
         return usingBson().build();
     }
 
-    public static JacksonConfig usingJson() {
-        return new JacksonConfig(new ObjectMapper())
-                .addModule(new JsonModule())
-                .addModifier(new SerializationModifier())
-                .addModifier(new DeserializationModifier());
+    public static JacksonConfig usingMapper(ObjectMapper mapper) {
+        return new JacksonConfig(mapper);
     }
 
     public static JacksonConfig usingBson() {

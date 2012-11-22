@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.compatibility;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -23,11 +23,12 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.MappingConfig;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
-public class JsonEngine implements Unmarshaller, Marshaller {
+class JsonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
 
