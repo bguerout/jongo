@@ -16,6 +16,7 @@
 
 package org.jongo.query;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.jongo.bson.Bson;
@@ -65,7 +66,7 @@ public final class JsonQueryFactory implements QueryFactory {
 
     private String bindParameter(String query, Object parameter) {
         try {
-            String jsonParam = marshallParameter(parameter).toString();
+            String jsonParam = marshallParameter(parameter, true).toString();
             return query.replaceFirst(token, getMatcherWithEscapedDollar(jsonParam));
         } catch (RuntimeException e) {
             String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
@@ -73,13 +74,14 @@ public final class JsonQueryFactory implements QueryFactory {
         }
     }
 
-    private Object marshallParameter(Object parameter) {
+    private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
         try {
             if (Bson.isPrimitive(parameter)) {
-                return JSON.serialize(parameter);
+                return serializeBsonPrimitives ? JSON.serialize(parameter) : parameter;
             }
             if (parameter instanceof Enum) {
-                return JSON.serialize(((Enum) parameter).name());
+                String name = ((Enum) parameter).name();
+                return serializeBsonPrimitives ? JSON.serialize(name) : name;
             }
             if (parameter instanceof List) {
                 return marshallArray(((List) parameter).toArray());
@@ -94,12 +96,12 @@ public final class JsonQueryFactory implements QueryFactory {
         }
     }
 
-    private String marshallArray(Object[] parameters) {
-        Object[] list = new Object[parameters.length];
+    private DBObject marshallArray(Object[] parameters) {
+        BasicDBList list = new BasicDBList();
         for (int i = 0; i < parameters.length; i++) {
-            list[i] = marshallParameter(parameters[i]);
+            list.put(i, marshallParameter(parameters[i], false));
         }
-        return Arrays.toString(list);
+        return list;
     }
 
     private DBObject marshallDocument(Object parameter) {
