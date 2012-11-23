@@ -22,7 +22,7 @@ import org.jongo.bson.Bson;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,12 +94,12 @@ public final class JsonQueryFactory implements QueryFactory {
         }
     }
 
-    private List<Object> marshallArray(Object[] parameters) {
-        List<Object> newParameterList = new ArrayList<Object>();
-        for (Object param : parameters) {
-            newParameterList.add(marshallParameter(param));
+    private String marshallArray(Object[] parameters) {
+        Object[] list = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            list[i] = marshallParameter(parameters[i]);
         }
-        return newParameterList;
+        return Arrays.toString(list);
     }
 
     private DBObject marshallDocument(Object parameter) {
