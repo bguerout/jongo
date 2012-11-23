@@ -37,7 +37,7 @@ public class JsonEngineTest {
 
     @Before
     public void setUp() throws Exception {
-        this.engine = new JsonEngine(JsonCompatibilitySuiteTest.createConfig());
+        this.engine = new JsonEngine(JsonEngine.createConfig());
     }
 
     @Test(expected = MarshallingException.class)
