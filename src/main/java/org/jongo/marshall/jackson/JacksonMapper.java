@@ -34,14 +34,14 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-public class JacksonConfig {
+public class JacksonMapper {
     private final SimpleModule module;
     private final ArrayList<MapperModifier> modifiers;
     private final ObjectMapper mapper;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    private JacksonConfig(ObjectMapper mapper) {
+    private JacksonMapper(ObjectMapper mapper) {
         this.mapper = mapper;
         this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
@@ -52,13 +52,13 @@ public class JacksonConfig {
         return usingBson().build();
     }
 
-    public static JacksonConfig usingMapper(ObjectMapper mapper) {
-        return new JacksonConfig(mapper);
+    public static JacksonMapper usingMapper(ObjectMapper mapper) {
+        return new JacksonMapper(mapper);
     }
 
-    public static JacksonConfig usingBson() {
+    public static JacksonMapper usingBson() {
         BsonFactory bsonFactory = MongoBsonFactory.createFactory();
-        return new JacksonConfig(new ObjectMapper(bsonFactory))
+        return new JacksonMapper(new ObjectMapper(bsonFactory))
                 .addModule(new BsonModule())
                 .addModifier(new SerializationModifier())
                 .addModifier(new DeserializationModifier());
@@ -81,17 +81,17 @@ public class JacksonConfig {
     }
 
 
-    public <T> JacksonConfig addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
+    public <T> JacksonMapper addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
         module.addDeserializer(type, deserializer);
         return this;
     }
 
-    public <T> JacksonConfig addSerializer(Class<T> type, JsonSerializer<T> serializer) {
+    public <T> JacksonMapper addSerializer(Class<T> type, JsonSerializer<T> serializer) {
         module.addSerializer(type, serializer);
         return this;
     }
 
-    public JacksonConfig addModule(final Module module) {
+    public JacksonMapper addModule(final Module module) {
         modifiers.add(new MapperModifier() {
             public void modify(ObjectMapper mapper) {
                 mapper.registerModule(module);
@@ -100,23 +100,23 @@ public class JacksonConfig {
         return this;
     }
 
-    public JacksonConfig withView(final Class<?> viewClass) {
+    public JacksonMapper withView(final Class<?> viewClass) {
         setReaderCallback(new ViewReaderCallback(viewClass));
         setWriterCallback(new ViewWriterCallback(viewClass));
         return this;
     }
 
-    public JacksonConfig addModifier(MapperModifier modifier) {
+    public JacksonMapper addModifier(MapperModifier modifier) {
         modifiers.add(modifier);
         return this;
     }
 
-    public JacksonConfig setReaderCallback(ReaderCallback readerCallback) {
+    public JacksonMapper setReaderCallback(ReaderCallback readerCallback) {
         this.readerCallback = readerCallback;
         return this;
     }
 
-    public JacksonConfig setWriterCallback(WriterCallback writerCallback) {
+    public JacksonMapper setWriterCallback(WriterCallback writerCallback) {
         this.writerCallback = writerCallback;
         return this;
     }

@@ -23,7 +23,7 @@ import org.jongo.model.Views;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonConfig.usingBson;
+import static org.jongo.marshall.jackson.JacksonMapper.usingBson;
 import static org.jongo.util.BsonUtil.bsonify;
 
 public class JacksonViewTest {

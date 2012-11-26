@@ -21,7 +21,7 @@ import com.mongodb.DBCollection;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.BsonProvider;
-import org.jongo.marshall.jackson.JacksonConfig;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.query.Query;
 
 public class Jongo {
@@ -31,7 +31,7 @@ public class Jongo {
 
     public Jongo(DB database) {
         this.database = database;
-        this.provider = new BsonProvider(JacksonConfig.defaultConfig());
+        this.provider = new BsonProvider(JacksonMapper.defaultConfig());
     }
 
     public Jongo(DB database, Provider provider) {
