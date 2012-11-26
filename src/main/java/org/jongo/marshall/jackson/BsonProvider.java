@@ -26,13 +26,17 @@ import org.jongo.query.QueryFactory;
 public class BsonProvider implements Provider {
 
     private final BsonEngine engine;
+    private final JacksonObjectIdUpdater objectIdUpdater;
+    private final JsonQueryFactory queryFactory;
 
     public BsonProvider() {
         this(JacksonMapper.defaultConfig());
     }
 
     public BsonProvider(MappingConfig mappingConfig) {
-        engine = new BsonEngine(mappingConfig);
+        this.engine = new BsonEngine(mappingConfig);
+        this.objectIdUpdater = new JacksonObjectIdUpdater();
+        this.queryFactory = new JsonQueryFactory(engine);
     }
 
     public Marshaller getMarshaller() {
@@ -44,10 +48,10 @@ public class BsonProvider implements Provider {
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {
-        return new JacksonObjectIdUpdater();
+        return objectIdUpdater;
     }
 
     public QueryFactory getQueryFactory() {
-        return new JsonQueryFactory(engine);
+        return queryFactory;
     }
 }
