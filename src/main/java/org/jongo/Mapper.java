@@ -14,38 +14,19 @@
  * limitations under the License.
  */
 
-package org.jongo.compatibility;
+package org.jongo;
 
-import org.jongo.ObjectIdUpdater;
-import org.jongo.Provider;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
-import org.jongo.marshall.jackson.MappingConfig;
-import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
-class JsonProvider implements Provider {
+public interface Mapper {
 
-    private final JsonEngine engine;
+    Marshaller getMarshaller();
 
-    public JsonProvider(MappingConfig config) {
-        engine = new JsonEngine(config);
-    }
+    Unmarshaller getUnmarshaller();
 
-    public Marshaller getMarshaller() {
-        return engine;
-    }
+    ObjectIdUpdater getObjectIdUpdater();
 
-    public Unmarshaller getUnmarshaller() {
-        return engine;
-    }
-
-    public ObjectIdUpdater getObjectIdUpdater() {
-        return new JacksonObjectIdUpdater();
-    }
-
-    public QueryFactory getQueryFactory() {
-        return new JsonQueryFactory(engine);
-    }
+    QueryFactory getQueryFactory();
 }

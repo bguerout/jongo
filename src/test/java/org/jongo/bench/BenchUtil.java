@@ -19,8 +19,8 @@ package org.jongo.bench;
 import com.mongodb.*;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
-import org.jongo.Provider;
-import org.jongo.marshall.jackson.BsonProvider;
+import org.jongo.Mapper;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -54,15 +54,15 @@ class BenchUtil {
         return nativeMongo.getDB("jongo").getCollection("benchmark");
     }
 
-    public static MongoCollection getCollectionFromJongo(Provider provider) throws UnknownHostException {
+    public static MongoCollection getCollectionFromJongo(Mapper mapper) throws UnknownHostException {
         Mongo mongo = new Mongo();
         DB db = mongo.getDB("jongo");
-        Jongo jongo = new Jongo(db, provider);
+        Jongo jongo = new Jongo(db, mapper);
         return jongo.getCollection("benchmark");
     }
 
     public static void injectFriendsIntoDB(int nbDocuments) throws UnknownHostException {
-        MongoCollection collection = getCollectionFromJongo(new BsonProvider());
+        MongoCollection collection = getCollectionFromJongo(new JacksonMapper());
         collection.drop();
         for (int i = 0; i < nbDocuments; i++) {
             collection.save(createFriend(i), WriteConcern.SAFE);

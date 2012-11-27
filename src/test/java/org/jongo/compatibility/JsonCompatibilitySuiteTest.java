@@ -29,7 +29,7 @@ public class JsonCompatibilitySuiteTest {
     @Parameters
     public static TestContext context() {
         MappingConfig config = JsonEngine.createConfig();
-        return new TestContext("JsonProvider", new JsonProvider(config));
+        return new TestContext("JsonProvider", new JsonMapper(config));
     }
 
 }

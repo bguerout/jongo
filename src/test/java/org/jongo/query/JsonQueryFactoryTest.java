@@ -18,7 +18,7 @@ package org.jongo.query;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.QueryBuilder;
-import org.jongo.marshall.jackson.BsonEngine;
+import org.jongo.marshall.jackson.JacksonDocumentHandler;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class JsonQueryFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        factory = new JsonQueryFactory(new BsonEngine());
+        factory = new JsonQueryFactory(new JacksonDocumentHandler());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -71,7 +71,7 @@ public class JsonQueryFactoryTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        QueryFactory factoryWithToken = new JsonQueryFactory(new BsonEngine(), "@");
+        QueryFactory factoryWithToken = new JsonQueryFactory(new JacksonDocumentHandler(), "@");
 
         Query query = factoryWithToken.createQuery("{id:@}", 123);
 

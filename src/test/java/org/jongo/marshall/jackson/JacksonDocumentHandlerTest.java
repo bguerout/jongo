@@ -31,26 +31,26 @@ import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BsonUtil.bsonify;
 
-public class BsonEngineTest {
+public class JacksonDocumentHandlerTest {
 
-    private BsonEngine engine;
+    private JacksonDocumentHandler documentHandler;
 
     @Before
     public void setUp() throws Exception {
-        this.engine = new BsonEngine();
+        this.documentHandler = new JacksonDocumentHandler();
     }
 
     @Test(expected = MarshallingException.class)
     public void shouldFailWhenUnableToMarshall() throws Exception {
 
-        engine.marshall(new ErrorObject());
+        documentHandler.marshall(new ErrorObject());
     }
 
     @Test
     public void shouldFailWhenUnableToUnmarshall() throws Exception {
 
         try {
-            engine.unmarshall(bsonify("{'error':'notADate'}"), ErrorObject.class);
+            documentHandler.unmarshall(bsonify("{'error':'notADate'}"), ErrorObject.class);
             fail();
         } catch (Exception e) {
             assertThat(e).isInstanceOf(MarshallingException.class);
@@ -60,7 +60,7 @@ public class BsonEngineTest {
     @Test
     public void canMarshall() {
 
-        BsonDocument doc = engine.marshall(new Fox("fantastic", "roux"));
+        BsonDocument doc = documentHandler.marshall(new Fox("fantastic", "roux"));
 
         DBObject dbo = doc.toDBObject();
         assertThat(dbo.get("_class")).isEqualTo("org.jongo.model.Fox");
@@ -73,7 +73,7 @@ public class BsonEngineTest {
 
         BsonDocument document = bsonify("{'address': '22 rue des murlins'}");
 
-        Friend friend = engine.unmarshall(document, Friend.class);
+        Friend friend = documentHandler.unmarshall(document, Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("22 rue des murlins");
     }

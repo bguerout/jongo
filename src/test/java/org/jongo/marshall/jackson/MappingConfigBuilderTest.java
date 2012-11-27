@@ -31,15 +31,15 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonMapper.usingBson;
-import static org.jongo.marshall.jackson.JacksonMapper.usingMapper;
+import static org.jongo.marshall.jackson.MappingConfigBuilder.usingBsonConfig;
+import static org.jongo.marshall.jackson.MappingConfigBuilder.usingObjectMapper;
 
-public class JacksonMapperTest {
+public class MappingConfigBuilderTest {
 
     @Test
     public void canAddDeserializer() throws Exception {
 
-        MappingConfig config = usingMapper(new ObjectMapper())
+        MappingConfig config = usingObjectMapper(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .build();
 
@@ -52,7 +52,7 @@ public class JacksonMapperTest {
     @Test
     public void canAddSerializer() throws Exception {
 
-        MappingConfig conf = usingMapper(new ObjectMapper())
+        MappingConfig conf = usingObjectMapper(new ObjectMapper())
                 .addSerializer(String.class, new DoeJsonSerializer())
                 .build();
 
@@ -65,7 +65,7 @@ public class JacksonMapperTest {
     @Test
     public void canAddModule() throws Exception {
 
-        MappingConfig config = usingMapper(new ObjectMapper())
+        MappingConfig config = usingObjectMapper(new ObjectMapper())
                 .addModule(new JsonModule())
                 .build();
 
@@ -79,7 +79,7 @@ public class JacksonMapperTest {
     @Test
     public void canEnhanceBsonConfig() throws Exception {
 
-        MappingConfig config = usingBson()
+        MappingConfig config = usingBsonConfig()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .build();
 

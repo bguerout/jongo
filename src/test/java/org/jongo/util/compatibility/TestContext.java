@@ -16,20 +16,20 @@
 
 package org.jongo.util.compatibility;
 
-import org.jongo.Provider;
+import org.jongo.Mapper;
 
 public class TestContext {
 
     private final String contextName;
-    private final Provider provider;
+    private final Mapper mapper;
 
-    public TestContext(String contextName, Provider provider) {
+    public TestContext(String contextName, Mapper mapper) {
         this.contextName = contextName;
-        this.provider = provider;
+        this.mapper = mapper;
     }
 
-    public Provider getProvider() {
-        return provider;
+    public Mapper getMapper() {
+        return mapper;
     }
 
     public String getContextName() {

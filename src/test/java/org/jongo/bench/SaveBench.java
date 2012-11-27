@@ -22,7 +22,7 @@ import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBCollection;
 import com.mongodb.WriteConcern;
 import org.jongo.MongoCollection;
-import org.jongo.marshall.jackson.BsonProvider;
+import org.jongo.marshall.jackson.JacksonMapper;
 
 import static org.jongo.bench.BenchUtil.*;
 
@@ -38,7 +38,7 @@ public class SaveBench extends SimpleBenchmark {
 
     protected void setUp() throws Exception {
 
-        bsonCollection = getCollectionFromJongo(new BsonProvider());
+        bsonCollection = getCollectionFromJongo(new JacksonMapper());
         dbCollection = getCollectionFromDriver();
 
         bsonCollection.drop();
