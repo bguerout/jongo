@@ -36,11 +36,11 @@ class JsonEngine implements Unmarshaller, Marshaller {
     private final MappingConfig config;
 
     public static MappingConfig createConfig() {
-        return MappingConfigBuilder.usingObjectMapper(new ObjectMapper())
+        return new MappingConfigBuilder(new ObjectMapper())
                 .addModule(new JsonModule())
                 .addModifier(new MappingConfigBuilder.SerializationModifier())
                 .addModifier(new MappingConfigBuilder.DeserializationModifier())
-                .build();
+                .buildConfig();
     }
 
     public JsonEngine(MappingConfig config) {

@@ -22,13 +22,13 @@ import com.mongodb.*;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDocument;
-import org.jongo.marshall.jackson.JacksonDocumentHandler;
+import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
 public class DecoderBench extends SimpleBenchmark {
 
-    private final JacksonDocumentHandler documentHandler = new JacksonDocumentHandler();
+    private final JacksonEngine engine = new JacksonEngine();
 
     public void timeDecodeWithDriver(int reps) {
 
@@ -46,7 +46,7 @@ public class DecoderBench extends SimpleBenchmark {
         for (int docIndex = 0; docIndex < reps; docIndex++) {
             DBObject dbo = decode(BsonDBDecoder.FACTORY);
             BsonDocument document = Bson.createDocument(dbo);
-            Friend f = documentHandler.unmarshall(document, Friend.class);
+            Friend f = engine.unmarshall(document, Friend.class);
         }
     }
 

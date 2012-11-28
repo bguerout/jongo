@@ -20,10 +20,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
-import org.jongo.bson.Bson;
-import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.jackson.configuration.JsonModule;
 import org.jongo.model.Friend;
 import org.junit.Test;
@@ -31,17 +28,15 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.MappingConfigBuilder.usingBsonConfig;
-import static org.jongo.marshall.jackson.MappingConfigBuilder.usingObjectMapper;
 
 public class MappingConfigBuilderTest {
 
     @Test
     public void canAddDeserializer() throws Exception {
 
-        MappingConfig config = usingObjectMapper(new ObjectMapper())
+        MappingConfig config = new MappingConfigBuilder(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .build();
+                .buildConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -52,9 +47,9 @@ public class MappingConfigBuilderTest {
     @Test
     public void canAddSerializer() throws Exception {
 
-        MappingConfig conf = usingObjectMapper(new ObjectMapper())
+        MappingConfig conf = new MappingConfigBuilder(new ObjectMapper())
                 .addSerializer(String.class, new DoeJsonSerializer())
-                .build();
+                .buildConfig();
 
         ObjectMapper mapper = conf.getObjectMapper();
 
@@ -65,29 +60,15 @@ public class MappingConfigBuilderTest {
     @Test
     public void canAddModule() throws Exception {
 
-        MappingConfig config = usingObjectMapper(new ObjectMapper())
+        MappingConfig config = new MappingConfigBuilder(new ObjectMapper())
                 .addModule(new JsonModule())
-                .build();
+                .buildConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
         String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
         assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
-    }
-
-    @Test
-    public void canEnhanceBsonConfig() throws Exception {
-
-        MappingConfig config = usingBsonConfig()
-                .addDeserializer(String.class, new DoeJsonDeserializer())
-                .build();
-
-        ObjectMapper mapper = config.getObjectMapper();
-
-        BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
-        Friend friend = mapper.readValue(document.toByteArray(), Friend.class);
-        assertThat(friend.getName()).isEqualTo("Doe");
     }
 
     private static class DoeJsonDeserializer extends JsonDeserializer<String> {

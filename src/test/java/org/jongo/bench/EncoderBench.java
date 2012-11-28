@@ -25,7 +25,7 @@ import com.mongodb.DefaultDBEncoder;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
 import org.jongo.bson.BsonDBEncoder;
-import org.jongo.marshall.jackson.JacksonDocumentHandler;
+import org.jongo.marshall.jackson.JacksonEngine;
 
 import java.util.Map;
 
@@ -34,7 +34,7 @@ import static org.jongo.bench.BenchUtil.createFriend;
 
 public class EncoderBench extends SimpleBenchmark {
 
-    private final JacksonDocumentHandler documentHandler = new JacksonDocumentHandler();
+    private final JacksonEngine engine = new JacksonEngine();
     private final DBApiLayerEmulator dbApiLayer = new DBApiLayerEmulator();
 
     public void timeEncodeWithDriver(int reps) {
@@ -46,7 +46,7 @@ public class EncoderBench extends SimpleBenchmark {
 
     public void timeEncodeWithBsonJongo(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject friend = documentHandler.marshall(createFriend(i)).toDBObject();
+            DBObject friend = engine.marshall(createFriend(i)).toDBObject();
             dbApiLayer.encode(BsonDBEncoder.FACTORY, friend);
         }
     }

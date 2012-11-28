@@ -29,8 +29,7 @@ public class Jongo {
     private final Mapper mapper;
 
     public Jongo(DB database) {
-        this.database = database;
-        this.mapper = new JacksonMapper();
+        this(database, new JacksonMapper());
     }
 
     public Jongo(DB database, Mapper mapper) {

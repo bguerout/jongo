@@ -23,28 +23,34 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
+import static org.jongo.marshall.jackson.MappingConfigBuilder.useBson4Jackson;
+
 public class JacksonMapper implements Mapper {
 
-    private final JacksonDocumentHandler documentHandler;
+    private final JacksonEngine engine;
     private final JacksonObjectIdUpdater objectIdUpdater;
     private final JsonQueryFactory queryFactory;
 
+    public static MappingConfigBuilder enhanceConfig() {
+        return useBson4Jackson();
+    }
+
     public JacksonMapper() {
-        this(MappingConfigBuilder.defaultConfig());
+        this(useBson4Jackson().buildConfig());
     }
 
     public JacksonMapper(MappingConfig mappingConfig) {
-        this.documentHandler = new JacksonDocumentHandler(mappingConfig);
+        this.engine = new JacksonEngine(mappingConfig);
+        this.queryFactory = new JsonQueryFactory(engine);
         this.objectIdUpdater = new JacksonObjectIdUpdater();
-        this.queryFactory = new JsonQueryFactory(documentHandler);
     }
 
     public Marshaller getMarshaller() {
-        return documentHandler;
+        return engine;
     }
 
     public Unmarshaller getUnmarshaller() {
-        return documentHandler;
+        return engine;
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {
@@ -54,4 +60,5 @@ public class JacksonMapper implements Mapper {
     public QueryFactory getQueryFactory() {
         return queryFactory;
     }
+
 }

@@ -25,18 +25,18 @@ import org.jongo.marshall.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.jongo.marshall.jackson.MappingConfigBuilder.defaultConfig;
+import static org.jongo.marshall.jackson.MappingConfigBuilder.useBson4Jackson;
 
 
-public class JacksonDocumentHandler implements Unmarshaller, Marshaller {
+public class JacksonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
 
-    public JacksonDocumentHandler() {
-        this(defaultConfig());
+    public JacksonEngine() {
+        this(useBson4Jackson().buildConfig());
     }
 
-    public JacksonDocumentHandler(MappingConfig config) {
+    public JacksonEngine(MappingConfig config) {
         this.config = config;
     }
 

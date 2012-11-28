@@ -17,7 +17,7 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import org.jongo.marshall.jackson.JacksonDocumentHandler;
+import org.jongo.marshall.jackson.JacksonEngine;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -27,7 +27,7 @@ public class QueryTest {
     @Test
     public void shouldConvertToDBObject() throws Exception {
 
-        Query query = new JsonQueryFactory(new JacksonDocumentHandler()).createQuery("{'value':1}");
+        Query query = new JsonQueryFactory(new JacksonEngine()).createQuery("{'value':1}");
 
         DBObject dbObject = query.toDBObject();
 

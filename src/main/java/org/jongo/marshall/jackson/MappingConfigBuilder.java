@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.undercouch.bson4jackson.BsonFactory;
+import org.jongo.Mapper;
 import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
@@ -41,36 +42,32 @@ public class MappingConfigBuilder {
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    private MappingConfigBuilder(ObjectMapper mapper) {
+    public static MappingConfigBuilder useBson4Jackson() {
+        BsonFactory bsonFactory = MongoBsonFactory.createFactory();
+        return new MappingConfigBuilder(new ObjectMapper(bsonFactory))
+                .addModule(new BsonModule())
+                .addModifier(new MappingConfigBuilder.SerializationModifier())
+                .addModifier(new MappingConfigBuilder.DeserializationModifier());
+    }
+
+    public MappingConfigBuilder(ObjectMapper mapper) {
         this.mapper = mapper;
         this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
         addModule(module);
     }
 
-    public static MappingConfig defaultConfig() {
-        return usingBsonConfig().build();
-    }
-
-    public static MappingConfigBuilder usingObjectMapper(ObjectMapper mapper) {
-        return new MappingConfigBuilder(mapper);
-    }
-
-    public static MappingConfigBuilder usingBsonConfig() {
-        BsonFactory bsonFactory = MongoBsonFactory.createFactory();
-        return new MappingConfigBuilder(new ObjectMapper(bsonFactory))
-                .addModule(new BsonModule())
-                .addModifier(new SerializationModifier())
-                .addModifier(new DeserializationModifier());
-    }
-
-    public MappingConfig build() {
+    public MappingConfig buildConfig() {
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
         }
         setDefaultCallbacksIfNone();
 
         return new MappingConfig(mapper, readerCallback, writerCallback);
+    }
+
+    public Mapper buildMapper() {
+        return new JacksonMapper(buildConfig());
     }
 
     private void setDefaultCallbacksIfNone() {
