@@ -26,7 +26,6 @@ import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.MappingConfigBuilder;
 import org.jongo.marshall.jackson.MappingConfig;
-import org.jongo.marshall.jackson.configuration.JsonModule;
 
 import java.io.StringWriter;
 import java.io.Writer;

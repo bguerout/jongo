@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.jackson.configuration.JsonModule;
+import org.jongo.compatibility.JsonModule;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
