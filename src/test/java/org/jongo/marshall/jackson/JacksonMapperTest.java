@@ -25,6 +25,7 @@ import com.mongodb.BasicDBObject;
 import org.jongo.Mapper;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
@@ -33,20 +34,6 @@ import java.io.IOException;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JacksonMapperTest {
-
-    @Test
-    public void enhanceConfigAndBuildConfig() throws Exception {
-
-        BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
-
-        MappingConfig config = JacksonMapper.enhanceConfig()
-                .addDeserializer(String.class, new DoeJsonDeserializer())
-                .buildConfig();
-        ObjectMapper mapper = config.getObjectMapper();
-
-        Friend friend = mapper.readValue(document.toByteArray(), Friend.class);
-        assertThat(friend.getName()).isEqualTo("Doe");
-    }
 
     @Test
     public void enhanceConfigAndBuildMapper() throws Exception {

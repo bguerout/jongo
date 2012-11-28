@@ -24,8 +24,10 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.MappingConfigBuilder;
-import org.jongo.marshall.jackson.MappingConfig;
+import org.jongo.marshall.jackson.configuration.DeserializationModifier;
+import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.SerializationModifier;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -37,8 +39,8 @@ class JsonEngine implements Unmarshaller, Marshaller {
     public static MappingConfig createConfig() {
         return new MappingConfigBuilder(new ObjectMapper())
                 .addModule(new JsonModule())
-                .addModifier(new MappingConfigBuilder.SerializationModifier())
-                .addModifier(new MappingConfigBuilder.DeserializationModifier())
+                .addModifier(new SerializationModifier())
+                .addModifier(new DeserializationModifier())
                 .buildConfig();
     }
 

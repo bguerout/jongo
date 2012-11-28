@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
+import org.jongo.bson.Bson;
+import org.jongo.bson.BsonDocument;
 import org.jongo.compatibility.JsonModule;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
@@ -69,6 +73,20 @@ public class MappingConfigBuilderTest {
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
         String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
         assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
+    }
+
+    @Test
+    public void enhanceConfigAndBuildConfig() throws Exception {
+
+        BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
+
+        MappingConfig config = JacksonMapper.enhanceConfig()
+                .addDeserializer(String.class, new DoeJsonDeserializer())
+                .buildConfig();
+        ObjectMapper mapper = config.getObjectMapper();
+
+        Friend friend = mapper.readValue(document.toByteArray(), Friend.class);
+        assertThat(friend.getName()).isEqualTo("Doe");
     }
 
     private static class DoeJsonDeserializer extends JsonDeserializer<String> {

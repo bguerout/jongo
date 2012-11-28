@@ -20,10 +20,12 @@ import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.marshall.jackson.MappingConfigBuilder.useBson4Jackson;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.useBson4Jackson;
 
 public class JacksonMapper implements Mapper {
 

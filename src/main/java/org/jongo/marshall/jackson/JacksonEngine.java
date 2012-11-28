@@ -21,11 +21,12 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.jongo.marshall.jackson.MappingConfigBuilder.useBson4Jackson;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.useBson4Jackson;
 
 
 public class JacksonEngine implements Unmarshaller, Marshaller {

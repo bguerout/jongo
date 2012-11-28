@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package org.jongo.compatibility;
+package org.jongo.marshall.jackson.configuration;
 
-import org.jongo.marshall.jackson.configuration.MappingConfig;
-import org.jongo.util.compatibility.CompatibilitySuite;
-import org.jongo.util.compatibility.TestContext;
-import org.junit.runner.RunWith;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
-import static org.junit.runners.Parameterized.Parameters;
-
-@RunWith(CompatibilitySuite.class)
-public class JsonCompatibilitySuiteTest {
-
-    @Parameters
-    public static TestContext context() {
-        MappingConfig config = JsonEngine.createConfig();
-        return new TestContext("JsonProvider", new JsonMapper(config));
+class DefaultWriterCallback implements WriterCallback {
+    public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
+        return mapper.writer();
     }
-
 }

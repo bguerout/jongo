@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.undercouch.bson4jackson.BsonFactory;
 import org.jongo.Mapper;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
-import org.jongo.marshall.jackson.configuration.MapperModifier;
-import org.jongo.marshall.jackson.configuration.ReaderCallback;
-import org.jongo.marshall.jackson.configuration.WriterCallback;
 
 import java.util.ArrayList;
-
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
 public class MappingConfigBuilder {
     private final SimpleModule module;
@@ -46,8 +40,8 @@ public class MappingConfigBuilder {
         BsonFactory bsonFactory = MongoBsonFactory.createFactory();
         return new MappingConfigBuilder(new ObjectMapper(bsonFactory))
                 .addModule(new BsonModule())
-                .addModifier(new MappingConfigBuilder.SerializationModifier())
-                .addModifier(new MappingConfigBuilder.DeserializationModifier());
+                .addModifier(new SerializationModifier())
+                .addModifier(new DeserializationModifier());
     }
 
     public MappingConfigBuilder(ObjectMapper mapper) {
@@ -76,7 +70,6 @@ public class MappingConfigBuilder {
         if (writerCallback == null)
             writerCallback = new DefaultWriterCallback();
     }
-
 
     public <T> MappingConfigBuilder addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
         module.addDeserializer(type, deserializer);
@@ -118,57 +111,4 @@ public class MappingConfigBuilder {
         return this;
     }
 
-    public static final class SerializationModifier implements MapperModifier {
-
-        public void modify(ObjectMapper mapper) {
-            mapper.disable(AUTO_DETECT_GETTERS);
-            mapper.setSerializationInclusion(NON_NULL);
-            VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
-            mapper.setVisibilityChecker(checker.withFieldVisibility(ANY));
-        }
-    }
-
-    public static final class DeserializationModifier implements MapperModifier {
-
-        public void modify(ObjectMapper mapper) {
-            mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
-            mapper.disable(AUTO_DETECT_SETTERS);
-        }
-    }
-
-    private static class ViewWriterCallback implements WriterCallback {
-        private final Class<?> viewClass;
-
-        public ViewWriterCallback(Class<?> viewClass) {
-            this.viewClass = viewClass;
-        }
-
-        public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
-            return mapper.writerWithView(viewClass);
-        }
-    }
-
-    private static class ViewReaderCallback implements ReaderCallback {
-        private final Class<?> viewClass;
-
-        public ViewReaderCallback(Class<?> viewClass) {
-            this.viewClass = viewClass;
-        }
-
-        public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
-            return mapper.reader(clazz).withView(viewClass);
-        }
-    }
-
-    private static class DefaultWriterCallback implements WriterCallback {
-        public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
-            return mapper.writer();
-        }
-    }
-
-    private static class DefaultReaderCallback implements ReaderCallback {
-        public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
-            return mapper.reader(clazz);
-        }
-    }
 }
