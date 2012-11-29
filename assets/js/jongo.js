@@ -4,7 +4,7 @@ $(document).ready(function() {
     var height = $(window).height(), width = $(window).width();
 
     if(width > 750 && height > 746) {
-      if(height > 945) height = 945;
+      if(height > 900) height = 900;
       gap = height - 746;
     } else {
       gap = 0;
