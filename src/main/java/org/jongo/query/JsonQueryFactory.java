@@ -23,7 +23,6 @@ import org.jongo.bson.Bson;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +45,9 @@ public final class JsonQueryFactory implements QueryFactory {
     }
 
     public final Query createQuery(String query, Object... parameters) {
-
+        if (parameters == null) {
+            parameters = new Object[]{null};
+        }
         if (parameters.length == 0) {
             return new JsonQuery(query);
         }
@@ -76,7 +77,7 @@ public final class JsonQueryFactory implements QueryFactory {
 
     private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
         try {
-            if (Bson.isPrimitive(parameter)) {
+            if (parameter == null || Bson.isPrimitive(parameter)) {
                 return serializeBsonPrimitives ? JSON.serialize(parameter) : parameter;
             }
             if (parameter instanceof Enum) {

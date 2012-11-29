@@ -159,6 +159,29 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
+    public void canBindNull() throws Exception {
+
+        collection.insert("{name:null}");
+        collection.insert("{name:'John'}");
+
+        long nb = collection.count("{name:#}", null);
+
+        assertThat(nb).isEqualTo(1);
+    }
+
+
+    @Test
+    public void canUseListWithANullElement() throws Exception {
+
+        collection.insert("{name:null}");
+        collection.insert("{name:'John'}");
+
+        long nb = collection.count("{name:{$in:#}}", Lists.newArrayList(1, null));
+
+        assertThat(nb).isEqualTo(1);
+    }
+
+    @Test
     public void canUseParameterWith$in() throws Exception {
 
         collection.insert("{value:1}");

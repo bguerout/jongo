@@ -69,6 +69,14 @@ public class JsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldBindNullParameter() throws Exception {
+
+        Query query = factory.createQuery("{id:#}", null);
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", null));
+    }
+
+    @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
         QueryFactory factoryWithToken = new JsonQueryFactory(new JsonEngine(), "@");
