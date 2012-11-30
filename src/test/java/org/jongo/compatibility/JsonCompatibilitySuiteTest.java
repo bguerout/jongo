@@ -16,7 +16,7 @@
 
 package org.jongo.compatibility;
 
-import org.jongo.marshall.jackson.JsonProvider;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
 import org.junit.runner.RunWith;
@@ -28,7 +28,8 @@ public class JsonCompatibilitySuiteTest {
 
     @Parameters
     public static TestContext context() {
-        return new TestContext("JsonProvider", new JsonProvider());
+        MappingConfig config = JsonEngine.createConfig();
+        return new TestContext("JsonProvider", new JsonMapper(config));
     }
 
 }

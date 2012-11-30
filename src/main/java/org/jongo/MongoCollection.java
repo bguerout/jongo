@@ -40,12 +40,12 @@ public class MongoCollection {
     private final QueryFactory queryFactory;
     private final ObjectIdUpdater objectIdUpdater;
 
-    public MongoCollection(DBCollection dbCollection, Provider provider) {
+    public MongoCollection(DBCollection dbCollection, Mapper mapper) {
         this.collection = dbCollection;
-        this.marshaller = provider.getMarshaller();
-        this.unmarshaller = provider.getUnmarshaller();
-        this.objectIdUpdater = provider.getObjectIdUpdater();
-        this.queryFactory = provider.getQueryFactory();
+        this.marshaller = mapper.getMarshaller();
+        this.unmarshaller = mapper.getUnmarshaller();
+        this.objectIdUpdater = mapper.getObjectIdUpdater();
+        this.queryFactory = mapper.getQueryFactory();
     }
 
     public FindOne findOne(ObjectId id) {

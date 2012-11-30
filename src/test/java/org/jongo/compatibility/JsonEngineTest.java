@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.compatibility;
 
 import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
@@ -31,13 +31,13 @@ import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BsonUtil.bsonify;
 
-public class BsonEngineTest {
+public class JsonEngineTest {
 
-    private BsonEngine engine;
+    private JsonEngine engine;
 
     @Before
     public void setUp() throws Exception {
-        this.engine = new BsonEngine();
+        this.engine = new JsonEngine(JsonEngine.createConfig());
     }
 
     @Test(expected = MarshallingException.class)
@@ -69,8 +69,7 @@ public class BsonEngineTest {
     }
 
     @Test
-    public void canUnmarshallBson() throws IOException {
-
+    public void canUnmarshallJson() throws IOException {
         BsonDocument document = bsonify("{'address': '22 rue des murlins'}");
 
         Friend friend = engine.unmarshall(document, Friend.class);

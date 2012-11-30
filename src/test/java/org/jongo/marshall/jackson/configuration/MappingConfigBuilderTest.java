@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -24,24 +24,23 @@ import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
-import org.jongo.marshall.jackson.configuration.JsonModule;
+import org.jongo.compatibility.JsonModule;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonProviders.usingBson;
-import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
 
-public class JacksonProvidersTest {
+public class MappingConfigBuilderTest {
 
     @Test
     public void canAddDeserializer() throws Exception {
 
-        MappingConfig config = usingJson()
+        MappingConfig config = new MappingConfigBuilder(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
+                .buildConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -52,9 +51,9 @@ public class JacksonProvidersTest {
     @Test
     public void canAddSerializer() throws Exception {
 
-        MappingConfig conf = usingJson()
+        MappingConfig conf = new MappingConfigBuilder(new ObjectMapper())
                 .addSerializer(String.class, new DoeJsonSerializer())
-                .innerConfig();
+                .buildConfig();
 
         ObjectMapper mapper = conf.getObjectMapper();
 
@@ -65,9 +64,9 @@ public class JacksonProvidersTest {
     @Test
     public void canAddModule() throws Exception {
 
-        MappingConfig config = usingJson()
+        MappingConfig config = new MappingConfigBuilder(new ObjectMapper())
                 .addModule(new JsonModule())
-                .innerConfig();
+                .buildConfig();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -77,42 +76,15 @@ public class JacksonProvidersTest {
     }
 
     @Test
-    public void canCreateJsonMapper() throws Exception {
-
-        MappingConfig config = usingJson()
-                .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
-
-        ObjectMapper mapper = config.getObjectMapper();
-
-        ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
-        String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
-        assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
-    }
-
-    @Test
-    public void canCreateConfigWithCustomMapper() throws Exception {
-
-        MappingConfig config = new JacksonProviders.Builder(new ObjectMapper(), JacksonProviders.Type.JSON)
-                .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
-
-        ObjectMapper mapper = config.getObjectMapper();
-
-        Friend friend = mapper.readValue("{\"name\":\"robert\"}", Friend.class);
-        assertThat(friend.getName()).isEqualTo("Doe");
-    }
-
-    @Test
-    public void canCreateStreamMapper() throws Exception {
-
-        MappingConfig config = usingBson()
-                .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
-
-        ObjectMapper mapper = config.getObjectMapper();
+    public void enhanceConfigAndBuildConfig() throws Exception {
 
         BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
+
+        MappingConfig config = JacksonMapper.enhanceConfig()
+                .addDeserializer(String.class, new DoeJsonDeserializer())
+                .buildConfig();
+        ObjectMapper mapper = config.getObjectMapper();
+
         Friend friend = mapper.readValue(document.toByteArray(), Friend.class);
         assertThat(friend.getName()).isEqualTo("Doe");
     }

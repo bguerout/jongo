@@ -18,25 +18,26 @@ package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.useBson4Jackson;
 import static org.jongo.util.BsonUtil.bsonify;
 
 public class JacksonViewTest {
 
-    private JsonEngine createProcessorWithView(final Class<?> viewClass) {
-        MappingConfig conf = usingJson().withView(viewClass).innerConfig();
-        return new JsonEngine(conf);
+    private JacksonEngine createProcessorWithView(final Class<?> viewClass) {
+        MappingConfig config = useBson4Jackson().withView(viewClass).buildConfig();
+        return new JacksonEngine(config);
     }
 
     @Test
     public void shouldRespectJsonPublicViewOnMarshall() throws Exception {
 
-        JsonEngine custom = createProcessorWithView(Views.Public.class);
+        JacksonEngine custom = createProcessorWithView(Views.Public.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -52,7 +53,7 @@ public class JacksonViewTest {
     @Test
     public void shouldRespectJsonPrivateViewOnMarshall() throws Exception {
 
-        JsonEngine custom = createProcessorWithView(Views.Private.class);
+        JacksonEngine custom = createProcessorWithView(Views.Private.class);
         Fox vixen = new Fox("fantastic", "roux");
         vixen.setGender("female");
 
@@ -69,7 +70,7 @@ public class JacksonViewTest {
     public void respectsJsonPublicViewOnUnmarshall() throws Exception {
 
         BsonDocument doc = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        JsonEngine custom = createProcessorWithView(Views.Public.class);
+        JacksonEngine custom = createProcessorWithView(Views.Public.class);
 
         Fox fox = custom.unmarshall(doc, Fox.class);
 
@@ -80,7 +81,7 @@ public class JacksonViewTest {
     public void respectsJsonPrivateViewOnUnmarshall() throws Exception {
 
         BsonDocument doc = bsonify("{'_class':'org.jongo.model.Fox','name':'fantastic','color':'roux','gender':'female'}");
-        JsonEngine custom = createProcessorWithView(Views.Private.class);
+        JacksonEngine custom = createProcessorWithView(Views.Private.class);
 
         Fox fox = custom.unmarshall(doc, Fox.class);
 

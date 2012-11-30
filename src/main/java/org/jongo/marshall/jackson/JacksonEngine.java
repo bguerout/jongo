@@ -16,54 +16,49 @@
 
 package org.jongo.marshall.jackson;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
-import static org.jongo.marshall.jackson.JacksonProviders.usingJson;
+import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.useBson4Jackson;
 
-public class JsonEngine implements Unmarshaller, Marshaller {
+
+public class JacksonEngine implements Unmarshaller, Marshaller {
 
     private final MappingConfig config;
 
-    public JsonEngine() {
-        this(usingJson().innerConfig());
+    public JacksonEngine() {
+        this(useBson4Jackson().buildConfig());
     }
 
-    public JsonEngine(MappingConfig config) {
+    public JacksonEngine(MappingConfig config) {
         this.config = config;
     }
 
     public <T> T unmarshall(BsonDocument document, Class<T> clazz) throws MarshallingException {
-        String json = document.toDBObject().toString();
+
         try {
-            return (T) config.getReader(clazz).readValue(json);
-        } catch (Exception e) {
-            String message = String.format("Unable to unmarshall from json: %s to %s", json, clazz);
+            return (T) config.getReader(clazz).readValue(document.toByteArray(), 0, document.getSize());
+        } catch (IOException e) {
+            String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
         }
     }
 
     public BsonDocument marshall(Object obj) throws MarshallingException {
-        try {
-            Writer writer = new StringWriter();
-            config.getWriter(obj.getClass()).writeValue(writer, obj);
-            DBObject dbObject = createDBObjectWithDriver(writer.toString());
-            return Bson.createDocument(dbObject);
-        } catch (Exception e) {
-            String message = String.format("Unable to marshall json from: %s", obj);
-            throw new MarshallingException(message, e);
-        }
-    }
 
-    protected DBObject createDBObjectWithDriver(String json) {
-        return (DBObject) JSON.parse(json);
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+            config.getWriter(obj).writeValue(output, obj);
+        } catch (IOException e) {
+            throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
+        }
+        return Bson.createDocument(output.toByteArray());
     }
 }
