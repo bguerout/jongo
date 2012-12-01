@@ -50,7 +50,7 @@ public class MongoCollectionTest extends JongoTestCase {
     @Test
     public void canCreateACollection() throws Exception {
 
-        MongoCollection mongoCollection = new MongoCollection(null, mock(Provider.class));
+        MongoCollection mongoCollection = new MongoCollection(null, mock(Mapper.class));
 
         assertThat(mongoCollection).isNotNull();
     }

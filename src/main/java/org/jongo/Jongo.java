@@ -20,29 +20,28 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
-import org.jongo.marshall.jackson.JacksonProviders;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.query.Query;
 
 public class Jongo {
 
     private final DB database;
-    private final Provider provider;
+    private final Mapper mapper;
 
     public Jongo(DB database) {
-        this.database = database;
-        this.provider = JacksonProviders.usingBson().build();
+        this(database, new JacksonMapper());
     }
 
-    public Jongo(DB database, Provider provider) {
+    public Jongo(DB database, Mapper mapper) {
         this.database = database;
-        this.provider = provider;
+        this.mapper = mapper;
     }
 
     public MongoCollection getCollection(String name) {
         DBCollection dbCollection = database.getCollection(name);
         dbCollection.setDBDecoderFactory(BsonDBDecoder.FACTORY);
         dbCollection.setDBEncoderFactory(BsonDBEncoder.FACTORY);
-        return new MongoCollection(dbCollection, provider);
+        return new MongoCollection(dbCollection, mapper);
     }
 
     public DB getDatabase() {
@@ -50,6 +49,6 @@ public class Jongo {
     }
 
     public Query createQuery(String query, Object... parameters) {
-        return provider.getQueryFactory().createQuery(query, parameters);
+        return mapper.getQueryFactory().createQuery(query, parameters);
     }
 }

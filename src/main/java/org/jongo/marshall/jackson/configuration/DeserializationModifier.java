@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.marshall.jackson.configuration;
 
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.query.QueryFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public interface Provider {
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-    Marshaller getMarshaller();
+public final class DeserializationModifier implements MapperModifier {
 
-    Unmarshaller getUnmarshaller();
-
-    ObjectIdUpdater getObjectIdUpdater();
-
-    QueryFactory getQueryFactory();
+    public void modify(ObjectMapper mapper) {
+        mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.disable(AUTO_DETECT_SETTERS);
+    }
 }

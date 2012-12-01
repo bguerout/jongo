@@ -19,8 +19,8 @@ package org.jongo.util;
 import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
-import org.jongo.Provider;
-import org.jongo.marshall.jackson.BsonProvider;
+import org.jongo.Mapper;
+import org.jongo.marshall.jackson.JacksonMapper;
 
 import java.net.UnknownHostException;
 
@@ -29,7 +29,7 @@ public abstract class JongoTestCase {
     private Jongo jongo;
 
     public JongoTestCase() {
-        this.jongo = new Jongo(findDatabase(), new BsonProvider());
+        this.jongo = new Jongo(findDatabase(), new JacksonMapper());
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
@@ -46,8 +46,8 @@ public abstract class JongoTestCase {
         return jongo.getDatabase();
     }
 
-    public void prepareMarshallingStrategy(Provider provider) {
-        this.jongo = new Jongo(findDatabase(), provider);
+    public void prepareMarshallingStrategy(Mapper mapper) {
+        this.jongo = new Jongo(findDatabase(), mapper);
     }
 
     private static DB findDatabase() {

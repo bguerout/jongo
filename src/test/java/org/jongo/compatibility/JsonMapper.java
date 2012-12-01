@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.compatibility;
 
 import org.jongo.ObjectIdUpdater;
-import org.jongo.Provider;
+import org.jongo.Mapper;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
+import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.marshall.jackson.JacksonProviders.usingBson;
+class JsonMapper implements Mapper {
 
-public class BsonProvider implements Provider {
+    private final JsonEngine engine;
 
-    private final BsonEngine engine;
-
-    public BsonProvider() {
-        this(usingBson().innerConfig());
-    }
-
-    public BsonProvider(MappingConfig mappingConfig) {
-        engine = new BsonEngine(mappingConfig);
+    public JsonMapper(MappingConfig config) {
+        engine = new JsonEngine(config);
     }
 
     public Marshaller getMarshaller() {

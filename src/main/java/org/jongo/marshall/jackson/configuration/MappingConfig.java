@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;

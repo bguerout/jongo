@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package org.jongo.util.compatibility;
+package org.jongo.marshall.jackson.configuration;
 
-import org.jongo.Mapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class TestContext {
+class ViewWriterCallback implements WriterCallback {
+    private final Class<?> viewClass;
 
-    private final String contextName;
-    private final Mapper mapper;
-
-    public TestContext(String contextName, Mapper mapper) {
-        this.contextName = contextName;
-        this.mapper = mapper;
+    public ViewWriterCallback(Class<?> viewClass) {
+        this.viewClass = viewClass;
     }
 
-    public Mapper getMapper() {
-        return mapper;
-    }
-
-    public String getContextName() {
-        return contextName;
+    public ObjectWriter getWriter(ObjectMapper mapper, Object pojo) {
+        return mapper.writerWithView(viewClass);
     }
 }

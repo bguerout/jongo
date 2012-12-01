@@ -31,13 +31,13 @@ import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BsonUtil.bsonify;
 
-public class JsonEngineTest {
+public class JacksonEngineTest {
 
-    private JsonEngine engine;
+    private JacksonEngine engine;
 
     @Before
     public void setUp() throws Exception {
-        this.engine = new JsonEngine();
+        this.engine = new JacksonEngine();
     }
 
     @Test(expected = MarshallingException.class)
@@ -69,7 +69,8 @@ public class JsonEngineTest {
     }
 
     @Test
-    public void canUnmarshallJson() throws IOException {
+    public void canUnmarshallBson() throws IOException {
+
         BsonDocument document = bsonify("{'address': '22 rue des murlins'}");
 
         Friend friend = engine.unmarshall(document, Friend.class);
