@@ -21,7 +21,7 @@ import org.jongo.Mapper;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
@@ -29,7 +29,7 @@ class JsonMapper implements Mapper {
 
     private final JsonEngine engine;
 
-    public JsonMapper(MappingConfig config) {
+    public JsonMapper(Mapping config) {
         engine = new JsonEngine(config);
     }
 

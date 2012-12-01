@@ -16,19 +16,25 @@
 
 package org.jongo.bench;
 
-import com.google.caliper.Runner;
-import com.google.caliper.SimpleBenchmark;
-import com.mongodb.*;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.jackson.JacksonEngine;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
+import com.google.caliper.Runner;
+import com.google.caliper.SimpleBenchmark;
+import com.mongodb.DBCollection;
+import com.mongodb.DBDecoder;
+import com.mongodb.DBDecoderFactory;
+import com.mongodb.DBObject;
+import com.mongodb.DefaultDBDecoder;
+
 public class DecoderBench extends SimpleBenchmark {
 
-    private final JacksonEngine engine = new JacksonEngine();
+    private final JacksonEngine engine = new JacksonEngine(new JacksonMapper.Builder().innerConfig());
 
     public void timeDecodeWithDriver(int reps) {
 

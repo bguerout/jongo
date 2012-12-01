@@ -16,35 +16,36 @@
 
 package org.jongo.compatibility;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.marshall.jackson.configuration.DeserializationModifier;
-import org.jongo.marshall.jackson.configuration.MappingConfigBuilder;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.marshall.jackson.configuration.SerializationModifier;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 class JsonEngine implements Unmarshaller, Marshaller {
 
-    private final MappingConfig config;
+    private final Mapping config;
 
-    public static MappingConfig createConfig() {
-        return new MappingConfigBuilder(new ObjectMapper())
+    public static Mapping createConfig() {
+        return new JacksonMapper.Builder(new ObjectMapper())
                 .addModule(new JsonModule())
                 .addModifier(new SerializationModifier())
                 .addModifier(new DeserializationModifier())
-                .buildConfig();
+                .innerConfig();
     }
 
-    public JsonEngine(MappingConfig config) {
+    public JsonEngine(Mapping config) {
         this.config = config;
     }
 

@@ -16,12 +16,13 @@
 
 package org.jongo;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.query.Query;
+
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 
 public class Jongo {
 
@@ -29,7 +30,7 @@ public class Jongo {
     private final Mapper mapper;
 
     public Jongo(DB database) {
-        this(database, new JacksonMapper());
+        this(database, new JacksonMapper.Builder().build());
     }
 
     public Jongo(DB database, Mapper mapper) {

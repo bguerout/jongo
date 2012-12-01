@@ -19,22 +19,20 @@ package org.jongo.marshall.jackson.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.jongo.marshall.jackson.configuration.ReaderCallback;
-import org.jongo.marshall.jackson.configuration.WriterCallback;
 
-public class MappingConfig {
+public class Mapping {
 
     private ObjectMapper mapper;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    public MappingConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
+    public Mapping(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
         this.mapper = mapper;
         this.readerCallback = readerCallback;
         this.writerCallback = writerCallback;
     }
 
-    ObjectMapper getObjectMapper() {
+    public ObjectMapper getObjectMapper() {
         return mapper;
     }
 
