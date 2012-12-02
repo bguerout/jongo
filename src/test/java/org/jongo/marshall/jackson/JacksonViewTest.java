@@ -30,7 +30,7 @@ import com.mongodb.DBObject;
 public class JacksonViewTest {
 
     private JacksonEngine createProcessorWithView(final Class<?> viewClass) {
-        Mapping mapping = new JacksonMapper.Builder().withView(viewClass).innerConfig();
+        Mapping mapping = new JacksonMapper.Builder().withView(viewClass).innerMapping();
         return new JacksonEngine(mapping);
     }
 

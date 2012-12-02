@@ -18,7 +18,7 @@ import com.mongodb.DBObject;
 
 public class JacksonEngineTest {
 
-    JacksonEngine engine = new JacksonEngine(new JacksonMapper.Builder().innerConfig());
+    JacksonEngine engine = new JacksonEngine(new JacksonMapper.Builder().innerMapping());
     
     @Test(expected = MarshallingException.class)
     public void shouldFailWhenUnableToMarshall() throws Exception {

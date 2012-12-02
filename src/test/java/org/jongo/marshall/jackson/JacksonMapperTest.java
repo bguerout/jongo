@@ -66,7 +66,7 @@ public class JacksonMapperTest {
 
         Mapping config = new JacksonMapper.Builder(new ObjectMapper())
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
+                .innerMapping();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -79,7 +79,7 @@ public class JacksonMapperTest {
 
         Mapping conf = new JacksonMapper.Builder(new ObjectMapper())
                 .addSerializer(String.class, new DoeJsonSerializer())
-                .innerConfig();
+                .innerMapping();
 
         ObjectMapper mapper = conf.getObjectMapper();
 
@@ -92,7 +92,7 @@ public class JacksonMapperTest {
 
         Mapping config = new JacksonMapper.Builder(new ObjectMapper())
                 .addModule(new JsonModule())
-                .innerConfig();
+                .innerMapping();
 
         ObjectMapper mapper = config.getObjectMapper();
 
@@ -108,7 +108,7 @@ public class JacksonMapperTest {
 
         Mapping config = new JacksonMapper.Builder()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerConfig();
+                .innerMapping();
         ObjectMapper mapper = config.getObjectMapper();
 
         Friend friend = mapper.readValue(document.toByteArray(), Friend.class);

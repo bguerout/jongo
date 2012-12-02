@@ -9,6 +9,6 @@ public class ConfigurationHelper {
     }
     
     public static Mapping mapping(JacksonMapper.Builder builder) {
-        return builder.innerConfig();
+        return builder.innerMapping();
     }
 }

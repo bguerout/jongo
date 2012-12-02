@@ -26,10 +26,13 @@ import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
 import org.jongo.marshall.jackson.configuration.DefaultReaderCallback;
 import org.jongo.marshall.jackson.configuration.DefaultWriterCallback;
+import org.jongo.marshall.jackson.configuration.DeserializationFeatureModifier;
 import org.jongo.marshall.jackson.configuration.DeserializationModifier;
+import org.jongo.marshall.jackson.configuration.MapperFeatureModifier;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.marshall.jackson.configuration.ReaderCallback;
+import org.jongo.marshall.jackson.configuration.SerializationFeatureModifier;
 import org.jongo.marshall.jackson.configuration.SerializationModifier;
 import org.jongo.marshall.jackson.configuration.ViewReaderCallback;
 import org.jongo.marshall.jackson.configuration.ViewWriterCallback;
@@ -37,10 +40,13 @@ import org.jongo.marshall.jackson.configuration.WriterCallback;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class JacksonMapper implements Mapper {
@@ -93,10 +99,10 @@ public class JacksonMapper implements Mapper {
         }
 
         public Mapper build() {
-            return new JacksonMapper(innerConfig());
+            return new JacksonMapper(innerMapping());
         }
         
-        Mapping innerConfig() {
+        Mapping innerMapping() {
             for (MapperModifier modifier : modifiers) {
                 modifier.modify(mapper);
             }
@@ -137,6 +143,36 @@ public class JacksonMapper implements Mapper {
             return this;
         }
 
+        public Builder enable(final DeserializationFeature feature) {
+            modifiers.add(new DeserializationFeatureModifier(feature, true));
+            return this;
+        }
+        
+        public Builder enable(final SerializationFeature feature) {
+            modifiers.add(new SerializationFeatureModifier(feature, true));
+            return this;
+        }
+        
+        public Builder enable(final MapperFeature feature) {
+            modifiers.add(new MapperFeatureModifier(feature, true));
+            return this;
+        }
+        
+        public Builder disable(final DeserializationFeature feature) {
+            modifiers.add(new DeserializationFeatureModifier(feature, false));
+            return this;
+        }
+        
+        public Builder disable(final SerializationFeature feature) {
+            modifiers.add(new SerializationFeatureModifier(feature, false));
+            return this;
+        }
+        
+        public Builder disable(final MapperFeature feature) {
+            modifiers.add(new MapperFeatureModifier(feature, false));
+            return this;
+        }
+        
         public Builder addModifier(MapperModifier modifier) {
             modifiers.add(modifier);
             return this;
