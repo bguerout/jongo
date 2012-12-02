@@ -25,7 +25,6 @@ import org.jongo.Mapper;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.compatibility.JsonModule;
-import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
 import org.junit.Test;
 

@@ -20,7 +20,6 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.jongo.util.BsonUtil.bsonify;
 
 import org.jongo.bson.BsonDocument;
-import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;

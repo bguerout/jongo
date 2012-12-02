@@ -30,7 +30,6 @@ import org.jongo.marshall.jackson.configuration.DeserializationFeatureModifier;
 import org.jongo.marshall.jackson.configuration.DeserializationModifier;
 import org.jongo.marshall.jackson.configuration.MapperFeatureModifier;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
-import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.marshall.jackson.configuration.ReaderCallback;
 import org.jongo.marshall.jackson.configuration.SerializationFeatureModifier;
 import org.jongo.marshall.jackson.configuration.SerializationModifier;

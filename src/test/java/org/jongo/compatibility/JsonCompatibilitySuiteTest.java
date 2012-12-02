@@ -16,7 +16,7 @@
 
 package org.jongo.compatibility;
 
-import org.jongo.marshall.jackson.configuration.Mapping;
+import org.jongo.marshall.jackson.Mapping;
 import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
 import org.junit.runner.RunWith;

@@ -26,8 +26,8 @@ import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.ConfigurationHelper;
 import org.jongo.marshall.jackson.JacksonMapper;
+import org.jongo.marshall.jackson.Mapping;
 import org.jongo.marshall.jackson.configuration.DeserializationModifier;
-import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.marshall.jackson.configuration.SerializationModifier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

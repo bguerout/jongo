@@ -24,7 +24,6 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.Mapping;
 
 
 public class JacksonEngine implements Unmarshaller, Marshaller {
