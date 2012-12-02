@@ -16,21 +16,23 @@
 
 package org.jongo.util;
 
-import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.MongoURI;
+import java.net.UnknownHostException;
+
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.Provider;
 import org.jongo.marshall.jackson.JsonProvider;
 
-import java.net.UnknownHostException;
+import com.mongodb.DB;
+import com.mongodb.Mongo;
+import com.mongodb.MongoURI;
 
 public abstract class JongoTestCase {
 
     public static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
 
     private Jongo jongo;
+    private static Mongo mongo;
 
     public JongoTestCase() {
         this.jongo = new Jongo(findDatabase(), new JsonProvider());
@@ -76,7 +78,10 @@ public abstract class JongoTestCase {
     }
 
     private static DB getLocalDB() throws UnknownHostException {
-        return new Mongo("127.0.0.1").getDB("jongo");
+       if(mongo == null) {
+           mongo = new Mongo("127.0.0.1");
+       }
+       return mongo.getDB("jongo");
     }
 
     public void prepareMarshallingStrategy(Provider provider) {

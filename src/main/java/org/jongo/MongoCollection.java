@@ -16,16 +16,16 @@
 
 package org.jongo;
 
+import org.bson.types.ObjectId;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
-import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
-import org.jongo.query.JsonQueryFactory;
-import org.jongo.query.Query;
-import org.jongo.query.QueryFactory;
 
 
 public class MongoCollection {
@@ -56,10 +56,6 @@ public class MongoCollection {
         return new FindOne(collection, unmarshaller, queryFactory, "{_id:#}", id);
     }
     
-    public FindAndModify findAndModify(String query, Object... parameters) {
-        return new FindAndModify(collection, unmarshaller, queryFactory, query, parameters);
-    }
-    
     public FindOne findOne() {
         return findOne(ALL);
     }
@@ -84,6 +80,18 @@ public class MongoCollection {
         return new Find(collection, unmarshaller, queryFactory, query, parameters);
     }
 
+    public FindAndModify findAndModify() {
+        return findAndModify(ALL);
+    }
+    
+    public FindAndModify findAndModify(String query) {
+        return findAndModify(query, NO_PARAMETERS);
+    }
+    
+    public FindAndModify findAndModify(String query, Object... parameters) {
+        return new FindAndModify(collection, unmarshaller, queryFactory, query, parameters);
+    }
+    
     public long count() {
         return collection.count();
     }

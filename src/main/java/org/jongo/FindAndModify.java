@@ -16,31 +16,53 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
+
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 public final class FindAndModify {
-    private final Unmarshaller unmarshaller;
+    
     private final DBCollection collection;
+    private final Unmarshaller unmarshaller;
+    private final QueryFactory queryFactory;
     private final Query query;
-    private Query fields;
-    private Query sort;
-    private Query modifier;
+    private Query fields, sort, modifier;
     private boolean remove = false;
     private boolean returnNew = false;
     private boolean upsert = false;
-    private final QueryFactory queryFactory;
     
     FindAndModify(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryFactory = queryFactory;
         this.query = this.queryFactory.createQuery(query, parameters);
+    }
+    
+    public FindAndModify with(String modifier, Object... parameters) {
+        if(modifier == null) throw new IllegalArgumentException("Modifier may not be null");
+        this.modifier = queryFactory.createQuery(modifier, parameters);
+        return this;
+    }
+    
+    public <T> T as(final Class<T> clazz) {
+        return map(newMapper(clazz, unmarshaller));
+    }
+    
+    private <T> T map(ResultMapper<T> resultMapper) {
+    	DBObject result = collection.findAndModify(query.toDBObject(), 
+    			getAsDBObject(fields), 
+    			getAsDBObject(sort), 
+    			remove, 
+    			getAsDBObject(modifier), 
+    			returnNew, 
+    			upsert);
+    	
+        return result == null ? null : resultMapper.map(result);
     }
 
     public FindAndModify fields(String fields) {
@@ -49,53 +71,26 @@ public final class FindAndModify {
     }
     
     public FindAndModify sort(String sort) {
-    	this.sort = queryFactory.createQuery(sort);
-    	return this;
+        this.sort = queryFactory.createQuery(sort);
+        return this;
     }
 
     public FindAndModify remove() {
-    	this.remove = true;
-    	return this;
+        this.remove = true;
+        return this;
     }
     
     public FindAndModify returnNew() {
-    	this.returnNew = true;
-    	return this;
+        this.returnNew = true;
+        return this;
     }
     
     public FindAndModify upsert() {
-    	this.upsert = true;
-    	return this;
+        this.upsert = true;
+        return this;
     }
     
-    public <T> T with(String modifier, final Class<T> clazz) {
-    	if(modifier == null) throw new IllegalArgumentException("Modifier may not be null");
-    	this.modifier = queryFactory.createQuery(modifier);
-        return map(newMapper(clazz, unmarshaller));
-    }
-
-    public <T> T with(String modifier, ResultMapper<T> resultMapper) {
-    	if(modifier == null) throw new IllegalArgumentException("Modifier may not be null");
-    	this.modifier = queryFactory.createQuery(modifier);
-    	return map(resultMapper);
-    }
-    
-    private <T> T map(ResultMapper<T> resultMapper) {
-    	DBObject result = collection.findAndModify(query.toDBObject(), 
-    			getAsDBObject(fields), 
-    			getAsDBObject(sort), 
-    			remove, 
-    			modifier.toDBObject(), 
-    			returnNew, 
-    			upsert);
-        if (result == null)
-            return null;
-
-        return resultMapper.map(result);
-    }
-
     private DBObject getAsDBObject(Query query) {
         return query == null ? null : query.toDBObject();
     }
-
 }
