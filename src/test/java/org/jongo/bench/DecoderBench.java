@@ -19,8 +19,8 @@ package org.jongo.bench;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDocument;
+import org.jongo.marshall.jackson.ConfigurationHelper;
 import org.jongo.marshall.jackson.JacksonEngine;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
@@ -34,7 +34,7 @@ import com.mongodb.DefaultDBDecoder;
 
 public class DecoderBench extends SimpleBenchmark {
 
-    private final JacksonEngine engine = new JacksonEngine(new JacksonMapper.Builder().innerConfig());
+    private final JacksonEngine engine = new JacksonEngine(ConfigurationHelper.mapping());
 
     public void timeDecodeWithDriver(int reps) {
 

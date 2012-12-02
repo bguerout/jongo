@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jongo.MongoCollection;
+import org.jongo.marshall.jackson.ConfigurationHelper;
 import org.jongo.marshall.jackson.JacksonEngine;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -70,7 +70,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
         friends.add(new Friend("peter"));
         collection.save(friends);
 
-        DBObject robert = new JacksonEngine(new JacksonMapper.Builder().innerConfig()).marshall(new Friend("Robert")).toDBObject();
+        DBObject robert = new JacksonEngine(ConfigurationHelper.mapping()).marshall(new Friend("Robert")).toDBObject();
         collection.update("{}").with("{$push:{friends:" + robert.toString() + "}}");
 
         assertThat(collection.count("{ 'friends.name' : 'Robert'}")).isEqualTo(1);

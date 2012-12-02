@@ -96,7 +96,7 @@ public class JacksonMapper implements Mapper {
             return new JacksonMapper(innerConfig());
         }
         
-        public Mapping innerConfig() {
+        Mapping innerConfig() {
             for (MapperModifier modifier : modifiers) {
                 modifier.modify(mapper);
             }
