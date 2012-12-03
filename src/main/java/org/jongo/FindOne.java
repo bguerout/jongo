@@ -16,13 +16,14 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
+
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 public final class FindOne {
 
@@ -39,25 +40,21 @@ public final class FindOne {
         this.query = this.queryFactory.createQuery(query, parameters);
     }
 
-    public FindOne fields(String fields) {
-        this.fields = queryFactory.createQuery(fields);
-        return this;
-    }
-
     public <T> T as(final Class<T> clazz) {
         return map(newMapper(clazz, unmarshaller));
     }
 
     public <T> T map(ResultMapper<T> resultMapper) {
         DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject());
-        if (result == null)
-            return null;
-
-        return resultMapper.map(result);
+        return result == null ? null : resultMapper.map(result);
+    }
+    
+    public FindOne fields(String fields) {
+        this.fields = queryFactory.createQuery(fields);
+        return this;
     }
 
     private DBObject getFieldsAsDBObject() {
         return fields == null ? null : fields.toDBObject();
     }
-
 }

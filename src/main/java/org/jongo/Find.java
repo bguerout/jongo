@@ -16,14 +16,15 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
+
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 public final class Find {
 
@@ -31,20 +32,14 @@ public final class Find {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final Query query;
-    private Query fields;
+    private Query fields, sort;
     private Integer limit, skip;
-    private Query sort;
 
     Find(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryFactory = queryFactory;
         this.query = this.queryFactory.createQuery(query, parameters);
-    }
-
-    public Find fields(String fields) {
-        this.fields = queryFactory.createQuery(fields);
-        return this;
     }
 
     public <T> Iterable<T> as(final Class<T> clazz) {
@@ -67,6 +62,11 @@ public final class Find {
         }
     }
 
+    public Find fields(String fields) {
+        this.fields = queryFactory.createQuery(fields);
+        return this;
+    }
+    
     public Find limit(int limit) {
         this.limit = limit;
         return this;
