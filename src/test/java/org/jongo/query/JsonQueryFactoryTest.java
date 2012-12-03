@@ -16,16 +16,15 @@
 
 package org.jongo.query;
 
-import static org.fest.assertions.Assertions.assertThat;
-
+import com.mongodb.BasicDBObject;
+import com.mongodb.QueryBuilder;
 import org.jongo.marshall.jackson.ConfigurationHelper;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.QueryBuilder;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JsonQueryFactoryTest {
 

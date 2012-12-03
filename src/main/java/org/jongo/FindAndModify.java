@@ -16,14 +16,13 @@
 
 package org.jongo;
 
-import static org.jongo.ResultMapperFactory.newMapper;
-
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 public class FindAndModify {
 
@@ -35,33 +34,33 @@ public class FindAndModify {
     private boolean remove = false;
     private boolean returnNew = false;
     private boolean upsert = false;
-    
+
     FindAndModify(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryFactory = queryFactory;
         this.query = this.queryFactory.createQuery(query, parameters);
     }
-    
+
     public FindAndModify with(String modifier, Object... parameters) {
-        if(modifier == null) throw new IllegalArgumentException("Modifier may not be null");
+        if (modifier == null) throw new IllegalArgumentException("Modifier may not be null");
         this.modifier = queryFactory.createQuery(modifier, parameters);
         return this;
     }
-    
+
     public <T> T as(final Class<T> clazz) {
         return map(newMapper(clazz, unmarshaller));
     }
-    
+
     private <T> T map(ResultMapper<T> resultMapper) {
-        DBObject result = collection.findAndModify(query.toDBObject(), 
-                getAsDBObject(fields), 
-                getAsDBObject(sort), 
-                remove, 
-                getAsDBObject(modifier), 
-                returnNew, 
+        DBObject result = collection.findAndModify(query.toDBObject(),
+                getAsDBObject(fields),
+                getAsDBObject(sort),
+                remove,
+                getAsDBObject(modifier),
+                returnNew,
                 upsert);
-        
+
         return result == null ? null : resultMapper.map(result);
     }
 
@@ -69,7 +68,7 @@ public class FindAndModify {
         this.fields = queryFactory.createQuery(fields);
         return this;
     }
-    
+
     public FindAndModify sort(String sort) {
         this.sort = queryFactory.createQuery(sort);
         return this;
@@ -79,17 +78,17 @@ public class FindAndModify {
         this.remove = true;
         return this;
     }
-    
+
     public FindAndModify returnNew() {
         this.returnNew = true;
         return this;
     }
-    
+
     public FindAndModify upsert() {
         this.upsert = true;
         return this;
     }
-    
+
     private DBObject getAsDBObject(Query query) {
         return query == null ? null : query.toDBObject();
     }

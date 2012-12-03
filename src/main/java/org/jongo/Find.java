@@ -16,15 +16,14 @@
 
 package org.jongo;
 
-import static org.jongo.ResultMapperFactory.newMapper;
-
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import static org.jongo.ResultMapperFactory.newMapper;
 
 public final class Find {
 
@@ -66,7 +65,7 @@ public final class Find {
         this.fields = queryFactory.createQuery(fields);
         return this;
     }
-    
+
     public Find limit(int limit) {
         this.limit = limit;
         return this;

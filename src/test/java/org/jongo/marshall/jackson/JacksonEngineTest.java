@@ -1,11 +1,6 @@
 package org.jongo.marshall.jackson;
 
-import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.util.BsonUtil.bsonify;
-
-import java.io.IOException;
-
+import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Fox;
@@ -13,13 +8,17 @@ import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.junit.Test;
 
-import com.mongodb.DBObject;
+import java.io.IOException;
+
+import static junit.framework.Assert.fail;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.BsonUtil.bsonify;
 
 
 public class JacksonEngineTest {
 
     JacksonEngine engine = new JacksonEngine(new JacksonMapper.Builder().innerMapping());
-    
+
     @Test(expected = MarshallingException.class)
     public void shouldFailWhenUnableToMarshall() throws Exception {
 

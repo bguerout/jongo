@@ -16,12 +16,11 @@
 
 package org.jongo.marshall.jackson;
 
-import org.jongo.marshall.jackson.configuration.ReaderCallback;
-import org.jongo.marshall.jackson.configuration.WriterCallback;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.jongo.marshall.jackson.configuration.ReaderCallback;
+import org.jongo.marshall.jackson.configuration.WriterCallback;
 
 public class Mapping {
 

@@ -16,13 +16,12 @@
 
 package org.jongo;
 
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.query.Query;
-
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 
 public class Jongo {
 

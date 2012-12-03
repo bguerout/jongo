@@ -16,8 +16,7 @@
 
 package org.jongo.bench;
 
-import java.net.UnknownHostException;
-
+import com.mongodb.*;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
@@ -25,12 +24,7 @@ import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.WriteConcern;
+import java.net.UnknownHostException;
 
 class BenchUtil {
 

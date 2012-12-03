@@ -16,8 +16,8 @@
 
 package org.jongo.compatibility;
 
-import org.jongo.ObjectIdUpdater;
 import org.jongo.Mapper;
+import org.jongo.ObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonObjectIdUpdater;

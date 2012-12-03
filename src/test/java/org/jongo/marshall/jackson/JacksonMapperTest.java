@@ -16,10 +16,11 @@
 
 package org.jongo.marshall.jackson;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Mapper;
 import org.jongo.bson.Bson;
@@ -28,15 +29,9 @@ import org.jongo.compatibility.JsonModule;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.mongodb.BasicDBObject;
+import java.io.IOException;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JacksonMapperTest {
 

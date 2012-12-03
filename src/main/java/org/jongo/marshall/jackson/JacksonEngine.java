@@ -16,14 +16,14 @@
 
 package org.jongo.marshall.jackson;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 
 public class JacksonEngine implements Unmarshaller, Marshaller {

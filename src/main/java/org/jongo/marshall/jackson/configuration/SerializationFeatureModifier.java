@@ -22,13 +22,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class SerializationFeatureModifier implements MapperModifier {
     private final SerializationFeature feature;
     private final boolean enable;
-    
+
     public SerializationFeatureModifier(SerializationFeature feature, boolean enable) {
         this.feature = feature;
         this.enable = enable;
     }
+
     public void modify(ObjectMapper mapper) {
-        if(enable)
+        if (enable)
             mapper.enable(feature);
         else
             mapper.disable(feature);

@@ -16,20 +16,19 @@
 
 package org.jongo.bench;
 
-import static org.jongo.bench.BenchUtil.getCollectionFromDriver;
-import static org.jongo.bench.BenchUtil.getCollectionFromJongo;
-
-import org.jongo.MongoCollection;
-import org.jongo.marshall.jackson.JacksonMapper;
-import org.jongo.model.Coordinate;
-import org.jongo.model.Friend;
-
 import com.google.caliper.Param;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.jongo.MongoCollection;
+import org.jongo.marshall.jackson.JacksonMapper;
+import org.jongo.model.Coordinate;
+import org.jongo.model.Friend;
+
+import static org.jongo.bench.BenchUtil.getCollectionFromDriver;
+import static org.jongo.bench.BenchUtil.getCollectionFromJongo;
 
 public class FindBench extends SimpleBenchmark {
 

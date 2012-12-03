@@ -16,11 +16,8 @@
 
 package org.jongo.spike;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.ConfigurationHelper;
 import org.jongo.marshall.jackson.JacksonEngine;
@@ -30,8 +27,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class QuestionsSpikeTest extends JongoTestCase {
 

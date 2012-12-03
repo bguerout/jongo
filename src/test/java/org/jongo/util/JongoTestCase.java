@@ -16,14 +16,13 @@
 
 package org.jongo.util;
 
-import java.net.UnknownHostException;
-
+import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
 
-import com.mongodb.DB;
+import java.net.UnknownHostException;
 
 public abstract class JongoTestCase {
 
