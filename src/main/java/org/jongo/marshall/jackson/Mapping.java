@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.configuration;
+package org.jongo.marshall.jackson;
+
+import org.jongo.marshall.jackson.configuration.ReaderCallback;
+import org.jongo.marshall.jackson.configuration.WriterCallback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.jongo.marshall.jackson.configuration.ReaderCallback;
-import org.jongo.marshall.jackson.configuration.WriterCallback;
 
-public class MappingConfig {
+public class Mapping {
 
     private ObjectMapper mapper;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
 
-    public MappingConfig(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
+    public Mapping(ObjectMapper mapper, ReaderCallback readerCallback, WriterCallback writerCallback) {
         this.mapper = mapper;
         this.readerCallback = readerCallback;
         this.writerCallback = writerCallback;

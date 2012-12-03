@@ -16,15 +16,21 @@
 
 package org.jongo.bench;
 
-import com.mongodb.*;
+import java.net.UnknownHostException;
+
 import org.jongo.Jongo;
-import org.jongo.MongoCollection;
 import org.jongo.Mapper;
+import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
-import java.net.UnknownHostException;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.WriteConcern;
 
 class BenchUtil {
 
@@ -62,7 +68,7 @@ class BenchUtil {
     }
 
     public static void injectFriendsIntoDB(int nbDocuments) throws UnknownHostException {
-        MongoCollection collection = getCollectionFromJongo(new JacksonMapper());
+        MongoCollection collection = getCollectionFromJongo(new JacksonMapper.Builder().build());
         collection.drop();
         for (int i = 0; i < nbDocuments; i++) {
             collection.save(createFriend(i), WriteConcern.SAFE);

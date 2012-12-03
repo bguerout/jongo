@@ -16,35 +16,29 @@
 
 package org.jongo.marshall.jackson;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.useBson4Jackson;
 
 
 public class JacksonEngine implements Unmarshaller, Marshaller {
 
-    private final MappingConfig config;
+    private final Mapping mapping;
 
-    public JacksonEngine() {
-        this(useBson4Jackson().buildConfig());
+    public JacksonEngine(Mapping mapping) {
+        this.mapping = mapping;
     }
 
-    public JacksonEngine(MappingConfig config) {
-        this.config = config;
-    }
-
+    @SuppressWarnings("unchecked")
     public <T> T unmarshall(BsonDocument document, Class<T> clazz) throws MarshallingException {
 
         try {
-            return (T) config.getReader(clazz).readValue(document.toByteArray(), 0, document.getSize());
+            return (T) mapping.getReader(clazz).readValue(document.toByteArray(), 0, document.getSize());
         } catch (IOException e) {
             String message = String.format("Unable to unmarshall result to %s from content %s", clazz, document.toString());
             throw new MarshallingException(message, e);
@@ -55,7 +49,7 @@ public class JacksonEngine implements Unmarshaller, Marshaller {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
-            config.getWriter(obj).writeValue(output, obj);
+            mapping.getWriter(obj).writeValue(output, obj);
         } catch (IOException e) {
             throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
         }

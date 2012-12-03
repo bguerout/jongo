@@ -17,16 +17,20 @@
 package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class ViewReaderCallback implements ReaderCallback {
-    private final Class<?> viewClass;
-
-    public ViewReaderCallback(Class<?> viewClass) {
-        this.viewClass = viewClass;
+public class SerializationFeatureModifier implements MapperModifier {
+    private final SerializationFeature feature;
+    private final boolean enable;
+    
+    public SerializationFeatureModifier(SerializationFeature feature, boolean enable) {
+        this.feature = feature;
+        this.enable = enable;
     }
-
-    public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
-        return mapper.reader(clazz).withView(viewClass);
+    public void modify(ObjectMapper mapper) {
+        if(enable)
+            mapper.enable(feature);
+        else
+            mapper.disable(feature);
     }
 }

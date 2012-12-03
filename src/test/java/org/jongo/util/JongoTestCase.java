@@ -16,20 +16,21 @@
 
 package org.jongo.util;
 
-import com.mongodb.DB;
+import java.net.UnknownHostException;
+
 import org.jongo.Jongo;
-import org.jongo.MongoCollection;
 import org.jongo.Mapper;
+import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
 
-import java.net.UnknownHostException;
+import com.mongodb.DB;
 
 public abstract class JongoTestCase {
 
     private Jongo jongo;
 
     public JongoTestCase() {
-        this.jongo = new Jongo(findDatabase(), new JacksonMapper());
+        this.jongo = new Jongo(findDatabase(), new JacksonMapper.Builder().build());
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
