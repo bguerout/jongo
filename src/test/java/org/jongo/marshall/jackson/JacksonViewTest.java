@@ -16,22 +16,21 @@
 
 package org.jongo.marshall.jackson;
 
-import com.mongodb.DBObject;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.util.BsonUtil.bsonify;
+
 import org.jongo.bson.BsonDocument;
-import org.jongo.marshall.jackson.configuration.MappingConfig;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jongo.marshall.jackson.configuration.MappingConfigBuilder.useBson4Jackson;
-import static org.jongo.util.BsonUtil.bsonify;
+import com.mongodb.DBObject;
 
 public class JacksonViewTest {
 
     private JacksonEngine createProcessorWithView(final Class<?> viewClass) {
-        MappingConfig config = useBson4Jackson().withView(viewClass).buildConfig();
-        return new JacksonEngine(config);
+        Mapping mapping = new JacksonMapper.Builder().withView(viewClass).innerMapping();
+        return new JacksonEngine(mapping);
     }
 
     @Test
