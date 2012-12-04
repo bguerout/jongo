@@ -9,6 +9,11 @@
 @red: #D14;
 @dblue: #1E347B;
 
+@font-face {
+  font-family: 'adonais';
+  src: url('Adonais Regular.ttf');
+}
+
 .cleancode (@color:@peach) {
   background-color: @color;
   border: 0px;
@@ -23,6 +28,14 @@
 	-webkit-border-radius: @arguments;
 	-moz-border-radius: @arguments;
 	border-radius: @arguments;
+}
+.user-select (@property:text) {
+	-webkit-touch-callout: @property;
+	-webkit-user-select: @property;
+	-khtml-user-select: @property;
+	-moz-user-select: @property;
+	-ms-user-select: @property;
+	user-select: @property;
 }
 .gradient (@color1, @color2){
 	background: @color1;
