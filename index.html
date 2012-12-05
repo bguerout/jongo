@@ -496,8 +496,8 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonProvider());</pre>
                                     <dt class="strong">Performance gap</dt><dd>six time faster than before, nearly as fast as the driver</dd>
                                     <dt>Highly adaptable</dt><dd><code>JacksonMapper</code> can modify the (un)marshalling process or be replaced</dd>
                                     <dt>findAndModify</dt><dd>operation support (<i>thanks to <a href="mark1ewis" target="_blank">mark1ewis</a></i>)</dd>
-                                    <dt>_id updating</dt><dd><code>save()</code> can be intercept _id with an <code>ObjectIdUpdater</code> before it is setted</dd>
-                                    <dt>@Id</dt><dd>pojo <code>_id</code> attribute can use an annotated <code>String</code> instead of <code>ObjectId</code></dd>
+                                    <dt>_id updating</dt><dd><code>save()</code> can intercept the <code>_id</code> with an <code>ObjectIdUpdater</code> before it is setted</dd>
+                                    <dt>@Id</dt><dd>pojo <code>_id</code> attribute can be <code>String</code> instead of <code>ObjectId</code></dd>
                                   </dl>
                                 </div>
                               </div>
