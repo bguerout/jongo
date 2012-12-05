@@ -140,8 +140,8 @@ DB db = new Mongo().getDB("dbname");
 Jongo jongo = new Jongo(db);
 MongoCollection friends = jongo.getCollection("friends");
 
-Iterable&lt;Friend&gt; all = friends.find("{name:'John'}").as(Friend.class);
-Friend one = friends.findOne("{name:'John'}").as(Friend.class);</pre>
+Iterable&lt;Friend&gt; all = friends.find("{name:'Joe'}").as(Friend.class);
+Friend one = friends.findOne("{name:'Joe'}").as(Friend.class);</pre>
 
               </section>
 
@@ -153,7 +153,13 @@ Friend one = friends.findOne("{name:'John'}").as(Friend.class);</pre>
 
                     <p>Passing an object to the <code>save(...)</code> method will do the job. See <a href="#mapping">mapping section</a> for objects defintion.
                     </p>
-                    <pre class="prettyprint">friends.save(new Friend("Joe", 27));</pre>
+                    <pre class="prettyprint">
+Friend joe = new Friend("Joe", 27);
+
+friends.save(joe);
+joe.age = 28;
+friends.save(joe);
+</pre>
 
                     <h2>Update</h2>
 
@@ -227,7 +233,7 @@ public class Friend {
                   <div class="row">
                     <div class="span9">
                       <p>
-                        <code>JSON</code> properties are automatically mapped to their equivalent object attributes (<i>and complex ones mapped as sub-attributes</i>). <strong>No extra annotations needed</strong>. For fine grained control over (un)marshalling, configure <a href="#advanced">Jongo underlying mapper</a> or <a href="#advanced">use your own (un)marshaller</a>.
+                        <code>JSON</code> properties are automatically mapped to their equivalent object attributes (<i>and complex ones mapped as sub-attributes</i>). <strong>No extra annotations needed</strong>. To ignore a pojo attribute, annotate it with <code>@JsonIgnore</code>.<br>For fine grained control over (un)marshalling, configure <a href="#advanced">Jongo mapper</a> or <a href="#advanced">create your own</a>.
                       </p>
 
                       <h2>Handling polymorphism</h2>
@@ -278,15 +284,15 @@ Fox fantastic = (Fox)friend;</pre>
 
                       <p>
                         Query syntax is almost the same as in Mongo shell: copy/paste, it just works.
-                        <br>Strings have to be escaped with single quotes <code>"{name: 'John'}"</code>, numbers don't <code>"{age:
+                        <br>Strings have to be escaped with single quotes <code>"{name: 'Joe'}"</code>, numbers don't <code>"{age:
                         18}"</code>.
                       </p>
 
                       <pre class="prettyprint">
-Iterable&lt;Friend&gt; all = friends.find("{name: 'John'}").as(Friend.class);
+Iterable&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
 
-Friend john = friends.findOne("{name: 'John'}").as(Friend.class);
-Friend john = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
+Friend joe = friends.findOne("{name: 'Joe'}").as(Friend.class);
+Friend joe = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
 
                         <p>
                           Field names only need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
@@ -322,7 +328,7 @@ friends.find().limit(10).as(Friend.class);</pre>
                               Primitives</a> or any complex type made of those.
                             </p>
 
-                            <pre class="prettyprint">friends.find("{name:#, age:#}", "John", 18); //&rarr; will produce {name: 'John', age: 18}</pre>
+                            <pre class="prettyprint">friends.find("{name:#, age:#}", "Joe", 18); //&rarr; will produce {name: 'Joe', age: 18}</pre>
                             <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
 friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}</pre>
@@ -339,14 +345,14 @@ collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
 
                               <h2>Count</h2>
                               <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.</p>
-                              <pre class="prettyprint">friends.count("{name: 'John'}");</pre>
+                              <pre class="prettyprint">friends.count("{name: 'Joe'}");</pre>
 
                               <h2>Aggregation</h2>
 
                               <h3>Distinct</h3>
                               <p>Distinct syntax is almost the same as Find/FindOne operations. Optional query can be setted using <code>query(...)</code> method</p>
                               <pre class="prettyprint">List&lt;String&gt; names = friends.distinct("name").as(String.class);</pre>
-                              <pre class="prettyprint">List&lt;Address&gt; addresses = friends.distinct("address").query("{name: 'John'}").as(Address.class);</pre>
+                              <pre class="prettyprint">List&lt;Address&gt; addresses = friends.distinct("address").query("{name: 'Joe'}").as(Address.class);</pre>
 
                               <h3>New Aggregation Framework</h3>
                               <p>Careful, this feature is only available in the Mongo v2.2 release. All aggregation operators are supported <code>$project, $match, $limit, $skip, $unwind, $group, $sort</code> and can be piped using <code>and(...)</code> method</p>
@@ -440,7 +446,7 @@ public class Views {
                                   </p>
 
                                   <pre class="prettyprint">
-Iterable&lt;Integer&gt; ages = col.find("{'name':'John'}").map(
+Iterable&lt;Integer&gt; ages = col.find("{'name':'Joe'}").map(
     new ResultMapper&lt;Integer&gt;() {
         @Override
         public Integer map(DBObject result) {
