@@ -330,10 +330,12 @@ friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}
                               <h2>Regular expressions</h2>
 
                               <p>
-                                Regular expressions can be expressed with the classic <code>$regex: 'jo.*'</code> operator or with <code>Pattern.compile("jo.*")</code>.
+                                Classic <code>$regex: 'jo.*'</code> operator works in Jongo. It worth mentioning that <code>Pattern.compile("jo.*")</code> also does. Unluckily, JavaScript syntax <code>/jo*/g</code> is not available in Mongo Java Driver and Jongo cannot use it yet.
                               </p>
 
-                              <pre class="prettyprint">friends.find("{name:#, age:#}", "John", 18); //&rarr; will produce {name: 'John', age: 18}</pre>
+                              <pre class="prettyprint">
+collection.findOne("{name: {$regex: #}}", "jo.*").as(Friend.class); 
+collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
 
                               <h2>Count</h2>
                               <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.</p>
