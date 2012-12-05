@@ -21,7 +21,7 @@ import org.jongo.ObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
-import org.jongo.marshall.jackson.Mapping;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 

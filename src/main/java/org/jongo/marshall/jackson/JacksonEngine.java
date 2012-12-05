@@ -21,6 +21,7 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.Mapping;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

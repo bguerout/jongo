@@ -1,6 +1,8 @@
 package org.jongo.marshall.jackson;
 
 
+import org.jongo.marshall.jackson.configuration.Mapping;
+
 public class ConfigurationHelper {
 
     public static Mapping mapping() {

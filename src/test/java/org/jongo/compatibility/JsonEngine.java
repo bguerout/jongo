@@ -23,7 +23,7 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.Mapping;
+import org.jongo.marshall.jackson.configuration.Mapping;
 
 import java.io.StringWriter;
 import java.io.Writer;

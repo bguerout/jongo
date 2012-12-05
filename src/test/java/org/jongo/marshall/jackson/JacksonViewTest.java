@@ -18,6 +18,7 @@ package org.jongo.marshall.jackson;
 
 import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;
