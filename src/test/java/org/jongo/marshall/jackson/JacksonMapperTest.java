@@ -19,14 +19,14 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Mapper;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
-import org.jongo.compatibility.JsonModule;
-import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
 import org.junit.Test;
 
@@ -59,11 +59,12 @@ public class JacksonMapperTest {
     @Test
     public void canAddDeserializer() throws Exception {
 
-        Mapping config = new JacksonMapper.Builder(new ObjectMapper())
+        BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
+        Mapper mapper = new JacksonMapper.Builder()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerMapping();
+                .build();
 
-        Friend friend = config.getReader(Friend.class).readValue("{\"name\":\"robert\"}");
+        Friend friend = mapper.getUnmarshaller().unmarshall(document, Friend.class);
 
         assertThat(friend.getName()).isEqualTo("Doe");
     }
@@ -72,14 +73,13 @@ public class JacksonMapperTest {
     public void canAddSerializer() throws Exception {
 
         Friend robert = new Friend("Robert");
-        Mapping config = new JacksonMapper.Builder(new ObjectMapper())
+        Mapper mapper = new JacksonMapper.Builder()
                 .addSerializer(String.class, new DoeJsonSerializer())
-                .innerMapping();
+                .build();
 
+        BsonDocument document = mapper.getMarshaller().marshall(robert);
 
-        String friend = config.getWriter(robert).writeValueAsString(robert);
-
-        assertThat(friend).contains("\"name\":\"Doe\"");
+        assertThat(document.toString()).contains("{ \"name\" : \"Doe\"}");
     }
 
     @Test
@@ -87,24 +87,41 @@ public class JacksonMapperTest {
 
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
         Friend friend = new Friend(oid, "Robert");
-        Mapping config = new JacksonMapper.Builder(new ObjectMapper())
-                .addModule(new JsonModule())
-                .innerMapping();
+        Mapper mapper = new JacksonMapper.Builder()
+                .addModule(new Module() {
+                    @Override
+                    public String getModuleName() {
+                        return "test-module";
+                    }
 
-        String robert = config.getWriter(friend).writeValueAsString(friend);
+                    @Override
+                    public Version version() {
+                        return new Version(2, 0, 0, "", "org.jongo", "testmodule");
+                    }
 
-        assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
+                    @Override
+                    public void setupModule(SetupContext setupContext) {
+                        SimpleDeserializers deserializers = new SimpleDeserializers();
+                        deserializers.addDeserializer(String.class, new DoeJsonDeserializer());
+                        setupContext.addDeserializers(deserializers);
+                    }
+                })
+                .build();
+
+        BsonDocument document = mapper.getMarshaller().marshall(friend);
+
+        assertThat(document.toString()).contains("\"_id\" : { \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
     }
 
     @Test
     public void enhanceConfigAndBuildConfig() throws Exception {
 
         BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
-        Mapping config = new JacksonMapper.Builder()
+        Mapper mapper = new JacksonMapper.Builder()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
-                .innerMapping();
+                .build();
 
-        Friend friend = config.getReader(Friend.class).readValue(document.toByteArray());
+        Friend friend = mapper.getUnmarshaller().unmarshall(document, Friend.class);
 
         assertThat(friend.getName()).isEqualTo("Doe");
     }

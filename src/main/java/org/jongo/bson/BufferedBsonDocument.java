@@ -50,4 +50,9 @@ class BufferedBsonDocument implements BsonDocument {
     public DBObject toDBObject() {
         return dbo;
     }
+
+    @Override
+    public String toString() {
+        return dbo.toString();
+    }
 }

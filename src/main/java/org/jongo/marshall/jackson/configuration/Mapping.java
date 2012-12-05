@@ -19,8 +19,6 @@ package org.jongo.marshall.jackson.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.jongo.marshall.jackson.configuration.ReaderCallback;
-import org.jongo.marshall.jackson.configuration.WriterCallback;
 
 public class Mapping {
 
@@ -41,4 +39,29 @@ public class Mapping {
     public ObjectWriter getWriter(Object pojo) {
         return writerCallback.getWriter(mapper, pojo);
     }
+
+    public static Mapping defaultMapping() {
+        return new Builder().build();
+    }
+
+    public static class Builder extends AbstractMappingBuilder<Builder> {
+
+        public Builder() {
+            super();
+        }
+
+        public Builder(ObjectMapper mapper) {
+            super(mapper);
+        }
+
+        @Override
+        protected Builder getBuilderInstance() {
+            return this;
+        }
+
+        public Mapping build() {
+            return innerMapping();
+        }
+    }
+
 }

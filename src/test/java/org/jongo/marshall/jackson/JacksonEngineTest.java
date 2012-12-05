@@ -3,6 +3,7 @@ package org.jongo.marshall.jackson;
 import com.mongodb.DBObject;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
@@ -17,7 +18,7 @@ import static org.jongo.util.BsonUtil.bsonify;
 
 public class JacksonEngineTest {
 
-    JacksonEngine engine = new JacksonEngine(new JacksonMapper.Builder().innerMapping());
+    JacksonEngine engine = new JacksonEngine(new Mapping.Builder().build());
 
     @Test(expected = MarshallingException.class)
     public void shouldFailWhenUnableToMarshall() throws Exception {

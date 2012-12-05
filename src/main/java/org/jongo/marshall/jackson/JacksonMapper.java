@@ -16,19 +16,15 @@
 
 package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.bson4jackson.BsonModule;
-import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
-import org.jongo.marshall.jackson.configuration.*;
+import org.jongo.marshall.jackson.configuration.AbstractMappingBuilder;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
-
-import java.util.ArrayList;
 
 public class JacksonMapper implements Mapper {
 
@@ -58,115 +54,25 @@ public class JacksonMapper implements Mapper {
         return queryFactory;
     }
 
-    public static class Builder {
-        private final SimpleModule module;
-        private final ArrayList<MapperModifier> modifiers;
-        private final ObjectMapper mapper;
-        private ReaderCallback readerCallback;
-        private WriterCallback writerCallback;
+    public static class Builder extends AbstractMappingBuilder<Builder> {
 
         public Builder() {
-            this(new ObjectMapper(MongoBsonFactory.createFactory()));
-            addModule(new BsonModule());
-            addModifier(new SerializationModifier());
-            addModifier(new DeserializationModifier());
+            super();
         }
 
         public Builder(ObjectMapper mapper) {
-            this.mapper = mapper;
-            this.module = new SimpleModule("jongo-custom-module");
-            this.modifiers = new ArrayList<MapperModifier>();
-            addModule(module);
+            super(mapper);
         }
 
         public Mapper build() {
             return new JacksonMapper(innerMapping());
         }
 
-        Mapping innerMapping() {
-            for (MapperModifier modifier : modifiers) {
-                modifier.modify(mapper);
-            }
-            setDefaultCallbacksIfNone();
-
-            return new Mapping(mapper, readerCallback, writerCallback);
-        }
-
-        private void setDefaultCallbacksIfNone() {
-            if (readerCallback == null)
-                readerCallback = new DefaultReaderCallback();
-            if (writerCallback == null)
-                writerCallback = new DefaultWriterCallback();
-        }
-
-        public <T> Builder addDeserializer(Class<T> type, JsonDeserializer<T> deserializer) {
-            module.addDeserializer(type, deserializer);
-            return this;
-        }
-
-        public <T> Builder addSerializer(Class<T> type, JsonSerializer<T> serializer) {
-            module.addSerializer(type, serializer);
-            return this;
-        }
-
-        public Builder addModule(final Module module) {
-            modifiers.add(new MapperModifier() {
-                public void modify(ObjectMapper mapper) {
-                    mapper.registerModule(module);
-                }
-            });
-            return this;
-        }
-
-        public Builder withView(final Class<?> viewClass) {
-            setReaderCallback(new ViewReaderCallback(viewClass));
-            setWriterCallback(new ViewWriterCallback(viewClass));
-            return this;
-        }
-
-        public Builder enable(final DeserializationFeature feature) {
-            modifiers.add(new DeserializationFeatureModifier(feature, true));
-            return this;
-        }
-
-        public Builder enable(final SerializationFeature feature) {
-            modifiers.add(new SerializationFeatureModifier(feature, true));
-            return this;
-        }
-
-        public Builder enable(final MapperFeature feature) {
-            modifiers.add(new MapperFeatureModifier(feature, true));
-            return this;
-        }
-
-        public Builder disable(final DeserializationFeature feature) {
-            modifiers.add(new DeserializationFeatureModifier(feature, false));
-            return this;
-        }
-
-        public Builder disable(final SerializationFeature feature) {
-            modifiers.add(new SerializationFeatureModifier(feature, false));
-            return this;
-        }
-
-        public Builder disable(final MapperFeature feature) {
-            modifiers.add(new MapperFeatureModifier(feature, false));
-            return this;
-        }
-
-        public Builder addModifier(MapperModifier modifier) {
-            modifiers.add(modifier);
-            return this;
-        }
-
-        public Builder setReaderCallback(ReaderCallback readerCallback) {
-            this.readerCallback = readerCallback;
-            return this;
-        }
-
-        public Builder setWriterCallback(WriterCallback writerCallback) {
-            this.writerCallback = writerCallback;
+        @Override
+        protected Builder getBuilderInstance() {
             return this;
         }
     }
+
+
 }

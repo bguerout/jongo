@@ -29,7 +29,7 @@ import static org.jongo.util.BsonUtil.bsonify;
 public class JacksonViewTest {
 
     private JacksonEngine createProcessorWithView(final Class<?> viewClass) {
-        Mapping mapping = new JacksonMapper.Builder().withView(viewClass).innerMapping();
+        Mapping mapping = new Mapping.Builder().withView(viewClass).build();
         return new JacksonEngine(mapping);
     }
 

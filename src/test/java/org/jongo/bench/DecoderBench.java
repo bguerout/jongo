@@ -22,14 +22,14 @@ import com.mongodb.*;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDocument;
-import org.jongo.marshall.jackson.ConfigurationHelper;
 import org.jongo.marshall.jackson.JacksonEngine;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
 public class DecoderBench extends SimpleBenchmark {
 
-    private final JacksonEngine engine = new JacksonEngine(ConfigurationHelper.mapping());
+    private final JacksonEngine engine = new JacksonEngine(Mapping.defaultMapping());
 
     public void timeDecodeWithDriver(int reps) {
 

@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class JsonModule extends Module {
+class JsonModule extends Module {
 
     @Override
     public String getModuleName() {

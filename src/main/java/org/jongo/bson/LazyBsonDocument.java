@@ -40,4 +40,9 @@ class LazyBsonDocument implements BsonDocument {
     public DBObject toDBObject() {
         return new LazyWriteableDBObject(bytes, new LazyBSONCallback());
     }
+
+    @Override
+    public String toString() {
+        return toDBObject().toString();
+    }
 }
