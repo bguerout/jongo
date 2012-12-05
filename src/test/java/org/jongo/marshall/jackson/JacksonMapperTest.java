@@ -62,36 +62,36 @@ public class JacksonMapperTest {
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .innerMapping();
 
-        ObjectMapper mapper = config.getObjectMapper();
+        Friend friend = config.getReader(Friend.class).readValue("{\"name\":\"robert\"}");
 
-        Friend friend = mapper.readValue("{\"name\":\"robert\"}", Friend.class);
         assertThat(friend.getName()).isEqualTo("Doe");
     }
 
     @Test
     public void canAddSerializer() throws Exception {
 
-        Mapping conf = new JacksonMapper.Builder(new ObjectMapper())
+        Friend robert = new Friend("Robert");
+        Mapping config = new JacksonMapper.Builder(new ObjectMapper())
                 .addSerializer(String.class, new DoeJsonSerializer())
                 .innerMapping();
 
-        ObjectMapper mapper = conf.getObjectMapper();
 
-        String friend = mapper.writeValueAsString(new Friend("Robert"));
+        String friend = config.getWriter(robert).writeValueAsString(robert);
+
         assertThat(friend).contains("\"name\":\"Doe\"");
     }
 
     @Test
     public void canAddModule() throws Exception {
 
+        ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
+        Friend friend = new Friend(oid, "Robert");
         Mapping config = new JacksonMapper.Builder(new ObjectMapper())
                 .addModule(new JsonModule())
                 .innerMapping();
 
-        ObjectMapper mapper = config.getObjectMapper();
+        String robert = config.getWriter(friend).writeValueAsString(friend);
 
-        ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
-        String robert = mapper.writeValueAsString(new Friend(oid, "Robert"));
         assertThat(robert).contains("\"_id\":{ \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
     }
 
@@ -99,13 +99,12 @@ public class JacksonMapperTest {
     public void enhanceConfigAndBuildConfig() throws Exception {
 
         BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
-
         Mapping config = new JacksonMapper.Builder()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .innerMapping();
-        ObjectMapper mapper = config.getObjectMapper();
 
-        Friend friend = mapper.readValue(document.toByteArray(), Friend.class);
+        Friend friend = config.getReader(Friend.class).readValue(document.toByteArray());
+
         assertThat(friend.getName()).isEqualTo("Doe");
     }
 

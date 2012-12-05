@@ -34,10 +34,6 @@ public class Mapping {
         this.writerCallback = writerCallback;
     }
 
-    ObjectMapper getObjectMapper() {
-        return mapper;
-    }
-
     public ObjectReader getReader(Class<?> clazz) {
         return readerCallback.getReader(mapper, clazz);
     }
