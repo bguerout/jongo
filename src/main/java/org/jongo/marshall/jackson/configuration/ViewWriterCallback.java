@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class ViewWriterCallback implements WriterCallback {
+class ViewWriterCallback implements WriterCallback {
     private final Class<?> viewClass;
 
     public ViewWriterCallback(Class<?> viewClass) {

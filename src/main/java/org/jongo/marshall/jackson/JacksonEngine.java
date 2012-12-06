@@ -46,13 +46,13 @@ public class JacksonEngine implements Unmarshaller, Marshaller {
         }
     }
 
-    public BsonDocument marshall(Object obj) throws MarshallingException {
+    public BsonDocument marshall(Object pojo) throws MarshallingException {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
-            mapping.getWriter(obj).writeValue(output, obj);
+            mapping.getWriter(pojo).writeValue(output, pojo);
         } catch (IOException e) {
-            throw new MarshallingException("Unable to marshall " + obj + " into bson", e);
+            throw new MarshallingException("Unable to marshall " + pojo + " into bson", e);
         }
         return Bson.createDocument(output.toByteArray());
     }

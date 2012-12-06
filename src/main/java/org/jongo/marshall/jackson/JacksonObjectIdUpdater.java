@@ -29,17 +29,17 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
 
+    public boolean canSetObjectId(Object target) {
+        Field field = findFieldOrNull(target.getClass());
+        return field != null && getTargetValue(target, field) == null;
+    }
+
     public void setDocumentGeneratedId(Object target, ObjectId id) {
         Field field = findFieldOrNull(target.getClass());
         if (field == null) {
             throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
         }
         updateField(target, id, field);
-    }
-
-    public boolean canSetObjectId(Object target) {
-        Field field = findFieldOrNull(target.getClass());
-        return field != null && getTargetValue(target, field) == null;
     }
 
     private void updateField(Object target, ObjectId id, Field field) {

@@ -20,5 +20,5 @@ import org.jongo.bson.BsonDocument;
 
 public interface Marshaller {
 
-    BsonDocument marshall(Object source) throws MarshallingException;
+    BsonDocument marshall(Object pojo) throws MarshallingException;
 }

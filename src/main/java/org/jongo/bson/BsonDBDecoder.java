@@ -21,7 +21,7 @@ import org.bson.LazyBSONCallback;
 
 import java.util.Iterator;
 
-public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
+public class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
     public final static DBDecoderFactory FACTORY = new BsonDBDecoderFactory();
 
@@ -61,22 +61,4 @@ public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
     }
 
-    private static class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument {
-
-        public RelaxedLazyDBObject(byte[] data, LazyBSONCallback cbk) {
-            super(data, cbk);
-        }
-
-        public byte[] toByteArray() {
-            return _input.array();
-        }
-
-        public DBObject toDBObject() {
-            return this;
-        }
-
-        public int getSize() {
-            return getBSONSize();
-        }
-    }
 }

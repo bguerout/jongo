@@ -65,7 +65,7 @@ public class FindAndModifyTest extends JongoTestCase {
         collection.save(new Friend("John", "22 Wall Street Avenue"));
 
         /* when */
-        Friend updatedFriend = collection.findAndModify().returnNew().with("{$set: {address: 'A better place'}}").as(Friend.class);
+        Friend updatedFriend = collection.findAndModify().with("{$set: {address: 'A better place'}}").returnNew().as(Friend.class);
 
         /* then */
         assertThat(updatedFriend.getAddress()).isEqualTo("A better place");

@@ -46,14 +46,14 @@ class JsonEngine implements Unmarshaller, Marshaller {
         }
     }
 
-    public BsonDocument marshall(Object obj) throws MarshallingException {
+    public BsonDocument marshall(Object pojo) throws MarshallingException {
         try {
             Writer writer = new StringWriter();
-            config.getWriter(obj.getClass()).writeValue(writer, obj);
+            config.getWriter(pojo.getClass()).writeValue(writer, pojo);
             DBObject dbObject = createDBObjectWithDriver(writer.toString());
             return Bson.createDocument(dbObject);
         } catch (Exception e) {
-            String message = String.format("Unable to marshall json from: %s", obj);
+            String message = String.format("Unable to marshall json from: %s", pojo);
             throw new MarshallingException(message, e);
         }
     }

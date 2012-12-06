@@ -31,6 +31,7 @@ import java.util.Iterator;
 
 import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
+import static org.jongo.marshall.jackson.id.Oid.withOid;
 
 public class FindTest extends JongoTestCase {
 
@@ -134,7 +135,7 @@ public class FindTest extends JongoTestCase {
         collection.save(friend);
 
         /* when */
-        Iterator<Friend> friends = collection.find(friend.getOid()).as(Friend.class).iterator();
+        Iterator<Friend> friends = collection.find(withOid(friend.getId())).as(Friend.class).iterator();
 
         /* then */
         Friend john = friends.next();

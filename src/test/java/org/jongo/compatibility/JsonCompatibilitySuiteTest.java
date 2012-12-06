@@ -17,9 +17,8 @@
 package org.jongo.compatibility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jongo.marshall.jackson.configuration.DeserializationModifier;
+import org.jongo.marshall.jackson.configuration.StandardModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
-import org.jongo.marshall.jackson.configuration.SerializationModifier;
 import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
 import org.junit.runner.RunWith;
@@ -33,8 +32,7 @@ public class JsonCompatibilitySuiteTest {
     public static TestContext context() {
         Mapping config = new Mapping.Builder(new ObjectMapper())
                 .addModule(new JsonModule())
-                .addModifier(new SerializationModifier())
-                .addModifier(new DeserializationModifier())
+                .addModifier(new StandardModifier())
                 .build();
 
         return new TestContext("JsonProvider", new JsonMapper(config));

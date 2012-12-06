@@ -24,7 +24,7 @@ import org.jongo.query.QueryFactory;
 
 import static org.jongo.ResultMapperFactory.newMapper;
 
-public class FindAndModify {
+public final class FindAndModify {
 
     private final DBCollection collection;
     private final Unmarshaller unmarshaller;

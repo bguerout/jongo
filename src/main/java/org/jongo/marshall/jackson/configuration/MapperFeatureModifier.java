@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson.configuration;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MapperFeatureModifier implements MapperModifier {
+class MapperFeatureModifier implements MapperModifier {
     private final MapperFeature feature;
     private final boolean enable;
 

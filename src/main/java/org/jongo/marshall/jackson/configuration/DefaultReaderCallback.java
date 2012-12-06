@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class DefaultReaderCallback implements ReaderCallback {
+class DefaultReaderCallback implements ReaderCallback {
     public ObjectReader getReader(ObjectMapper mapper, Class<?> clazz) {
         return mapper.reader(clazz);
     }

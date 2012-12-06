@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.configuration;
+package org.jongo.bson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
+import com.mongodb.LazyDBObject;
+import org.bson.LazyBSONCallback;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
+class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument {
 
-public final class DeserializationModifier implements MapperModifier {
+    public RelaxedLazyDBObject(byte[] data, LazyBSONCallback cbk) {
+        super(data, cbk);
+    }
 
-    public void modify(ObjectMapper mapper) {
-        mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.disable(AUTO_DETECT_SETTERS);
+    public byte[] toByteArray() {
+        return _input.array();
+    }
+
+    public DBObject toDBObject() {
+        return this;
+    }
+
+    public int getSize() {
+        return getBSONSize();
     }
 }

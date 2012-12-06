@@ -20,7 +20,7 @@ import static org.jongo.MongoCollection.MONGO_QUERY_OID;
 
 public class Oid {
 
-    public static String from(String id) {
+    public static String withOid(String id) {
         return "{_id: {" + MONGO_QUERY_OID + ":\"" + id + "\"}}";
     }
 }

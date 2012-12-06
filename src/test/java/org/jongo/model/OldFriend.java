@@ -35,10 +35,6 @@ public class OldFriend {
         return id;
     }
 
-    public String getOid() {
-        return Oid.from(id);
-    }
-
     public String getName() {
         return name;
     }

@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class SerializationFeatureModifier implements MapperModifier {
+class SerializationFeatureModifier implements MapperModifier {
     private final SerializationFeature feature;
     private final boolean enable;
 
