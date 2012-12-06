@@ -18,7 +18,6 @@ package org.jongo.model;
 
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.id.Id;
-import org.jongo.marshall.jackson.id.Oid;
 
 public class OldFriend {
 

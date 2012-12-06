@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.id;
+package org.jongo;
 
 import static org.jongo.MongoCollection.MONGO_QUERY_OID;
 
