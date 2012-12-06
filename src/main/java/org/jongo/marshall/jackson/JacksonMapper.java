@@ -22,20 +22,19 @@ import org.jongo.ObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.AbstractMappingBuilder;
-import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
 public class JacksonMapper implements Mapper {
 
     private final JacksonEngine engine;
-    private final JacksonObjectIdUpdater objectIdUpdater;
-    private final JsonQueryFactory queryFactory;
+    private final ObjectIdUpdater objectIdUpdater;
+    private final QueryFactory queryFactory;
 
-    private JacksonMapper(Mapping mapping) {
-        this.engine = new JacksonEngine(mapping);
-        this.queryFactory = new JsonQueryFactory(engine);
-        this.objectIdUpdater = new JacksonObjectIdUpdater();
+    private JacksonMapper(JacksonEngine engine, QueryFactory queryFactory, ObjectIdUpdater objectIdUpdater) {
+        this.engine = engine;
+        this.queryFactory = queryFactory;
+        this.objectIdUpdater = objectIdUpdater;
     }
 
     public Marshaller getMarshaller() {
@@ -56,6 +55,9 @@ public class JacksonMapper implements Mapper {
 
     public static class Builder extends AbstractMappingBuilder<Builder> {
 
+        private QueryFactory queryFactory;
+        private ObjectIdUpdater objectIdUpdater;
+
         public Builder() {
             super();
         }
@@ -65,7 +67,24 @@ public class JacksonMapper implements Mapper {
         }
 
         public Mapper build() {
-            return new JacksonMapper(innerMapping());
+            JacksonEngine jacksonEngine = new JacksonEngine(innerMapping());
+            if (queryFactory == null) {
+                queryFactory = new JsonQueryFactory(jacksonEngine);
+            }
+            if (objectIdUpdater == null) {
+                objectIdUpdater = new JacksonObjectIdUpdater();
+            }
+            return new JacksonMapper(jacksonEngine, queryFactory, objectIdUpdater);
+        }
+
+        public Builder withQueryFactory(QueryFactory factory) {
+            this.queryFactory = factory;
+            return getBuilderInstance();
+        }
+
+        public Builder withObjectIdUpdater(ObjectIdUpdater objectIdUpdater) {
+            this.objectIdUpdater = objectIdUpdater;
+            return getBuilderInstance();
         }
 
         @Override

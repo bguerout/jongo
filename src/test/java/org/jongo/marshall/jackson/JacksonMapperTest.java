@@ -25,9 +25,12 @@ import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Mapper;
+import org.jongo.ObjectIdUpdater;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.model.Friend;
+import org.jongo.query.Query;
+import org.jongo.query.QueryFactory;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,26 +38,6 @@ import java.io.IOException;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JacksonMapperTest {
-
-    @Test
-    public void enhanceConfigAndBuildMapper() throws Exception {
-
-        BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
-
-        Mapper mapper = new JacksonMapper.Builder()
-                .addDeserializer(String.class, new DoeJsonDeserializer())
-                .build();
-        Friend friend = mapper.getUnmarshaller().unmarshall(document, Friend.class);
-
-        assertThat(friend.getName()).isEqualTo("Doe");
-    }
-
-    private static class DoeJsonDeserializer extends JsonDeserializer<String> {
-        @Override
-        public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            return "Doe";
-        }
-    }
 
     @Test
     public void canAddDeserializer() throws Exception {
@@ -114,22 +97,43 @@ public class JacksonMapperTest {
     }
 
     @Test
-    public void enhanceConfigAndBuildConfig() throws Exception {
+    public void canAddJongoInterfaces() throws Exception {
 
-        BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
+        ObjectIdUpdater objectIdUpdater = new ObjectIdUpdater() {
+            public boolean canSetObjectId(Object target) {
+                return false;
+            }
+
+            public void setDocumentGeneratedId(Object target, ObjectId id) {
+            }
+        };
+
+        QueryFactory factory = new QueryFactory() {
+            public Query createQuery(String query, Object... parameters) {
+                return null;
+            }
+        };
         Mapper mapper = new JacksonMapper.Builder()
-                .addDeserializer(String.class, new DoeJsonDeserializer())
+                .withObjectIdUpdater(objectIdUpdater)
+                .withQueryFactory(factory)
                 .build();
 
-        Friend friend = mapper.getUnmarshaller().unmarshall(document, Friend.class);
-
-        assertThat(friend.getName()).isEqualTo("Doe");
+        assertThat(mapper.getObjectIdUpdater()).isEqualTo(objectIdUpdater);
+        assertThat(mapper.getQueryFactory()).isEqualTo(factory);
     }
 
     private static class DoeJsonSerializer extends JsonSerializer<String> {
+
         @Override
         public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
             jgen.writeString("Doe");
+        }
+    }
+
+    private static class DoeJsonDeserializer extends JsonDeserializer<String> {
+        @Override
+        public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            return "Doe";
         }
     }
 
