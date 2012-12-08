@@ -163,7 +163,7 @@ friends.save(joe);
 
                     <h2>Update</h2>
 
-                    <p>Update syntax is a bit different than in Mongo shell: <code>modifier</code> query has to be passed using <code>with(..)</code>. You can parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a href="#query-templating">query templating</a> for more details.
+                    <p>Update syntax is a bit different than in Mongo shell: <code>modifier</code> query has to be passed using <code>with(..)</code>. You can also parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a href="#query-templating">query templating</a> for more details.
                     </p>
                     <pre class="prettyprint">
 friends.update("{name: 'Joe'}").with("{$inc: {age: 1}}");
@@ -339,7 +339,7 @@ friends.find(withOid(joe.id)).as(Friend.class); // instead of new ObjectId(joe.i
 
                             <pre class="prettyprint">
 friends.find("{name:#, age:#}", "Joe", 18); //&rarr; will produce {name: 'Joe', age: 18}
-friends.find("{address: #}", new Address(..));</pre>
+friends.find("{address: #}", new Address(..)); //&rarr; will marshall Address object</pre>
                             <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
 friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}</pre>
