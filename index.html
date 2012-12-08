@@ -192,7 +192,7 @@ friends.remove(new ObjectId("4c...e"));</pre>
                       <div class="span9 header"><h1>Object Mapping</h1></div>
                       <div class="span9">
                         <p>
-                          Query results are automatically mapped into objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg constructor, even private</strong>. If the object has to be immutable, <code>@JsonCreator</code> annotation can be use instead.
+                          Query results are automatically mapped to objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg constructor, even private</strong>. If the object has to be immutable, <code>@JsonCreator</code> annotation can be use instead.
                         </p>
                         <p>
                           <code>_id</code> is a unique identifier available on every Mongo document. <strong>If it isn't setted, it is generated</strong>. It can be handled with the dedicated <code>ObjectId</code> class — named <code>_id</code> or annotated <code>@JsonProperty("_id")</code> — or with a simple <code>String</code> — annotated <code>@Id</code>.
@@ -319,7 +319,7 @@ friends.find().limit(10).as(Friend.class);</pre>
 
                         <h3>Oid</h3>
                         <p>
-                          As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated with a <code>String</code> annotated with <code>@Id</code>. If you want to completly avoid using <code>ObjectId</code>, Jongo offers the <code>Oid</code> class.
+                          As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated with a <code>String</code> annotated with <code>@Id</code>. If you want to completly avoid using <code>ObjectId</code>, Jongo offers <code>Oid</code> class.
                         </p>
 
                         <pre class="prettyprint">
@@ -404,7 +404,15 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
                                       code possible.
                                     </p>
                                     <p>
-                                      Since 0.3, Jongo uses Mongo Java driver as a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it uses <code>byte[]</code>. Only query marhalling has been kept the old way, because of its specificities.
+                                      Since .3, Jongo uses Mongo Java driver as a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it works at <code>byte[]</code> level (<i>note that query marhalling has been kept the old way, because of its specificities</i>).
+                                    </p>
+
+                                    <p>
+                                      Several microbenchmarks (<i>using Caliper & Yourkit</i>) highlight this release net improvements: Jongo .3 is 6 times faster than Jongo .2, which make it <strong>as fast as the driver!</strong> Have a look at <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.FindBench2/1982001" target="_blank">find microbenchmark</a> and <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.SaveBench/1981002" target="_blank">save microbenchmark</a>, and at <a href="https://github.com/bguerout/jongo/tree/master/src/test/java/org/jongo/bench" target="_blank">their implementations</a>.
+                                    </p>
+
+                                    <p>
+                                      <i class="icon-exclamation-sign"></i> Not all benchmarks accurately reflect real world performance; <a href="http://code.google.com/p/caliper/wiki/JavaMicrobenchmarks" target="_blank">more on microbenchmarks</a>.
                                     </p>
 
                                     <h2 id="jongo-mapper">Configuring Jongo Mapper</h2>
