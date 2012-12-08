@@ -16,14 +16,14 @@
 
 package org.jongo;
 
+import com.mongodb.DBObject;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
+import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.ErrorObject;
-import org.jongo.util.IdResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -57,6 +57,18 @@ public class FindAndModifyTest extends JongoTestCase {
         Friend updatedFriend = collection.findOne().as(Friend.class);
         assertThat(updatedFriend.getAddress()).isEqualTo("A better place");
         assertThat(updatedFriend.getName()).isEqualTo("John");
+    }
+
+    @Test
+    public void canFindAndModifyWithResultHandler() throws Exception {
+        /* given */
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
+
+        /* when */
+        DBObject dbo = collection.findAndModify("{name:#}", "John").with("{$set: {address: #}}", "A better place").map(new DBObjectResultHandler());
+
+        /* then */
+        assertThat(dbo.get("name")).isEqualTo("John");
     }
 
     @Test

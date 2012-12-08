@@ -52,7 +52,7 @@ public final class FindAndModify {
         return map(newMapper(clazz, unmarshaller));
     }
 
-    private <T> T map(ResultHandler<T> resultHandler) {
+    public <T> T map(ResultHandler<T> resultHandler) {
         DBObject result = collection.findAndModify(query.toDBObject(),
                 getAsDBObject(fields),
                 getAsDBObject(sort),
