@@ -19,7 +19,7 @@ package org.jongo;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
-import org.jongo.util.IdResultMapper;
+import org.jongo.util.IdResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -120,7 +120,7 @@ public class FindAndModifyTest extends JongoTestCase {
     @Test
     public void whenNoResultShouldReturnNull() throws Exception {
         assertThat(collection.findOne("{_id:'invalid-id'}").as(Object.class)).isNull();
-        assertThat(collection.findOne("{_id:'invalid-id'}").map(new IdResultMapper())).isNull();
+        assertThat(collection.findOne("{_id:'invalid-id'}").map(new IdResultHandler())).isNull();
         assertThat(collection.find("{_id:'invalid-id'}").as(Object.class)).hasSize(0);
     }
 }

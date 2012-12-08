@@ -17,15 +17,10 @@
 package org.jongo.util;
 
 import com.mongodb.DBObject;
-import org.jongo.ResultMapper;
+import org.jongo.ResultHandler;
 
-public class JSONResultMapper implements ResultMapper<String> {
-    public String map(DBObject result) {
-        return result.toString();
-    }
-
-
-    public static String jsonify(String json) {
-        return json.replace("'", "\"");
+public class DBObjectResultHandler implements ResultHandler<DBObject> {
+    public DBObject map(DBObject result) {
+        return result;
     }
 }

@@ -26,7 +26,7 @@ import org.jongo.query.QueryFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import static org.jongo.ResultHandlerFactory.newMapper;
 
 public final class Aggregate {
 
@@ -54,11 +54,11 @@ public final class Aggregate {
         return map(newMapper(clazz, unmarshaller));
     }
 
-    public <T> List<T> map(ResultMapper<T> resultMapper) {
+    public <T> List<T> map(ResultHandler<T> resultHandler) {
         List<DBObject> results = executeAggregateCommand();
         List<T> mappedResult = new ArrayList<T>(results.size());
         for (DBObject dbObject : results) {
-            mappedResult.add(resultMapper.map(dbObject));
+            mappedResult.add(resultHandler.map(dbObject));
         }
         return mappedResult;
     }

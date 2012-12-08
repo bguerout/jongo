@@ -23,7 +23,7 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import static org.jongo.ResultHandlerFactory.newMapper;
 
 public final class Find {
 
@@ -45,10 +45,10 @@ public final class Find {
         return map(newMapper(clazz, unmarshaller));
     }
 
-    public <T> Iterable<T> map(ResultMapper<T> resultMapper) {
+    public <T> Iterable<T> map(ResultHandler<T> resultHandler) {
         DBCursor cursor = collection.find(query.toDBObject(), getFieldsAsDBObject());
         addOptionsOn(cursor);
-        return new MongoIterator<T>(cursor, resultMapper);
+        return new MongoIterator<T>(cursor, resultHandler);
     }
 
     private void addOptionsOn(DBCursor cursor) {

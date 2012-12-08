@@ -17,9 +17,9 @@
 package org.jongo.util;
 
 import com.mongodb.DBObject;
-import org.jongo.ResultMapper;
+import org.jongo.ResultHandler;
 
-public class IdResultMapper implements ResultMapper<String> {
+public class IdResultHandler implements ResultHandler<String> {
 
     public String map(DBObject result) {
         return result.get("_id").toString();

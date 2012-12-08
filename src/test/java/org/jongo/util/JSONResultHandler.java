@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.util;
 
-import com.mongodb.DBCursor;
-import org.junit.Test;
+import com.mongodb.DBObject;
+import org.jongo.ResultHandler;
 
-import java.util.NoSuchElementException;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-public class MongoIteratorTest {
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldFailWhenNoMoreElements() throws Exception {
-        DBCursor cursor = mock(DBCursor.class);
-        when(cursor.hasNext()).thenReturn(false);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, mock(ResultHandler.class));
-
-        iterator.next();
+public class JSONResultHandler implements ResultHandler<String> {
+    public String map(DBObject result) {
+        return result.toString();
     }
 
+
+    public static String jsonify(String json) {
+        return json.replace("'", "\"");
+    }
 }

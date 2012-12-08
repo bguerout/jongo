@@ -68,9 +68,9 @@ public final class Distinct {
 
     private <T> List<T> typedList(List<DBObject> distinct, Class<T> clazz) {
         List<T> results = new ArrayList<T>();
-        ResultMapper<T> mapper = ResultMapperFactory.newMapper(clazz, unmarshaller);
+        ResultHandler<T> handler = ResultHandlerFactory.newMapper(clazz, unmarshaller);
         for (DBObject dbObject : distinct) {
-            results.add(mapper.map(dbObject));
+            results.add(handler.map(dbObject));
         }
         return results;
     }

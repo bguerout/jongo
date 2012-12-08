@@ -47,7 +47,7 @@ public class FindPartialFieldTest extends JongoTestCase {
         collection.save(friend);
 
         /* when */
-        collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());
+        collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultHandler());
     }
 
     @Test
@@ -56,12 +56,12 @@ public class FindPartialFieldTest extends JongoTestCase {
         collection.save(friend);
 
         /* when */
-        Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultMapper());
+        Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultHandler());
 
         assertThat(result).isTrue();
     }
 
-    private static class AssertionResultMapper implements ResultMapper<Boolean> {
+    private static class AssertionResultHandler implements ResultHandler<Boolean> {
         public Boolean map(DBObject result) {
             assertThat(result.containsField("address")).isFalse();
             assertThat(result.containsField("name")).isTrue();

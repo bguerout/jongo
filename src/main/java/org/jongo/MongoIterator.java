@@ -25,11 +25,11 @@ import java.util.NoSuchElementException;
 class MongoIterator<E> implements Iterator<E>, Iterable<E> {
 
     private final DBCursor cursor;
-    private final ResultMapper<E> resultMapper;
+    private final ResultHandler<E> resultHandler;
 
-    public MongoIterator(DBCursor cursor, ResultMapper<E> resultMapper) {
+    public MongoIterator(DBCursor cursor, ResultHandler<E> resultHandler) {
         this.cursor = cursor;
-        this.resultMapper = resultMapper;
+        this.resultHandler = resultHandler;
     }
 
     public boolean hasNext() {
@@ -41,7 +41,7 @@ class MongoIterator<E> implements Iterator<E>, Iterable<E> {
             throw new NoSuchElementException();
 
         DBObject dbObject = cursor.next();
-        return resultMapper.map(dbObject);
+        return resultHandler.map(dbObject);
     }
 
     public void remove() {

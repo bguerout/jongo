@@ -22,7 +22,7 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import static org.jongo.ResultHandlerFactory.newMapper;
 
 public final class FindOne {
 
@@ -43,9 +43,9 @@ public final class FindOne {
         return map(newMapper(clazz, unmarshaller));
     }
 
-    public <T> T map(ResultMapper<T> resultMapper) {
+    public <T> T map(ResultHandler<T> resultHandler) {
         DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject());
-        return result == null ? null : resultMapper.map(result);
+        return result == null ? null : resultHandler.map(result);
     }
 
     public FindOne fields(String fields) {

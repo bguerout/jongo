@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package org.jongo.util;
+package org.jongo;
 
 import com.mongodb.DBObject;
-import org.jongo.ResultMapper;
 
-public class DBObjectResultMapper implements ResultMapper<DBObject> {
-    public DBObject map(DBObject result) {
-        return result;
-    }
+public interface ResultHandler<T> {
+    T map(DBObject result);
 }

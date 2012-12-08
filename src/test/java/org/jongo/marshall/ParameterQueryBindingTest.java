@@ -24,7 +24,7 @@ import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.model.Gender;
 import org.jongo.model.LinkedFriend;
-import org.jongo.util.DBObjectResultMapper;
+import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -106,7 +106,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.insert("{name:{1:'John'}}");
 
         /* when */
-        DBObject result = collection.findOne("{name.#:'John'}", 1).map(new DBObjectResultMapper());
+        DBObject result = collection.findOne("{name.#:'John'}", 1).map(new DBObjectResultHandler());
 
         /* then */
         assertThat(result).isNotNull();

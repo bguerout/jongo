@@ -22,7 +22,7 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultMapperFactory.newMapper;
+import static org.jongo.ResultHandlerFactory.newMapper;
 
 public final class FindAndModify {
 
@@ -52,7 +52,7 @@ public final class FindAndModify {
         return map(newMapper(clazz, unmarshaller));
     }
 
-    private <T> T map(ResultMapper<T> resultMapper) {
+    private <T> T map(ResultHandler<T> resultHandler) {
         DBObject result = collection.findAndModify(query.toDBObject(),
                 getAsDBObject(fields),
                 getAsDBObject(sort),
@@ -61,7 +61,7 @@ public final class FindAndModify {
                 returnNew,
                 upsert);
 
-        return result == null ? null : resultMapper.map(result);
+        return result == null ? null : resultHandler.map(result);
     }
 
     public FindAndModify fields(String fields) {

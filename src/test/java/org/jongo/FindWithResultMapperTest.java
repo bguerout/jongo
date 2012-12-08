@@ -18,7 +18,7 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import org.jongo.model.Friend;
-import org.jongo.util.DBObjectResultMapper;
+import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -43,12 +43,12 @@ public class FindWithResultMapperTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        ResultMapper<DBObject> mapper = new DBObjectResultMapper();
+        ResultHandler<DBObject> handler = new DBObjectResultHandler();
         collection.save(new Friend("John", "22 Wall Street Avenue"));
         collection.save(new Friend("Peter", "22 Wall Street Avenue"));
 
         /* when */
-        for (DBObject result : collection.find().map(mapper)) {
+        for (DBObject result : collection.find().map(handler)) {
             /* then */
             assertThat(result.get("name")).isIn("John", "Peter");
         }
@@ -57,12 +57,12 @@ public class FindWithResultMapperTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        ResultMapper<DBObject> mapper = new DBObjectResultMapper();
+        ResultHandler<DBObject> handler = new DBObjectResultHandler();
         Friend john = new Friend("John", "22 Wall Street Avenue");
         collection.save(john);
 
         /* when */
-        DBObject result = collection.findOne().map(mapper);
+        DBObject result = collection.findOne().map(handler);
 
         /* then */
         assertThat(result.get("name")).isEqualTo("John");

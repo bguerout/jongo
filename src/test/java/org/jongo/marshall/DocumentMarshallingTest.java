@@ -21,7 +21,7 @@ import com.mongodb.DBObject;
 import org.bson.types.*;
 import org.jongo.MongoCollection;
 import org.jongo.model.Friend;
-import org.jongo.util.JSONResultMapper;
+import org.jongo.util.JSONResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
-import static org.jongo.util.JSONResultMapper.jsonify;
+import static org.jongo.util.JSONResultHandler.jsonify;
 
 public class DocumentMarshallingTest extends JongoTestCase {
 
@@ -264,7 +264,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     private void assertHasBeenPersistedAs(String expectedPersistedJSON) {
-        String result = collection.findOne("{}").map(new JSONResultMapper());
+        String result = collection.findOne("{}").map(new JSONResultHandler());
         assertThat(result).contains(expectedPersistedJSON);
     }
 
