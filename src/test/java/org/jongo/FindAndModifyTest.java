@@ -101,7 +101,6 @@ public class FindAndModifyTest extends JongoTestCase {
     }
 
     @Test
-    @Ignore
     public void shouldFailWhenUnableToUnmarshallResult() throws Exception {
         /* given */
         collection.insert("{error: 'NotaDate'}");
@@ -113,14 +112,5 @@ public class FindAndModifyTest extends JongoTestCase {
         } catch (MarshallingException e) {
             assertThat(e.getMessage()).contains(" \"error\" : \"NotaDate\"");
         }
-
-        assertThat(collection.getDBCollection().findOne().get("error")).isEqualTo("StillNotaDate");
-    }
-
-    @Test
-    public void whenNoResultShouldReturnNull() throws Exception {
-        assertThat(collection.findOne("{_id:'invalid-id'}").as(Object.class)).isNull();
-        assertThat(collection.findOne("{_id:'invalid-id'}").map(new IdResultHandler())).isNull();
-        assertThat(collection.find("{_id:'invalid-id'}").as(Object.class)).hasSize(0);
     }
 }
