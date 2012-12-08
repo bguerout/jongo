@@ -408,11 +408,11 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
                                     </p>
 
                                     <p>
-                                      Several microbenchmarks (<i>using Caliper & Yourkit</i>) highlight this release net improvements: Jongo .3 is 6 times faster than Jongo .2, which make it <strong>as fast as the driver!</strong> Have a look at <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.FindBench2/1982001" target="_blank">find microbenchmark</a> and <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.SaveBench/1981002" target="_blank">save microbenchmark</a>, and at <a href="https://github.com/bguerout/jongo/tree/master/src/test/java/org/jongo/bench" target="_blank">their implementations</a>.
+                                      Several microbenchmarks (<i>using Caliper & Yourkit</i>) highlight this release net improvements: Jongo .3 is 6 times faster than Jongo .2, which make it <strong>as fast as the driver!</strong> Have a look at <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.FindBench2/1982001" target="_blank">find microbenchmark</a> and <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.SaveBench/1981002" target="_blank">save microbenchmark</a>, and at their implementations (<a href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/FindBench.java" target="_blank">find</a> & <a href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/SaveBench.java" target="_blank">save</a>).
                                     </p>
 
                                     <p>
-                                      <i class="icon-exclamation-sign"></i> Not all benchmarks accurately reflect real world performance; <a href="http://code.google.com/p/caliper/wiki/JavaMicrobenchmarks" target="_blank">more on microbenchmarks</a>.
+                                      <i class="icon-flag"></i> Not all benchmarks accurately reflect real world performance; <a href="http://code.google.com/p/caliper/wiki/JavaMicrobenchmarks" target="_blank">more on microbenchmarks</a>.
                                     </p>
 
                                     <h2 id="jongo-mapper">Configuring Jongo Mapper</h2>
@@ -426,24 +426,33 @@ DB db = new Mongo().getDB("dbname");
 
 Jongo jongo = new Jongo(db, 
   new JacksonMapper.Builder()
-                   .addModule(new JodaModule())
-                   .withView(Views.Public.class)
-                   .build()
+      .addModule(new JodaModule())
+      .enable(MapperFeature.AUTO_DETECT_GETTERS)
+      .withView(Views.Public.class)
+      .build()
 );</pre>
 
                                       <h3>Mapper interface</h3>
                                       <p>
-                                        Jongo constructor comes with a new optional parameter: <code>Mapper</code>. This interface has a provided implementation <code>JacksonMapper</code> which defines the defaut (un)marshalling behavior of Jongo. <code>JacksonMapper.Builder</code> allows to alter this configuration
+                                        Jongo constructor comes with a new optional parameter: <code>Mapper</code>. This interface has a provided <code>JacksonMapper</code> implementation which defines the defaut (un)marshalling behavior of Jongo. <code>JacksonMapper.Builder</code> allows to alter this configuration as you see fit.
+                                      </p>
+
+                                      <h3>Features on/off</h3>
+                                      <p>
+                                        Jackson mapper comes with an large set of features which can be enabled or disabled. Note that the default <code>JacksonMapper.Builder()</code> comes with a set of <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/StandardModifier.java" target="_blank">predefined features</a>. Those can be overridden with <code>enable(..)</code> and <code>disable(..)</code> methods.
                                       </p>
 
                                       <h3>Joda module</h3>
                                       <p>
-                                        The previous example shows how to handle Joda thanks to a <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">provided Jackson module</a>.
+                                        Hanlding Joda dates can be done with this <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">Jackson module</a> and the <code>addModule(..)</code> method.
                                       </p>
 
                                       <h3>Json view</h3>
                                       <p>
-                                        Jackson <code>@JsonView</code> allows to filter an object attributes on (un)marshalling. It can be configured that way:
+                                        Jackson <code>@JsonView</code> allows to filter an object attributes on (un)marshalling. Once Jongo is configured to use the <code>Public</code> view (<i>as in the previous configuration</i>), the <code>gender</code> attribute will be ignored even if it exists in Mongo. 
+                                      </p>
+                                      <p>
+                                        Careful, when no view is defined, Jackson ignore annotations which means every attribute is visible. Views can be used for marshalling-only or unmarshalling-only if needed.
                                       </p>
 
                                       <pre class="prettyprint">
@@ -459,51 +468,57 @@ public class Views {
     public static class Private extends Public {}
 }</pre>
 
+                                  <h3>MapperModifier</h3>
                                   <p>
-                                    Once Jongo is configured to use the <code>Public</code> view, the <code>gender</code> attribute will be ignored for every (un)marshall, even if it already exists in Mongo. Careful, when no view is defined, Jackson ignore the annotations which means every attributes is visible. Views can be used for marshalling-only or unmarshalling-only if needed.
+                                    Jongo uses the <code>MapperModifier</code> interface to configure a <code>JacksonMapper</code>. Looking at <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/MapperFeatureModifier.java" target="_blank">one implementation</a> give a good feeling of own it can be used.
+                                  </p>
+
+                                  <h3>Reader & WriterCallback</h3>
+                                  <p>
+                                    In certain circumstances, modifying <code>mapper.reader</code> or <code>mapper.writer</code> will be useful. <code>JacksonMapper</code> offers one default <code>ReaderCallback</code> and one <code>WriterCalback</code> for that purpose, they can be replaced if needed.
                                   </p>
 
                                   <p>
-                                    For more options, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a>.
+                                    <i class="icon-wrench"></i> For more options, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a>.
                                   </p>
 
                                   <h2 id="custom-mapper">Using a custom Mapper</h2>
 
                                 <p>
-                                  Instead of Jackson, one can provide his own implementation of <code>Provider</code>.
+                                  Instead of Jackson, one can provide his own implementation of <code>Mapper</code>.
                                 </p>
 
                                 <pre class="prettyprint">
-public class GsonProvider extends Provider {
+public class GsonMapper extends Mapper {
     Marshaller getMarshaller() { ... }
     Unmarshaller getUnmarshaller() { ... }
     ObjectIdUpdater getObjectIdUpdater() { ... }
     QueryFactory getQueryFactory() { ... }
 }
 
-Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonProvider());</pre>
+Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonMapper());</pre>
 
-                                  <h2>Using a custom result Mapper</h2>
+                                  <h2>Using a custom ResultHandler</h2>
 
                                   <p>
-                                    If one prefers to manually map objects (<i>ie. without unmarshaller</i>), he can implements
-                                    <code>ResultMapper</code>. Each result entity will be passed to the inherited <code>map(DBObject result)</code> method.
+                                    If one prefers to manually handle objects (<i>ie. without unmarshaller</i>), he can implements
+                                    <code>ResultHandler</code>. Each result entity will be passed to the inherited <code>handle(DBObject result)</code> method.
                                   </p>
 
                                   <pre class="prettyprint">
-Iterable&lt;Integer&gt; ages = col.find("{'name':'Joe'}").map(
-    new ResultMapper&lt;Integer&gt;() {
+Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").handle(
+    new ResultHandler&lt;Integer&gt;() {
         @Override
-        public Integer map(DBObject result) {
+        public Integer handle(DBObject result) {
             //do manual stuff here
             return result.get("age");
         }
 });</pre>
 
-                              <h2>Using Jongo objects with Jersey</h2>
+                              <h2>Exposing objects through web services</h2>
 
                               <p>
-                                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey. But if some have an <code>ObjectId</code> use <a href="https://gist.github.com/3155831">this custom Jackson Provider</a>, it exposes <code>ObjectId</code> as <code>String</code>. Using <code>String</code> instead of <code>ObjectId</code> — thanks to the <code>@Id</code> annotation — avoid this problem.
+                                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey (<i>or Spring or any web services library</i>). If you decide to keep <code>ObjectId</code> in pojo attributes, the library (de)serialization have to be configured to support them (<i>using <code>@Id</code> annotation on <code>String</code> avoid this problem</i>). For Jersey, use <a href="https://gist.github.com/3155831" target="_blank">this Jackson Provider</a> to expose <code>ObjectId</code> as <code>String</code>. For other web services libraries, adapting it won't be to hard.
                               </p>
                               
                                 </div>
@@ -518,7 +533,8 @@ Iterable&lt;Integer&gt; ages = col.find("{'name':'Joe'}").map(
                                   <dl class="dl-horizontal">
                                     <dt class="strong">Performance gap</dt><dd>six time faster than before, nearly as fast as the driver</dd>
                                     <dt class="strong">Highly adaptable</dt><dd><code>JacksonMapper</code> can be modified or replaced</dd>
-                                    <dt>findAndModify</dt><dd>operation support (<i>thanks to <a href="mark1ewis" target="_blank">mark1ewis</a></i>)</dd>
+                                    <dt>findAndModify</dt><dd>operation support (<i>thanks to <a href="https://github.com/mark1ewis" target="_blank">Mark Lewis</a></i>)</dd>
+                                    <dt>ResultMapper</dt><dd>renamed to <code>ResultHandler</code> to avoid confusion</dd>
                                     <dt>_id updating</dt><dd><code>save()</code> can intercept the <code>_id</code> with an <code>ObjectIdUpdater</code> before it is setted</dd>
                                     <dt>@Id</dt><dd>pojo <code>_id</code> attribute can be <code>String</code> instead of <code>ObjectId</code></dd>
                                   </dl>
