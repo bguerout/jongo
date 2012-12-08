@@ -140,8 +140,8 @@ DB db = new Mongo().getDB("dbname");
 Jongo jongo = new Jongo(db);
 MongoCollection friends = jongo.getCollection("friends");
 
-Iterable&lt;Friend&gt; all = friends.find("{name:'Joe'}").as(Friend.class);
-Friend one = friends.findOne("{name:'Joe'}").as(Friend.class);</pre>
+Iterable&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
+Friend one = friends.findOne("{name: 'Joe'}").as(Friend.class);</pre>
 
               </section>
 
@@ -319,7 +319,7 @@ friends.find().limit(10).as(Friend.class);</pre>
 
                         <h3>Oid</h3>
                         <p>
-                          As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated with a <code>String</code> annotated with <code>@Id</code>. If you want to completly avoid using <code>ObjectId</code>, Jongo offers <code>Oid</code> class.
+                          As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated with a <code>String</code> annotated with <code>@Id</code>. If you want to completly avoid using <code>ObjectId</code>, Jongo offers the <code>Oid</code> class.
                         </p>
 
                         <pre class="prettyprint">
@@ -434,17 +434,17 @@ Jongo jongo = new Jongo(db,
 
                                       <h3>Mapper interface</h3>
                                       <p>
-                                        Jongo constructor comes with a new optional parameter: <code>Mapper</code>. This interface has a provided <code>JacksonMapper</code> implementation which defines the defaut (un)marshalling behavior of Jongo. <code>JacksonMapper.Builder</code> allows to alter this configuration as you see fit.
+                                        Jongo constructor comes with an optional parameter: <code>Mapper</code>. This interface has a provided <code>JacksonMapper</code> implementation which defines the defaut (un)marshalling behavior of Jongo. <code>JacksonMapper.Builder</code> allows to alter this configuration as you see fit.
                                       </p>
 
                                       <h3>Features on/off</h3>
                                       <p>
-                                        Jackson mapper comes with an large set of features which can be enabled or disabled. Note that the default <code>JacksonMapper.Builder()</code> comes with a set of <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/StandardModifier.java" target="_blank">predefined features</a>. Those can be overridden with <code>enable(..)</code> and <code>disable(..)</code> methods.
+                                        Default <code>JacksonMapper.Builder()</code> comes with a set of <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/StandardModifier.java" target="_blank">predefined features</a> for the embedded Jackson <code>ObjectMapper</code>. Those can be overridden and extended with <code>enable(..)</code> and <code>disable(..)</code> methods.
                                       </p>
 
-                                      <h3>Joda module</h3>
+                                      <h3>Modules</h3>
                                       <p>
-                                        Hanlding Joda dates can be done with this <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">Jackson module</a> and the <code>addModule(..)</code> method.
+                                        Jackson <code>Module</code> is a set of (un)marshalling configuration. Hanlding Joda dates, for example, can be done with this <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">Jackson module</a> and the <code>addModule(..)</code> method.
                                       </p>
 
                                       <h3>Json view</h3>
@@ -452,7 +452,7 @@ Jongo jongo = new Jongo(db,
                                         Jackson <code>@JsonView</code> allows to filter an object attributes on (un)marshalling. Once Jongo is configured to use the <code>Public</code> view (<i>as in the previous configuration</i>), the <code>gender</code> attribute will be ignored even if it exists in Mongo. 
                                       </p>
                                       <p>
-                                        Careful, when no view is defined, Jackson ignore annotations which means every attribute is visible. Views can be used for marshalling-only or unmarshalling-only if needed.
+                                        Careful, when no view is defined, Jackson ignore annotations — which means every attribute is visible. Views can be used for marshalling-only or unmarshalling-only if needed.
                                       </p>
 
                                       <pre class="prettyprint">
@@ -470,12 +470,12 @@ public class Views {
 
                                   <h3>MapperModifier</h3>
                                   <p>
-                                    Jongo uses the <code>MapperModifier</code> interface to configure a <code>JacksonMapper</code>. Looking at <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/MapperFeatureModifier.java" target="_blank">one implementation</a> give a good feeling of own it can be used.
+                                    Jongo uses the <code>MapperModifier</code> interface to configure a <code>JacksonMapper</code>. Looking at <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/MapperFeatureModifier.java" target="_blank">one implementation</a> give a good feeling of own it can be used to further configure a <code>JacksonMapper</code>.
                                   </p>
 
                                   <h3>Reader & WriterCallback</h3>
                                   <p>
-                                    In certain circumstances, modifying <code>mapper.reader</code> or <code>mapper.writer</code> will be useful. <code>JacksonMapper</code> offers one default <code>ReaderCallback</code> and one <code>WriterCalback</code> for that purpose, they can be replaced if needed.
+                                    In certain circumstances, modifying Jackson <code>ObjectReader</code> or <code>ObjectWriter</code> will be useful. <code>JacksonMapper</code> offers one default <code>ReaderCallback</code> and one <code>WriterCalback</code> for that purpose, they can be replaced if needed.
                                   </p>
 
                                   <p>
