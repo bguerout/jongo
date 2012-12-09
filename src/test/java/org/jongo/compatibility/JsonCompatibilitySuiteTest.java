@@ -31,7 +31,7 @@ public class JsonCompatibilitySuiteTest {
     @Parameters
     public static TestContext context() {
         Mapping config = new Mapping.Builder(new ObjectMapper())
-                .addModule(new JsonModule())
+                .registerModule(new JsonModule())
                 .addModifier(new StandardModifier())
                 .build();
 

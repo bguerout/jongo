@@ -34,7 +34,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
 
     public AbstractMappingBuilder() {
         this(new ObjectMapper(MongoBsonFactory.createFactory()));
-        addModule(new BsonModule());
+        registerModule(new BsonModule());
         addModifier(new StandardModifier());
     }
 
@@ -42,7 +42,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
         this.mapper = mapper;
         this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
-        addModule(module);
+        registerModule(module);
     }
 
     protected abstract T getBuilderInstance();
@@ -73,7 +73,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
         return getBuilderInstance();
     }
 
-    public T addModule(final Module module) {
+    public T registerModule(final Module module) {
         modifiers.add(new MapperModifier() {
             public void modify(ObjectMapper mapper) {
                 mapper.registerModule(module);

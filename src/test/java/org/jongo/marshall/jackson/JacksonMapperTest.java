@@ -71,7 +71,7 @@ public class JacksonMapperTest {
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
         Friend friend = new Friend(oid, "Robert");
         Mapper mapper = new JacksonMapper.Builder()
-                .addModule(new Module() {
+                .registerModule(new Module() {
                     @Override
                     public String getModuleName() {
                         return "test-module";
