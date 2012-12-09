@@ -426,7 +426,7 @@ DB db = new Mongo().getDB("dbname");
 
 Jongo jongo = new Jongo(db, 
   new JacksonMapper.Builder()
-      .addModule(new JodaModule())
+      .registerModule(new JodaModule())
       .enable(MapperFeature.AUTO_DETECT_GETTERS)
       .withView(Views.Public.class)
       .build()
@@ -444,7 +444,7 @@ Jongo jongo = new Jongo(db,
 
                                       <h3>Modules</h3>
                                       <p>
-                                        Jackson <code>Module</code> is a set of (un)marshalling configuration. Hanlding Joda dates, for example, can be done with this <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">Jackson module</a> and the <code>addModule(..)</code> method.
+                                        Jackson <code>Module</code> is a set of (un)marshalling configuration. Hanlding Joda dates, for example, can be done with this <a href="https://github.com/FasterXML/jackson-datatype-joda" target="_blank">Jackson module</a> and the <code>registerModule(..)</code> method.
                                       </p>
 
                                       <h3>Json view</h3>
