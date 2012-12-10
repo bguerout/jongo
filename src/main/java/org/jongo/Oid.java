@@ -23,4 +23,7 @@ public class Oid {
     public static String withOid(String id) {
         return "{_id: {" + MONGO_QUERY_OID + ":\"" + id + "\"}}";
     }
+
+    private Oid() {
+    }
 }

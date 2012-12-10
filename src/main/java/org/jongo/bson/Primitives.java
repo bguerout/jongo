@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-class Primitives {
+final class Primitives {
 
     private static final Set<Class<?>> PRIMITIVES;
 

@@ -85,9 +85,9 @@ class Save {
         return concern == null ? collection.getWriteConcern() : concern;
     }
 
-    private static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
+    private final static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
 
-        private final HashSet<String> keys;
+        private final Set<String> keys;
 
         private AlreadyCheckedDBObject(byte[] data) {
             super(data, new LazyBSONCallback());

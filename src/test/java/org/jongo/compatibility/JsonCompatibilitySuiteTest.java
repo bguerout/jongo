@@ -17,8 +17,8 @@
 package org.jongo.compatibility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jongo.marshall.jackson.configuration.StandardModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
+import org.jongo.marshall.jackson.configuration.StandardModifier;
 import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
 import org.junit.runner.RunWith;

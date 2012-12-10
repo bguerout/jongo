@@ -22,12 +22,13 @@ import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>> {
 
     private final SimpleModule module;
 
-    private final ArrayList<MapperModifier> modifiers;
+    private final List<MapperModifier> modifiers;
     private final ObjectMapper mapper;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;

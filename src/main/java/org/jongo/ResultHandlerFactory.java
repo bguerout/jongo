@@ -21,7 +21,7 @@ import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Unmarshaller;
 
-class ResultHandlerFactory {
+final class ResultHandlerFactory {
 
 
     public static <T> ResultHandler<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
