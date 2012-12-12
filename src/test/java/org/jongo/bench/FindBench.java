@@ -47,7 +47,7 @@ public class FindBench extends SimpleBenchmark {
         }
     }
 
-    public int timeFindWithDriver(int reps) {
+    public int timeDriverFind(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
             DBCursor cursor = dbCollection.find().limit(size);
@@ -61,7 +61,7 @@ public class FindBench extends SimpleBenchmark {
         return insertions;
     }
 
-    public int timeFindWithBsonJongo(int reps) {
+    public int timeJongoFind(int reps) {
         int insertions = 0;
         for (int i = 0; i < reps; i++) {
             for (Friend friend : bsonCollection.find().limit(size).as(Friend.class)) {

@@ -32,9 +32,7 @@ class BenchUtil {
         return new Friend("John" + id, "Address" + id, new Coordinate(1, id));
     }
 
-    public static DBObject createDBOFriend(int id) {
-
-        Friend friend = createFriend(id);
+    public static DBObject asDBObject(Friend friend) {
 
         DBObject dbo = new BasicDBObject();
         dbo.put("name", friend.getName());

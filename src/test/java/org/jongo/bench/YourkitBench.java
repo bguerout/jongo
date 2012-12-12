@@ -29,7 +29,7 @@ public class YourkitBench {
     public void saveWithDriver() throws Exception {
         SaveBench saveBench = new SaveBench();
         saveBench.setUp();
-        saveBench.timeSaveWithDriver(ITERATION);
+        saveBench.timeDriverSave(ITERATION);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class YourkitBench {
     public void saveWithBsonJongo() throws Exception {
         SaveBench saveBench = new SaveBench();
         saveBench.setUp();
-        saveBench.timeSaveWithBsonJongo(ITERATION);
+        saveBench.timeJongoSave(ITERATION);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class YourkitBench {
     public void findWithDriver() throws Exception {
         FindBench findBench = new FindBench();
         findBench.setUp();
-        findBench.timeFindWithDriver(ITERATION);
+        findBench.timeDriverFind(ITERATION);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class YourkitBench {
     public void findWithBsonJongo() throws Exception {
         FindBench findBench = new FindBench();
         findBench.setUp();
-        findBench.timeFindWithBsonJongo(ITERATION);
+        findBench.timeJongoFind(ITERATION);
     }
 
     @Test

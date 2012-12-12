@@ -44,15 +44,15 @@ public class SaveBench extends SimpleBenchmark {
         bsonCollection.drop();
     }
 
-    public void timeSaveWithDriver(int reps) {
+    public void timeDriverSave(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                dbCollection.save(createDBOFriend(reps + j), concern);
+                dbCollection.save(asDBObject(createFriend(reps + j)), concern);
             }
         }
     }
 
-    public void timeSaveWithBsonJongo(int reps) {
+    public void timeJongoSave(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
                 bsonCollection.save(createFriend(reps + j), concern);

@@ -30,7 +30,7 @@ import org.jongo.marshall.jackson.configuration.Mapping;
 
 import java.util.Map;
 
-import static org.jongo.bench.BenchUtil.createDBOFriend;
+import static org.jongo.bench.BenchUtil.asDBObject;
 import static org.jongo.bench.BenchUtil.createFriend;
 
 public class EncoderBench extends SimpleBenchmark {
@@ -40,7 +40,7 @@ public class EncoderBench extends SimpleBenchmark {
 
     public void timeEncodeWithDriver(int reps) {
         for (int i = 0; i < reps; i++) {
-            DBObject dbo = createDBOFriend(i);
+            DBObject dbo = asDBObject(createFriend(i));
             dbApiLayer.encode(DefaultDBEncoder.FACTORY, dbo);
         }
     }
