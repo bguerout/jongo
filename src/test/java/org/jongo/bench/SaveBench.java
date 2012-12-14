@@ -30,8 +30,7 @@ public class SaveBench extends SimpleBenchmark {
 
     @Param({"1"})
     int size = 1;
-    @Param("NORMAL")
-    WriteConcern concern = WriteConcern.NORMAL;
+    WriteConcern concern = WriteConcern.SAFE;
 
     private DBCollection dbCollection;
     private MongoCollection bsonCollection;
@@ -61,6 +60,9 @@ public class SaveBench extends SimpleBenchmark {
     }
 
     public static void main(String[] args) {
-        Runner.main(SaveBench.class, new String[]{"-Dsize=1000,10000,50000", "-Dconcern=SAFE"});
+        Runner.main(SaveBench.class, new String[]{
+                //"--vm", "/opt/jvm/jdk1.6.0_37/bin/java,/opt/jvm/jdk1.7.0_10/bin/java",
+                "-Dsize=1000,10000,50000"
+        });
     }
 }

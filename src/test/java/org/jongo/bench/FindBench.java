@@ -72,6 +72,9 @@ public class FindBench extends SimpleBenchmark {
     }
 
     public static void main(String[] args) {
-        Runner.main(FindBench.class, new String[]{"-Dsize=1000,10000,50000,100000"});
+        Runner.main(FindBench.class, new String[]{
+                //"--vm", "/opt/jvm/jdk1.6.0_37/bin/java,/opt/jvm/jdk1.7.0_10/bin/java",
+                "-Dsize=1000,10000,50000,100000"
+        });
     }
 }
