@@ -24,7 +24,7 @@ var wrench = require('wrench');
 var outputFolder = path.resolve("./target/jongo_org_website");
 
 task('prepare', [], function (params) {
-    if (path.existsSync(outputFolder)) {
+    if (fs.existsSync(outputFolder)) {
         console.log("Deleting folder: " + outputFolder);
         wrench.rmdirSyncRecursive(outputFolder);
     }
@@ -45,7 +45,7 @@ task('lessify', ['prepare'], function (params) {
         if (err) throw err;
 
         var parser = new (less.Parser)({
-            paths:['./assets/bootstrap'],
+            paths:['./assets/css'],
             optimization:true,
             filename:'style.less'
         });
