@@ -27,7 +27,7 @@ echo "nodejs $NODE_VERSION has been installed."
 
 echo "Installing npm"
 pushd $NODE_SOURCE_DIR
-curl http://npmjs.org/install.sh | clean=yes sh
+curl https://npmjs.org/install.sh | clean=yes sh
 popd
 echo "npm has been installed."
 
