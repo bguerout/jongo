@@ -2,8 +2,8 @@
 
 #https://raw.github.com/gtramontina/cloudbees-node
 
-NODE_VERSION=v0.8.1
-NODE_DIST_FILE='/private/jongo/nodejs-0.8.1-cloudbees.zip'
+NODE_VERSION=v0.6.15
+NODE_DIST_FILE='/private/jongo/nodejs-0.6.15-cloudbees.zip'
 NODE_SOURCE_DIR='node'
 
 if [ -f $NODE_DIST_FILE ]
