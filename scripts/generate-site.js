@@ -100,4 +100,3 @@ task('dns', ['prepare'], function (params) {
 desc("Create Jongo site")
 task('default', ['prepare', 'lessify', 'weave-html', 'dns'], function (params) {
 });
-
