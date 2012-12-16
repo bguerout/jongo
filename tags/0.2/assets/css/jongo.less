@@ -1,0 +1,153 @@
+@baseLineHeight: 18px;
+
+body {
+    padding-top: 30px;
+    padding-bottom: 60px;
+    background: #F3F4EB;
+}
+
+section{
+  padding-top: 30px;
+}
+
+h2 {
+    line-height: @baseLineHeight * 1.5;
+    font-size: 18px;
+    small {
+        font-size: 14px;
+    }
+}
+h3 {
+    line-height: @baseLineHeight;
+    font-size: 14px;
+    small {
+        font-size: 12px;
+    }
+}
+h4 {
+    font-size: 13px;
+}
+
+a:hover {
+  color: #08C;
+  background-color: #bbd8e9;
+  text-decoration: none;
+}
+
+.sidebar-nav {
+    padding: 9px 0;
+}
+
+.navbar{
+ .brand{
+    background: url(../img/jongo_small.png) no-repeat left;
+    padding: 3px 20px 6px 25px;
+    color: white;
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, .1), 0 0 30px rgba(255, 255, 255, .125);
+ }
+ .navbar-inner{
+     height: 30px;
+     min-height: 30px;
+     border-bottom: 4px solid #468847;
+     background-color: rgb(44, 44, 44);
+     background-color: rgba(44, 44, 44, 0.85);
+     background-image: none;
+ }
+ .nav > li > a {
+  padding: 4px 10px 11px;
+ }
+ .nav .active > a, .nav .active > a:hover {
+   background-color: #468847;
+ }
+ .dropdown-menu {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25),inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    margin-top: 6px;
+    border: 0 none;
+    background-color: #468847;
+    border-radius: 0;
+    min-width: 180px;
+    z-index: -1;
+    top: 28px;
+
+    a {
+      color: white;
+    }
+
+    li > a:hover, .active > a, .active > a:hover {
+      background-color: rgb(44, 44, 44);
+     background-color: rgba(44, 44, 44, 0.85);
+    }
+
+    &:before { border: 0 none; }
+    &:after { border: 0 none; }
+  }
+}
+
+#overview{
+  h1{
+   margin-bottom: 10px;
+   text-align: center;
+   font-size: 75px;
+  }
+  img{
+    vertical-align: baseline;
+  }
+
+ .intro{
+     margin-bottom: 30px;
+     pre.prettyprint.maincode{
+       font-size : 16px;
+       background-color: #F3F4EB;
+       border: 0px;
+     }
+
+     div.row{
+       padding: 10px 0px;
+     }
+	 
+	 .pitch{
+		font-size: 22px;
+    text-align: center;
+    line-height:27px;
+    margin-bottom: 40px;
+		strong{
+		 color: #468847;
+		}
+	 }
+ }
+}
+
+section#usage{
+  padding-top: 0px;
+}
+
+.label, .badge{
+  font-size: 12px;
+  text-transform : uppercase;
+}
+
+.dl-horizontal dt{
+  width: 150px;
+  &.strong{
+   color:#468847
+  }
+}
+.dl-horizontal dd{
+  margin-left: 160px;
+}
+
+.small-bs-icon {
+  float: left;
+  margin: 4px 5px 0 0;
+}
+
+p{
+	line-height:18px;
+	margin-bottom:20px;
+}
+
+footer {
+    img {
+        max-width: none;
+    }
+}
