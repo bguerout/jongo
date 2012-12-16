@@ -17,7 +17,7 @@ source /private/jongo/install-node.sh
 stop_on_error "Unable to install node"
 
 #Download node dependencies
-npm install express@2.5.8 jake@0.2.18 jsdom@0.2.12 less@1.2.2 wrench@1.3.7
+npm install express@3.0.4 jake@0.3.1 jsdom@0.3.1 less@1.3.1 wrench@1.3.7
 stop_on_error "Unable to install npm dependencies"
 export NODE_PATH=$PWD/node_modules
 
