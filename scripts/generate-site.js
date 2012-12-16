@@ -44,11 +44,7 @@ task('lessify', ['prepare'], function (params) {
     fs.readFile('./assets/css/jongo.less', 'utf-8', function (err, data) {
         if (err) throw err;
 
-        var parser = new (less.Parser)({
-            paths:['./assets/css'],
-            optimization:true,
-            filename:'style.less'
-        });
+        var parser = new (less.Parser);
 
         parser.parse(data, function (err, tree) {
             if (err) throw err;
