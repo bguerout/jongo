@@ -24,7 +24,7 @@ var wrench = require('wrench');
 var outputFolder = path.resolve("./target/jongo_org_website");
 
 task('prepare', [], function (params) {
-    if (fs.existsSync(outputFolder)) {
+    if (path.existsSync(outputFolder)) {
         console.log("Deleting folder: " + outputFolder);
         wrench.rmdirSyncRecursive(outputFolder);
     }
