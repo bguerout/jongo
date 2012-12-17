@@ -517,7 +517,7 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonMapper());</pre>
                                   </p>
 
                                   <pre class="prettyprint">
-Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").handle(
+Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
     new ResultHandler&lt;Integer&gt;() {
         @Override
         public Integer handle(DBObject result) {
