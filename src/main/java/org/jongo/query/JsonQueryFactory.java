@@ -58,21 +58,33 @@ public final class JsonQueryFactory implements QueryFactory {
         String query = template;
         assertThatParamsCanBeBound(query, parameters);
         int paramIndex = 0;
-        while (query.contains(token)) {
+        int tokenIndex = 0;
+        while (true) {
+            tokenIndex = query.indexOf(token, tokenIndex);
+            if (tokenIndex < 0) {
+                break;
+            }
+            
             Object parameter = parameters[paramIndex++];
-            query = bindParameter(query, parameter);
+            
+            String replacement;
+            try {
+                replacement = getParameterReplacement(parameter);
+            } catch (RuntimeException e) {
+                String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
+                throw new IllegalArgumentException(message, e);
+            }
+            
+            query = query.substring(0, tokenIndex) + replacement + query.substring(tokenIndex + token.length());
+            tokenIndex += replacement.length();
         }
+        
         return new JsonQuery(query);
     }
 
-    private String bindParameter(String query, Object parameter) {
-        try {
-            String jsonParam = marshallParameter(parameter, true).toString();
-            return query.replaceFirst(token, getMatcherWithEscapedDollar(jsonParam));
-        } catch (RuntimeException e) {
-            String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
-            throw new IllegalArgumentException(message, e);
-        }
+    private String getParameterReplacement(Object parameter) {
+        String jsonParam = marshallParameter(parameter, true).toString();
+        return getMatcherWithEscapedDollar(jsonParam);
     }
 
     private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
