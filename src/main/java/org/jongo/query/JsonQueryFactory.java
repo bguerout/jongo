@@ -69,7 +69,7 @@ public final class JsonQueryFactory implements QueryFactory {
             
             String replacement;
             try {
-                replacement = getParameterReplacement(parameter);
+                replacement = marshallParameter(parameter, true).toString();
             } catch (RuntimeException e) {
                 String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
                 throw new IllegalArgumentException(message, e);
@@ -80,11 +80,6 @@ public final class JsonQueryFactory implements QueryFactory {
         }
         
         return new JsonQuery(query);
-    }
-
-    private String getParameterReplacement(Object parameter) {
-        String jsonParam = marshallParameter(parameter, true).toString();
-        return getMatcherWithEscapedDollar(jsonParam);
     }
 
     private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
@@ -128,13 +123,6 @@ public final class JsonQueryFactory implements QueryFactory {
                     "[tokens: %s / parameters:%s]", template, nbTokens, parameters.length);
             throw new IllegalArgumentException(message);
         }
-    }
-
-    /**
-     * http://veerasundar.com/blog/2010/01/java-lang-illegalargumentexception-illegal-group-reference-in-string-replaceall/
-     */
-    private String getMatcherWithEscapedDollar(String serialized) {
-        return Matcher.quoteReplacement(serialized);
     }
 
     private int countTokens(String template) {
