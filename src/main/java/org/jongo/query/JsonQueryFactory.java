@@ -58,21 +58,28 @@ public final class JsonQueryFactory implements QueryFactory {
         String query = template;
         assertThatParamsCanBeBound(query, parameters);
         int paramIndex = 0;
-        while (query.contains(token)) {
+        int tokenIndex = 0;
+        while (true) {
+            tokenIndex = query.indexOf(token, tokenIndex);
+            if (tokenIndex < 0) {
+                break;
+            }
+            
             Object parameter = parameters[paramIndex++];
-            query = bindParameter(query, parameter);
+            
+            String replacement;
+            try {
+                replacement = marshallParameter(parameter, true).toString();
+            } catch (RuntimeException e) {
+                String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
+                throw new IllegalArgumentException(message, e);
+            }
+            
+            query = query.substring(0, tokenIndex) + replacement + query.substring(tokenIndex + token.length());
+            tokenIndex += replacement.length();
         }
+        
         return new JsonQuery(query);
-    }
-
-    private String bindParameter(String query, Object parameter) {
-        try {
-            String jsonParam = marshallParameter(parameter, true).toString();
-            return query.replaceFirst(token, getMatcherWithEscapedDollar(jsonParam));
-        } catch (RuntimeException e) {
-            String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
-            throw new IllegalArgumentException(message, e);
-        }
     }
 
     private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
@@ -116,13 +123,6 @@ public final class JsonQueryFactory implements QueryFactory {
                     "[tokens: %s / parameters:%s]", template, nbTokens, parameters.length);
             throw new IllegalArgumentException(message);
         }
-    }
-
-    /**
-     * http://veerasundar.com/blog/2010/01/java-lang-illegalargumentexception-illegal-group-reference-in-string-replaceall/
-     */
-    private String getMatcherWithEscapedDollar(String serialized) {
-        return Matcher.quoteReplacement(serialized);
     }
 
     private int countTokens(String template) {
