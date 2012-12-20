@@ -16,6 +16,8 @@
 
 package org.jongo;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jongo.model.Animal;
 import org.jongo.model.Fox;
 import org.jongo.util.JongoTestCase;
@@ -52,7 +54,7 @@ public class PolymorphismTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldUpdateIdFieldOnSuperType() throws IOException {
+    public void canUpdateIdFieldOnSuperType() throws IOException {
 
         Fox fox = new Fox("fantastic", "roux");
 
@@ -61,6 +63,36 @@ public class PolymorphismTest extends JongoTestCase {
         Animal result = collection.findOne().as(Fox.class);
         assertThat(fox.getId()).isNotNull();
         assertThat(result.getId()).isEqualTo(fox.getId());
+    }
+
+    @Test
+    public void canFindInheritedEntityByDiscriminator() throws IOException {
+
+        collection.insert("{name:'piou piout', discriminator:'L'}");
+        collection.insert("{name:'hunter', discriminator:'B'}");
+
+        Dog dog = collection.findOne("{name:'hunter'}").as(Dog.class);
+
+        assertThat(dog).isInstanceOf(Beagle.class);
+        assertThat(dog.name).isEqualTo("hunter");
+    }
+
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.PROPERTY,
+            property = "discriminator")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = Beagle.class, name = "B"),
+            @JsonSubTypes.Type(value = Loulou.class, name = "L")
+    })
+    private static abstract class Dog {
+        String name;
+    }
+
+    private static class Beagle extends Dog {
+    }
+
+    private static class Loulou extends Dog {
     }
 
 
