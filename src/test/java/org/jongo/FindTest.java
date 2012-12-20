@@ -18,9 +18,9 @@ package org.jongo;
 
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
+import org.jongo.marshall.jackson.id.Id;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
-import org.jongo.model.OldFriend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -142,5 +142,25 @@ public class FindTest extends JongoTestCase {
         assertThat(john.getId()).isEqualTo(id);
         assertThat(john.getName()).isEqualTo("John");
         assertThat(friends.hasNext()).isFalse();
+    }
+
+    private static class OldFriend {
+
+        @Id
+        private String id;
+        private String name;
+
+        public OldFriend(ObjectId id, String name) {
+            this.id = id.toString();
+            this.name = name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }

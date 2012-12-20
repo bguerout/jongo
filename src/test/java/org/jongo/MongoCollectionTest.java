@@ -19,16 +19,12 @@ package org.jongo;
 import com.mongodb.MongoException.DuplicateKey;
 import com.mongodb.WriteConcern;
 import junit.framework.Assert;
-import org.jongo.model.Animal;
 import org.jongo.model.Coordinate;
-import org.jongo.model.Fox;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -127,17 +123,6 @@ public class MongoCollectionTest extends JongoTestCase {
 
         //then
         collection.save(new Friend("John", "way"), WriteConcern.SAFE);
-    }
-
-
-    @Test
-    public void canFindInheritedEntity() throws IOException {
-        collection.save(new Fox("fantastic", "roux"));
-
-        Animal animal = collection.findOne("{name:'fantastic'}").as(Animal.class);
-
-        assertThat(animal).isInstanceOf(Fox.class);
-        assertThat(animal.getId()).isNotNull();
     }
 
     @Test

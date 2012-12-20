@@ -142,18 +142,6 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldUpdateIdFieldOnSuperType() throws IOException {
-
-        Fox fox = new Fox("fantastic", "roux");
-
-        collection.save(fox);
-
-        Animal result = collection.findOne().as(Fox.class);
-        assertThat(fox.getId()).isNotNull();
-        assertThat(result.getId()).isEqualTo(fox.getId());
-    }
-
-    @Test
     public void shouldNotChangeOtherObjectIdField() throws IOException {
 
         ObjectId relationId = new ObjectId();
