@@ -9,7 +9,7 @@ stop_on_download_error() {
   exit 1
  fi
 }
-if [ ! $NODE_DIST ]
+if [ ! -f $NODE_DIST ]
 then
     echo "Installing $NODE_DIST"
     wget --no-verbose -O $NODE_BIN_FILE https://github.com/CloudBees-community/node-clickstack/blob/master/$NODE_BIN_FILE?raw=true
