@@ -15,6 +15,7 @@ then
     echo "Installing $NODE_DIST"
     wget --no-verbose -O $NODE_BIN_FILE https://github.com/CloudBees-community/node-clickstack/blob/master/$NODE_BIN_FILE?raw=true
     stop_on_download_error "Unable to download $NODE_BIN_FILE"
+    mkdir target
     tar xf $NODE_BIN_FILE -C target
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
     echo "nodejs $(node -v) has been installed."
