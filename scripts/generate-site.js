@@ -86,8 +86,7 @@ task('weave-html', ['prepare'], function (params) {
             script.text = gaScript;
 
             $('.jsdom').remove();
-
-            fs.writeFileSync(htmlFile, $("html").html(), "utf8");
+            fs.writeFileSync(htmlFile, '<!DOCTYPE html>' + $("html").html(), "utf8");
         }
     });
 });
