@@ -23,7 +23,7 @@ node $NODE_PATH/jake/bin/cli.js -f scripts/generate-site.js
 stop_on_error "Jake script has failed"
 
 #Trash current files and apply new sources
-git checkout -b gh-pages origin/gh-pages
+git checkout gh-pages
 git rm -r --ignore-unmatch * && mv target/jongo_org_website/* ./ && rm -rf target/ && git add ./ && git status
 stop_on_error "Unable to apply sources from site branch on gh-pages branch"
 
