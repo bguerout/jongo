@@ -1,5 +1,7 @@
 #!/bin/sh
 
+GENERATED_SITE_DIR=target/jongo_org_website
+
 stop_on_error() {
  if [ $? -ne 0 ] ; then
   echo "$1"
@@ -19,7 +21,7 @@ stop_on_error "Jake script has failed"
 
 #Trash current files and apply new sources
 git checkout gh-pages
-git rm -r --ignore-unmatch * && mv target/jongo_org_website/* ./ && rm -rf target/ && git add ./ && git status && git diff --staged
+git rm -r --ignore-unmatch * && mv $GENERATED_SITE_DIR/* ./ && rm -rf $GENERATED_SITE_DIR && git add ./ && git status && git diff --staged
 stop_on_error "Unable to apply sources from site branch on gh-pages branch"
 
 if [ "$DRY_RUN" = "false" ]; then
