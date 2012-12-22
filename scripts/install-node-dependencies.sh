@@ -10,7 +10,7 @@ stop_on_install_error() {
   exit 1
  fi
 }
-if [ -f $NODE_INSTALL_DIR ]
+if [ -d $NODE_INSTALL_DIR ]
 then
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
 else
