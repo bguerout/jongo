@@ -31,10 +31,10 @@ else
     popd
     echo "npm $(npm -v) has been installed."
     echo
-fi
 
-#Download node dependencies
-npm install express@3.0.5 jake@0.5.8 jsdom@0.3.3 less@1.3.1 wrench@1.4.4
-stop_on_install_error "Unable to install npm dependencies"
+    #Download node dependencies
+    npm install express@3.0.5 jake@0.5.8 jsdom@0.3.3 less@1.3.1 wrench@1.4.4
+    stop_on_install_error "Unable to install npm dependencies"
+fi
 
 
