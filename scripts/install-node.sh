@@ -19,6 +19,7 @@ else
     stop_on_download_error "Unable to download $NODE_BIN_FILE"
     mkdir target
     tar xf $NODE_BIN_FILE -C target
+    rm $NODE_BIN_FILE
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
     echo "nodejs $(node -v) has been installed."
     echo
