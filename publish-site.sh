@@ -31,7 +31,7 @@ rm -rf $GHPAGES_REPO_DIR
 git clone --branch gh-pages git@github.com:bguerout/jongo.git $GHPAGES_REPO_DIR
 
 pushd $GHPAGES_REPO_DIR
-git rm -r --ignore-unmatch * && mv $GENERATED_SITE_DIR/* ./ && rm -rf $GENERATED_SITE_DIR && git add ./ && git status && git diff --staged
+git rm -r --ignore-unmatch * && mv ../$GENERATED_SITE_DIR/* ./ && git add ./ && git status && git diff --staged
 stop_on_error "Unable to apply sources from site branch on gh-pages branch"
 if [ "$DRY_RUN" = "false" ]; then
  echo "************************"

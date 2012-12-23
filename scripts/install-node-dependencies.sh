@@ -15,9 +15,9 @@ stop_on_install_error() {
 if [ -d $NODE_INSTALL_DIR ]
 then
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
-    echo "******************************************************"
+    echo "*****************************************************"
     echo "nodejs is already available at $PWD/$NODE_INSTALL_DIR"
-    echo "******************************************************"
+    echo "*****************************************************"
 else
     echo "Installing $NODE_DIST"
     wget --no-verbose -O $NODE_BIN_FILE https://github.com/CloudBees-community/node-clickstack/blob/master/$NODE_BIN_FILE?raw=true
@@ -26,18 +26,18 @@ else
     tar xf $NODE_BIN_FILE -C target
     rm $NODE_BIN_FILE
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
-    echo "******************************************"
+    echo "*************************************"
     echo "nodejs $(node -v) has been installed."
-    echo "******************************************"
+    echo "*************************************"
 
     echo "Installing npm"
     pushd $NODE_INSTALL_DIR
     curl https://npmjs.org/install.sh | clean=yes sh
     stop_on_install_error "Unable to download npm"
     popd
-    echo "******************************************"
+    echo "*********************************"
     echo "npm $(npm -v) has been installed."
-    echo "******************************************"
+    echo "*********************************"
 
     #Download node dependencies
     echo "Installing npm dependencies"
