@@ -75,18 +75,20 @@ public class PolymorphismTest extends JongoTestCase {
 
         assertThat(dog).isInstanceOf(Beagle.class);
         assertThat(dog.name).isEqualTo("hunter");
+        assertThat(dog.discriminator).isEqualTo("B");
     }
 
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
             include = JsonTypeInfo.As.PROPERTY,
-            property = "discriminator")
+            property = "discriminator",
+            visible = true)
     @JsonSubTypes({
             @JsonSubTypes.Type(value = Beagle.class, name = "B"),
             @JsonSubTypes.Type(value = Loulou.class, name = "L")
     })
     private static abstract class Dog {
-        String name;
+        String name, discriminator;
     }
 
     private static class Beagle extends Dog {
