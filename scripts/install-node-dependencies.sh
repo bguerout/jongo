@@ -15,9 +15,7 @@ stop_on_install_error() {
 if [ -d $NODE_INSTALL_DIR ]
 then
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
-    echo "*****************************************************"
     echo "nodejs is already available at $PWD/$NODE_INSTALL_DIR"
-    echo "*****************************************************"
 else
     echo "Installing $NODE_DIST"
     wget --no-verbose -O $NODE_BIN_FILE https://github.com/CloudBees-community/node-clickstack/blob/master/$NODE_BIN_FILE?raw=true
