@@ -9,9 +9,10 @@ stop_on_install_error() {
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   echo "$1"
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-  exit 1
  fi
+ exit 1
 }
+
 if [ -d $NODE_INSTALL_DIR ]
 then
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
