@@ -1,8 +1,8 @@
 #!/bin/bash
 
-NODE_DIST=node-v0.8.16-linux-x64
-NODE_INSTALL_DIR=target/$NODE_DIST
-NODE_BIN_FILE=$NODE_DIST.tar.gz
+NODE_VERSION=0.8.17
+NODE_INSTALL_DIR=target/node-$NODE_VERSION
+NODE_BIN_FILE=node-$NODE_VERSION.tar.gz
 
 stop_on_install_error() {
  if [ $? -ne 0 ] ; then
@@ -17,8 +17,8 @@ then
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
     echo "nodejs is already available at $PWD/$NODE_INSTALL_DIR"
 else
-    echo "Installing $NODE_DIST"
-    wget --no-verbose -O $NODE_BIN_FILE https://github.com/CloudBees-community/node-clickstack/blob/master/$NODE_BIN_FILE?raw=true
+    echo "Installing nodejs $NODE_VERSION"
+    wget --no-verbose -O $NODE_BIN_FILE http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz
     stop_on_install_error "Unable to download $NODE_BIN_FILE"
     mkdir target
     tar xf $NODE_BIN_FILE -C target
