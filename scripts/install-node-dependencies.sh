@@ -24,6 +24,8 @@ else
     tar xf $NODE_BIN_FILE -C target
     rm $NODE_BIN_FILE
     export PATH=$PWD/$NODE_INSTALL_DIR/bin:${PATH}
+    node -v
+    stop_on_install_error "Unable to install node"
     echo "*************************************"
     echo "nodejs $(node -v) has been installed."
     echo "*************************************"
