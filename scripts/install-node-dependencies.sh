@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NODE_VERSION=0.8.17
-NODE_INSTALL_DIR=target/node-$NODE_VERSION
+NODE_INSTALL_DIR=target/node-v$NODE_VERSION-linux-x64
 NODE_BIN_FILE=node-$NODE_VERSION.tar.gz
 
 stop_on_install_error() {
