@@ -21,10 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
-import org.bson.types.BSONTimestamp;
-import org.bson.types.MaxKey;
-import org.bson.types.MinKey;
-import org.bson.types.ObjectId;
+import org.bson.types.*;
 
 import java.io.IOException;
 
@@ -34,6 +31,7 @@ class BsonSerializers extends SimpleSerializers {
         addSerializer(BSONTimestamp.class, new BSONTimestampSerializer());
         addSerializer(MinKey.class, new MinKeySerializer());
         addSerializer(MaxKey.class, new MaxKeySerializer());
+        addSerializer(Binary.class, new BinarySerializer());
     }
 
     static class MaxKeySerializer extends JsonSerializer<MaxKey> {
@@ -63,4 +61,12 @@ class BsonSerializers extends SimpleSerializers {
             ((MongoBsonGenerator) jsonGenerator).writeNativeObjectId(obj);
         }
     }
+
+    static class BinarySerializer extends JsonSerializer<Binary> {
+
+        public void serialize(Binary obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            ((MongoBsonGenerator) jsonGenerator).writeBinary(obj);
+        }
+    }
+
 }
