@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public final class Mapping {
+public class Mapping {
 
     private ObjectMapper mapper;
     private ReaderCallback readerCallback;

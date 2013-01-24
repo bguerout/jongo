@@ -18,7 +18,7 @@ package org.jongo.bson;
 
 import com.mongodb.DBObject;
 
-public final class Bson {
+public class Bson {
 
     public static boolean isPrimitive(Object obj) {
         return Primitives.contains(obj.getClass());

@@ -16,7 +16,6 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
 import de.undercouch.bson4jackson.BsonFactory;
@@ -27,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public final class MongoBsonFactory extends BsonFactory {
+public class MongoBsonFactory extends BsonFactory {
 
     public static BsonFactory createFactory() {
         BsonFactory factory = new MongoBsonFactory();
@@ -36,7 +35,7 @@ public final class MongoBsonFactory extends BsonFactory {
     }
 
     @Override
-    protected BsonParser _createJsonParser(InputStream in, IOContext ctxt) throws IOException, JsonParseException {
+    protected BsonParser _createJsonParser(InputStream in, IOContext ctxt) throws IOException {
         BsonParser p = new MongoBsonParser(ctxt, _parserFeatures, _bsonParserFeatures, in);
         ObjectCodec codec = getCodec();
         if (codec != null) {

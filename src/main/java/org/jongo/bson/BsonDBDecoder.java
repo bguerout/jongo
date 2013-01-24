@@ -21,7 +21,7 @@ import org.bson.LazyBSONCallback;
 
 import java.util.Iterator;
 
-public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
+public class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
     public final static DBDecoderFactory FACTORY = new BsonDBDecoderFactory();
 

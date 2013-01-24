@@ -25,7 +25,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
 import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-public final class StandardModifier implements MapperModifier {
+public class StandardModifier implements MapperModifier {
 
     public void modify(ObjectMapper mapper) {
         mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);

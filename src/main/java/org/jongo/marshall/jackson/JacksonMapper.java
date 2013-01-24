@@ -25,7 +25,7 @@ import org.jongo.marshall.jackson.configuration.AbstractMappingBuilder;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
-public final class JacksonMapper implements Mapper {
+public class JacksonMapper implements Mapper {
 
     private final JacksonEngine engine;
     private final ObjectIdUpdater objectIdUpdater;
