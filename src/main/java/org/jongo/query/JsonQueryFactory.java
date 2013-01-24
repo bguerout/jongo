@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class JsonQueryFactory implements QueryFactory {
+public class JsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
     private final String token;

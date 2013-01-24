@@ -35,7 +35,7 @@ import java.util.List;
  * @version 1.0
  * @date 16/02/2011
  */
-final class ClasspathClassesFinder {
+class ClasspathClassesFinder {
 
     public static final Class<? extends Annotation> IGNORE_ANNOTATION = null;
 

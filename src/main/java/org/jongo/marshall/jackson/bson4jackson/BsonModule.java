@@ -16,7 +16,7 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-public final class BsonModule extends de.undercouch.bson4jackson.BsonModule {
+public class BsonModule extends de.undercouch.bson4jackson.BsonModule {
 
     @Override
     public void setupModule(SetupContext context) {
