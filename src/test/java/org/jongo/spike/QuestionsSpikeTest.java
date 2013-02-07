@@ -18,10 +18,13 @@ package org.jongo.spike;
 
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+import org.bson.LazyDBList;
 import org.jongo.MongoCollection;
+import org.jongo.ResultHandler;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
+import org.jongo.util.JSONResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -79,11 +82,12 @@ public class QuestionsSpikeTest extends JongoTestCase {
     // https://groups.google.com/forum/?fromgroups=#!topic/jongo-user/UVOEmP-ql_k
     public void canHandleElemMatchOperator() throws Exception {
 
-        collection.insert("{days:[{name:'monday'},{name:'sunday'}]}");
+        collection.insert("{version : 1, days:[{name:'monday'},{name:'sunday'}]}");
+        collection.insert("{version : 2, days:[{name:'wednesday'}]}");
 
-        long nb = collection.count("{days:{$elemMatch:{name: 'monday'}}}");
+        String monday = collection.findOne("{version:1}").fields("{days:{$elemMatch:{name: 'monday'}}}").map(new JSONResultHandler());
 
-        assertThat(nb).isEqualTo(1);
+        assertThat(monday).contains("\"days\" : [ { \"name\" : \"monday\"}]");
     }
 
     private static class Friends {
