@@ -75,6 +75,17 @@ public class QuestionsSpikeTest extends JongoTestCase {
         assertThat(collection.count("{ 'friends.name' : 'Robert'}")).isEqualTo(1);
     }
 
+    @Test
+    // https://groups.google.com/forum/?fromgroups=#!topic/jongo-user/UVOEmP-ql_k
+    public void canHandleElemMatchOperator() throws Exception {
+
+        collection.insert("{days:[{name:'monday'},{name:'sunday'}]}");
+
+        long nb = collection.count("{days:{$elemMatch:{name: 'monday'}}}");
+
+        assertThat(nb).isEqualTo(1);
+    }
+
     private static class Friends {
         private List<Friend> friends = new ArrayList<Friend>();
 
