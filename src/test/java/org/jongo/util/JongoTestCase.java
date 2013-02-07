@@ -16,6 +16,7 @@
 
 package org.jongo.util;
 
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
@@ -23,6 +24,8 @@ import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
 
 import java.net.UnknownHostException;
+
+import static org.junit.Assume.assumeTrue;
 
 public abstract class JongoTestCase {
 
@@ -44,6 +47,14 @@ public abstract class JongoTestCase {
 
     protected DB getDatabase() throws UnknownHostException {
         return jongo.getDatabase();
+    }
+
+    protected void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {
+        int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
+        CommandResult buildInfo = getDatabase().command("buildInfo");
+        String version = (String) buildInfo.get("version");
+        int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
+        assumeTrue(currentVersion >= expectedVersionAsInt);
     }
 
     public void prepareMarshallingStrategy(Mapper mapper) {

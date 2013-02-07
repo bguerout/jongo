@@ -82,6 +82,8 @@ public class QuestionsSpikeTest extends JongoTestCase {
     // https://groups.google.com/forum/?fromgroups=#!topic/jongo-user/UVOEmP-ql_k
     public void canHandleElemMatchOperator() throws Exception {
 
+        assumeThatMongoVersionIsGreaterThan("2.1.1");
+
         collection.insert("{version : 1, days:[{name:'monday'},{name:'sunday'}]}");
         collection.insert("{version : 2, days:[{name:'wednesday'}]}");
 

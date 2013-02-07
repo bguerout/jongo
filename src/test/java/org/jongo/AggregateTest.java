@@ -125,12 +125,4 @@ public class AggregateTest extends JongoTestCase {
         private Article() {
         }
     }
-
-    private void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {
-        int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
-        CommandResult buildInfo = getDatabase().command("buildInfo");
-        String version = (String) buildInfo.get("version");
-        int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
-        assumeTrue(currentVersion >= expectedVersionAsInt);
-    }
 }
