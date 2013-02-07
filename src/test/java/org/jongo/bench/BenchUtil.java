@@ -65,8 +65,9 @@ class BenchUtil {
         for (int i = 0; i < nbDocuments; i++) {
             collection.save(createFriend(i), WriteConcern.SAFE);
         }
-        if (collection.count() < nbDocuments) {
-            System.exit(1);
+        long count = collection.count();
+        if (count < nbDocuments) {
+            throw new RuntimeException("Not enough documents have been saved into db : expected " + nbDocuments + "/ saved: " + count);
         }
     }
 }
