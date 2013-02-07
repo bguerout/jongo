@@ -51,12 +51,33 @@ public class FindPartialFieldTest extends JongoTestCase {
     }
 
     @Test
+    public void canFindWithProjectionParams() throws Exception {
+        /* given */
+        collection.save(friend);
+
+        /* when */
+        collection.find("{name:'John'}").fields("{name:#}", 1).map(new AssertionResultHandler());
+    }
+
+
+    @Test
     public void canFindOne() throws Exception {
         /* given */
         collection.save(friend);
 
         /* when */
         Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultHandler());
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void canFindOneWithProjectionParams() throws Exception {
+        /* given */
+        collection.save(friend);
+
+        /* when */
+        Boolean result = collection.findOne("{name:'John'}").fields("{name:#}", 1).map(new AssertionResultHandler());
 
         assertThat(result).isTrue();
     }

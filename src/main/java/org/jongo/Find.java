@@ -66,6 +66,11 @@ public final class Find {
         return this;
     }
 
+    public Find fields(String fields, Object... parameters) {
+        this.fields = queryFactory.createQuery(fields, parameters);
+        return this;
+    }
+
     public Find limit(int limit) {
         this.limit = limit;
         return this;

@@ -53,6 +53,11 @@ public final class FindOne {
         return this;
     }
 
+    public FindOne fields(String fields, Object... parameters) {
+        this.fields = queryFactory.createQuery(fields, parameters);
+        return this;
+    }
+
     private DBObject getFieldsAsDBObject() {
         return fields == null ? null : fields.toDBObject();
     }
