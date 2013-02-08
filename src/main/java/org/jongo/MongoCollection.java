@@ -147,7 +147,7 @@ public class MongoCollection {
     }
 
     public WriteResult remove(String query, Object... parameters) {
-        return collection.remove(createQuery(query, parameters).toDBObject());
+        return collection.remove(createQuery(query, parameters).toDBObject(), writeConcern);
     }
 
     public Distinct distinct(String key) {
