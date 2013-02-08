@@ -31,18 +31,14 @@ class Save {
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
     private final Object pojo;
-    private WriteConcern concern;
+    private WriteConcern writeConcern;
 
-    Save(DBCollection collection, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object pojo) {
+    Save(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object pojo) {
+        this.writeConcern = writeConcern;
         this.marshaller = marshaller;
         this.collection = collection;
         this.objectIdUpdater = objectIdUpdater;
         this.pojo = pojo;
-    }
-
-    public Save concern(WriteConcern concern) {
-        this.concern = concern;
-        return this;
     }
 
     public WriteResult execute() {
@@ -53,7 +49,7 @@ class Save {
             dbObject = createDBObjectToUpdate();
         }
 
-        return collection.save(dbObject, determineWriteConcern());
+        return collection.save(dbObject, writeConcern);
     }
 
     private DBObject createDBObjectToUpdate() {
@@ -79,10 +75,6 @@ class Save {
             String message = String.format("Unable to save object %s due to a marshalling error", pojo);
             throw new IllegalArgumentException(message, e);
         }
-    }
-
-    private WriteConcern determineWriteConcern() {
-        return concern == null ? collection.getWriteConcern() : concern;
     }
 
     private final static class AlreadyCheckedDBObject extends LazyWriteableDBObject {

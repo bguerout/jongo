@@ -110,15 +110,4 @@ public class RemoveTest extends JongoTestCase {
 
         assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
-
-    @Test
-    public void canSaveWithWriteConcern() throws Exception {
-
-        Friend john = new Friend("John");
-        collection.save(john);
-
-        WriteResult writeResult = collection.save(john, WriteConcern.SAFE);
-
-        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
-    }
 }

@@ -75,7 +75,7 @@ public class SaveTest extends JongoTestCase {
 
         Friend friend = new Friend("John", "22 Wall Street Avenue");
 
-        WriteResult writeResult = collection.save(friend, WriteConcern.SAFE);
+        WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).save(friend);
 
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }

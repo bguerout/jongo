@@ -21,10 +21,7 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.Marshaller;
-import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
-import org.jongo.query.QueryFactory;
 
 
 public class MongoCollection {
@@ -35,24 +32,29 @@ public class MongoCollection {
     private static final String ALL = "{}";
 
     private final DBCollection collection;
-    private final Marshaller marshaller;
-    private final Unmarshaller unmarshaller;
-    private final QueryFactory queryFactory;
-    private final ObjectIdUpdater objectIdUpdater;
+    private final WriteConcern writeConcern;
+    private final Mapper mapper;
 
     public MongoCollection(DBCollection dbCollection, Mapper mapper) {
+        this(dbCollection, mapper, dbCollection.getWriteConcern());
+
+    }
+
+    private MongoCollection(DBCollection dbCollection, Mapper mapper, WriteConcern writeConcern) {
         this.collection = dbCollection;
-        this.marshaller = mapper.getMarshaller();
-        this.unmarshaller = mapper.getUnmarshaller();
-        this.objectIdUpdater = mapper.getObjectIdUpdater();
-        this.queryFactory = mapper.getQueryFactory();
+        this.writeConcern = writeConcern;
+        this.mapper = mapper;
+    }
+
+    public MongoCollection withConcern(WriteConcern concern) {
+        return new MongoCollection(collection, mapper, concern);
     }
 
     public FindOne findOne(ObjectId id) {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
-        return new FindOne(collection, unmarshaller, queryFactory, "{_id:#}", id);
+        return new FindOne(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), "{_id:#}", id);
     }
 
     public FindOne findOne() {
@@ -64,7 +66,7 @@ public class MongoCollection {
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(collection, unmarshaller, queryFactory, query, parameters);
+        return new FindOne(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
     public Find find() {
@@ -76,7 +78,7 @@ public class MongoCollection {
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(collection, unmarshaller, queryFactory, query, parameters);
+        return new Find(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
     public FindAndModify findAndModify() {
@@ -88,7 +90,7 @@ public class MongoCollection {
     }
 
     public FindAndModify findAndModify(String query, Object... parameters) {
-        return new FindAndModify(collection, unmarshaller, queryFactory, query, parameters);
+        return new FindAndModify(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
     public long count() {
@@ -116,15 +118,11 @@ public class MongoCollection {
     }
 
     public Update update(String query, Object... parameters) {
-        return new Update(collection, queryFactory, query, parameters);
+        return new Update(collection, mapper.getQueryFactory(), query, parameters);
     }
 
     public WriteResult save(Object document) {
-        return new Save(collection, marshaller, objectIdUpdater, document).execute();
-    }
-
-    public WriteResult save(Object document, WriteConcern concern) {
-        return new Save(collection, marshaller, objectIdUpdater, document).concern(concern).execute();
+        return new Save(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), document).execute();
     }
 
     public WriteResult insert(String query) {
@@ -153,7 +151,7 @@ public class MongoCollection {
     }
 
     public Distinct distinct(String key) {
-        return new Distinct(collection, unmarshaller, queryFactory, key);
+        return new Distinct(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), key);
     }
 
     public Aggregate aggregate(String pipelineOperator) {
@@ -161,7 +159,7 @@ public class MongoCollection {
     }
 
     public Aggregate aggregate(String pipelineOperator, Object... parameters) {
-        return new Aggregate(collection.getDB(), collection.getName(), unmarshaller, queryFactory).and(pipelineOperator, parameters);
+        return new Aggregate(collection.getDB(), collection.getName(), mapper.getUnmarshaller(), mapper.getQueryFactory()).and(pipelineOperator, parameters);
     }
 
     public void drop() {
@@ -193,7 +191,7 @@ public class MongoCollection {
     }
 
     private Query createQuery(String query, Object... parameters) {
-        return queryFactory.createQuery(query, parameters);
+        return mapper.getQueryFactory().createQuery(query, parameters);
     }
 
     @Override
