@@ -29,18 +29,15 @@ public class Update {
     private final Query query;
     private final QueryFactory queryFactory;
 
-    private WriteConcern concern;
+    private WriteConcern writeConcern;
     private boolean upsert = false;
     private boolean multi = false;
 
-    Update(DBCollection collection, QueryFactory queryFactory, String query, Object... parameters) {
+    Update(DBCollection collection, WriteConcern writeConcern, QueryFactory queryFactory, String query, Object... parameters) {
         this.collection = collection;
+        this.writeConcern = writeConcern;
         this.queryFactory = queryFactory;
         this.query = createQuery(query, parameters);
-    }
-
-    private WriteConcern determineWriteConcern() {
-        return concern == null ? collection.getWriteConcern() : concern;
     }
 
     public WriteResult with(String modifier) {
@@ -50,12 +47,7 @@ public class Update {
     public WriteResult with(String modifier, Object... parameters) {
         DBObject dbQuery = query.toDBObject();
         DBObject dbModifier = queryFactory.createQuery(modifier, parameters).toDBObject();
-        return collection.update(dbQuery, dbModifier, upsert, multi, determineWriteConcern());
-    }
-
-    public Update concern(WriteConcern concern) {
-        this.concern = concern;
-        return this;
+        return collection.update(dbQuery, dbModifier, upsert, multi, writeConcern);
     }
 
     public Update upsert() {

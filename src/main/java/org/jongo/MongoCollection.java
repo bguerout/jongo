@@ -118,7 +118,7 @@ public class MongoCollection {
     }
 
     public Update update(String query, Object... parameters) {
-        return new Update(collection, mapper.getQueryFactory(), query, parameters);
+        return new Update(collection, writeConcern, mapper.getQueryFactory(), query, parameters);
     }
 
     public WriteResult save(Object document) {
