@@ -18,7 +18,7 @@ package org.jongo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.jackson.JacksonObjectIdSelector;
+import org.jongo.marshall.jackson.JacksonIdFieldSelector;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.junit.Before;
@@ -28,13 +28,13 @@ import java.lang.reflect.Field;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class DefaultObjectIdUpdaterTest {
+public class ReflectiveObjectIdUpdaterTest {
 
-    private DefaultObjectIdUpdater updater;
+    private ReflectiveObjectIdUpdater updater;
 
     @Before
     public void setUp() throws Exception {
-        updater = new DefaultObjectIdUpdater(new JacksonObjectIdSelector());
+        updater = new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector());
     }
 
     @Test

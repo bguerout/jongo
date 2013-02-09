@@ -16,12 +16,12 @@
 
 package org.jongo.compatibility;
 
-import org.jongo.DefaultObjectIdUpdater;
+import org.jongo.ReflectiveObjectIdUpdater;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.Mapper;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
-import org.jongo.marshall.jackson.JacksonObjectIdSelector;
+import org.jongo.marshall.jackson.JacksonIdFieldSelector;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.query.JsonQueryFactory;
 import org.jongo.query.QueryFactory;
@@ -43,7 +43,7 @@ class JsonMapper implements Mapper {
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {
-        return new DefaultObjectIdUpdater(new JacksonObjectIdSelector());
+        return new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector());
     }
 
     public QueryFactory getQueryFactory() {

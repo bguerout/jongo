@@ -22,13 +22,13 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultObjectIdUpdater implements ObjectIdUpdater{
+public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
-    private final ObjectIdSelector objectIdSelector;
+    private final IdFieldSelector idFieldSelector;
 
-    public DefaultObjectIdUpdater(ObjectIdSelector objectIdSelector) {
-        this.objectIdSelector = objectIdSelector;
+    public ReflectiveObjectIdUpdater(IdFieldSelector idFieldSelector) {
+        this.idFieldSelector = idFieldSelector;
     }
 
     public boolean hasObjectId(Object target) {
@@ -55,7 +55,7 @@ public class DefaultObjectIdUpdater implements ObjectIdUpdater{
                 return null;
             }
             for (Field f : declaredFields) {
-                if (objectIdSelector.isId(f)) {
+                if (idFieldSelector.isId(f)) {
                     idFields.put(clazz, f);
                     return f;
                 }
@@ -93,7 +93,7 @@ public class DefaultObjectIdUpdater implements ObjectIdUpdater{
         return null;
     }
 
-    public interface ObjectIdSelector {
+    public interface IdFieldSelector {
         public boolean isId(Field f);
     }
 
