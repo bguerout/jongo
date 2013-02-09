@@ -17,14 +17,19 @@
 package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
 
-public class StandardModifier implements MapperModifier {
+public class VisibilityModifier implements MapperModifier {
 
     public void modify(ObjectMapper mapper) {
-        mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setSerializationInclusion(NON_NULL);
+        mapper.disable(AUTO_DETECT_SETTERS);
+        mapper.disable(AUTO_DETECT_GETTERS);
+
+        VisibilityChecker<?> checker = mapper.getSerializationConfig().getDefaultVisibilityChecker();
+        mapper.setVisibilityChecker(checker.withFieldVisibility(ANY));
     }
 }

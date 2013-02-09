@@ -16,11 +16,14 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
@@ -64,6 +67,21 @@ public class JacksonMapperTest {
 
         assertThat(document.toString()).contains("{ \"name\" : \"Doe\"}");
     }
+
+    @Test
+    public void canSetVisibilityChecker() throws Exception {
+
+        PojoWithGetter robert = new PojoWithGetter("Robert", "Sax");
+
+        Mapper mapper = new JacksonMapper.Builder()
+                .withVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.PUBLIC_ONLY).withFieldVisibility(JsonAutoDetect.Visibility.NONE))
+                .build();
+
+        BsonDocument document = mapper.getMarshaller().marshall(robert);
+
+        assertThat(document.toString()).contains("{ \"firstName\" : \"Robert\"}");
+    }
+
 
     @Test
     public void canAddModule() throws Exception {
@@ -134,6 +152,20 @@ public class JacksonMapperTest {
         @Override
         public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             return "Doe";
+        }
+    }
+
+    private static class PojoWithGetter {
+        private String firstName;
+        private String lastName;
+
+        private PojoWithGetter(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public String getFirstName() {
+            return firstName;
         }
     }
 
