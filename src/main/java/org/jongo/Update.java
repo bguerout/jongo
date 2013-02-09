@@ -48,9 +48,15 @@ public class Update {
     }
 
     public WriteResult with(String modifier, Object... parameters) {
-        DBObject dbQuery = query.toDBObject();
-        DBObject dbModifier = queryFactory.createQuery(modifier, parameters).toDBObject();
-        return collection.update(dbQuery, dbModifier, upsert, multi, determineWriteConcern());
+        Query updateQuery = queryFactory.createQuery(modifier, parameters);
+        return collection.update(this.query.toDBObject(), updateQuery.toDBObject(), upsert, multi, determineWriteConcern());
+    }
+
+    public WriteResult with(Object pojo) {
+        DBObject updateDbo = queryFactory.createQuery("{$set:#}", pojo).toDBObject();
+        DBObject pojoAsDbo = (DBObject) updateDbo.get("$set");
+        pojoAsDbo.removeField("_id");
+        return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, determineWriteConcern());
     }
 
     public Update concern(WriteConcern concern) {

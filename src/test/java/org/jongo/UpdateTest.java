@@ -130,4 +130,32 @@ public class UpdateTest extends JongoTestCase {
         assertThat(writeResult).isNotNull();
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
+
+    @Test
+    public void canPartiallyUdpateWithAPreexistingDocument() throws Exception {
+        Friend friend = new Friend("John", "123 Wall Street");
+        collection.save(friend);
+        Friend preexistingDocument = new Friend(friend.getId(), "Johnny");
+
+        collection.update("{name:'John'}").with(preexistingDocument);
+
+        Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
+        assertThat(johnny).isNotNull();
+        assertThat(johnny.getName()).isEqualTo("Johnny");
+        assertThat(johnny.getAddress()).isEqualTo("123 Wall Street");
+    }
+
+    @Test
+    public void canPartiallyUdpateWithaNewDocument() throws Exception {
+        Friend friend = new Friend("John", "123 Wall Street");
+        collection.save(friend);
+        Friend newDocument = new Friend("Johnny");
+
+        collection.update("{name:'John'}").with(newDocument);
+
+        Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
+        assertThat(johnny).isNotNull();
+        assertThat(johnny.getName()).isEqualTo("Johnny");
+        assertThat(johnny.getAddress()).isEqualTo("123 Wall Street");
+    }
 }
