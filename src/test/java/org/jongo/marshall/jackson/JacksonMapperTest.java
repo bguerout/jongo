@@ -17,7 +17,6 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -74,7 +73,7 @@ public class JacksonMapperTest {
         PojoWithGetter robert = new PojoWithGetter("Robert", "Sax");
 
         Mapper mapper = new JacksonMapper.Builder()
-                .withVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.PUBLIC_ONLY).withFieldVisibility(JsonAutoDetect.Visibility.NONE))
+                .setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.PUBLIC_ONLY).withFieldVisibility(JsonAutoDetect.Visibility.NONE))
                 .build();
 
         BsonDocument document = mapper.getMarshaller().marshall(robert);

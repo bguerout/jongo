@@ -92,7 +92,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
         return getBuilderInstance();
     }
 
-    public T withVisibilityChecker(final VisibilityChecker<?> visibilityChecker) {
+    public T setVisibilityChecker(final VisibilityChecker<?> visibilityChecker) {
         visibilityModifier = new MapperModifier() {
             public void modify(ObjectMapper mapper) {
                 mapper.setVisibilityChecker(visibilityChecker);
