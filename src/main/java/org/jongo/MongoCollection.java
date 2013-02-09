@@ -131,7 +131,7 @@ public class MongoCollection {
 
     public WriteResult insert(String query, Object... parameters) {
         DBObject dbQuery = createQuery(query, parameters).toDBObject();
-        return collection.insert(dbQuery);
+        return collection.insert(dbQuery, writeConcern);
     }
 
     public WriteResult remove(ObjectId id) {
