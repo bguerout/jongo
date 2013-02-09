@@ -38,7 +38,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
     public AbstractMappingBuilder() {
         this(new ObjectMapper(MongoBsonFactory.createFactory()));
         registerModule(new BsonModule());
-        addModifier(new StandardModifier());
+        addModifier(new PropertyModifier());
     }
 
     public AbstractMappingBuilder(ObjectMapper mapper) {
@@ -86,7 +86,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
         return getBuilderInstance();
     }
 
-    public T withView(final Class<?> viewClass) {
+    public T withView(Class<?> viewClass) {
         setReaderCallback(new ViewReaderCallback(viewClass));
         setWriterCallback(new ViewWriterCallback(viewClass));
         return getBuilderInstance();

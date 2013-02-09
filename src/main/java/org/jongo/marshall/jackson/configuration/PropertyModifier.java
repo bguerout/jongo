@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
-public class StandardModifier implements MapperModifier {
+public class PropertyModifier implements MapperModifier {
 
     public void modify(ObjectMapper mapper) {
         mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
