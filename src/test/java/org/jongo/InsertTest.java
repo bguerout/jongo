@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -55,11 +56,11 @@ public class InsertTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldSaveWithCollectionWriteConcern() throws Exception {
+    public void shouldInsertWithCollectionWriteConcern() throws Exception {
 
-        WriteResult writeResult = collection.insert("{name : 'Abby'}");
+        WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).insert("{name : 'Abby'}");
 
-        assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
+        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
 
 

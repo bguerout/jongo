@@ -112,12 +112,12 @@ public class RemoveTest extends JongoTestCase {
     }
 
     @Test
-    public void canSaveWithWriteConcern() throws Exception {
+    public void canRemoveWithWriteConcern() throws Exception {
 
         Friend john = new Friend("John");
         collection.save(john);
 
-        WriteResult writeResult = collection.save(john, WriteConcern.SAFE);
+        WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).remove();
 
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }

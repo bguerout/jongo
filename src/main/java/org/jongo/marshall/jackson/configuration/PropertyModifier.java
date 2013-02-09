@@ -14,36 +14,17 @@
  * limitations under the License.
  */
 
-package org.jongo.bson;
+package org.jongo.marshall.jackson.configuration;
 
-import com.mongodb.DBObject;
-import com.mongodb.LazyDBObject;
-import com.mongodb.LazyWriteableDBObject;
-import org.bson.LazyBSONCallback;
-import org.bson.io.BSONByteBuffer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-class LazyBsonDocument implements BsonDocument {
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
-    private final byte[] bytes;
+public class PropertyModifier implements MapperModifier {
 
-    LazyBsonDocument(byte[] bytes) {
-        this.bytes = bytes;
-    }
-
-    public int getSize() {
-        return BSONByteBuffer.wrap(bytes).getInt(0);
-    }
-
-    public byte[] toByteArray() {
-        return bytes;
-    }
-
-    public DBObject toDBObject() {
-        return new LazyDBObject(bytes, new LazyBSONCallback());
-    }
-
-    @Override
-    public String toString() {
-        return toDBObject().toString();
+    public void modify(ObjectMapper mapper) {
+        mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setSerializationInclusion(NON_NULL);
     }
 }

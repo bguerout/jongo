@@ -33,8 +33,9 @@ public class Update {
     private boolean upsert = false;
     private boolean multi = false;
 
-    Update(DBCollection collection, QueryFactory queryFactory, String query, Object... parameters) {
+    Update(DBCollection collection, WriteConcern writeConcern, QueryFactory queryFactory, String query, Object... parameters) {
         this.collection = collection;
+        this.concern = writeConcern;
         this.queryFactory = queryFactory;
         this.query = createQuery(query, parameters);
     }

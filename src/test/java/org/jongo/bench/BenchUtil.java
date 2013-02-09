@@ -63,7 +63,7 @@ class BenchUtil {
         MongoCollection collection = getCollectionFromJongo(new JacksonMapper.Builder().build());
         collection.drop();
         for (int i = 0; i < nbDocuments; i++) {
-            collection.save(createFriend(i), WriteConcern.SAFE);
+            collection.withConcern(WriteConcern.SAFE).save(createFriend(i));
         }
         long count = collection.count();
         if (count < nbDocuments) {
