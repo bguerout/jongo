@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.JacksonObjectIdSelector;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.junit.Before;
@@ -27,13 +28,13 @@ import java.lang.reflect.Field;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JacksonObjectIdUpdaterTest {
+public class ObjectIdUpdaterTest {
 
-    private JacksonObjectIdUpdater updater;
+    private ObjectIdUpdater updater;
 
     @Before
     public void setUp() throws Exception {
-        updater = new JacksonObjectIdUpdater();
+        updater = new ObjectIdUpdater(new JacksonObjectIdSelector());
     }
 
     @Test
