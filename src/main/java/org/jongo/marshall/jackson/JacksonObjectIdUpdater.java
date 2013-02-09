@@ -28,6 +28,11 @@ import java.util.Map;
 public class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
+    private final ObjectIdSelector fieldSelector;
+
+    public JacksonObjectIdUpdater() {
+        fieldSelector = new ObjectIdSelector();
+    }
 
     public boolean canSetObjectId(Object target) {
         Field field = findFieldOrNull(target.getClass());
@@ -80,7 +85,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
                 return null;
             }
             for (Field f : declaredFields) {
-                if (isId(f.getName()) || isJacksonAnnotated(f) || isIdAnnotated(f)) {
+                if (fieldSelector.canBeConsideredAsObjectId(f)) {
                     idFields.put(clazz, f);
                     return f;
                 }
@@ -91,17 +96,24 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         return null;
     }
 
-    private boolean isJacksonAnnotated(Field f) {
-        JsonProperty annotation = f.getAnnotation(JsonProperty.class);
-        return annotation != null && isId(annotation.value());
-    }
+    private static class ObjectIdSelector {
 
-    private boolean isIdAnnotated(Field f) {
-        Id annotation = f.getAnnotation(Id.class);
-        return annotation != null;
-    }
+        public boolean canBeConsideredAsObjectId(Field f) {
+            return isId(f.getName()) || isJacksonAnnotated(f) || isIdAnnotated(f);
+        }
 
-    private boolean isId(String value) {
-        return "_id".equals(value);
+        private boolean isJacksonAnnotated(Field f) {
+            JsonProperty annotation = f.getAnnotation(JsonProperty.class);
+            return annotation != null && isId(annotation.value());
+        }
+
+        private boolean isIdAnnotated(Field f) {
+            Id annotation = f.getAnnotation(Id.class);
+            return annotation != null;
+        }
+
+        private boolean isId(String value) {
+            return "_id".equals(value);
+        }
     }
 }
