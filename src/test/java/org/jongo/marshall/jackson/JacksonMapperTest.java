@@ -118,11 +118,11 @@ public class JacksonMapperTest {
     public void canAddJongoInterfaces() throws Exception {
 
         ObjectIdUpdater objectIdUpdater = new DefaultObjectIdUpdater(new JacksonObjectIdSelector()) {
-            public boolean canSetObjectId(Object target) {
+            public boolean hasObjectId(Object target) {
                 return false;
             }
 
-            public void setDocumentGeneratedId(Object target, ObjectId id) {
+            public void setObjectId(Object target, ObjectId id) {
             }
         };
 

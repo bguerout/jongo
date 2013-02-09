@@ -31,12 +31,12 @@ public class DefaultObjectIdUpdater implements ObjectIdUpdater{
         this.objectIdSelector = objectIdSelector;
     }
 
-    public boolean canSetObjectId(Object target) {
+    public boolean hasObjectId(Object target) {
         Field field = findFieldOrNull(target.getClass());
         return field != null && getTargetValue(target, field) == null;
     }
 
-    public void setDocumentGeneratedId(Object target, ObjectId id) {
+    public void setObjectId(Object target, ObjectId id) {
         Field field = findFieldOrNull(target.getClass());
         if (field == null) {
             throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());

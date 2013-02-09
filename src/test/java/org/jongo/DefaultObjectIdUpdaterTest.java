@@ -48,7 +48,7 @@ public class DefaultObjectIdUpdaterTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailOnInvalidCall() throws Exception {
 
-        updater.setDocumentGeneratedId(new Object(), ObjectId.get());
+        updater.setObjectId(new Object(), ObjectId.get());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class DefaultObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend();
 
-        updater.setDocumentGeneratedId(friend, oid);
+        updater.setObjectId(friend, oid);
 
         assertThat(friend.getId()).isEqualTo(oid);
     }
@@ -119,7 +119,7 @@ public class DefaultObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         WithIdAsString target = new WithIdAsString();
 
-        updater.setDocumentGeneratedId(target, oid);
+        updater.setObjectId(target, oid);
 
         assertThat(target._id).isEqualTo(oid.toString());
     }
@@ -130,7 +130,7 @@ public class DefaultObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         WithIdAsInteger target = new WithIdAsInteger();
 
-        updater.setDocumentGeneratedId(target, oid);
+        updater.setObjectId(target, oid);
 
         assertThat(target._id).isNull();
     }
@@ -140,7 +140,7 @@ public class DefaultObjectIdUpdaterTest {
 
         Friend friend = new Friend();
 
-        boolean canUpdate = updater.canSetObjectId(friend);
+        boolean canUpdate = updater.hasObjectId(friend);
 
         assertThat(canUpdate).isTrue();
     }
@@ -151,7 +151,7 @@ public class DefaultObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend(oid, "John");
 
-        boolean canUpdate = updater.canSetObjectId(friend);
+        boolean canUpdate = updater.hasObjectId(friend);
 
         assertThat(canUpdate).isFalse();
     }

@@ -43,7 +43,7 @@ class Save {
 
     public WriteResult execute() {
         DBObject dbObject;
-        if (objectIdUpdater.canSetObjectId(pojo)) {
+        if (objectIdUpdater.hasObjectId(pojo)) {
             dbObject = createDBObjectToInsert();
         } else {
             dbObject = createDBObjectToUpdate();
@@ -59,7 +59,7 @@ class Save {
 
     private DBObject createDBObjectToInsert() {
         ObjectId id = ObjectId.get();
-        objectIdUpdater.setDocumentGeneratedId(pojo, id);
+        objectIdUpdater.setObjectId(pojo, id);
 
         BsonDocument document = marshallDocument();
         DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray());

@@ -24,7 +24,7 @@ import java.util.Map;
 
 public interface ObjectIdUpdater {
 
-    public boolean canSetObjectId(Object target);
+    public boolean hasObjectId(Object target);
 
-    public void setDocumentGeneratedId(Object target, ObjectId id);
+    public void setObjectId(Object target, ObjectId id);
 }
