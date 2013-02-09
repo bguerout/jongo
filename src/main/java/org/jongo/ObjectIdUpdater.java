@@ -22,79 +22,9 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectIdUpdater {
+public interface ObjectIdUpdater {
 
-    private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
-    private final ObjectIdSelector objectIdSelector;
+    public boolean canSetObjectId(Object target);
 
-    public ObjectIdUpdater(ObjectIdSelector objectIdSelector) {
-        this.objectIdSelector = objectIdSelector;
-    }
-
-    public interface ObjectIdSelector {
-        public boolean isAnObjectId(Field f);
-    }
-
-    public boolean canSetObjectId(Object target) {
-        Field field = findFieldOrNull(target.getClass());
-        return field != null && getTargetValue(target, field) == null;
-    }
-
-    public void setDocumentGeneratedId(Object target, ObjectId id) {
-        Field field = findFieldOrNull(target.getClass());
-        if (field == null) {
-            throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
-        }
-        updateField(target, id, field);
-    }
-
-    protected Field findFieldOrNull(Class<?> clazz) {
-        if (idFields.containsKey(clazz)) {
-            return idFields.get(clazz);
-        }
-
-        while (!Object.class.equals(clazz)) {
-            Field[] declaredFields = clazz.getDeclaredFields();
-            if (declaredFields == null) {
-                return null;
-            }
-            for (Field f : declaredFields) {
-                if (objectIdSelector.isAnObjectId(f)) {
-                    idFields.put(clazz, f);
-                    return f;
-                }
-            }
-            clazz = clazz.getSuperclass();
-        }
-
-        return null;
-    }
-
-    protected void updateField(Object target, ObjectId id, Field field) {
-        Object value = getTargetValue(target, field);
-        if (value == null) {
-            try {
-                if (field.getType().equals(ObjectId.class)) {
-                    field.set(target, id);
-                } else if (field.getType().equals(String.class)) {
-                    field.set(target, id.toString());
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
-            }
-        }
-    }
-
-    protected Object getTargetValue(Object target, Field field) {
-        try {
-            if (field != null) {
-                field.setAccessible(true);
-                return field.get(target);
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to obtain value from field" + field.getName() + ", class: " + target.getClass(), e);
-        }
-        return null;
-    }
-
+    public void setDocumentGeneratedId(Object target, ObjectId id);
 }

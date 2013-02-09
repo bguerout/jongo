@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
+import org.jongo.DefaultObjectIdUpdater;
 import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.bson.Bson;
@@ -116,7 +117,7 @@ public class JacksonMapperTest {
     @Test
     public void canAddJongoInterfaces() throws Exception {
 
-        ObjectIdUpdater objectIdUpdater = new ObjectIdUpdater(new JacksonObjectIdSelector()) {
+        ObjectIdUpdater objectIdUpdater = new DefaultObjectIdUpdater(new JacksonObjectIdSelector()) {
             public boolean canSetObjectId(Object target) {
                 return false;
             }

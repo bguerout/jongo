@@ -28,13 +28,13 @@ import java.lang.reflect.Field;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ObjectIdUpdaterTest {
+public class DefaultObjectIdUpdaterTest {
 
-    private ObjectIdUpdater updater;
+    private DefaultObjectIdUpdater updater;
 
     @Before
     public void setUp() throws Exception {
-        updater = new ObjectIdUpdater(new JacksonObjectIdSelector());
+        updater = new DefaultObjectIdUpdater(new JacksonObjectIdSelector());
     }
 
     @Test

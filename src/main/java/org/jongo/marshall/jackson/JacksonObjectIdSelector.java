@@ -17,14 +17,15 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jongo.DefaultObjectIdUpdater;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.marshall.jackson.id.Id;
 
 import java.lang.reflect.Field;
 
-public class JacksonObjectIdSelector implements ObjectIdUpdater.ObjectIdSelector {
+public class JacksonObjectIdSelector implements DefaultObjectIdUpdater.ObjectIdSelector {
 
-    public boolean isAnObjectId(Field f) {
+    public boolean isId(Field f) {
         return isId(f.getName()) || isJacksonAnnotated(f) || isIdAnnotated(f);
     }
 

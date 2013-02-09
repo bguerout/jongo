@@ -16,6 +16,7 @@
 
 package org.jongo.compatibility;
 
+import org.jongo.DefaultObjectIdUpdater;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.Mapper;
 import org.jongo.marshall.Marshaller;
@@ -42,7 +43,7 @@ class JsonMapper implements Mapper {
     }
 
     public ObjectIdUpdater getObjectIdUpdater() {
-        return new ObjectIdUpdater(new JacksonObjectIdSelector());
+        return new DefaultObjectIdUpdater(new JacksonObjectIdSelector());
     }
 
     public QueryFactory getQueryFactory() {
