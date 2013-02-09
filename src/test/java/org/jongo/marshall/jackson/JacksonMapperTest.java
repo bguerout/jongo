@@ -79,7 +79,7 @@ public class JacksonMapperTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(robert);
 
-        assertThat(document.toString()).contains("{ \"firstName\" : \"Robert\"}");
+        assertThat(document.toString()).isEqualTo("{ \"firstName\" : \"Robert\"}");
     }
 
 
