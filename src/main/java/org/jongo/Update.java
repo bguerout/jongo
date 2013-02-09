@@ -40,24 +40,20 @@ public class Update {
         this.query = createQuery(query, parameters);
     }
 
-    private WriteConcern determineWriteConcern() {
-        return writeConcern == null ? collection.getWriteConcern() : writeConcern;
-    }
-
     public WriteResult with(String modifier) {
         return with(modifier, new Object[0]);
     }
 
     public WriteResult with(String modifier, Object... parameters) {
         Query updateQuery = queryFactory.createQuery(modifier, parameters);
-        return collection.update(this.query.toDBObject(), updateQuery.toDBObject(), upsert, multi, determineWriteConcern());
+        return collection.update(this.query.toDBObject(), updateQuery.toDBObject(), upsert, multi, writeConcern);
     }
 
     public WriteResult with(Object pojo) {
         DBObject updateDbo = queryFactory.createQuery("{$set:#}", pojo).toDBObject();
         DBObject pojoAsDbo = (DBObject) updateDbo.get("$set");
         pojoAsDbo.removeField("_id");
-        return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, determineWriteConcern());
+        return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, writeConcern);
     }
 
     public Update upsert() {
