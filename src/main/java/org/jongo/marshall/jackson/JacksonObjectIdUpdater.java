@@ -47,33 +47,6 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         updateField(target, id, field);
     }
 
-    private void updateField(Object target, ObjectId id, Field field) {
-        Object value = getTargetValue(target, field);
-        if (value == null) {
-            try {
-                if (field.getType().equals(ObjectId.class)) {
-                    field.set(target, id);
-                } else if (field.getType().equals(String.class)) {
-                    field.set(target, id.toString());
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
-            }
-        }
-    }
-
-    private Object getTargetValue(Object target, Field field) {
-        try {
-            if (field != null) {
-                field.setAccessible(true);
-                return field.get(target);
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to obtain value from field" + field.getName() + ", class: " + target.getClass(), e);
-        }
-        return null;
-    }
-
     protected Field findFieldOrNull(Class<?> clazz) {
         if (idFields.containsKey(clazz)) {
             return idFields.get(clazz);
@@ -93,6 +66,33 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
             clazz = clazz.getSuperclass();
         }
 
+        return null;
+    }
+
+    protected void updateField(Object target, ObjectId id, Field field) {
+        Object value = getTargetValue(target, field);
+        if (value == null) {
+            try {
+                if (field.getType().equals(ObjectId.class)) {
+                    field.set(target, id);
+                } else if (field.getType().equals(String.class)) {
+                    field.set(target, id.toString());
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
+            }
+        }
+    }
+
+    protected Object getTargetValue(Object target, Field field) {
+        try {
+            if (field != null) {
+                field.setAccessible(true);
+                return field.get(target);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to obtain value from field" + field.getName() + ", class: " + target.getClass(), e);
+        }
         return null;
     }
 
