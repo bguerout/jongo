@@ -29,19 +29,19 @@ public class Update {
     private final Query query;
     private final QueryFactory queryFactory;
 
-    private WriteConcern concern;
+    private WriteConcern writeConcern;
     private boolean upsert = false;
     private boolean multi = false;
 
     Update(DBCollection collection, WriteConcern writeConcern, QueryFactory queryFactory, String query, Object... parameters) {
         this.collection = collection;
-        this.concern = writeConcern;
+        this.writeConcern = writeConcern;
         this.queryFactory = queryFactory;
         this.query = createQuery(query, parameters);
     }
 
     private WriteConcern determineWriteConcern() {
-        return concern == null ? collection.getWriteConcern() : concern;
+        return writeConcern == null ? collection.getWriteConcern() : writeConcern;
     }
 
     public WriteResult with(String modifier) {
@@ -58,11 +58,6 @@ public class Update {
         DBObject pojoAsDbo = (DBObject) updateDbo.get("$set");
         pojoAsDbo.removeField("_id");
         return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, determineWriteConcern());
-    }
-
-    public Update concern(WriteConcern concern) {
-        this.concern = concern;
-        return this;
     }
 
     public Update upsert() {
