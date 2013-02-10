@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
-import org.jongo.ObjectIdUpdater;
-import org.jongo.marshall.jackson.id.Id;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JacksonObjectIdUpdater implements ObjectIdUpdater {
+public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
+    private final IdFieldSelector idFieldSelector;
 
-    public boolean canSetObjectId(Object target) {
+    public ReflectiveObjectIdUpdater(IdFieldSelector idFieldSelector) {
+        this.idFieldSelector = idFieldSelector;
+    }
+
+    public boolean hasObjectId(Object target) {
         Field field = findFieldOrNull(target.getClass());
         return field != null && getTargetValue(target, field) == null;
     }
 
-    public void setDocumentGeneratedId(Object target, ObjectId id) {
+    public void setObjectId(Object target, ObjectId id) {
         Field field = findFieldOrNull(target.getClass());
         if (field == null) {
             throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
@@ -42,7 +44,29 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         updateField(target, id, field);
     }
 
-    private void updateField(Object target, ObjectId id, Field field) {
+    protected Field findFieldOrNull(Class<?> clazz) {
+        if (idFields.containsKey(clazz)) {
+            return idFields.get(clazz);
+        }
+
+        while (!Object.class.equals(clazz)) {
+            Field[] declaredFields = clazz.getDeclaredFields();
+            if (declaredFields == null) {
+                return null;
+            }
+            for (Field f : declaredFields) {
+                if (idFieldSelector.isId(f)) {
+                    idFields.put(clazz, f);
+                    return f;
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+
+        return null;
+    }
+
+    protected void updateField(Object target, ObjectId id, Field field) {
         Object value = getTargetValue(target, field);
         if (value == null) {
             try {
@@ -57,7 +81,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         }
     }
 
-    private Object getTargetValue(Object target, Field field) {
+    protected Object getTargetValue(Object target, Field field) {
         try {
             if (field != null) {
                 field.setAccessible(true);
@@ -69,39 +93,8 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         return null;
     }
 
-    protected Field findFieldOrNull(Class<?> clazz) {
-        if (idFields.containsKey(clazz)) {
-            return idFields.get(clazz);
-        }
-
-        while (!Object.class.equals(clazz)) {
-            Field[] declaredFields = clazz.getDeclaredFields();
-            if (declaredFields == null) {
-                return null;
-            }
-            for (Field f : declaredFields) {
-                if (isId(f.getName()) || isJacksonAnnotated(f) || isIdAnnotated(f)) {
-                    idFields.put(clazz, f);
-                    return f;
-                }
-            }
-            clazz = clazz.getSuperclass();
-        }
-
-        return null;
+    public interface IdFieldSelector {
+        public boolean isId(Field f);
     }
 
-    private boolean isJacksonAnnotated(Field f) {
-        JsonProperty annotation = f.getAnnotation(JsonProperty.class);
-        return annotation != null && isId(annotation.value());
-    }
-
-    private boolean isIdAnnotated(Field f) {
-        Id annotation = f.getAnnotation(Id.class);
-        return annotation != null;
-    }
-
-    private boolean isId(String value) {
-        return "_id".equals(value);
-    }
 }
