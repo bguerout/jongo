@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson;
+package org.jongo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.JacksonIdFieldSelector;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.junit.Before;
@@ -27,13 +28,13 @@ import java.lang.reflect.Field;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JacksonObjectIdUpdaterTest {
+public class ReflectiveObjectIdUpdaterTest {
 
-    private JacksonObjectIdUpdater updater;
+    private ReflectiveObjectIdUpdater updater;
 
     @Before
     public void setUp() throws Exception {
-        updater = new JacksonObjectIdUpdater();
+        updater = new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector());
     }
 
     @Test
@@ -47,7 +48,7 @@ public class JacksonObjectIdUpdaterTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailOnInvalidCall() throws Exception {
 
-        updater.setDocumentGeneratedId(new Object(), ObjectId.get());
+        updater.setObjectId(new Object(), ObjectId.get());
     }
 
     @Test
@@ -107,7 +108,7 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend();
 
-        updater.setDocumentGeneratedId(friend, oid);
+        updater.setObjectId(friend, oid);
 
         assertThat(friend.getId()).isEqualTo(oid);
     }
@@ -118,7 +119,7 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         WithIdAsString target = new WithIdAsString();
 
-        updater.setDocumentGeneratedId(target, oid);
+        updater.setObjectId(target, oid);
 
         assertThat(target._id).isEqualTo(oid.toString());
     }
@@ -129,7 +130,7 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         WithIdAsInteger target = new WithIdAsInteger();
 
-        updater.setDocumentGeneratedId(target, oid);
+        updater.setObjectId(target, oid);
 
         assertThat(target._id).isNull();
     }
@@ -139,7 +140,7 @@ public class JacksonObjectIdUpdaterTest {
 
         Friend friend = new Friend();
 
-        boolean canUpdate = updater.canSetObjectId(friend);
+        boolean canUpdate = updater.hasObjectId(friend);
 
         assertThat(canUpdate).isTrue();
     }
@@ -150,7 +151,7 @@ public class JacksonObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend(oid, "John");
 
-        boolean canUpdate = updater.canSetObjectId(friend);
+        boolean canUpdate = updater.hasObjectId(friend);
 
         assertThat(canUpdate).isFalse();
     }

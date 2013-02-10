@@ -18,9 +18,13 @@ package org.jongo;
 
 import org.bson.types.ObjectId;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 public interface ObjectIdUpdater {
 
-    boolean canSetObjectId(Object target);
+    public boolean hasObjectId(Object target);
 
-    void setDocumentGeneratedId(Object target, ObjectId id);
+    public void setObjectId(Object target, ObjectId id);
 }
