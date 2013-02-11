@@ -49,6 +49,10 @@ public abstract class JongoTestCase {
         return jongo.getDatabase();
     }
 
+    protected Jongo getJongo() {
+        return jongo;
+    }
+
     protected void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {
         int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
         CommandResult buildInfo = getDatabase().command("buildInfo");
