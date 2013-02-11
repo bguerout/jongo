@@ -137,7 +137,7 @@ public class UpdateTest extends JongoTestCase {
         collection.save(friend);
         Friend preexistingDocument = new Friend(friend.getId(), "Johnny");
 
-        collection.update("{name:'John'}").with(preexistingDocument);
+        collection.update("{name:'John'}").merge(preexistingDocument);
 
         Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
         assertThat(johnny).isNotNull();
@@ -151,7 +151,7 @@ public class UpdateTest extends JongoTestCase {
         collection.save(friend);
         Friend newDocument = new Friend("Johnny");
 
-        collection.update("{name:'John'}").with(newDocument);
+        collection.update("{name:'John'}").merge(newDocument);
 
         Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
         assertThat(johnny).isNotNull();
