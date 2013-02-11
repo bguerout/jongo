@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall;
+package org.jongo;
 
 import org.jongo.query.Query;
 

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.jongo.marshall.Projection;
+import org.jongo.Projection;
 import org.jongo.query.Query;
 
 import java.util.Iterator;
@@ -37,9 +37,10 @@ public class JacksonProjection implements Projection {
     }
 
     public Query getProjectionQuery(Class<?> pojoClass) {
-        DBObject fields = new BasicDBObject();
-        putFieldNames(fields, getSchemaNode(pojoClass));
-        return new ProjectionQuery(fields);
+        DBObject query = new BasicDBObject();
+        putFieldNames(query, getSchemaNode(pojoClass));
+        query.removeField("_id");
+        return new ProjectionQuery(query);
     }
 
     private ObjectNode getSchemaNode(Class<?> pojoClass) {
@@ -58,20 +59,14 @@ public class JacksonProjection implements Projection {
             Map.Entry<String, JsonNode> field = fields.next();
             String fieldName = field.getKey();
             JsonNode value = field.getValue();
-            if (!isIdField(fieldName)) {
-                if (value.has("properties")) {
-                    BasicDBObject children = new BasicDBObject();
-                    putFieldNames(children, value);
-                    dbo.put(fieldName, children);
-                } else {
-                    dbo.put(fieldName, 1);
-                }
+            if (value.has("properties")) {
+                BasicDBObject children = new BasicDBObject();
+                putFieldNames(children, value);
+                dbo.put(fieldName, children);
+            } else {
+                dbo.put(fieldName, 1);
             }
         }
-    }
-
-    private boolean isIdField(String fieldName) {
-        return "_id".equals(fieldName); //TODO should reuse IdFieldSelector
     }
 
     private static class ProjectionQuery implements Query {

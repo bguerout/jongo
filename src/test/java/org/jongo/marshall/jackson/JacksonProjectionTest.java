@@ -17,10 +17,7 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.caliper.Runner;
-import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBObject;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Coordinate;
@@ -38,7 +35,7 @@ public class JacksonProjectionTest {
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ObjectMapper();
+        mapper = Mapping.defaultMapping().getMapper();
         projection = new JacksonProjection(mapper);
     }
 
@@ -47,7 +44,7 @@ public class JacksonProjectionTest {
 
         DBObject fields = projection.getProjectionQuery(Friend.class).toDBObject();
 
-        assertThat(fields.toString()).isEqualTo("{ \"name\" : 1 , \"address\" : 1 , \"coordinate\" : { \"lat\" : 1 , \"lng\" : 1}}, \"gender\" : 1}");
+        assertThat(fields.toString()).isEqualTo("{ \"name\" : 1 , \"address\" : 1 , \"coordinate\" : { \"lat\" : 1 , \"lng\" : 1} , \"gender\" : 1}");
     }
 
     @Test
