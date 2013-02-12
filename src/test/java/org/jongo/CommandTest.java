@@ -60,7 +60,6 @@ public class CommandTest extends JongoTestCase {
         ServerStatus status = jongo.runCommand("{ serverStatus: 1 }").as(ServerStatus.class);
 
         assertThat(status.host).isNotNull();
-        assertThat(status.pid).isNotNull();
         assertThat(status.ok).isEqualTo("1.0");
     }
 
@@ -81,6 +80,6 @@ public class CommandTest extends JongoTestCase {
     }
 
     private static class ServerStatus {
-        String ok, pid, host;
+        String ok, host;
     }
 }
