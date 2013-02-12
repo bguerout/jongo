@@ -37,7 +37,7 @@ public class CommandTest extends JongoTestCase {
 
     @Test
     public void canRunACommand() throws Exception {
-        DBObject result = jongo.runCommand("{ buildInfo: 1 }").map(new DBObjectResultHandler());
+        DBObject result = jongo.runCommand("{ serverStatus: 1 }").map(new DBObjectResultHandler());
 
         assertThat(result).isNotNull();
         assertThat(result.get("version")).isNotNull();
@@ -76,7 +76,7 @@ public class CommandTest extends JongoTestCase {
         try {
             jongo.runCommand("{forceerror:1}").throwOnError().as(ServerStatus.class);
         } catch (RuntimeException e) {
-            assertThat(e.getMessage()).contains("\"errmsg\" : \"exception: forced error\"");
+            assertThat(e.getMessage()).contains("forced error");
         }
     }
 
