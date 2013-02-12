@@ -40,13 +40,13 @@ public class Command {
         this.query = this.queryFactory.createQuery(query, parameters);
     }
 
-    public <T> T as(final Class<T> clazz) {
-        return map(newMapper(clazz, unmarshaller));
-    }
-
     public Command throwOnError() {
         throwOnError = true;
         return this;
+    }
+
+    public <T> T as(final Class<T> clazz) {
+        return map(newMapper(clazz, unmarshaller));
     }
 
     public <T> T map(ResultHandler<T> resultHandler) {

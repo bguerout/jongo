@@ -20,19 +20,28 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.JongoTestCase;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class CommandTest extends JongoTestCase {
 
     private Jongo jongo;
+    private MongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
         jongo = getJongo();
+        collection = createEmptyCollection("friends");
+    }
 
+    @After
+    public void tearDown() throws Exception {
+        dropCollection("friends");
     }
 
     @Test
@@ -47,12 +56,29 @@ public class CommandTest extends JongoTestCase {
     @Test
     public void canRunACommandWithParameter() throws Exception {
 
-        String collectionName = "friends";
-        createEmptyCollection(collectionName).withConcern(WriteConcern.SAFE).insert("{test:1}");
+        collection.withConcern(WriteConcern.SAFE).insert("{test:1}");
 
-        DBObject result = jongo.runCommand("{ count: #}", collectionName).map(new DBObjectResultHandler());
+        DBObject result = jongo.runCommand("{ count: #}", "friends").map(new DBObjectResultHandler());
 
         assertThat(result.get("n")).isEqualTo(1.0);
+    }
+
+    @Test
+    public void canRunAGeoNearCommand() throws Exception {
+
+        MongoCollection safeCollection = collection.withConcern(WriteConcern.SAFE);
+        safeCollection.insert("{loc:{lat:48.690833,lng:9.140556}}");
+        safeCollection.ensureIndex("{loc:'2d'}");
+
+        DBObject command = jongo.runCommand("{ geoNear : 'friends', near : [48.690,9.140], spherical: true}")
+                .throwOnError()
+                .map(new DBObjectResultHandler());
+
+        DBObject results = (DBObject) command.get("results");
+        assertThat(results).isNotNull();
+        DBObject obj = (DBObject) results.get("0");
+        assertThat(obj).isNotNull();
+        assertThat(obj.get("dis")).isEqualTo(1.732644332036388E-5);
     }
 
     @Test
@@ -81,5 +107,10 @@ public class CommandTest extends JongoTestCase {
 
     private static class ServerStatus {
         String ok, host;
+    }
+
+
+    private static class Location {
+        double dis;
     }
 }
