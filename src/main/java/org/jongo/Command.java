@@ -19,9 +19,13 @@ package org.jongo;
 
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.jongo.ResultHandlerFactory.newMapper;
 
@@ -45,15 +49,49 @@ public class Command {
         return this;
     }
 
+    public ResultCommand field(String fieldName) {
+        return new ResultCommand(fieldName);
+    }
+
     public <T> T as(final Class<T> clazz) {
         return map(newMapper(clazz, unmarshaller));
     }
 
     public <T> T map(ResultHandler<T> resultHandler) {
+        CommandResult commandResult = executeCommand();
+        return resultHandler.map(commandResult);
+    }
+
+    private CommandResult executeCommand() {
         CommandResult commandResult = db.command(query.toDBObject());
         if (throwOnError) {
             commandResult.throwOnError();
         }
-        return resultHandler.map(commandResult);
+        return commandResult;
+    }
+
+    public class ResultCommand {
+
+        private String fieldName;
+
+        public ResultCommand(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        public <T> List<T> as(final Class<T> clazz) {
+            return map(newMapper(clazz, unmarshaller));
+        }
+
+        public <T> List<T> map(ResultHandler<T> resultHandler) {
+            List<DBObject> results = (List<DBObject>) executeCommand().get(fieldName);
+            if (results == null) {
+                return new ArrayList<T>();
+            }
+            List<T> mappedResult = new ArrayList<T>(results.size());
+            for (DBObject dbObject : results) {
+                mappedResult.add(resultHandler.map(dbObject));
+            }
+            return mappedResult;
+        }
     }
 }

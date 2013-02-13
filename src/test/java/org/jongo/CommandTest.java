@@ -21,7 +21,6 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import org.bson.types.BasicBSONList;
 import org.fest.assertions.Condition;
-import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -83,11 +82,11 @@ public class CommandTest extends JongoTestCase {
         safeCollection.insert("{loc:{lat:48.690833,lng:9.140556}, name:'Paris'}");
         safeCollection.ensureIndex("{loc:'2d'}");
 
-        GeoNearResult geoNearResult = jongo.runCommand("{ geoNear : 'friends', near : [48.690,9.140], spherical: true}")
+        List<Location> locations = jongo.runCommand("{ geoNear : 'friends', near : [48.690,9.140], spherical: true}")
                 .throwOnError()
-                .as(GeoNearResult.class);
+                .field("results")
+                .as(Location.class);
 
-        List<Location> locations = geoNearResult.locations;
         assertThat(locations.size()).isEqualTo(1);
         assertThat(locations.get(0).dis).satisfies(new Condition<Double>() {
             @Override
@@ -96,6 +95,16 @@ public class CommandTest extends JongoTestCase {
             }
         });
         assertThat(locations.get(0).getName()).isEqualTo("Paris");
+    }
+
+    @Test
+    public void canRunAnEmptyResultCommand() throws Exception {
+
+        List<DBObject> locations = jongo.runCommand("{ geoNear : 'friends' , near : [48.690,9.140]}")
+                .field("results")
+                .map(new RawResultHandler<DBObject>());
+
+        assertThat(locations).isEmpty();
     }
 
     @Test
@@ -126,10 +135,6 @@ public class CommandTest extends JongoTestCase {
         String ok, errmsg;
     }
 
-    private static class GeoNearResult {
-        @JsonProperty("results")
-        List<Location> locations;
-    }
 
     private static class Location {
 
