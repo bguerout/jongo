@@ -47,7 +47,7 @@ public class FindPartialFieldTest extends JongoTestCase {
         collection.save(friend);
 
         /* when */
-        collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultHandler());
+        collection.find("{name:'John'}").projection("{name:1}").map(new AssertionResultHandler());
     }
 
     @Test

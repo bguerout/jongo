@@ -61,7 +61,7 @@ public class Find {
         }
     }
 
-    public Find fields(String fields) {
+    public Find projection(String fields) {
         this.fields = queryFactory.createQuery(fields);
         return this;
     }
