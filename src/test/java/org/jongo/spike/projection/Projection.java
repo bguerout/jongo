@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.spike.projection;
 
 import org.jongo.query.Query;
 
