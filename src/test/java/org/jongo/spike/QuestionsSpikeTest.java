@@ -101,37 +101,6 @@ public class QuestionsSpikeTest extends JongoTestCase {
         assertThat(monday).contains("\"days\" : [ { \"name\" : \"monday\"}]");
     }
 
-    @Test
-    public void importBsonDumpFileIntoCollection() throws Exception {
-
-        InputStream bsonDump = getClass().getClassLoader().getResourceAsStream("1000friends.bson");
-        BsonFactory bsonFactory = new BsonFactory();
-        //bsonFactory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH); // fails when enabled
-        ObjectReader reader = new ObjectMapper(bsonFactory).reader(BasicBSONObject.class);
-
-        MappingIterator<BSONObject> iterator = reader.readValues(bsonDump);
-        try {
-            while (safeHasNext(iterator)) {
-                BSONObject bsonObject = iterator.next();
-                collection.withConcern(WriteConcern.SAFE).save(bsonObject);
-            }
-        } finally {
-            iterator.close();
-        }
-
-        assertThat(collection.count()).isEqualTo(1000);
-    }
-
-    private boolean safeHasNext(MappingIterator<BSONObject> iterator) {
-        try {
-            return iterator.hasNextValue();
-        } catch(IOException e) {
-            // Erroneous bson4jackson exception?
-            return false;
-        }
-    }
-
-
     private static class Friends {
         private List<Friend> friends = new ArrayList<Friend>();
 
