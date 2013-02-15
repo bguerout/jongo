@@ -48,12 +48,12 @@ public class FindOne {
         return result == null ? null : resultHandler.map(result);
     }
 
-    public FindOne fields(String fields) {
+    public FindOne projection(String fields) {
         this.fields = queryFactory.createQuery(fields);
         return this;
     }
 
-    public FindOne fields(String fields, Object... parameters) {
+    public FindOne projection(String fields, Object... parameters) {
         this.fields = queryFactory.createQuery(fields, parameters);
         return this;
     }

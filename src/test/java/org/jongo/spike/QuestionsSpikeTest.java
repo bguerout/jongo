@@ -16,18 +16,10 @@
 
 package org.jongo.spike;
 
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
-import com.mongodb.WriteConcern;
-import de.undercouch.bson4jackson.BsonFactory;
-import org.bson.BSONObject;
-import org.bson.BasicBSONObject;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonEngine;
-import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
 import org.jongo.util.JSONResultHandler;
@@ -36,9 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,7 +85,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
         collection.insert("{version : 1, days:[{name:'monday'},{name:'sunday'}]}");
         collection.insert("{version : 2, days:[{name:'wednesday'}]}");
 
-        String monday = collection.findOne("{version:1}").fields("{days:{$elemMatch:{name: 'monday'}}}").map(new JSONResultHandler());
+        String monday = collection.findOne("{version:1}").projection("{days:{$elemMatch:{name: 'monday'}}}").map(new JSONResultHandler());
 
         assertThat(monday).contains("\"days\" : [ { \"name\" : \"monday\"}]");
     }

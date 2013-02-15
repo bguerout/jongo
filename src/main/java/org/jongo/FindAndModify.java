@@ -64,7 +64,7 @@ public class FindAndModify {
         return result == null ? null : resultHandler.map(result);
     }
 
-    public FindAndModify fields(String fields) {
+    public FindAndModify projection(String fields) {
         this.fields = queryFactory.createQuery(fields);
         return this;
     }

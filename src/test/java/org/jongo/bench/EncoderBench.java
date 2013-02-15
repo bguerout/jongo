@@ -89,9 +89,9 @@ public class EncoderBench extends SimpleBenchmark {
 
         private void validateKey(String s) {
             if (s.contains("."))
-                throw new IllegalArgumentException("fields stored in the db can't have . in them. (Bad Key: '" + s + "')");
+                throw new IllegalArgumentException("projection stored in the db can't have . in them. (Bad Key: '" + s + "')");
             if (s.startsWith("$"))
-                throw new IllegalArgumentException("fields stored in the db can't start with '$' (Bad Key: '" + s + "')");
+                throw new IllegalArgumentException("projection stored in the db can't start with '$' (Bad Key: '" + s + "')");
         }
 
     }
