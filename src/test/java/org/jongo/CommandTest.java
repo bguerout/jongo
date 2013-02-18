@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
+import org.fest.assertions.Condition;
 import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -77,8 +78,12 @@ public class CommandTest extends JongoTestCase {
         DBObject results = (DBObject) command.get("results");
         assertThat(results).isNotNull();
         DBObject obj = (DBObject) results.get("0");
-        assertThat(obj).isNotNull();
-        assertThat(obj.get("dis")).isEqualTo(1.732644332036388E-5);
+        assertThat(obj.get("dis")).satisfies(new Condition<Object>() {
+            @Override
+            public boolean matches(Object value) {
+                return value instanceof Double && ((Double) value) > 1.7E-5 && ((Double) value) < 1.8E-5;
+            }
+        });
     }
 
     @Test
