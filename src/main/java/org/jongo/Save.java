@@ -43,10 +43,10 @@ class Save {
 
     public WriteResult execute() {
         DBObject dbObject;
-        if (objectIdUpdater.hasObjectId(pojo)) {
-            dbObject = createDBObjectToInsert();
-        } else {
+        if (objectIdUpdater.haveAnId(pojo)) {
             dbObject = createDBObjectToUpdate();
+        } else {
+            dbObject = createDBObjectToInsert();
         }
 
         return collection.save(dbObject, writeConcern);

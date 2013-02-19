@@ -31,9 +31,9 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
         this.idFieldSelector = idFieldSelector;
     }
 
-    public boolean hasObjectId(Object target) {
-        Field field = findFieldOrNull(target.getClass());
-        return field != null && getTargetValue(target, field) == null;
+    public boolean haveAnId(Object document) {
+        Field field = findFieldOrNull(document.getClass());
+        return field == null || getTargetValue(document, field) != null;
     }
 
     public void setObjectId(Object target, ObjectId id) {
