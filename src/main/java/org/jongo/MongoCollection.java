@@ -121,16 +121,16 @@ public class MongoCollection {
         return new Update(collection, writeConcern, mapper.getQueryFactory(), query, parameters);
     }
 
-    public WriteResult save(Object document) {
-        return new PojoUpdater(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater()).save(document);
+    public WriteResult save(Object pojo) {
+        return new PojoUpdate(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater()).save(pojo);
     }
 
-    public WriteResult insert(Object document) {
-        return insert(new Object[]{document});
+    public WriteResult insert(Object pojo) {
+        return insert(new Object[]{pojo});
     }
 
-    public WriteResult insert(Object... documents) {
-        return new PojoUpdater(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater()).insert(documents);
+    public WriteResult insert(Object... pojos) {
+        return new PojoUpdate(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater()).insert(pojos);
     }
 
     public WriteResult insert(String query) {

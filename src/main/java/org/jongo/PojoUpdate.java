@@ -27,14 +27,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class PojoUpdater {
+class PojoUpdate {
 
     private final Marshaller marshaller;
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
     private WriteConcern writeConcern;
 
-    PojoUpdater(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater) {
+    PojoUpdate(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater) {
         this.writeConcern = writeConcern;
         this.marshaller = marshaller;
         this.collection = collection;
