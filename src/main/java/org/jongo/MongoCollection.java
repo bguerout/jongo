@@ -122,7 +122,7 @@ public class MongoCollection {
     }
 
     public WriteResult save(Object document) {
-        return new Save(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), document).execute();
+        return new PojoUpdater(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater()).save(document);
     }
 
     public WriteResult insert(String query) {

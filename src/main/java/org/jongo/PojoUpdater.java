@@ -25,50 +25,48 @@ import org.jongo.marshall.Marshaller;
 import java.util.HashSet;
 import java.util.Set;
 
-class Save {
+class PojoUpdater {
 
     private final Marshaller marshaller;
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
-    private final Object pojo;
     private WriteConcern writeConcern;
 
-    Save(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object pojo) {
+    PojoUpdater(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater) {
         this.writeConcern = writeConcern;
         this.marshaller = marshaller;
         this.collection = collection;
         this.objectIdUpdater = objectIdUpdater;
-        this.pojo = pojo;
     }
 
-    public WriteResult execute() {
+    public WriteResult save(Object pojo) {
         DBObject dbObject;
         if (objectIdUpdater.haveAnId(pojo)) {
-            dbObject = createDBObjectToUpdate();
+            dbObject = createDBObjectToUpdate(pojo);
         } else {
-            dbObject = createDBObjectToInsert();
+            dbObject = createDBObjectToInsert(pojo);
         }
 
         return collection.save(dbObject, writeConcern);
     }
 
-    private DBObject createDBObjectToUpdate() {
-        BsonDocument document = marshallDocument();
+    private DBObject createDBObjectToUpdate(Object pojo) {
+        BsonDocument document = marshallDocument(pojo);
         return new AlreadyCheckedDBObject(document.toByteArray());
     }
 
-    private DBObject createDBObjectToInsert() {
+    private DBObject createDBObjectToInsert(Object pojo) {
         ObjectId id = ObjectId.get();
         objectIdUpdater.setObjectId(pojo, id);
 
-        BsonDocument document = marshallDocument();
+        BsonDocument document = marshallDocument(pojo);
         DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray());
         dbo.put("_id", id);
 
         return dbo;
     }
 
-    private BsonDocument marshallDocument() {
+    private BsonDocument marshallDocument(Object pojo) {
         try {
             return marshaller.marshall(pojo);
         } catch (Exception e) {
