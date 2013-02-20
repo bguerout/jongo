@@ -55,9 +55,7 @@ public class SaveTest extends JongoTestCase {
 
         collection.save(friend);
 
-        Friend result = collection.findOne("{name:'John'}").as(Friend.class);
-        assertThat(result.getName()).isEqualTo("John");
-        assertThat(collection.count("{name:'John'}")).isEqualTo(1);
+        assertThat(collection.count("{name:'John', address:'22 Wall Street Avenue'}")).isEqualTo(1);
     }
 
     @Test

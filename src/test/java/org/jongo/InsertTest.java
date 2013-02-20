@@ -18,6 +18,8 @@ package org.jongo;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -45,6 +47,37 @@ public class InsertTest extends JongoTestCase {
         collection.insert("{name : 'Abby'}");
 
         assertThat(collection.count("{name : 'Abby'}")).isEqualTo(1);
+    }
+
+    @Test
+    public void canInsertPojo() throws Exception {
+
+        Friend friend = new Friend("John");
+
+        collection.insert(friend);
+
+        Friend result = collection.findOne("{name:'John'}").as(Friend.class);
+        assertThat(result.getName()).isEqualTo("John");
+    }
+
+    @Test
+    public void canInsertPojos() throws Exception {
+
+        Friend friend = new Friend("John");
+        Friend friend2 = new Friend("Robert");
+
+        collection.insert(friend, friend2);
+
+        assertThat(collection.count("{name:'John'}")).isEqualTo(1);
+        assertThat(collection.count("{name:'Robert'}")).isEqualTo(1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldEraseObjectIdWhenInsert() throws Exception {
+
+        ObjectId id = ObjectId.get();
+
+        collection.withConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
     }
 
     @Test

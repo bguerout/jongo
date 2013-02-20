@@ -125,6 +125,14 @@ public class MongoCollection {
         return new PojoUpdater(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater()).save(document);
     }
 
+    public WriteResult insert(Object document) {
+        return insert(new Object[]{document});
+    }
+
+    public WriteResult insert(Object... documents) {
+        return new PojoUpdater(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater()).insert(documents);
+    }
+
     public WriteResult insert(String query) {
         return insert(query, NO_PARAMETERS);
     }

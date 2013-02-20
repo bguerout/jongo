@@ -22,7 +22,9 @@ import org.bson.types.ObjectId;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 class PojoUpdater {
@@ -40,14 +42,25 @@ class PojoUpdater {
     }
 
     public WriteResult save(Object pojo) {
-        DBObject dbObject;
+        DBObject dbo;
         if (objectIdUpdater.haveAnId(pojo)) {
-            dbObject = createDBObjectToUpdate(pojo);
+            dbo = createDBObjectToUpdate(pojo);
         } else {
-            dbObject = createDBObjectToInsert(pojo);
+            dbo = createDBObjectToInsert(pojo);
         }
 
-        return collection.save(dbObject, writeConcern);
+        return collection.save(dbo, writeConcern);
+    }
+
+    public WriteResult insert(Object... pojos) {
+        List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
+        for (Object pojo : pojos) {
+            if (objectIdUpdater.haveAnId(pojo)) {
+                throw new IllegalArgumentException("Unable to insert pojo with Id. Use save() method instead.");
+            }
+            dbos.add(createDBObjectToInsert(pojo));
+        }
+        return collection.insert(dbos, writeConcern);
     }
 
     private DBObject createDBObjectToUpdate(Object pojo) {
