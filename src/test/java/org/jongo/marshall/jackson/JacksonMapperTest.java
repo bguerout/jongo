@@ -118,7 +118,7 @@ public class JacksonMapperTest {
     public void canAddJongoInterfaces() throws Exception {
 
         ObjectIdUpdater objectIdUpdater = new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector()) {
-            public boolean haveAnId(Object document) {
+            public boolean hasObjectId(Object target) {
                 return false;
             }
 

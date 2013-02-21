@@ -43,10 +43,10 @@ class PojoUpdate {
 
     public WriteResult save(Object pojo) {
         DBObject dbo;
-        if (objectIdUpdater.haveAnId(pojo)) {
-            dbo = createDBObjectToUpdate(pojo);
-        } else {
+        if (objectIdUpdater.hasObjectId(pojo)) {
             dbo = createDBObjectToInsert(pojo);
+        } else {
+            dbo = createDBObjectToUpdate(pojo);
         }
 
         return collection.save(dbo, writeConcern);
@@ -55,7 +55,7 @@ class PojoUpdate {
     public WriteResult insert(Object... pojos) {
         List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
         for (Object pojo : pojos) {
-            if (objectIdUpdater.haveAnId(pojo)) {
+            if (!objectIdUpdater.hasObjectId(pojo)) {
                 throw new IllegalArgumentException("Unable to insert pojo with Id. Use save() method instead.");
             }
             dbos.add(createDBObjectToInsert(pojo));

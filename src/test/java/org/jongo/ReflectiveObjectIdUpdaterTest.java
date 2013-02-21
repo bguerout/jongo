@@ -140,9 +140,9 @@ public class ReflectiveObjectIdUpdaterTest {
 
         Friend friend = new Friend();
 
-        boolean canUpdate = updater.haveAnId(friend);
+        boolean canUpdate = updater.hasObjectId(friend);
 
-        assertThat(canUpdate).isFalse();
+        assertThat(canUpdate).isTrue();
     }
 
     @Test
@@ -151,9 +151,9 @@ public class ReflectiveObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend(oid, "John");
 
-        boolean canUpdate = updater.haveAnId(friend);
+        boolean canUpdate = updater.hasObjectId(friend);
 
-        assertThat(canUpdate).isTrue();
+        assertThat(canUpdate).isFalse();
     }
 
     private static class WithAnnotation {
