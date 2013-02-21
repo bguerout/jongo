@@ -32,16 +32,35 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
     }
 
     public boolean hasObjectId(Object target) {
-        Field field = findFieldOrNull(target.getClass());
-        return field != null && getTargetValue(target, field) == null;
+        Field oidField = findFieldOrNull(target.getClass());
+        return oidField != null && getIdFieldValue(target, oidField) == null;
     }
 
     public void setObjectId(Object target, ObjectId id) {
         Field field = findFieldOrNull(target.getClass());
         if (field == null) {
-            throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
+            throw handleInvalidTarget(target);
         }
         updateField(target, id, field);
+    }
+
+    protected void updateField(Object target, ObjectId id, Field field) {
+        Object value = getIdFieldValue(target, field);
+        if (value == null) {
+            try {
+                if (field.getType().equals(ObjectId.class)) {
+                    field.set(target, id);
+                } else if (field.getType().equals(String.class)) {
+                    field.set(target, id.toString());
+                }
+            } catch (IllegalAccessException e) {
+                throw handleInvalidTarget(target);
+            }
+        }
+    }
+
+    private RuntimeException handleInvalidTarget(Object target) {
+        return new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
     }
 
     protected Field findFieldOrNull(Class<?> clazz) {
@@ -62,26 +81,10 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
             }
             clazz = clazz.getSuperclass();
         }
-
         return null;
     }
 
-    protected void updateField(Object target, ObjectId id, Field field) {
-        Object value = getTargetValue(target, field);
-        if (value == null) {
-            try {
-                if (field.getType().equals(ObjectId.class)) {
-                    field.set(target, id);
-                } else if (field.getType().equals(String.class)) {
-                    field.set(target, id.toString());
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
-            }
-        }
-    }
-
-    protected Object getTargetValue(Object target, Field field) {
+    protected Object getIdFieldValue(Object target, Field field) {
         try {
             if (field != null) {
                 field.setAccessible(true);

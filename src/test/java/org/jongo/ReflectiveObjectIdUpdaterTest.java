@@ -19,6 +19,7 @@ package org.jongo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonIdFieldSelector;
+import org.jongo.marshall.jackson.id.Id;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.junit.Before;
@@ -38,47 +39,43 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void whenNoDeclaredFieldShouldReturnNull() throws Exception {
+    public void shouldFindObjectIdUsingIdAnnotation() throws Exception {
 
-        Field field = updater.findFieldOrNull(Object.class);
-
-        assertThat(field).isNull();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailOnInvalidCall() throws Exception {
-
-        updater.setObjectId(new Object(), ObjectId.get());
-    }
-
-    @Test
-    public void whenNoObjectdIdShouldReturnNull() throws Exception {
-
-        Field field = updater.findFieldOrNull(Coordinate.class);
-
-        assertThat(field).isNull();
-    }
-
-    @Test
-    public void shouldLocateObjectIdUsingAnnotation() throws Exception {
-
-        Field field = updater.findFieldOrNull(WithAnnotation.class);
+        Field field = updater.findFieldOrNull(WithIdAnnotation.class);
 
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("key");
     }
 
     @Test
-    public void shouldLocateObjectIdUsingFieldName() throws Exception {
+    public void shouldFindObjectIdUsingJsonPropertyAnnotation() throws Exception {
 
-        Field field = updater.findFieldOrNull(WithName.class);
+        Field field = updater.findFieldOrNull(With_IdJsonPropertyAnnotation.class);
+
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("key");
+    }
+
+    @Test
+    public void shouldFindObjectIdUsingFieldName() throws Exception {
+
+        Field field = updater.findFieldOrNull(With_Id.class);
 
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("_id");
     }
 
     @Test
-    public void shouldLocateObjectIdInParent() throws Exception {
+    public void shouldFindStringIdUsingFieldName() throws Exception {
+
+        Field field = updater.findFieldOrNull(With_IdAsString.class);
+
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("_id");
+    }
+
+    @Test
+    public void shouldFindObjectIdInParent() throws Exception {
 
         Field field = updater.findFieldOrNull(WithParent.class);
 
@@ -87,23 +84,37 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void shouldNotLocateOtherObjectId() throws Exception {
+    public void whenNoObjectdIdShouldReturnNull() throws Exception {
 
-        Field field = updater.findFieldOrNull(WithOtherName.class);
-
-        assertThat(field).isNull();
+        assertThat(updater.hasObjectId(new Coordinate(1, 1))).isFalse();
     }
 
     @Test
-    public void shouldNotLocateOtherAnnotatedObjectId() throws Exception {
+    public void whenNoDeclaredFieldShouldReturnNull() throws Exception {
 
-        Field field = updater.findFieldOrNull(WithOtherAnnotation.class);
-
-        assertThat(field).isNull();
+        assertThat(updater.hasObjectId(new Object())).isFalse();
     }
 
     @Test
-    public void shouldUpdateObjectId() throws Exception {
+    public void shouldIgnoreOtherObjectId() throws Exception {
+
+        assertThat(updater.hasObjectId(new WithOtherOid())).isFalse();
+    }
+
+    @Test
+    public void shouldIgnorePojoWithoutObjectId() throws Exception {
+
+        assertThat(updater.hasObjectId(new WithoutId())).isFalse();
+    }
+
+    @Test
+    public void shouldIgnoreOtherAnnotatedObjectId() throws Exception {
+
+        assertThat(updater.hasObjectId(new WithJsonPropertyOnAnotherField())).isFalse();
+    }
+
+    @Test
+    public void shouldSetObjectId() throws Exception {
 
         ObjectId oid = new ObjectId();
         Friend friend = new Friend();
@@ -114,75 +125,58 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void shouldUpdateStringIdWithObjectId() throws Exception {
+    public void shouldSetStringIdWithObjectIdValue() throws Exception {
 
         ObjectId oid = new ObjectId();
-        WithIdAsString target = new WithIdAsString();
+        With_IdAsString target = new With_IdAsString();
 
         updater.setObjectId(target, oid);
 
         assertThat(target._id).isEqualTo(oid.toString());
     }
 
-    @Test
-    public void shouldNotUpdateNonSupportedId() throws Exception {
-
-        ObjectId oid = new ObjectId();
-        WithIdAsInteger target = new WithIdAsInteger();
-
-        updater.setObjectId(target, oid);
-
-        assertThat(target._id).isNull();
+    @Test(expected = IllegalArgumentException.class)
+    public void canNotSetNoOID() throws Exception {
+        updater.setObjectId(new WithoutId(), new ObjectId());
     }
 
-    @Test
-    public void canUpdateObjectId() throws Exception {
-
-        Friend friend = new Friend();
-
-        boolean canUpdate = updater.hasObjectId(friend);
-
-        assertThat(canUpdate).isTrue();
+    @Test(expected = IllegalArgumentException.class)
+    public void canNotHandleObject() throws Exception {
+        updater.setObjectId(new Object(), ObjectId.get());
     }
 
-    @Test
-    public void whenFriendHasIdThenCannotSetIt() throws Exception {
-
-        ObjectId oid = new ObjectId();
-        Friend friend = new Friend(oid, "John");
-
-        boolean canUpdate = updater.hasObjectId(friend);
-
-        assertThat(canUpdate).isFalse();
+    private static class WithIdAnnotation {
+        @Id
+        ObjectId key;
     }
 
-    private static class WithAnnotation {
+    private static class With_IdJsonPropertyAnnotation {
         @JsonProperty("_id")
         ObjectId key;
     }
 
-    private static class WithOtherAnnotation {
+    private static class WithJsonPropertyOnAnotherField {
         @JsonProperty("otherKey")
         ObjectId key;
     }
 
-    private static class WithName {
+    private static class With_Id {
         ObjectId _id;
     }
 
-    private static class WithIdAsString {
+    private static class With_IdAsString {
         String _id;
     }
 
-    private static class WithIdAsInteger {
-        Integer _id;
-    }
-
-    private static class WithOtherName {
+    private static class WithOtherOid {
         ObjectId otherKey;
     }
 
-    private static class WithParent extends WithName {
+    private static class WithoutId {
+        String value;
+    }
+
+    private static class WithParent extends With_Id {
 
     }
 }
