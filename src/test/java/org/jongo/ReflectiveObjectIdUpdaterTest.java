@@ -114,6 +114,12 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
+    public void shouldIgnoreOtherCustomId() throws Exception {
+
+        assertThat(updater.hasObjectId(new WithCustomId())).isFalse();
+    }
+
+    @Test
     public void shouldSetObjectId() throws Exception {
 
         ObjectId oid = new ObjectId();
@@ -133,6 +139,11 @@ public class ReflectiveObjectIdUpdaterTest {
         updater.setObjectId(target, oid);
 
         assertThat(target._id).isEqualTo(oid.toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void canNotSetCustomId() throws Exception {
+        updater.setObjectId(new WithCustomId(), new ObjectId());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -166,6 +177,10 @@ public class ReflectiveObjectIdUpdaterTest {
 
     private static class With_IdAsString {
         String _id;
+    }
+
+    private static class WithCustomId {
+        Integer _id;
     }
 
     private static class WithOtherOid {
