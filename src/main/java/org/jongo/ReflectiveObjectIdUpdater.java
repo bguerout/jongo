@@ -46,16 +46,17 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
 
     protected void updateField(Object target, ObjectId id, Field field) {
         Object value = getIdFieldValue(target, field);
-        if (value == null) {
-            try {
-                if (field.getType().equals(ObjectId.class)) {
-                    field.set(target, id);
-                } else if (field.getType().equals(String.class)) {
-                    field.set(target, id.toString());
-                }
-            } catch (IllegalAccessException e) {
-                throw handleInvalidTarget(target);
+        if (value != null) {
+            throw handleInvalidTarget(target);
+        }
+        try {
+            if (field.getType().equals(ObjectId.class)) {
+                field.set(target, id);
+            } else if (field.getType().equals(String.class)) {
+                field.set(target, id.toString());
             }
+        } catch (IllegalAccessException e) {
+            throw handleInvalidTarget(target);
         }
     }
 

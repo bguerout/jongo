@@ -109,6 +109,11 @@ public class ReflectiveObjectIdUpdaterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSetPreexistingObjectId() throws Exception {
+        updater.setObjectId(new Friend(ObjectId.get(), "John"), ObjectId.get());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotSetObject() throws Exception {
         updater.setObjectId(new Object(), ObjectId.get());
     }
 
