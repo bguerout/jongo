@@ -26,12 +26,11 @@ import java.lang.reflect.Field;
 public class JacksonIdFieldSelector implements ReflectiveObjectIdUpdater.IdFieldSelector {
 
     public boolean isId(Field f) {
-        return isIdField(f) || hasJsonProperty(f) || hasIdAnnotation(f);
+        return has_IdName(f) || hasJsonProperty(f) || hasIdAnnotation(f);
     }
 
-    private boolean isIdField(Field f) {
-        final Class<?> type = f.getType();
-        return "_id".equals(f.getName()) && (type.equals(ObjectId.class) || type.equals(String.class));
+    private boolean has_IdName(Field f) {
+        return "_id".equals(f.getName());
     }
 
     private boolean hasJsonProperty(Field f) {

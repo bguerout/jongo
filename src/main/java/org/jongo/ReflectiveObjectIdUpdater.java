@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
+public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
 
     private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
     private final IdFieldSelector idFieldSelector;
@@ -31,7 +31,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
         this.idFieldSelector = idFieldSelector;
     }
 
-    public boolean hasObjectId(Object target) {
+    public boolean canSetObjectId(Object target) {
         Field oidField = findFieldOrNull(target.getClass());
         return oidField != null && getIdFieldValue(target, oidField) == null;
     }
@@ -63,7 +63,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
         return new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
     }
 
-    protected Field findFieldOrNull(Class<?> clazz) {
+    private Field findFieldOrNull(Class<?> clazz) {
         if (idFields.containsKey(clazz)) {
             return idFields.get(clazz);
         }
@@ -74,7 +74,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
                 return null;
             }
             for (Field f : declaredFields) {
-                if (idFieldSelector.isId(f)) {
+                if (idFieldSelector.isId(f) && isObjectIdCompliant(f.getType())) {
                     idFields.put(clazz, f);
                     return f;
                 }
@@ -84,7 +84,11 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
         return null;
     }
 
-    protected Object getIdFieldValue(Object target, Field field) {
+    private boolean isObjectIdCompliant(Class<?> type) {
+        return type.equals(ObjectId.class) || type.equals(String.class);
+    }
+
+    private Object getIdFieldValue(Object target, Field field) {
         try {
             if (field != null) {
                 field.setAccessible(true);
