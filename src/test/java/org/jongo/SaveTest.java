@@ -117,6 +117,20 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
+    public void canSaveAnObjectWithoutId() throws Exception {
+
+        WithoutId noId = new WithoutId();
+        noId.name = "unknown";
+
+        collection.save(noId);
+
+        WithoutId result = collection.findOne().as(WithoutId.class);
+        assertThat(result).isNotNull();
+        assertThat(result.name).isEqualTo("unknown");
+    }
+
+
+    @Test
     public void shouldFailWhenMarshallerFail() throws Exception {
 
         try {
@@ -164,5 +178,11 @@ public class SaveTest extends JongoTestCase {
             this._id = _id;
             this.name = name;
         }
+    }
+
+    private static class WithoutId {
+
+        private String name;
+
     }
 }

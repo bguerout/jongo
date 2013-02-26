@@ -72,14 +72,6 @@ public class InsertTest extends JongoTestCase {
         assertThat(collection.count("{name:'Robert'}")).isEqualTo(1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldEraseObjectIdWhenInsert() throws Exception {
-
-        ObjectId id = ObjectId.get();
-
-        collection.withConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
-    }
-
     @Test
     public void canInsertWithParameters() throws Exception {
 
@@ -96,5 +88,11 @@ public class InsertTest extends JongoTestCase {
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotInsertAPojoWithId() throws Exception {
 
+        ObjectId id = ObjectId.get();
+
+        collection.withConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+    }
 }
