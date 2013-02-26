@@ -19,6 +19,7 @@ package org.jongo;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
+import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -86,6 +87,18 @@ public class InsertTest extends JongoTestCase {
         WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).insert("{name : 'Abby'}");
 
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
+    }
+
+    @Test
+    public void canInsertAnObjectWithoutId() throws Exception {
+
+        Coordinate noId = new Coordinate(123, 1);
+
+        collection.insert(noId);
+
+        Coordinate result = collection.findOne().as(Coordinate.class);
+        assertThat(result).isNotNull();
+        assertThat(result.lat).isEqualTo(123);
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -20,8 +20,7 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.jongo.model.Animal;
-import org.jongo.model.Fox;
+import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.model.LinkedFriend;
 import org.jongo.util.ErrorObject;
@@ -117,16 +116,15 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
-    public void canSaveAnObjectWithoutId() throws Exception {
+    public void canInsertAnObjectWithoutId() throws Exception {
 
-        WithoutId noId = new WithoutId();
-        noId.name = "unknown";
+        Coordinate noId = new Coordinate(123, 1);
 
         collection.save(noId);
 
-        WithoutId result = collection.findOne().as(WithoutId.class);
+        Coordinate result = collection.findOne().as(Coordinate.class);
         assertThat(result).isNotNull();
-        assertThat(result.name).isEqualTo("unknown");
+        assertThat(result.lat).isEqualTo(123);
     }
 
 
@@ -178,11 +176,5 @@ public class SaveTest extends JongoTestCase {
             this._id = _id;
             this.name = name;
         }
-    }
-
-    private static class WithoutId {
-
-        private String name;
-
     }
 }

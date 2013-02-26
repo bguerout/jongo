@@ -18,6 +18,7 @@ package org.jongo;
 
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonIdFieldSelector;
+import org.jongo.marshall.jackson.id.Id;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.junit.Before;
@@ -35,49 +36,51 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void shouldFindObjectId() throws Exception {
+    public void isNewWhenPojoHasObjectId() throws Exception {
 
         Friend friend = new Friend();
 
-        boolean hasOid = updater.canSetObjectId(friend);
+        boolean hasOid = updater.isNew(friend);
 
         assertThat(hasOid).isTrue();
     }
 
     @Test
-    public void shouldIgnoreNonNullObjectId() throws Exception {
+    public void isNewWhenPojoHasnotObjectId() throws Exception {
+
+        Coordinate coordinate = new Coordinate(1, 1);
+
+        assertThat(updater.isNew(coordinate)).isTrue();
+    }
+
+    @Test
+    public void isNotNewWhenPojoHasObjectIdWithValue() throws Exception {
 
         Friend friend = new Friend(ObjectId.get(), "John");
 
-        boolean hasOid = updater.canSetObjectId(friend);
+        boolean hasOid = updater.isNew(friend);
 
         assertThat(hasOid).isFalse();
     }
 
     @Test
-    public void shouldIgnoreWhenNoObjectId() throws Exception {
-
-        Coordinate coordinate = new Coordinate(1, 1);
-
-        assertThat(updater.canSetObjectId(coordinate)).isFalse();
-    }
-
-    @Test
-    public void shoudFindObjectIdInParent() throws Exception {
+    public void shouldFindObjectIdInParent() throws Exception {
 
         Child child = new Child();
 
-        boolean hasOid = updater.canSetObjectId(child);
+        boolean hasOid = updater.isNew(child);
 
         assertThat(hasOid).isTrue();
     }
 
     @Test
-    public void shouldIgnoreWhenNoDeclaredField() throws Exception {
+    public void shouldNotFindObjectIdInParentWhenChildHasId() throws Exception {
 
-        Object o = new Object();
+        ChildWithId child = new ChildWithId();
 
-        assertThat(updater.canSetObjectId(o)).isFalse();
+        boolean hasOid = updater.isNew(child);
+
+        assertThat(hasOid).isFalse();
     }
 
     @Test
@@ -102,19 +105,14 @@ public class ReflectiveObjectIdUpdaterTest {
         assertThat(target._id).isEqualTo(oid.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void cannotSetWhenNoObjectIdExists() throws Exception {
+    @Test
+    public void shouldIgnoreWhenObjectIdDoesntExist() throws Exception {
         updater.setObjectId(new Coordinate(1, 1), ObjectId.get());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSetPreexistingObjectId() throws Exception {
         updater.setObjectId(new Friend(ObjectId.get(), "John"), ObjectId.get());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void cannotSetObject() throws Exception {
-        updater.setObjectId(new Object(), ObjectId.get());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -143,5 +141,10 @@ public class ReflectiveObjectIdUpdaterTest {
 
     private static class Child extends Parent {
 
+    }
+
+    private static class ChildWithId extends Parent {
+        @Id
+        protected Integer id;
     }
 }

@@ -24,31 +24,34 @@ import java.util.Map;
 
 public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
 
-    private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
+    private final Map<Class<?>, Field> fieldCache = new HashMap<Class<?>, Field>();
     private final IdFieldSelector idFieldSelector;
 
     public ReflectiveObjectIdUpdater(IdFieldSelector idFieldSelector) {
         this.idFieldSelector = idFieldSelector;
     }
 
-    public boolean canSetObjectId(Object target) {
-        Field oidField = findFieldOrNull(target.getClass());
-        return oidField != null && getIdFieldValue(target, oidField) == null;
+    public boolean isNew(Object pojo) {
+        Field idField = findIdField(pojo.getClass());
+        return canBeConsideredAsNew(pojo, idField);
     }
 
-    public void setObjectId(Object target, ObjectId id) {
-        Field field = findFieldOrNull(target.getClass());
-        if (field == null) {
-            throw handleInvalidTarget(target);
-        }
-        updateField(target, id, field);
+    protected boolean canBeConsideredAsNew(Object pojo, Field idField) {
+        return idField == null || (isObjectIdCompliant(idField.getType()) && isAnEmptyObjectId(pojo, idField));
     }
 
-    protected void updateField(Object target, ObjectId id, Field field) {
-        Object value = getIdFieldValue(target, field);
-        if (value != null) {
-            throw handleInvalidTarget(target);
+    public void setObjectId(Object newPojo, ObjectId id) {
+        Field idField = findIdField(newPojo.getClass());
+        if (!canBeConsideredAsNew(newPojo, idField)) {
+            throw handleInvalidTarget(newPojo);
         }
+        if (idField == null) {
+            return;
+        }
+        updateField(newPojo, id, idField);
+    }
+
+    private void updateField(Object target, ObjectId id, Field field) {
         try {
             if (field.getType().equals(ObjectId.class)) {
                 field.set(target, id);
@@ -64,19 +67,15 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
         return new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
     }
 
-    private Field findFieldOrNull(Class<?> clazz) {
-        if (idFields.containsKey(clazz)) {
-            return idFields.get(clazz);
+    private Field findIdField(Class<?> clazz) {
+        if (fieldCache.containsKey(clazz)) {
+            return fieldCache.get(clazz);
         }
 
         while (!Object.class.equals(clazz)) {
-            Field[] declaredFields = clazz.getDeclaredFields();
-            if (declaredFields == null) {
-                return null;
-            }
-            for (Field f : declaredFields) {
-                if (idFieldSelector.isId(f) && isObjectIdCompliant(f.getType())) {
-                    idFields.put(clazz, f);
+            for (Field f : clazz.getDeclaredFields()) {
+                if (idFieldSelector.isId(f)) {
+                    fieldCache.put(clazz, f);
                     return f;
                 }
             }
@@ -89,20 +88,16 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
         return type.equals(ObjectId.class) || type.equals(String.class);
     }
 
-    private Object getIdFieldValue(Object target, Field field) {
+    private boolean isAnEmptyObjectId(Object target, Field field) {
         try {
-            if (field != null) {
-                field.setAccessible(true);
-                return field.get(target);
-            }
+            field.setAccessible(true);
+            return field.get(target) == null;
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Unable to obtain value from field" + field.getName() + ", class: " + target.getClass(), e);
         }
-        return null;
     }
 
     public interface IdFieldSelector {
         public boolean isId(Field f);
     }
-
 }
