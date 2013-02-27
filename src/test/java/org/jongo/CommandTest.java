@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import org.fest.assertions.Condition;
@@ -68,22 +69,22 @@ public class CommandTest extends JongoTestCase {
     public void canRunAGeoNearCommand() throws Exception {
 
         MongoCollection safeCollection = collection.withConcern(WriteConcern.SAFE);
-        safeCollection.insert("{loc:{lat:48.690833,lng:9.140556}}");
+        safeCollection.insert("{loc:{lat:48.690833,lng:9.140556}, name:'Paris'}");
         safeCollection.ensureIndex("{loc:'2d'}");
 
-        DBObject command = jongo.runCommand("{ geoNear : 'friends', near : [48.690,9.140], spherical: true}")
+        GeoNearResult geoNearResult = jongo.runCommand("{ geoNear : 'friends', near : [48.690,9.140], spherical: true}")
                 .throwOnError()
-                .map(new DBObjectResultHandler());
+                .as(GeoNearResult.class);
 
-        DBObject results = (DBObject) command.get("results");
-        assertThat(results).isNotNull();
-        DBObject obj = (DBObject) results.get("0");
-        assertThat(obj.get("dis")).satisfies(new Condition<Object>() {
+        List<Location> locations = geoNearResult.locations;
+        assertThat(locations.size()).isEqualTo(1);
+        assertThat(locations.get(0).dis).satisfies(new Condition<Double>() {
             @Override
-            public boolean matches(Object value) {
-                return value instanceof Double && ((Double) value) > 1.7E-5 && ((Double) value) < 1.8E-5;
+            public boolean matches(Double value) {
+                return value instanceof Double && value > 1.7E-5 && value < 1.8E-5;
             }
         });
+        assertThat(locations.get(0).getName()).isEqualTo("Paris");
     }
 
     @Test
@@ -102,7 +103,7 @@ public class CommandTest extends JongoTestCase {
     }
 
     @Test
-    public void canThrowExceptionOnInvalidCommand() throws Exception {
+    public void mustForceExceptionToBeThrownOnInvalidCommand() throws Exception {
         try {
             jongo.runCommand("{forceerror:1}").throwOnError().as(ServerStatus.class);
         } catch (RuntimeException e) {
@@ -114,8 +115,29 @@ public class CommandTest extends JongoTestCase {
         String ok, host;
     }
 
+    private static class GeoNearResult {
+        @JsonProperty("results")
+        List<Location> locations;
+    }
 
     private static class Location {
+
         double dis;
+
+        /**
+         * Real Location document is contained into 'obj' property
+         * Jackson doesn't support nested mapping. see http://jira.codehaus.org/browse/JACKSON-781
+         */
+        @JsonProperty("obj")
+        NestedLocation nestedLocation;
+
+        public String getName() {
+            return nestedLocation.locationName;
+        }
+    }
+
+    private static class NestedLocation {
+        @JsonProperty("name")
+        String locationName;
     }
 }
