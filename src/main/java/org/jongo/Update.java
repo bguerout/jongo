@@ -50,10 +50,15 @@ public class Update {
     }
 
     public WriteResult merge(Object pojo) {
+
         DBObject updateDbo = queryFactory.createQuery("{$set:#}", pojo).toDBObject();
+        removeIdField(updateDbo);
+        return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, writeConcern);
+    }
+
+    private void removeIdField(DBObject updateDbo) {
         DBObject pojoAsDbo = (DBObject) updateDbo.get("$set");
         pojoAsDbo.removeField("_id");
-        return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, writeConcern);
     }
 
     public Update upsert() {
