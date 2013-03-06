@@ -21,24 +21,27 @@ import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
+import org.jongo.query.QueryFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class PojoUpdate {
+class Insert {
 
     private final Marshaller marshaller;
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
+    private final QueryFactory queryFactory;
     private WriteConcern writeConcern;
 
-    PojoUpdate(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater) {
+    Insert(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, QueryFactory queryFactory) {
         this.writeConcern = writeConcern;
         this.marshaller = marshaller;
         this.collection = collection;
         this.objectIdUpdater = objectIdUpdater;
+        this.queryFactory = queryFactory;
     }
 
     public WriteResult save(Object pojo) {
@@ -61,6 +64,11 @@ class PojoUpdate {
             dbos.add(createDBObjectToInsert(pojo));
         }
         return collection.insert(dbos, writeConcern);
+    }
+
+    public WriteResult insert(String query, Object... parameters) {
+        DBObject dbQuery = queryFactory.createQuery(query, parameters).toDBObject();
+        return collection.insert(dbQuery, writeConcern);
     }
 
     private DBObject createDBObjectToUpdate(Object pojo) {
