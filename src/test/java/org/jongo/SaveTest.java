@@ -21,6 +21,7 @@ import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
+import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
 import org.jongo.model.LinkedFriend;
 import org.jongo.util.ErrorObject;
@@ -106,13 +107,13 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSaveAnObjectWithACustomTypeId() throws Exception {
 
-        WithCustomId john = new WithCustomId(999, "Robert");
+        ExternalFriend john = new ExternalFriend(999, "Robert");
 
         collection.save(john);
 
-        WithCustomId result = collection.findOne().as(WithCustomId.class);
+        ExternalFriend result = collection.findOne().as(ExternalFriend.class);
         assertThat(result).isNotNull();
-        assertThat(result._id).isEqualTo(999);
+        assertThat(result.get_id()).isEqualTo(999);
     }
 
     @Test
@@ -163,18 +164,4 @@ public class SaveTest extends JongoTestCase {
         assertThat(friend.getRelationId()).isEqualTo(relationId);
     }
 
-    private static class WithCustomId {
-
-        private int _id;
-        private String name;
-
-        private WithCustomId() {
-            //jackson
-        }
-
-        private WithCustomId(int _id, String name) {
-            this._id = _id;
-            this.name = name;
-        }
-    }
 }

@@ -20,6 +20,7 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonIdFieldSelector;
 import org.jongo.marshall.jackson.id.Id;
 import org.jongo.model.Coordinate;
+import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,18 +119,13 @@ public class ReflectiveObjectIdUpdaterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSetCustomId() throws Exception {
-        updater.setObjectId(new WithCustomId(), ObjectId.get());
+        updater.setObjectId(new ExternalFriend(), ObjectId.get());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSetPreexistingCustomId() throws Exception {
-        final WithCustomId custom = new WithCustomId();
-        custom._id = 122;
+        final ExternalFriend custom = new ExternalFriend(122, "value");
         updater.setObjectId(custom, ObjectId.get());
-    }
-
-    private static class WithCustomId {
-        private Integer _id;
     }
 
     private static class PojoWithStringId {

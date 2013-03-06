@@ -20,6 +20,7 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
+import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -107,5 +108,11 @@ public class InsertTest extends JongoTestCase {
         ObjectId id = ObjectId.get();
 
         collection.withConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotInsertAPojoWithACustomId() throws Exception {
+
+        collection.withConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
     }
 }
