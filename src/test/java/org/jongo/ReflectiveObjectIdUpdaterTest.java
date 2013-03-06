@@ -64,7 +64,7 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void shouldFindObjectIdInParent() throws Exception {
+    public void isNewWhenObjectIdIsInParent() throws Exception {
 
         Child child = new Child();
 
@@ -74,9 +74,10 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void shouldNotFindObjectIdInParentWhenChildHasId() throws Exception {
+    public void isNewWhenObjectIdIsInChildAndInParent() throws Exception {
 
         ChildWithId child = new ChildWithId();
+        child.id_parent = ObjectId.get();
 
         boolean hasOid = updater.isNew(child);
 
@@ -136,7 +137,8 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     private static class Parent {
-        ObjectId _id;
+        @Id
+        ObjectId id_parent;
     }
 
     private static class Child extends Parent {
@@ -145,6 +147,6 @@ public class ReflectiveObjectIdUpdaterTest {
 
     private static class ChildWithId extends Parent {
         @Id
-        protected Integer id;
+        Object id;
     }
 }
