@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.spike;
 
-import org.bson.types.ObjectId;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
-public interface ObjectIdUpdater {
-
-    public boolean isNew(Object pojo);
-
-    public void setObjectId(Object target, ObjectId id);
+public interface MarshallingListener<T> {
 }

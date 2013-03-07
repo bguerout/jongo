@@ -22,79 +22,82 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReflectiveObjectIdUpdater implements ObjectIdUpdater{
+public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
 
-    private final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
+    private final Map<Class<?>, Field> fieldCache = new HashMap<Class<?>, Field>();
     private final IdFieldSelector idFieldSelector;
 
     public ReflectiveObjectIdUpdater(IdFieldSelector idFieldSelector) {
         this.idFieldSelector = idFieldSelector;
     }
 
-    public boolean hasObjectId(Object target) {
-        Field field = findFieldOrNull(target.getClass());
-        return field != null && getTargetValue(target, field) == null;
+    public boolean isNew(Object pojo) {
+        Field idField = findIdField(pojo.getClass());
+        return canBeConsideredAsNew(pojo, idField);
     }
 
-    public void setObjectId(Object target, ObjectId id) {
-        Field field = findFieldOrNull(target.getClass());
-        if (field == null) {
-            throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
+    protected boolean canBeConsideredAsNew(Object pojo, Field idField) {
+        return idField == null || (isObjectIdCompliant(idField.getType()) && isAnEmptyObjectId(pojo, idField));
+    }
+
+    public void setObjectId(Object newPojo, ObjectId id) {
+        Field idField = findIdField(newPojo.getClass());
+        if (!canBeConsideredAsNew(newPojo, idField)) {
+            throw handleInvalidTarget(newPojo);
         }
-        updateField(target, id, field);
+        if (idField == null) {
+            return;
+        }
+        updateField(newPojo, id, idField);
     }
 
-    protected Field findFieldOrNull(Class<?> clazz) {
-        if (idFields.containsKey(clazz)) {
-            return idFields.get(clazz);
+    private void updateField(Object target, ObjectId id, Field field) {
+        try {
+            if (field.getType().equals(ObjectId.class)) {
+                field.set(target, id);
+            } else if (field.getType().equals(String.class)) {
+                field.set(target, id.toString());
+            }
+        } catch (IllegalAccessException e) {
+            throw handleInvalidTarget(target);
+        }
+    }
+
+    private RuntimeException handleInvalidTarget(Object target) {
+        return new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
+    }
+
+    private Field findIdField(Class<?> clazz) {
+        if (fieldCache.containsKey(clazz)) {
+            return fieldCache.get(clazz);
         }
 
         while (!Object.class.equals(clazz)) {
-            Field[] declaredFields = clazz.getDeclaredFields();
-            if (declaredFields == null) {
-                return null;
-            }
-            for (Field f : declaredFields) {
+            for (Field f : clazz.getDeclaredFields()) {
                 if (idFieldSelector.isId(f)) {
-                    idFields.put(clazz, f);
+                    fieldCache.put(clazz, f);
                     return f;
                 }
             }
             clazz = clazz.getSuperclass();
         }
-
         return null;
     }
 
-    protected void updateField(Object target, ObjectId id, Field field) {
-        Object value = getTargetValue(target, field);
-        if (value == null) {
-            try {
-                if (field.getType().equals(ObjectId.class)) {
-                    field.set(target, id);
-                } else if (field.getType().equals(String.class)) {
-                    field.set(target, id.toString());
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to set objectid on class: " + target.getClass(), e);
-            }
-        }
+    private boolean isObjectIdCompliant(Class<?> type) {
+        return type.equals(ObjectId.class) || type.equals(String.class);
     }
 
-    protected Object getTargetValue(Object target, Field field) {
+    private boolean isAnEmptyObjectId(Object target, Field field) {
         try {
-            if (field != null) {
-                field.setAccessible(true);
-                return field.get(target);
-            }
+            field.setAccessible(true);
+            return field.get(target) == null;
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Unable to obtain value from field" + field.getName() + ", class: " + target.getClass(), e);
         }
-        return null;
     }
 
     public interface IdFieldSelector {
         public boolean isId(Field f);
     }
-
 }

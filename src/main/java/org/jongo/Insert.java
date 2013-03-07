@@ -21,54 +21,73 @@ import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
+import org.jongo.query.QueryFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-class Save {
+class Insert {
 
     private final Marshaller marshaller;
     private final DBCollection collection;
     private final ObjectIdUpdater objectIdUpdater;
-    private final Object pojo;
+    private final QueryFactory queryFactory;
     private WriteConcern writeConcern;
 
-    Save(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, Object pojo) {
+    Insert(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, QueryFactory queryFactory) {
         this.writeConcern = writeConcern;
         this.marshaller = marshaller;
         this.collection = collection;
         this.objectIdUpdater = objectIdUpdater;
-        this.pojo = pojo;
+        this.queryFactory = queryFactory;
     }
 
-    public WriteResult execute() {
-        DBObject dbObject;
-        if (objectIdUpdater.hasObjectId(pojo)) {
-            dbObject = createDBObjectToInsert();
+    public WriteResult save(Object pojo) {
+        DBObject dbo;
+        if (objectIdUpdater.isNew(pojo)) {
+            dbo = createDBObjectToInsert(pojo);
         } else {
-            dbObject = createDBObjectToUpdate();
+            dbo = createDBObjectToUpdate(pojo);
         }
 
-        return collection.save(dbObject, writeConcern);
+        return collection.save(dbo, writeConcern);
     }
 
-    private DBObject createDBObjectToUpdate() {
-        BsonDocument document = marshallDocument();
+    public WriteResult insert(Object... pojos) {
+        List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
+        for (Object pojo : pojos) {
+            if (!objectIdUpdater.isNew(pojo)) {
+                throw new IllegalArgumentException("Unable to insert pojo with Id. Use save() method instead.");
+            }
+            dbos.add(createDBObjectToInsert(pojo));
+        }
+        return collection.insert(dbos, writeConcern);
+    }
+
+    public WriteResult insert(String query, Object... parameters) {
+        DBObject dbQuery = queryFactory.createQuery(query, parameters).toDBObject();
+        return collection.insert(dbQuery, writeConcern);
+    }
+
+    private DBObject createDBObjectToUpdate(Object pojo) {
+        BsonDocument document = marshallDocument(pojo);
         return new AlreadyCheckedDBObject(document.toByteArray());
     }
 
-    private DBObject createDBObjectToInsert() {
+    private DBObject createDBObjectToInsert(Object pojo) {
         ObjectId id = ObjectId.get();
         objectIdUpdater.setObjectId(pojo, id);
 
-        BsonDocument document = marshallDocument();
+        BsonDocument document = marshallDocument(pojo);
         DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray());
         dbo.put("_id", id);
 
         return dbo;
     }
 
-    private BsonDocument marshallDocument() {
+    private BsonDocument marshallDocument(Object pojo) {
         try {
             return marshaller.marshall(pojo);
         } catch (Exception e) {

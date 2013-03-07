@@ -131,7 +131,7 @@ public class FindTest extends JongoTestCase {
     public void canFindWithStringAsObjectId() {
         /* given */
         ObjectId id = new ObjectId();
-        OldFriend friend = new OldFriend(id, "John");
+        ExposableFriend friend = new ExposableFriend(id, "John");
         collection.save(friend);
 
         /* when */
@@ -144,13 +144,14 @@ public class FindTest extends JongoTestCase {
         assertThat(friends.hasNext()).isFalse();
     }
 
-    private static class OldFriend {
+
+    private static class ExposableFriend {
 
         @Id
         private String id;
         private String name;
 
-        public OldFriend(ObjectId id, String name) {
+        public ExposableFriend(ObjectId id, String name) {
             this.id = id.toString();
             this.name = name;
         }

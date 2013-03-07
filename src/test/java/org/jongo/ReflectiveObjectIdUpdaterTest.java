@@ -16,15 +16,14 @@
 
 package org.jongo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonIdFieldSelector;
+import org.jongo.marshall.jackson.id.Id;
 import org.jongo.model.Coordinate;
+import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.lang.reflect.Field;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -38,72 +37,56 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void whenNoDeclaredFieldShouldReturnNull() throws Exception {
+    public void isNewWhenPojoHasObjectId() throws Exception {
 
-        Field field = updater.findFieldOrNull(Object.class);
+        Friend friend = new Friend();
 
-        assertThat(field).isNull();
-    }
+        boolean hasOid = updater.isNew(friend);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailOnInvalidCall() throws Exception {
-
-        updater.setObjectId(new Object(), ObjectId.get());
+        assertThat(hasOid).isTrue();
     }
 
     @Test
-    public void whenNoObjectdIdShouldReturnNull() throws Exception {
+    public void isNewWhenPojoHasnotObjectId() throws Exception {
 
-        Field field = updater.findFieldOrNull(Coordinate.class);
+        Coordinate coordinate = new Coordinate(1, 1);
 
-        assertThat(field).isNull();
+        assertThat(updater.isNew(coordinate)).isTrue();
     }
 
     @Test
-    public void shouldLocateObjectIdUsingAnnotation() throws Exception {
+    public void isNotNewWhenPojoHasObjectIdWithValue() throws Exception {
 
-        Field field = updater.findFieldOrNull(WithAnnotation.class);
+        Friend friend = new Friend(ObjectId.get(), "John");
 
-        assertThat(field).isNotNull();
-        assertThat(field.getName()).isEqualTo("key");
+        boolean hasOid = updater.isNew(friend);
+
+        assertThat(hasOid).isFalse();
     }
 
     @Test
-    public void shouldLocateObjectIdUsingFieldName() throws Exception {
+    public void isNewWhenObjectIdIsInParent() throws Exception {
 
-        Field field = updater.findFieldOrNull(WithName.class);
+        Child child = new Child();
 
-        assertThat(field).isNotNull();
-        assertThat(field.getName()).isEqualTo("_id");
+        boolean hasOid = updater.isNew(child);
+
+        assertThat(hasOid).isTrue();
     }
 
     @Test
-    public void shouldLocateObjectIdInParent() throws Exception {
+    public void isNewWhenObjectIdIsInChildAndInParent() throws Exception {
 
-        Field field = updater.findFieldOrNull(WithParent.class);
+        ChildWithId child = new ChildWithId();
+        child.id_parent = ObjectId.get();
 
-        assertThat(field).isNotNull();
-        assertThat(field.getName()).isEqualTo("_id");
+        boolean hasOid = updater.isNew(child);
+
+        assertThat(hasOid).isFalse();
     }
 
     @Test
-    public void shouldNotLocateOtherObjectId() throws Exception {
-
-        Field field = updater.findFieldOrNull(WithOtherName.class);
-
-        assertThat(field).isNull();
-    }
-
-    @Test
-    public void shouldNotLocateOtherAnnotatedObjectId() throws Exception {
-
-        Field field = updater.findFieldOrNull(WithOtherAnnotation.class);
-
-        assertThat(field).isNull();
-    }
-
-    @Test
-    public void shouldUpdateObjectId() throws Exception {
+    public void canSetObjectId() throws Exception {
 
         ObjectId oid = new ObjectId();
         Friend friend = new Friend();
@@ -114,10 +97,10 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void shouldUpdateStringIdWithObjectId() throws Exception {
+    public void canSetStringIdWithObjectIdValue() throws Exception {
 
         ObjectId oid = new ObjectId();
-        WithIdAsString target = new WithIdAsString();
+        PojoWithStringId target = new PojoWithStringId();
 
         updater.setObjectId(target, oid);
 
@@ -125,64 +108,41 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void shouldNotUpdateNonSupportedId() throws Exception {
-
-        ObjectId oid = new ObjectId();
-        WithIdAsInteger target = new WithIdAsInteger();
-
-        updater.setObjectId(target, oid);
-
-        assertThat(target._id).isNull();
+    public void shouldIgnoreWhenObjectIdDoesntExist() throws Exception {
+        updater.setObjectId(new Coordinate(1, 1), ObjectId.get());
     }
 
-    @Test
-    public void canUpdateObjectId() throws Exception {
-
-        Friend friend = new Friend();
-
-        boolean canUpdate = updater.hasObjectId(friend);
-
-        assertThat(canUpdate).isTrue();
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotSetPreexistingObjectId() throws Exception {
+        updater.setObjectId(new Friend(ObjectId.get(), "John"), ObjectId.get());
     }
 
-    @Test
-    public void whenFriendHasIdThenCannotSetIt() throws Exception {
-
-        ObjectId oid = new ObjectId();
-        Friend friend = new Friend(oid, "John");
-
-        boolean canUpdate = updater.hasObjectId(friend);
-
-        assertThat(canUpdate).isFalse();
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotSetCustomId() throws Exception {
+        updater.setObjectId(new ExternalFriend(), ObjectId.get());
     }
 
-    private static class WithAnnotation {
-        @JsonProperty("_id")
-        ObjectId key;
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotSetPreexistingCustomId() throws Exception {
+        final ExternalFriend custom = new ExternalFriend(122, "value");
+        updater.setObjectId(custom, ObjectId.get());
     }
 
-    private static class WithOtherAnnotation {
-        @JsonProperty("otherKey")
-        ObjectId key;
+    private static class PojoWithStringId {
+        protected String _id;
     }
 
-    private static class WithName {
-        ObjectId _id;
+    private static class Parent {
+        @Id
+        ObjectId id_parent;
     }
 
-    private static class WithIdAsString {
-        String _id;
+    private static class Child extends Parent {
+
     }
 
-    private static class WithIdAsInteger {
-        Integer _id;
-    }
-
-    private static class WithOtherName {
-        ObjectId otherKey;
-    }
-
-    private static class WithParent extends WithName {
-
+    private static class ChildWithId extends Parent {
+        @Id
+        Object id;
     }
 }
