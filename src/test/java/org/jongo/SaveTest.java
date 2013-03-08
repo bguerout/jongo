@@ -20,8 +20,8 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.jongo.model.Animal;
-import org.jongo.model.Fox;
+import org.jongo.model.Coordinate;
+import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
 import org.jongo.model.LinkedFriend;
 import org.jongo.util.ErrorObject;
@@ -55,9 +55,7 @@ public class SaveTest extends JongoTestCase {
 
         collection.save(friend);
 
-        Friend result = collection.findOne("{name:'John'}").as(Friend.class);
-        assertThat(result.getName()).isEqualTo("John");
-        assertThat(collection.count("{name:'John'}")).isEqualTo(1);
+        assertThat(collection.count("{name:'John', address:'22 Wall Street Avenue'}")).isEqualTo(1);
     }
 
     @Test
@@ -109,14 +107,27 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSaveAnObjectWithACustomTypeId() throws Exception {
 
-        WithCustomId john = new WithCustomId(999, "Robert");
+        ExternalFriend john = new ExternalFriend(999, "Robert");
 
         collection.save(john);
 
-        WithCustomId result = collection.findOne().as(WithCustomId.class);
+        ExternalFriend result = collection.findOne().as(ExternalFriend.class);
         assertThat(result).isNotNull();
-        assertThat(result._id).isEqualTo(999);
+        assertThat(result.get_id()).isEqualTo(999);
     }
+
+    @Test
+    public void canInsertAnObjectWithoutId() throws Exception {
+
+        Coordinate noId = new Coordinate(123, 1);
+
+        collection.save(noId);
+
+        Coordinate result = collection.findOne().as(Coordinate.class);
+        assertThat(result).isNotNull();
+        assertThat(result.lat).isEqualTo(123);
+    }
+
 
     @Test
     public void shouldFailWhenMarshallerFail() throws Exception {
@@ -153,18 +164,4 @@ public class SaveTest extends JongoTestCase {
         assertThat(friend.getRelationId()).isEqualTo(relationId);
     }
 
-    private static class WithCustomId {
-
-        private int _id;
-        private String name;
-
-        private WithCustomId() {
-            //jackson
-        }
-
-        private WithCustomId(int _id, String name) {
-            this._id = _id;
-            this.name = name;
-        }
-    }
 }

@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package org.jongo;
+package org.jongo.model;
 
-import org.bson.types.ObjectId;
+public class ExternalFriend {
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+    private int _id;
+    private String name;
 
-public interface ObjectIdUpdater {
+    public ExternalFriend() {
+        //jackson
+    }
 
-    public boolean isNew(Object pojo);
+    public ExternalFriend(int _id, String name) {
+        this._id = _id;
+        this.name = name;
+    }
 
-    public void setObjectId(Object target, ObjectId id);
+    public int get_id() {
+        return _id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
