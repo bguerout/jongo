@@ -16,10 +16,7 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.jongo.query.Query;
 
@@ -33,28 +30,34 @@ public class MongoCollection {
 
     private final DBCollection collection;
     private final WriteConcern writeConcern;
+    private final ReadPreference readPreference;
     private final Mapper mapper;
 
     public MongoCollection(DBCollection dbCollection, Mapper mapper) {
-        this(dbCollection, mapper, dbCollection.getWriteConcern());
+        this(dbCollection, mapper, dbCollection.getWriteConcern(), dbCollection.getReadPreference());
 
     }
 
-    private MongoCollection(DBCollection dbCollection, Mapper mapper, WriteConcern writeConcern) {
+    private MongoCollection(DBCollection dbCollection, Mapper mapper, WriteConcern writeConcern, ReadPreference readPreference) {
         this.collection = dbCollection;
         this.writeConcern = writeConcern;
+        this.readPreference = readPreference;
         this.mapper = mapper;
     }
 
     public MongoCollection withConcern(WriteConcern concern) {
-        return new MongoCollection(collection, mapper, concern);
+        return new MongoCollection(collection, mapper, concern, readPreference);
+    }
+
+    public MongoCollection withReadPreference(ReadPreference readPreference) {
+        return new MongoCollection(collection, mapper, writeConcern, readPreference);
     }
 
     public FindOne findOne(ObjectId id) {
         if (id == null) {
             throw new IllegalArgumentException("Object id must not be null");
         }
-        return new FindOne(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), "{_id:#}", id);
+        return new FindOne(collection, readPreference, mapper.getUnmarshaller(), mapper.getQueryFactory(), "{_id:#}", id);
     }
 
     public FindOne findOne() {
@@ -66,7 +69,7 @@ public class MongoCollection {
     }
 
     public FindOne findOne(String query, Object... parameters) {
-        return new FindOne(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
+        return new FindOne(collection, readPreference, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
     public Find find() {
@@ -78,7 +81,7 @@ public class MongoCollection {
     }
 
     public Find find(String query, Object... parameters) {
-        return new Find(collection, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
+        return new Find(collection, readPreference, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
     public FindAndModify findAndModify() {
@@ -94,7 +97,7 @@ public class MongoCollection {
     }
 
     public long count() {
-        return collection.count();
+        return collection.getCount(readPreference);
     }
 
     public long count(String query) {
@@ -103,7 +106,7 @@ public class MongoCollection {
 
     public long count(String query, Object... parameters) {
         DBObject dbQuery = createQuery(query, parameters).toDBObject();
-        return collection.count(dbQuery);
+        return collection.getCount(dbQuery, null, readPreference);
     }
 
     public Update update(String query) {
