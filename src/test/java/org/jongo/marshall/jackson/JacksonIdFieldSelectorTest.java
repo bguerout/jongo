@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.jongo.ReflectiveObjectIdUpdater;
-import org.jongo.marshall.jackson.id.Id;
+import org.jongo.marshall.jackson.oid.Id;
 import org.junit.Before;
 import org.junit.Test;
 
