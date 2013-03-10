@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.ReadPreference;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
@@ -115,4 +116,17 @@ public class FindOneTest extends JongoTestCase {
         assertThat(collection.find("{_id:'invalid-id'}").as(Object.class)).hasSize(0);
     }
 
+    @Test
+    public void canFindOneWithReadPreference() throws Exception {
+        /* given */
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
+
+        /* when */
+        Friend friend = collection.withReadPreference(ReadPreference.primaryPreferred()).findOne("{name:'John'}").as(Friend.class);
+
+        /* then */
+        assertThat(friend.getName()).isEqualTo("John");
+
+        // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
+    }
 }

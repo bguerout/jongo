@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.ReadPreference;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.jackson.id.Id;
@@ -144,6 +145,22 @@ public class FindTest extends JongoTestCase {
         assertThat(friends.hasNext()).isFalse();
     }
 
+    @Test
+    public void canFindWithReadPreference() throws Exception {
+        /* given */
+        Friend friend = new Friend(new ObjectId(), "John");
+        collection.save(friend);
+
+        /* when */
+        Iterator<Friend> friends = collection.withReadPreference(ReadPreference.primaryPreferred()).find("{name:'John'}").as(Friend.class).iterator();
+
+        /* then */
+        assertThat(friends.hasNext()).isTrue();
+        assertThat(friends.next().getName()).isEqualTo("John");
+        assertThat(friends.hasNext()).isFalse();
+
+        // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
+    }
 
     private static class ExposableFriend {
 
