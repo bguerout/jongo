@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.ReadPreference;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -70,5 +71,17 @@ public class CountTest extends JongoTestCase {
 
         /* then */
         assertThat(collection.count("{name:#}", "Peter")).isEqualTo(1);
+    }
+
+    @Test
+    public void canCountWithReadPreference() throws Exception {
+        /* given */
+        collection.save(newFriend());
+        collection.save(newFriend());
+
+        /* then */
+        assertThat(collection.withReadPreference(ReadPreference.primaryPreferred()).count()).isEqualTo(2);
+
+        // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
     }
 }

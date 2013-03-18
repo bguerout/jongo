@@ -19,6 +19,7 @@ package org.jongo;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.ReadPreference;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -28,13 +29,15 @@ import static org.jongo.ResultHandlerFactory.newMapper;
 public class Find {
 
     private final DBCollection collection;
+    private final ReadPreference readPreference;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final Query query;
     private Query fields, sort;
     private Integer limit, skip;
 
-    Find(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+        this.readPreference = readPreference;
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryFactory = queryFactory;
@@ -46,7 +49,7 @@ public class Find {
     }
 
     public <T> Iterable<T> map(ResultHandler<T> resultHandler) {
-        DBCursor cursor = collection.find(query.toDBObject(), getFieldsAsDBObject());
+        DBCursor cursor = new DBCursor(collection, query.toDBObject(), getFieldsAsDBObject(), readPreference);
         addOptionsOn(cursor);
         return new MongoIterator<T>(cursor, resultHandler);
     }
