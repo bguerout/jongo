@@ -29,6 +29,9 @@ do
 done
 
 if $A_VERSION_HAS_FAILED ; then
+  echo "***************************************"
+  echo "One or more driver versions have FAILED"
+  echo "***************************************"
   exit 1;
 fi
 
