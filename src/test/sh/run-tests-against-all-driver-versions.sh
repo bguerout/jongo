@@ -4,6 +4,7 @@ OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
 NEXUS_URL="https://oss.sonatype.org/service/local/data_index?g=org.mongodb&a=mongo-java-driver"
 LAST_UNSUPPORTED_VERSION="2.8.0"
+A_VERSION_HAS_FAILED=false
 OPTS=$*
 
 echo "Executing tests with mongo-java-driver[$LAST_UNSUPPORTED_VERSION+] dependencies available on Nexus http://repository.sonatype.org"
@@ -20,9 +21,14 @@ do
       if [ "$?" -ne "0" ];
       then
         echo "$version FAILED, please check file $OUTPUT_DIR/build-$version.log"
-        exit 1;
+        A_VERSION_HAS_FAILED=true;
       else
         echo "$version SUCCESS"
       fi
     fi
 done
+
+if $A_VERSION_HAS_FAILED ; then
+  exit 1;
+fi
+
