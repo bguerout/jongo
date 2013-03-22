@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.id;
+package org.jongo.marshall.jackson.oid;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import org.bson.types.ObjectId;
+import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import java.io.IOException;
+import java.lang.annotation.Retention;
 
-public class ObjectIdSerializer extends JsonSerializer<String> {
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-    @Override
-    public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeObject(new ObjectId(value));
-    }
+@Retention(RUNTIME)
+@JacksonAnnotationsInside
+
+@JsonInclude(NON_NULL)
+@JsonSerialize(using = ObjectIdSerializer.class)
+@JsonDeserialize(using = ObjectIdDeserializer.class)
+public @interface ObjectId {
 }

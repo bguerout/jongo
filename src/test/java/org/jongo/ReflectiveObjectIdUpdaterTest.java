@@ -18,7 +18,7 @@ package org.jongo;
 
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonIdFieldSelector;
-import org.jongo.marshall.jackson.id.Id;
+import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.model.Coordinate;
 import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;

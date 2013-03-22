@@ -19,7 +19,7 @@ package org.jongo;
 import com.mongodb.ReadPreference;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.jackson.id.Id;
+import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
@@ -165,6 +165,7 @@ public class FindTest extends JongoTestCase {
     private static class ExposableFriend {
 
         @Id
+        @org.jongo.marshall.jackson.oid.ObjectId
         private String id;
         private String name;
 
