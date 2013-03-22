@@ -76,7 +76,7 @@ public class UpdateTest extends JongoTestCase {
         collection.save(new Friend("John"));
 
         /* when */
-        WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).update("{name:'John'}").multi().with("{$unset:{name:1}}");
+        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
         Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
@@ -122,7 +122,7 @@ public class UpdateTest extends JongoTestCase {
     public void canUpsertWithWriteConcern() throws Exception {
 
         /* when */
-        WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).update("{}").upsert().with("{$set:{name:'John'}}");
+        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).update("{}").upsert().with("{$set:{name:'John'}}");
 
         /* then */
         Friend john = collection.findOne("{name:'John'}").as(Friend.class);

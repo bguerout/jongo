@@ -85,7 +85,7 @@ public class InsertTest extends JongoTestCase {
     @Test
     public void shouldInsertWithCollectionWriteConcern() throws Exception {
 
-        WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).insert("{name : 'Abby'}");
+        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).insert("{name : 'Abby'}");
 
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
@@ -107,12 +107,12 @@ public class InsertTest extends JongoTestCase {
 
         ObjectId id = ObjectId.get();
 
-        collection.withConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+        collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotInsertAPojoWithACustomId() throws Exception {
 
-        collection.withConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
+        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
     }
 }

@@ -45,7 +45,7 @@ public class MongoCollection {
         this.mapper = mapper;
     }
 
-    public MongoCollection withConcern(WriteConcern concern) {
+    public MongoCollection withWriteConcern(WriteConcern concern) {
         return new MongoCollection(collection, mapper, concern, readPreference);
     }
 

@@ -58,7 +58,7 @@ public class CommandTest extends JongoTestCase {
     @Test
     public void canRunACommandWithParameter() throws Exception {
 
-        collection.withConcern(WriteConcern.SAFE).insert("{test:1}");
+        collection.withWriteConcern(WriteConcern.SAFE).insert("{test:1}");
 
         DBObject result = jongo.runCommand("{ count: #}", "friends").map(new DBObjectResultHandler());
 
@@ -68,7 +68,7 @@ public class CommandTest extends JongoTestCase {
     @Test
     public void canRunAGeoNearCommand() throws Exception {
 
-        MongoCollection safeCollection = collection.withConcern(WriteConcern.SAFE);
+        MongoCollection safeCollection = collection.withWriteConcern(WriteConcern.SAFE);
         safeCollection.insert("{loc:{lat:48.690833,lng:9.140556}, name:'Paris'}");
         safeCollection.ensureIndex("{loc:'2d'}");
 

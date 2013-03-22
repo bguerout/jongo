@@ -117,7 +117,7 @@ public class RemoveTest extends JongoTestCase {
         Friend john = new Friend("John");
         collection.save(john);
 
-        WriteResult writeResult = collection.withConcern(WriteConcern.SAFE).remove();
+        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).remove();
 
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }

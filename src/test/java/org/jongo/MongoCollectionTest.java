@@ -35,7 +35,7 @@ public class MongoCollectionTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("friends").withConcern(WriteConcern.SAFE);
+        collection = createEmptyCollection("friends").withWriteConcern(WriteConcern.SAFE);
     }
 
     @After
