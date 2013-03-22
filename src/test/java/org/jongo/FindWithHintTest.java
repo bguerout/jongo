@@ -3,8 +3,10 @@ package org.jongo;
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
+import org.jongo.util.MongoInMemoryRule;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -14,6 +16,9 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class FindWithHintTest extends JongoTestCase {
 
+
+    @Rule
+    public static final MongoInMemoryRule mongo = new MongoInMemoryRule();
 
     private MongoCollection collection;
 
@@ -30,15 +35,18 @@ public class FindWithHintTest extends JongoTestCase {
     @Test
     public void canFindWithHint() throws Exception {
         /* given */
-        Friend friend = new Friend(new ObjectId(), "John");
-        collection.save(friend);
+        Friend john = new Friend(new ObjectId(), "John");
+        collection.save(john);
+
+        Friend noName = new Friend(new ObjectId(), null);
+        collection.save(noName);
+
+        collection.ensureIndex("{name: 1}", "{sparse: true}");
 
         /* when */
-        Iterator<Friend> friends = collection.find("{name:'John'}").hint("{$natural: 1}").as(Friend.class).iterator();
+        Iterator<Friend> friends = collection.find("{name: null}").hint("{name: 1}").as(Friend.class).iterator();
 
         /* then */
-        assertThat(friends.hasNext()).isTrue();
-        assertThat(friends.next().getName()).isEqualTo("John");
         assertThat(friends.hasNext()).isFalse();
     }
 
