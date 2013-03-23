@@ -16,10 +16,6 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class FindWithHintTest extends JongoTestCase {
 
-
-    @Rule
-    public static final MongoInMemoryRule mongo = new MongoInMemoryRule();
-
     private MongoCollection collection;
 
     @Before
