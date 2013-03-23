@@ -35,19 +35,17 @@ public class FindWithHintTest extends JongoTestCase {
     @Test
     public void canFindWithHint() throws Exception {
         /* given */
-        Friend john = new Friend(new ObjectId(), "John");
-        collection.save(john);
-
         Friend noName = new Friend(new ObjectId(), null);
         collection.save(noName);
 
         collection.ensureIndex("{name: 1}", "{sparse: true}");
 
         /* when */
-        Iterator<Friend> friends = collection.find("{name: null}").hint("{name: 1}").as(Friend.class).iterator();
+        // force to use _id index instead of name index which is sparsed
+        Iterator<Friend> friends = collection.find().hint("{$natural: 1}").sort("{name: 1}").as(Friend.class).iterator();
 
         /* then */
-        assertThat(friends.hasNext()).isFalse();
+        assertThat(friends.hasNext()).isTrue();
     }
 
 }
