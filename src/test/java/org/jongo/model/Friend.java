@@ -16,12 +16,12 @@
 
 package org.jongo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.oid.Id;
 
 public class Friend {
 
-    @JsonProperty("_id")
+    @Id
     private ObjectId id;
     private String name;
     private String address;
