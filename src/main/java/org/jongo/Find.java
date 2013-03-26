@@ -33,7 +33,7 @@ public class Find {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final Query query;
-    private Query fields, sort;
+    private Query fields, sort, hint;
     private Integer limit, skip;
 
     Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
@@ -62,6 +62,9 @@ public class Find {
         if (sort != null) {
             cursor.sort(sort.toDBObject());
         }
+        if(hint != null) {
+            cursor.hint(hint.toDBObject());
+        }
     }
 
     public Find projection(String fields) {
@@ -89,7 +92,13 @@ public class Find {
         return this;
     }
 
+    public Find hint(final String hint) {
+        this.hint = queryFactory.createQuery(hint);
+        return this;
+    }
+
     private DBObject getFieldsAsDBObject() {
         return fields == null ? null : fields.toDBObject();
     }
+
 }
