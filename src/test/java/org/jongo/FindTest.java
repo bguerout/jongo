@@ -19,8 +19,8 @@ package org.jongo;
 import com.mongodb.ReadPreference;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
-import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.model.Coordinate;
+import org.jongo.model.ExposableFriend;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
@@ -130,16 +130,16 @@ public class FindTest extends JongoTestCase {
 
     @Test
     public void canFindWithStringAsObjectId() {
-        /* given */
-        ObjectId id = new ObjectId();
+         /* given */
+        String id = ObjectId.get().toString();
         ExposableFriend friend = new ExposableFriend(id, "John");
         collection.save(friend);
 
         /* when */
-        Iterator<Friend> friends = collection.find(withOid(friend.getId())).as(Friend.class).iterator();
+        Iterator<ExposableFriend> friends = collection.find(withOid(friend.getId())).as(ExposableFriend.class).iterator();
 
         /* then */
-        Friend john = friends.next();
+        ExposableFriend john = friends.next();
         assertThat(john.getId()).isEqualTo(id);
         assertThat(john.getName()).isEqualTo("John");
         assertThat(friends.hasNext()).isFalse();
@@ -160,26 +160,5 @@ public class FindTest extends JongoTestCase {
         assertThat(friends.hasNext()).isFalse();
 
         // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
-    }
-
-    private static class ExposableFriend {
-
-        @Id
-        @org.jongo.marshall.jackson.oid.ObjectId
-        private String id;
-        private String name;
-
-        public ExposableFriend(ObjectId id, String name) {
-            this.id = id.toString();
-            this.name = name;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 }

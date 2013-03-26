@@ -119,7 +119,7 @@ public class ReflectiveObjectIdUpdaterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSetCustomId() throws Exception {
-        updater.setObjectId(new ExternalFriend(), ObjectId.get());
+        updater.setObjectId(new ExternalFriend(122, "John"), ObjectId.get());
     }
 
     @Test(expected = IllegalArgumentException.class)

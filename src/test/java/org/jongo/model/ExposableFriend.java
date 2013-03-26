@@ -17,23 +17,25 @@
 package org.jongo.model;
 
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.ObjectId;
 
-public class ExternalFriend {
+public class ExposableFriend {
 
     @Id
-    private int id;
+    @ObjectId
+    private String id;
     private String name;
 
-    private ExternalFriend() {
+    private ExposableFriend() {
         //jackson
     }
 
-    public ExternalFriend(int id, String name) {
+    public ExposableFriend(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

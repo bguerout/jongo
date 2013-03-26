@@ -20,10 +20,7 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.jongo.model.Coordinate;
-import org.jongo.model.ExternalFriend;
-import org.jongo.model.Friend;
-import org.jongo.model.LinkedFriend;
+import org.jongo.model.*;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -113,7 +110,20 @@ public class SaveTest extends JongoTestCase {
 
         ExternalFriend result = collection.findOne().as(ExternalFriend.class);
         assertThat(result).isNotNull();
-        assertThat(result.get_id()).isEqualTo(999);
+        assertThat(result.getId()).isEqualTo(999);
+    }
+
+    @Test
+    public void canSaveAnObjectWithIdAsString() throws Exception {
+
+        String id = ObjectId.get().toString();
+        ExposableFriend john = new ExposableFriend(id, "Robert");
+
+        collection.save(john);
+
+        ExposableFriend result = collection.findOne().as(ExposableFriend.class);
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(id);
     }
 
     @Test
