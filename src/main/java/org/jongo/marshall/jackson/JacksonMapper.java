@@ -17,9 +17,9 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jongo.ReflectiveObjectIdUpdater;
-import org.jongo.ObjectIdUpdater;
 import org.jongo.Mapper;
+import org.jongo.ObjectIdUpdater;
+import org.jongo.ReflectiveObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.AbstractMappingBuilder;

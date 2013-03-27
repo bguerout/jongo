@@ -18,10 +18,6 @@ package org.jongo;
 
 import org.bson.types.ObjectId;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
 public interface ObjectIdUpdater {
 
     public boolean isNew(Object pojo);

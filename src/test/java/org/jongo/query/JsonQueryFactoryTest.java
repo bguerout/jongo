@@ -89,17 +89,17 @@ public class JsonQueryFactoryTest {
 
     @Test
     public void shouldBindHashSign() throws Exception {
-    
+
         Query query = factory.createQuery("{id:#}", "string with # sign");
-        
+
         assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", "string with # sign"));
     }
-    
+
     @Test
     public void shouldBindQuotationMark() throws Exception {
-    
+
         Query query = factory.createQuery("{id:#}", "string with \" quotation mark");
-        
+
         assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", "string with \" quotation mark"));
     }
 }

@@ -62,7 +62,7 @@ public class Find {
         if (sort != null) {
             cursor.sort(sort.toDBObject());
         }
-        if(hint != null) {
+        if (hint != null) {
             cursor.hint(hint.toDBObject());
         }
     }

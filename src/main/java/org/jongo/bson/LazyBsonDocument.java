@@ -18,7 +18,6 @@ package org.jongo.bson;
 
 import com.mongodb.DBObject;
 import com.mongodb.LazyDBObject;
-import com.mongodb.LazyWriteableDBObject;
 import org.bson.LazyBSONCallback;
 import org.bson.io.BSONByteBuffer;
 

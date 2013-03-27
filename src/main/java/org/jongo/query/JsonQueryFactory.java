@@ -64,9 +64,9 @@ public class JsonQueryFactory implements QueryFactory {
             if (tokenIndex < 0) {
                 break;
             }
-            
+
             Object parameter = parameters[paramIndex++];
-            
+
             String replacement;
             try {
                 replacement = marshallParameter(parameter, true).toString();
@@ -74,11 +74,11 @@ public class JsonQueryFactory implements QueryFactory {
                 String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
                 throw new IllegalArgumentException(message, e);
             }
-            
+
             query = query.substring(0, tokenIndex) + replacement + query.substring(tokenIndex + token.length());
             tokenIndex += replacement.length();
         }
-        
+
         return new JsonQuery(query);
     }
 
