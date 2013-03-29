@@ -325,13 +325,13 @@ Friend joe = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
                           Field names need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
                         </p>
 
-                        <h3>Field selection</h3>
+                        <h3>Projection or Field selection</h3>
                         <p>
                           Field selection aka. partial loading is not written as in Mongo shell:
-                          Jongo exposes a <code>fields(..)</code> method. A json selector must be provided: <code>{field:
+                          Jongo exposes a <code>projection(..)</code> method. A json selector must be provided: <code>{field:
                           1}</code> to include it, <code>{field: 0}</code> to exclude it.
                         </p>
-                        <pre class="prettyprint">friends.find().fields("{lastname: 1, address: 1}").as(Friend.class);</pre>
+                        <pre class="prettyprint">friends.find().projection("{lastname: 1, address: 1}").as(Friend.class);</pre>
 
                         <h3>Sorting</h3>
                         <p>Documents can be sorted in ascending or descending order using a json selector: <code>{field: 1}</code>
@@ -342,10 +342,14 @@ friends.find().sort("{firstname: 1}").as(Friend.class);
 friends.find().sort("{lasttname: -1}").as(Friend.class);</pre>
 
                           <h3>Skip and Limit</h3>
-                          <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html">DBCursor</a>.</p>
+                          <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a>.</p>
                           <pre class="prettyprint">
 friends.find().skip(20).as(Friend.class);
 friends.find().limit(10).as(Friend.class);</pre>
+
+                          <h3>Hint</h3>
+                          <p>Behaviour similar to Java driver <a href="http://docs.mongodb.org/manual/reference/operator/hint/" target="_blank">Find.hint(..)</a>.</p>
+                          <pre class="prettyprint">friends.find().hint("{age: 1}").as(Friend.class);</pre>
 
                         <h3>Oid</h3>
                         <p>
