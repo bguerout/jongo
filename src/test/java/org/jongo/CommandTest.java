@@ -48,10 +48,9 @@ public class CommandTest extends JongoTestCase {
 
     @Test
     public void canRunACommand() throws Exception {
-        DBObject result = jongo.runCommand("{ serverStatus: 1 }").map(new DBObjectResultHandler());
+        DBObject result = jongo.runCommand("{ ping: 1 }").map(new DBObjectResultHandler());
 
         assertThat(result).isNotNull();
-        assertThat(result.get("version")).isNotNull();
         assertThat(result.get("ok")).isEqualTo(1.0);
     }
 
@@ -89,15 +88,15 @@ public class CommandTest extends JongoTestCase {
 
     @Test
     public void canRunACommandAs() throws Exception {
-        ServerStatus status = jongo.runCommand("{ serverStatus: 1 }").as(ServerStatus.class);
+        Validate status = jongo.runCommand("{ validate: 1 }").as(Validate.class);
 
-        assertThat(status.host).isNotNull();
-        assertThat(status.ok).isEqualTo("1.0");
+        assertThat(status.errmsg).isNotNull();
+        assertThat(status.ok).isEqualTo("0.0");
     }
 
     @Test
     public void canRunInvalidCommand() throws Exception {
-        ServerStatus status = jongo.runCommand("{forceerror:1}").as(ServerStatus.class);
+        Validate status = jongo.runCommand("{forceerror:1}").as(Validate.class);
 
         assertThat(status.ok).isEqualTo("0.0");
     }
@@ -105,14 +104,14 @@ public class CommandTest extends JongoTestCase {
     @Test
     public void mustForceExceptionToBeThrownOnInvalidCommand() throws Exception {
         try {
-            jongo.runCommand("{forceerror:1}").throwOnError().as(ServerStatus.class);
+            jongo.runCommand("{forceerror:1}").throwOnError().as(Validate.class);
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).contains("forced error");
         }
     }
 
-    private static class ServerStatus {
-        String ok, host;
+    private static class Validate {
+        String ok, errmsg;
     }
 
     private static class GeoNearResult {
