@@ -58,7 +58,7 @@ public class MongoDumpTest extends JongoTestCase {
 
         MappingIterator<BSONObject> iterator = reader.readValues(bsonDump);
         try {
-            while (safeHasNext(iterator)) {
+            while (iterator.hasNext()) {
                 BSONObject bsonObject = iterator.next();
                 collection.withWriteConcern(WriteConcern.SAFE).save(bsonObject);
             }
@@ -67,14 +67,5 @@ public class MongoDumpTest extends JongoTestCase {
         }
 
         assertThat(collection.count()).isEqualTo(1000);
-    }
-
-    private boolean safeHasNext(MappingIterator<BSONObject> iterator) {
-        try {
-            return iterator.hasNextValue();
-        } catch (IOException e) {
-            // Erroneous bson4jackson exception?
-            return false;
-        }
     }
 }
