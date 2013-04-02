@@ -164,7 +164,7 @@ friends.save(joe);
 
                     <h2 id="update">Update</h2>
 
-                    <p>Update syntax is a bit different than in Mongo shell: <code>modifier</code> query has to be passed using <code>with(..)</code>. You can update with a <code>String</code> or with a pojo. You can also parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a href="#query-templating">query templating</a> for more details.
+                    <p>Update syntax is a bit different than in Mongo shell: <code>modifier</code> query has to be passed using <code>with(..)</code>. You can update with a <code>String</code> or with a object. You can also parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a href="#query-templating">query templating</a> for more details.
                     </p>
                     <pre class="prettyprint">
 friends.update("{name: 'Joe'}").with("{$inc: {age: 1}}");
@@ -394,7 +394,7 @@ collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
 
                               <h2 id="count">Command</h2>
                               <p>Behaviour pretty similar to Java driver <a href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
-                              <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(Friend.class);</pre>
+                              <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(GeoNearResult.class);</pre>
 
                               <h2 id="aggregation">Aggregation</h2>
 
