@@ -164,7 +164,7 @@ friends.save(joe);
 
                     <h2 id="update">Update</h2>
 
-                    <p>Update syntax is a bit different than in Mongo shell: <code>modifier</code> query has to be passed using <code>with(..)</code>. You can update with a <code>String</code> or with a object. You can also parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a href="#query-templating">query templating</a> for more details.
+                    <p>Update syntax is a bit different than in Mongo shell: <code>modifier</code> query has to be passed using <code>with(..)</code>. You can update with a <code>String</code> or with an object. You can also parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a href="#query-templating">query templating</a> for more details.
                     </p>
                     <pre class="prettyprint">
 friends.update("{name: 'Joe'}").with("{$inc: {age: 1}}");
