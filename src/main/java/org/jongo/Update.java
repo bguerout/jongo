@@ -49,7 +49,7 @@ public class Update {
         return collection.update(this.query.toDBObject(), updateQuery.toDBObject(), upsert, multi, writeConcern);
     }
 
-    public WriteResult merge(Object pojo) {
+    public WriteResult with(Object pojo) {
 
         DBObject updateDbo = queryFactory.createQuery("{$set:#}", pojo).toDBObject();
         removeIdField(updateDbo);
