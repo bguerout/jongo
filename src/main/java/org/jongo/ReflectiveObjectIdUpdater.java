@@ -31,22 +31,31 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
         this.idFieldSelector = idFieldSelector;
     }
 
-    public boolean isNew(Object pojo) {
-        Field idField = findIdField(pojo.getClass());
-        return canBeConsideredAsNew(pojo, idField);
+    public boolean mustGenerateObjectId(Object pojo) {
+        Field idField = selectIdField(pojo.getClass());
+        return idField != null && isAnEmptyObjectId(pojo, idField);
     }
 
-    protected boolean canBeConsideredAsNew(Object pojo, Field idField) {
-        return idField == null || (isObjectIdCompliant(idField.getType()) && isAnEmptyObjectId(pojo, idField));
+    public ObjectId getObjectId(Object pojo) {
+        Field idField = selectIdField(pojo.getClass());
+        if (idField != null && idField.getType().equals(ObjectId.class)) {
+            try {
+                idField.setAccessible(true);
+                return (ObjectId) idField.get(pojo);
+
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to obtain objectid from field" + idField.getName() + ", class: " + idField.getClass(), e);
+            }
+        }
+        return null;
     }
 
     public void setObjectId(Object newPojo, ObjectId id) {
-        Field idField = findIdField(newPojo.getClass());
-        if (!canBeConsideredAsNew(newPojo, idField)) {
-            throw handleInvalidTarget(newPojo);
-        }
+        Field idField = selectIdField(newPojo.getClass());
         if (idField == null) {
-            return;
+            return;     //TODO check if test exists
+        } else if (!mustGenerateObjectId(newPojo)) {
+            throw new IllegalArgumentException("Unable to set objectid on class: " + newPojo.getClass());
         }
         updateField(newPojo, id, idField);
     }
@@ -54,20 +63,17 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
     private void updateField(Object target, ObjectId id, Field field) {
         try {
             if (field.getType().equals(ObjectId.class)) {
+                field.setAccessible(true);
                 field.set(target, id);
             } else if (field.getType().equals(String.class)) {
                 field.set(target, id.toString());
             }
         } catch (IllegalAccessException e) {
-            throw handleInvalidTarget(target);
+            throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass(), e);
         }
     }
 
-    private RuntimeException handleInvalidTarget(Object target) {
-        return new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
-    }
-
-    private Field findIdField(Class<?> clazz) {
+    private Field selectIdField(Class<?> clazz) {
         if (fieldCache.containsKey(clazz)) {
             return fieldCache.get(clazz);
         }
@@ -82,10 +88,6 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
             clazz = clazz.getSuperclass();
         }
         return null;
-    }
-
-    private boolean isObjectIdCompliant(Class<?> type) {
-        return type.equals(ObjectId.class) || type.equals(String.class);
     }
 
     private boolean isAnEmptyObjectId(Object target, Field field) {

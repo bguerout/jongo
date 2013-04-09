@@ -35,6 +35,10 @@ public class ExposableFriend {
         this.name = name;
     }
 
+    public ExposableFriend(String name) {
+        this.name = name;
+    }
+
     public String getId() {
         return id;
     }

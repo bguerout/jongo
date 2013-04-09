@@ -60,7 +60,6 @@ public class JacksonIdFieldSelectorTest {
         assertThat(selector.isId(CustomWithoutAnnotation.class.getField("_id"))).isTrue();
     }
 
-
     private static class IdAnnotated {
         @Id
         public ObjectId id;

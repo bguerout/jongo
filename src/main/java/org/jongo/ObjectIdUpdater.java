@@ -20,7 +20,9 @@ import org.bson.types.ObjectId;
 
 public interface ObjectIdUpdater {
 
-    boolean isNew(Object pojo);
+    boolean mustGenerateObjectId(Object pojo);
+
+    ObjectId getObjectId(Object pojo);
 
     void setObjectId(Object target, ObjectId id);
 }

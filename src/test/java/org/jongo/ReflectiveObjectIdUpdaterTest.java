@@ -22,8 +22,11 @@ import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.model.Coordinate;
 import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
+import org.jongo.model.LinkedFriend;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -37,52 +40,79 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void isNewWhenPojoHasObjectId() throws Exception {
+    public void mustGenerateWhenPojoHasAnEmptyObjectId() throws Exception {
 
         Friend friend = new Friend();
 
-        boolean hasOid = updater.isNew(friend);
+        boolean hasOid = updater.mustGenerateObjectId(friend);
 
         assertThat(hasOid).isTrue();
     }
 
     @Test
-    public void isNewWhenPojoHasnotObjectId() throws Exception {
-
-        Coordinate coordinate = new Coordinate(1, 1);
-
-        assertThat(updater.isNew(coordinate)).isTrue();
-    }
-
-    @Test
-    public void isNotNewWhenPojoHasObjectIdWithValue() throws Exception {
+    public void mustNotGenerateNewWhenPojoHasNewObjectId() throws Exception {
 
         Friend friend = new Friend(ObjectId.get(), "John");
 
-        boolean hasOid = updater.isNew(friend);
+        boolean hasOid = updater.mustGenerateObjectId(friend);
 
         assertThat(hasOid).isFalse();
     }
 
     @Test
-    public void isNewWhenObjectIdIsInParent() throws Exception {
+    public void mustNotGenerateWhenWhenPojoDoesNotMapObjectId() throws Exception {
+
+        Coordinate coordinate = new Coordinate(1, 1);
+
+        assertThat(updater.mustGenerateObjectId(coordinate)).isFalse();
+    }
+
+    @Test
+    public void mustGenerateWhenObjectIdisInParent() throws Exception {
 
         Child child = new Child();
 
-        boolean hasOid = updater.isNew(child);
+        boolean hasOid = updater.mustGenerateObjectId(child);
 
         assertThat(hasOid).isTrue();
     }
 
     @Test
-    public void isNewWhenObjectIdIsInChildAndInParent() throws Exception {
+    public void mustGenerateWhenObjectIdisInChildAndInParent() throws Exception {
 
         ChildWithId child = new ChildWithId();
         child.id_parent = ObjectId.get();
 
-        boolean hasOid = updater.isNew(child);
+        boolean hasOid = updater.mustGenerateObjectId(child);
 
-        assertThat(hasOid).isFalse();
+        assertThat(hasOid).isTrue();
+    }
+
+    @Test
+    public void canFindObjectId() throws Exception {
+
+        ObjectId oid = new ObjectId();
+        Friend friend = new Friend(oid, "john");
+
+        ObjectId foundId = updater.getObjectId(friend);
+
+        assertThat(oid).isEqualTo(foundId);
+    }
+
+    @Test
+    public void canFindNullObjectId() throws Exception {
+
+        ObjectId foundId = updater.getObjectId(new Friend("john"));
+
+        assertThat(foundId).isNull();
+    }
+
+    @Test
+    public void canFindNullId() throws Exception {
+
+        ObjectId foundId = updater.getObjectId(new Coordinate(1, 1));
+
+        assertThat(foundId).isNull();
     }
 
     @Test
@@ -97,7 +127,7 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void canSetStringIdWithObjectIdValue() throws Exception {
+    public void canSetObjectIdValueAsString() throws Exception {
 
         ObjectId oid = new ObjectId();
         PojoWithStringId target = new PojoWithStringId();
@@ -108,13 +138,28 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
+    public void shouldNotChangeOtherObjectIdField() throws IOException {
+
+        ObjectId relationId = new ObjectId();
+        LinkedFriend friend = new LinkedFriend(relationId);
+
+        updater.setObjectId(friend, ObjectId.get());
+
+        assertThat(friend.getRelationId()).isNotEqualTo(friend.getId());
+        assertThat(friend.getRelationId()).isEqualTo(relationId);
+    }
+
+    @Test
     public void shouldIgnoreWhenObjectIdDoesntExist() throws Exception {
         updater.setObjectId(new Coordinate(1, 1), ObjectId.get());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void cannotSetPreexistingObjectId() throws Exception {
-        updater.setObjectId(new Friend(ObjectId.get(), "John"), ObjectId.get());
+    public void canSetNewObjectId() throws Exception {
+        Friend john = new Friend(ObjectId.get(), "John");
+        ObjectId newOid = ObjectId.get();
+
+        updater.setObjectId(john, newOid);
     }
 
     @Test(expected = IllegalArgumentException.class)

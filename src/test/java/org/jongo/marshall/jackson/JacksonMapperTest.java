@@ -28,7 +28,6 @@ import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
-import org.jongo.ReflectiveObjectIdUpdater;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.model.Friend;
@@ -117,12 +116,16 @@ public class JacksonMapperTest {
     @Test
     public void canAddJongoInterfaces() throws Exception {
 
-        ObjectIdUpdater objectIdUpdater = new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector()) {
-            public boolean isNew(Object pojo) {
+        ObjectIdUpdater objectIdUpdater = new ObjectIdUpdater() {
+            public boolean mustGenerateObjectId(Object pojo) {
                 return false;
             }
 
             public void setObjectId(Object newPojo, ObjectId id) {
+            }
+
+            public ObjectId getObjectId(Object pojo) {
+                return null;
             }
         };
 

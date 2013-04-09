@@ -16,8 +16,10 @@
 
 package org.jongo;
 
+import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
 import org.jongo.model.ExternalFriend;
@@ -83,7 +85,7 @@ public class InsertTest extends JongoTestCase {
     }
 
     @Test
-    public void shouldInsertWithCollectionWriteConcern() throws Exception {
+    public void whenNoSpecifyShouldInsertWithCollectionWriteConcern() throws Exception {
 
         WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).insert("{name : 'Abby'}");
 
@@ -102,17 +104,64 @@ public class InsertTest extends JongoTestCase {
         assertThat(result.lat).isEqualTo(123);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void cannotInsertAPojoWithId() throws Exception {
+    @Test
+    public void canInsertAPojoWithNewObjectId() throws Exception {
 
         ObjectId id = ObjectId.get();
 
         collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+
+        assertThat(collection.count("{name : 'John'}")).isEqualTo(1);
+        assertThat(id.isNew()).isFalse();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void cannotInsertAPojoWithACustomId() throws Exception {
+    @Test
+    public void canInsertAPojoWithNotNewObjectId() throws Exception {
+
+        ObjectId id = ObjectId.get();
+        id.notNew();
+
+        collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+
+        Friend result = collection.findOne(id).as(Friend.class);
+        assertThat(result.getId()).isEqualTo(id);
+    }
+
+    @Test
+    public void canInsertAPojoWithACustomId() throws Exception {
 
         collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
+
+        ExternalFriend result = collection.findOne("{name:'value'}").as(ExternalFriend.class);
+        assertThat(result.getId()).isEqualTo(122);
+    }
+
+    @Test
+    public void canOnlyInsertOnceAPojoWithObjectId() throws Exception {
+
+        ObjectId id = ObjectId.get();
+        id.notNew();
+
+        collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+
+        try {
+            collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+            Assert.fail();
+        } catch (MongoException.DuplicateKey e) {
+        }
+    }
+
+    @Test
+    public void canOnlyInsertOnceAPojoWithACustomId() throws Exception {
+
+        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
+
+
+        try {
+            collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "other value"));
+            Assert.fail();
+        } catch (MongoException.DuplicateKey e) {
+        }
+
     }
 }

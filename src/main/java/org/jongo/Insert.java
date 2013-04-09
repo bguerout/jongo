@@ -45,25 +45,26 @@ class Insert {
     }
 
     public WriteResult save(Object pojo) {
-        DBObject dbo;
-        if (objectIdUpdater.isNew(pojo)) {
-            dbo = createDBObjectToInsert(pojo);
-        } else {
-            dbo = createDBObjectToUpdate(pojo);
-        }
-
-        return collection.save(dbo, writeConcern);
+        ObjectId id = preparePojo(pojo);
+        return collection.save(convertToDBObject(pojo, id), writeConcern);
     }
 
     public WriteResult insert(Object... pojos) {
         List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
         for (Object pojo : pojos) {
-            if (!objectIdUpdater.isNew(pojo)) {
-                throw new IllegalArgumentException("Unable to insert pojo with Id. Use save() method instead.");
-            }
-            dbos.add(createDBObjectToInsert(pojo));
+            ObjectId id = preparePojo(pojo);
+            dbos.add(convertToDBObject(pojo, id));
         }
         return collection.insert(dbos, writeConcern);
+    }
+
+    private ObjectId preparePojo(Object pojo) {
+        if (objectIdUpdater.mustGenerateObjectId(pojo)) {
+            ObjectId newOid = ObjectId.get();
+            objectIdUpdater.setObjectId(pojo, newOid);
+            return newOid;
+        }
+        return objectIdUpdater.getObjectId(pojo);
     }
 
     public WriteResult insert(String query, Object... parameters) {
@@ -71,19 +72,10 @@ class Insert {
         return collection.insert(dbQuery, writeConcern);
     }
 
-    private DBObject createDBObjectToUpdate(Object pojo) {
+    private DBObject convertToDBObject(Object pojo, ObjectId id) {
         BsonDocument document = marshallDocument(pojo);
-        return new AlreadyCheckedDBObject(document.toByteArray());
-    }
-
-    private DBObject createDBObjectToInsert(Object pojo) {
-        ObjectId id = ObjectId.get();
-        objectIdUpdater.setObjectId(pojo, id);
-
-        BsonDocument document = marshallDocument(pojo);
-        DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray());
+        DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray(), id);
         dbo.put("_id", id);
-
         return dbo;
     }
 
@@ -99,10 +91,20 @@ class Insert {
     private final static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
 
         private final Set<String> keys;
+        private final ObjectId id;
 
-        private AlreadyCheckedDBObject(byte[] data) {
+        private AlreadyCheckedDBObject(byte[] data, ObjectId id) {
             super(data, new LazyBSONCallback());
+            this.id = id;
             this.keys = new HashSet<String>();
+        }
+
+        @Override
+        public Object get(String key) {
+            if ("_id".equals(key)) {
+                return id;
+            }
+            return super.get(key);
         }
 
         @Override
