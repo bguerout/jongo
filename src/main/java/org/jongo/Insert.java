@@ -109,7 +109,10 @@ class Insert {
 
         @Override
         public Set<String> keySet() {
-            return keys;
+            Set<String> combined = new HashSet<String>();
+            combined.addAll(keys);
+            combined.addAll(super.keySet());
+            return combined;
         }
     }
 }
