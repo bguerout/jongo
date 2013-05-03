@@ -16,19 +16,22 @@
 
 package org.jongo.util;
 
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
+import static org.junit.Assume.*;
+
+import java.net.UnknownHostException;
+
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
 
-import java.net.UnknownHostException;
-
-import static org.junit.Assume.assumeTrue;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
 
 public abstract class JongoTestCase {
 
+	public EmbeddedMongoRule mongoRule = new EmbeddedMongoRule();
+	
     private Jongo jongo;
 
     public JongoTestCase() {
@@ -66,10 +69,6 @@ public abstract class JongoTestCase {
     }
 
     private static DB findDatabase() {
-        try {
-            return MongoHolder.getInstance().getDB("jongo");
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("Unable to reach mongo database test instance", e);
-        }
-    }
+    	return EmbeddedMongoRule.getTestDatabase();    
+	}
 }
