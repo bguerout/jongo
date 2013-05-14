@@ -1,5 +1,6 @@
 package org.jongo.util;
 
+import com.mongodb.MongoClient;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -11,7 +12,7 @@ public class EmbeddedMongoRule implements TestRule {
 
 	private static DB db;
 
-	public static Mongo getMongo() {
+	public static MongoClient getMongo() {
 		return MongoHolder.getInstance();
 	}
 	
