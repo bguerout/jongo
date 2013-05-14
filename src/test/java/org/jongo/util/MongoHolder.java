@@ -16,17 +16,18 @@
 
 package org.jongo.util;
 
-import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.MongoURI;
-
 import java.net.UnknownHostException;
+
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.WriteConcern;
 
 class MongoHolder {
 
     private static final String MONGOHQ_FLAG = "jongo.mongohq.uri";
 
-    public static Mongo getInstance() throws UnknownHostException {
+    public static MongoClient getInstance() {
         if (mustRunTestsAgainstMongoHQ()) {
             return MongoHQ.instance;
         }
@@ -39,15 +40,16 @@ class MongoHolder {
 
     private static class MongoHQ {
 
-        private static Mongo instance = getAuthenticatedInstance();
+        private static MongoClient instance = getAuthenticatedInstance();
 
-        private static Mongo getAuthenticatedInstance() {
+        private static MongoClient getAuthenticatedInstance() {
             try {
                 String uri = System.getProperty(MONGOHQ_FLAG);
-                MongoURI mongoURI = new MongoURI(uri);
-                DB db = mongoURI.connectDB();
+                MongoClientURI mongoURI = new MongoClientURI(uri);
+                MongoClient mongo = new MongoClient(mongoURI);
+				DB db = mongo.getDB(mongoURI.getDatabase());
                 db.authenticate(mongoURI.getUsername(), mongoURI.getPassword());
-                return db.getMongo();
+                return mongo;
             } catch (UnknownHostException e) {
                 throw new RuntimeException("Unable to reach mongo database test instance", e);
             }
@@ -55,15 +57,18 @@ class MongoHolder {
     }
 
     private static class LocalMongo {
+    	
+        private static MongoClient instance = getLocalInstance();
 
-        private static Mongo instance = getLocalInstance();
-
-        private static Mongo getLocalInstance() {
-            try {
-                return new Mongo("127.0.0.1");
-            } catch (UnknownHostException e) {
-                throw new RuntimeException("Unable to reach mongo database test instance", e);
-            }
+        private static MongoClient getLocalInstance() {
+    	    try {
+    			int port = RandomPortNumberGenerator.pickAvailableRandomEphemeralPortNumber();
+    			EmbeddedMongo mongo = new EmbeddedMongo(port);
+    			mongo.setWriteConcern(WriteConcern.FSYNC_SAFE);
+    			return mongo;
+    		} catch (Exception e) {
+    			throw new RuntimeException("Failed to initialize Embedded Mongo instance: " + e, e);
+    		}
         }
     }
 }
