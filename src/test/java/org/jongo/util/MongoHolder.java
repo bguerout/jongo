@@ -35,7 +35,7 @@ class MongoHolder {
     }
 
     private static boolean mustRunTestsAgainstMongoHQ() {
-        return System.getProperty(MONGOHQ_FLAG) != null;
+        return false;
     }
 
     private static class MongoHQ {
