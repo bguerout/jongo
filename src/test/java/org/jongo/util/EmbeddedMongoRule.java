@@ -1,62 +1,31 @@
 package org.jongo.util;
 
-import com.mongodb.MongoClient;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
 import com.mongodb.DB;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.WriteConcern;
+import org.junit.rules.ExternalResource;
 
-public class EmbeddedMongoRule implements TestRule {
+public class EmbeddedMongoRule extends ExternalResource {
 
-	private static DB db;
+    public DB getDb(String dbname) {
+        return LocalMongo.instance.getDB(dbname);
+    }
 
-	public static MongoClient getMongo() {
-		return MongoHolder.getInstance();
-	}
-	
-	public static DB getTestDatabase() {
-		return db;
-	}
+    private static class LocalMongo {
 
-	public EmbeddedMongoRule() {
-		setUpTestDatabase();
-	}
+        private static MongoClient instance = getLocalInstance();
 
-	public Statement apply(final Statement base, final Description description) {
-		return new Statement() {
-			@Override
-			public void evaluate() throws Throwable {
-				before(description);
-				try {
-					base.evaluate();
-				} finally {
-					after();
-				}
-			}
-		};
-	}
+        private static MongoClient getLocalInstance() {
+            try {
+                int port = RandomPortNumberGenerator.pickAvailableRandomEphemeralPortNumber();
+                EmbeddedMongo mongo = new EmbeddedMongo(port);
+                mongo.setWriteConcern(WriteConcern.FSYNC_SAFE);
+                return mongo;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to initialize Embedded Mongo instance: " + e, e);
+            }
+        }
+    }
 
-	protected void before(Description description) throws Exception {
-		setUpTestDatabase();
-	}
 
-	protected void after() {
-		tearDownTestDatabase();
-	}
-	
-	public void setUpTestDatabase(){
-		if(db == null) {
-			db = getMongo().getDB("test_" + System.nanoTime());
-		}
-	}
-	
-	public void tearDownTestDatabase(){
-		if (db != null) {
-			db.dropDatabase();
-			db = null;
-		}
-	}
-	
 }
