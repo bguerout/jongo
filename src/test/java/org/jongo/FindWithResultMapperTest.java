@@ -18,7 +18,6 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import org.jongo.model.Friend;
-import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -43,7 +42,7 @@ public class FindWithResultMapperTest extends JongoTestCase {
     @Test
     public void canFind() throws Exception {
         /* given */
-        ResultHandler<DBObject> handler = new DBObjectResultHandler();
+        ResultHandler<DBObject> handler = new RawResultHandler<DBObject>();
         collection.save(new Friend("John", "22 Wall Street Avenue"));
         collection.save(new Friend("Peter", "22 Wall Street Avenue"));
 
@@ -57,7 +56,7 @@ public class FindWithResultMapperTest extends JongoTestCase {
     @Test
     public void canFindOne() throws Exception {
         /* given */
-        ResultHandler<DBObject> handler = new DBObjectResultHandler();
+        ResultHandler<DBObject> handler = new RawResultHandler<DBObject>();
         Friend john = new Friend("John", "22 Wall Street Avenue");
         collection.save(john);
 

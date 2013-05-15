@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import org.fest.assertions.Condition;
-import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +47,7 @@ public class CommandTest extends JongoTestCase {
 
     @Test
     public void canRunACommand() throws Exception {
-        DBObject result = jongo.runCommand("{ ping: 1 }").map(new DBObjectResultHandler());
+        DBObject result = jongo.runCommand("{ ping: 1 }").map(new RawResultHandler<DBObject>());
 
         assertThat(result).isNotNull();
         assertThat(result.get("ok")).isEqualTo(1.0);
@@ -59,7 +58,7 @@ public class CommandTest extends JongoTestCase {
 
         collection.withWriteConcern(WriteConcern.SAFE).insert("{test:1}");
 
-        DBObject result = jongo.runCommand("{ count: #}", "friends").map(new DBObjectResultHandler());
+        DBObject result = jongo.runCommand("{ count: #}", "friends").map(new RawResultHandler<DBObject>());
 
         assertThat(result.get("n")).isEqualTo(1.0);
     }
