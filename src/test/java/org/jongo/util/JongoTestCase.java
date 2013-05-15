@@ -22,6 +22,7 @@ import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
+import org.junit.BeforeClass;
 
 import java.net.UnknownHostException;
 
@@ -29,10 +30,17 @@ import static org.junit.Assume.assumeTrue;
 
 public abstract class JongoTestCase {
 
+    private static EmbeddedMongo mongo;
+
     private Jongo jongo;
 
     public JongoTestCase() {
-        this.jongo = new Jongo(findDatabase(), new JacksonMapper.Builder().build());
+        this.jongo = new Jongo(mongo.getDb("test_jongo"), new JacksonMapper.Builder().build());
+    }
+
+    @BeforeClass
+    public static void startMongo() throws Exception {
+        mongo = new EmbeddedMongo();
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
@@ -62,14 +70,7 @@ public abstract class JongoTestCase {
     }
 
     public void prepareMarshallingStrategy(Mapper mapper) {
-        this.jongo = new Jongo(findDatabase(), mapper);
+        this.jongo = new Jongo(mongo.getDb("test_jongo"), mapper);
     }
 
-    private static DB findDatabase() {
-        try {
-            return MongoHolder.getInstance().getDB("jongo");
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("Unable to reach mongo database test instance", e);
-        }
-    }
 }
