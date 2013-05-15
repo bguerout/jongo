@@ -20,14 +20,15 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.jongo.model.*;
+import org.jongo.model.Coordinate;
+import org.jongo.model.ExposableFriend;
+import org.jongo.model.ExternalFriend;
+import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 

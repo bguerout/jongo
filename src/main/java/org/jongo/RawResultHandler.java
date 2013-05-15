@@ -19,6 +19,7 @@ package org.jongo;
 import com.mongodb.DBObject;
 
 public class RawResultHandler<T extends DBObject> implements ResultHandler<T> {
+
     public static <T extends DBObject> RawResultHandler<T> asRaw(Class<T> clazz) {
         return new RawResultHandler<T>(clazz);
     }
