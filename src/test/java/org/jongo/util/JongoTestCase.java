@@ -30,7 +30,7 @@ import static org.junit.Assume.assumeTrue;
 
 public abstract class JongoTestCase {
 
-    private static EmbeddedMongo mongo;
+    private static MongoResource mongo;
 
     private Jongo jongo;
 
@@ -40,7 +40,7 @@ public abstract class JongoTestCase {
 
     @BeforeClass
     public static void startMongo() throws Exception {
-        mongo = new EmbeddedMongo();
+        mongo = new MongoResource();
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {

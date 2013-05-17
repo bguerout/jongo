@@ -17,6 +17,7 @@
 package org.jongo.util;
 
 import com.mongodb.DB;
+import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 
@@ -28,11 +29,11 @@ public class LocalMongo {
 
     public static class Holder {
 
-        public static MongoClient instance = getLocalInstance();
+        public static Mongo instance = getLocalInstance();
 
-        private static MongoClient getLocalInstance() {
+        private static Mongo getLocalInstance() {
             try {
-                MongoClient mongo = new MongoClient();
+                Mongo mongo = new MongoClient();
                 mongo.setWriteConcern(WriteConcern.FSYNC_SAFE);
                 return mongo;
             } catch (Exception e) {
