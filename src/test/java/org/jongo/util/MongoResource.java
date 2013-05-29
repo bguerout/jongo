@@ -35,7 +35,16 @@ import java.net.UnknownHostException;
 public class MongoResource {
 
     public DB getDb(String dbname) {
-        return EmbeddedMongo.instance.getDB(dbname);
+        return getInstance().getDB(dbname);
+    }
+
+    private Mongo getInstance() {
+        String isLocal = System.getProperty("jongo.test.local.mongo");
+        if (isLocal != null && isLocal.equals("true")) {
+            return LocalMongo.instance;
+        } else {
+            return EmbeddedMongo.instance;
+        }
     }
 
     /**
