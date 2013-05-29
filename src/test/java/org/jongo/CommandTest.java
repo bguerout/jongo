@@ -19,7 +19,9 @@ package org.jongo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
+import org.bson.types.BasicBSONList;
 import org.fest.assertions.Condition;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -51,6 +53,17 @@ public class CommandTest extends JongoTestCase {
 
         assertThat(result).isNotNull();
         assertThat(result.get("ok")).isEqualTo(1.0);
+    }
+
+    @Test
+    public void canRunAnEvalCommand() throws Exception {
+
+        String js = "return db.getCollectionNames();";
+        DBObject result = jongo.runCommand("{ eval: # }", js).map(new RawResultHandler<DBObject>());
+
+        assertThat(result).isNotNull();
+        List<?> jsResult = (BasicBSONList) result.get("retval");
+        assertThat(jsResult).contains("system.indexes");
     }
 
     @Test
