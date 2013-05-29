@@ -16,6 +16,7 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
+import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
 import de.undercouch.bson4jackson.BsonFactory;
@@ -35,7 +36,7 @@ public class MongoBsonFactory extends BsonFactory {
     }
 
     @Override
-    protected BsonParser _createJsonParser(InputStream in, IOContext ctxt) throws IOException {
+    protected BsonParser _createParser(InputStream in, IOContext ctxt) {
         BsonParser p = new MongoBsonParser(ctxt, _parserFeatures, _bsonParserFeatures, in);
         ObjectCodec codec = getCodec();
         if (codec != null) {
@@ -45,7 +46,12 @@ public class MongoBsonFactory extends BsonFactory {
     }
 
     @Override
-    public BsonGenerator createJsonGenerator(OutputStream out) throws IOException {
+    public BsonGenerator createGenerator(OutputStream out, JsonEncoding enc) throws IOException {
+        IOContext ctxt = _createContext(out, true);
+        ctxt.setEncoding(enc);
+        if (enc == JsonEncoding.UTF8 && _outputDecorator != null) {
+            out = _outputDecorator.decorate(ctxt, out);
+        }
         BsonGenerator g = new MongoBsonGenerator(_generatorFeatures, _bsonGeneratorFeatures, out);
         ObjectCodec codec = getCodec();
         if (codec != null) {
