@@ -22,7 +22,7 @@ public interface ObjectIdUpdater {
 
     boolean mustGenerateObjectId(Object pojo);
 
-    ObjectId getObjectId(Object pojo);
+    Object getId(Object pojo);
 
     void setObjectId(Object target, ObjectId id);
 }

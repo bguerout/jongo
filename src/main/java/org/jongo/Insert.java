@@ -45,26 +45,26 @@ class Insert {
     }
 
     public WriteResult save(Object pojo) {
-        ObjectId id = preparePojo(pojo);
+        Object id = preparePojo(pojo);
         return collection.save(convertToDBObject(pojo, id), writeConcern);
     }
 
     public WriteResult insert(Object... pojos) {
         List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
         for (Object pojo : pojos) {
-            ObjectId id = preparePojo(pojo);
+            Object id = preparePojo(pojo);
             dbos.add(convertToDBObject(pojo, id));
         }
         return collection.insert(dbos, writeConcern);
     }
 
-    private ObjectId preparePojo(Object pojo) {
+    private Object preparePojo(Object pojo) {
         if (objectIdUpdater.mustGenerateObjectId(pojo)) {
             ObjectId newOid = ObjectId.get();
             objectIdUpdater.setObjectId(pojo, newOid);
             return newOid;
         }
-        return objectIdUpdater.getObjectId(pojo);
+        return objectIdUpdater.getId(pojo);
     }
 
     public WriteResult insert(String query, Object... parameters) {
@@ -72,7 +72,7 @@ class Insert {
         return collection.insert(dbQuery, writeConcern);
     }
 
-    private DBObject convertToDBObject(Object pojo, ObjectId id) {
+    private DBObject convertToDBObject(Object pojo, Object id) {
         BsonDocument document = marshallDocument(pojo);
         DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray(), id);
         dbo.put("_id", id);
@@ -91,9 +91,9 @@ class Insert {
     private final static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
 
         private final Set<String> keys;
-        private final ObjectId id;
+        private final Object id;
 
-        private AlreadyCheckedDBObject(byte[] data, ObjectId id) {
+        private AlreadyCheckedDBObject(byte[] data, Object id) {
             super(data, new LazyBSONCallback());
             this.id = id;
             this.keys = new HashSet<String>();

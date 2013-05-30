@@ -124,7 +124,7 @@ public class JacksonMapperTest {
             public void setObjectId(Object newPojo, ObjectId id) {
             }
 
-            public ObjectId getObjectId(Object pojo) {
+            public Object getId(Object pojo) {
                 return null;
             }
         };

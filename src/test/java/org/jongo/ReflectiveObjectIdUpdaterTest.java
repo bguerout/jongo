@@ -94,7 +94,7 @@ public class ReflectiveObjectIdUpdaterTest {
         ObjectId oid = new ObjectId();
         Friend friend = new Friend(oid, "john");
 
-        ObjectId foundId = updater.getObjectId(friend);
+        Object foundId = updater.getId(friend);
 
         assertThat(oid).isEqualTo(foundId);
     }
@@ -102,7 +102,7 @@ public class ReflectiveObjectIdUpdaterTest {
     @Test
     public void canFindNullObjectId() throws Exception {
 
-        ObjectId foundId = updater.getObjectId(new Friend("john"));
+        Object foundId = updater.getId(new Friend("john"));
 
         assertThat(foundId).isNull();
     }
@@ -110,7 +110,7 @@ public class ReflectiveObjectIdUpdaterTest {
     @Test
     public void canFindNullId() throws Exception {
 
-        ObjectId foundId = updater.getObjectId(new Coordinate(1, 1));
+        Object foundId = updater.getId(new Coordinate(1, 1));
 
         assertThat(foundId).isNull();
     }

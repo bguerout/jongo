@@ -99,6 +99,19 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
+    public void canUpdateWithACustomTypeId() throws Exception {
+
+        ExternalFriend friend = new ExternalFriend(999, "Robert");
+        collection.save(friend);
+
+        friend.setName("Robert");
+        collection.save(friend);
+
+        ExternalFriend result = collection.findOne().as(ExternalFriend.class);
+        assertThat(result.getId()).isEqualTo(999);
+    }
+
+    @Test
     public void canSaveWithObjectIdAsString() throws Exception {
 
         String id = ObjectId.get().toString();

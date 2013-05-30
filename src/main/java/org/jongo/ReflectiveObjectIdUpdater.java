@@ -36,12 +36,12 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
         return idField != null && isAnEmptyObjectId(pojo, idField);
     }
 
-    public ObjectId getObjectId(Object pojo) {
+    public Object getId(Object pojo) {
         Field idField = selectIdField(pojo.getClass());
-        if (idField != null && idField.getType().equals(ObjectId.class)) {
+        if (idField != null) {
             try {
                 idField.setAccessible(true);
-                return (ObjectId) idField.get(pojo);
+                return idField.get(pojo);
 
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Unable to obtain objectid from field" + idField.getName() + ", class: " + idField.getClass(), e);
