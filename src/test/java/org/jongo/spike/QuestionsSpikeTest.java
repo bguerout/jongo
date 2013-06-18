@@ -90,6 +90,19 @@ public class QuestionsSpikeTest extends JongoTestCase {
         assertThat(monday).contains("\"days\" : [ { \"name\" : \"monday\"}]");
     }
 
+    @Test
+    //https://groups.google.com/forum/?fromgroups#!topic/jongo-user/p9CEKnkKX9Q
+    public void canUpdateIntoAnArray() throws Exception {
+
+        collection.insert("{friends:[{name:'Robert'},{name:'Peter'}]}");
+
+        collection.update("{ 'friends.name' : 'Peter' }").with("{ $set : { 'friends.$' : #} }", new Friend("John"));
+
+        Friends friends = collection.findOne().as(Friends.class);
+
+        assertThat(friends.friends).onProperty("name").containsExactly("Robert", "John");
+    }
+
     private static class Friends {
         private List<Friend> friends = new ArrayList<Friend>();
 
