@@ -83,7 +83,8 @@ public class Command {
         }
 
         public <T> List<T> map(ResultHandler<T> resultHandler) {
-            List<DBObject> results = (List<DBObject>) executeCommand().get(fieldName);
+            CommandResult commandResult = executeCommand();
+            List<DBObject> results = (List<DBObject>) commandResult.get(fieldName);
             if (results == null) {
                 return new ArrayList<T>();
             }

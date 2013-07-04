@@ -57,12 +57,14 @@ public class CommandTest extends JongoTestCase {
     @Test
     public void canRunAnEvalCommand() throws Exception {
 
-        String js = "return db.getCollectionNames();";
+        collection.insert("{doc:1}");
+
+        String js = "function() { return db.friends.findOne()}";
         DBObject result = jongo.runCommand("{ eval: # }", js).map(new RawResultHandler<DBObject>());
 
         assertThat(result).isNotNull();
-        List<?> jsResult = (BasicBSONList) result.get("retval");
-        assertThat(jsResult).contains("system.indexes");
+        DBObject retval = (DBObject) result.get("retval");
+        assertThat(retval.get("doc")).isEqualTo(1);
     }
 
     @Test
