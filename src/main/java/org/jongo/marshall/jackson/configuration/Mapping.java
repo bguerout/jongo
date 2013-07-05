@@ -40,6 +40,10 @@ public class Mapping {
         return writerCallback.getWriter(mapper, pojo);
     }
 
+    public ObjectMapper getMapper() {
+        return mapper;
+    }
+
     public static Mapping defaultMapping() {
         return new Builder().build();
     }
