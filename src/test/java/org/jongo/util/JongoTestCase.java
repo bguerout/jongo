@@ -30,17 +30,17 @@ import static org.junit.Assume.assumeTrue;
 
 public abstract class JongoTestCase {
 
-    private static MongoResource mongo;
+    private static MongoResource mongoResource;
 
     private Jongo jongo;
 
     public JongoTestCase() {
-        this.jongo = new Jongo(mongo.getDb("test_jongo"), new JacksonMapper.Builder().build());
+        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), new JacksonMapper.Builder().build());
     }
 
     @BeforeClass
     public static void startMongo() throws Exception {
-        mongo = new MongoResource();
+        mongoResource = new MongoResource();
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
@@ -70,7 +70,7 @@ public abstract class JongoTestCase {
     }
 
     public void prepareMarshallingStrategy(Mapper mapper) {
-        this.jongo = new Jongo(mongo.getDb("test_jongo"), mapper);
+        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
     }
 
 }

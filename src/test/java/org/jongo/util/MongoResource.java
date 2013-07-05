@@ -39,7 +39,7 @@ public class MongoResource {
     }
 
     private Mongo getInstance() {
-        String isLocal = System.getProperty("jongo.test.local.mongo");
+        String isLocal = System.getProperty("jongo.test.mongo.local");
         if (isLocal != null && isLocal.equals("true")) {
             return LocalMongo.instance;
         } else {
