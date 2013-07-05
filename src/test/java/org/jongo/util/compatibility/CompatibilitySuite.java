@@ -25,15 +25,16 @@ import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
+import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CompatibilitySuite extends Suite {
 
     private static final String SCANNED_PACKAGE = "org.jongo";
-    private static final Class<JongoTestCase> PARENT_CLASS = JongoTestCase.class;
 
     private final List<Runner> runners = new ArrayList<Runner>();
     private final ContextRunnerBuilder builder;
@@ -41,8 +42,9 @@ public class CompatibilitySuite extends Suite {
     public CompatibilitySuite(Class<?> clazz) throws Throwable {
         super(clazz, new Class<?>[]{});
         builder = new ContextRunnerBuilder(getParameter(getTestClass()));
-        Class<?>[] suiteClasses = ClasspathClassesFinder.getSuiteClasses(SCANNED_PACKAGE);
-        runners.addAll(builder.runners(clazz, suiteClasses));
+        Reflections reflections = new Reflections(SCANNED_PACKAGE);
+        Set<Class<? extends JongoTestCase>> classes = reflections.getSubTypesOf(JongoTestCase.class);
+        runners.addAll(builder.runners(clazz, new ArrayList<Class<?>>(classes)));
     }
 
     @Override
@@ -100,11 +102,8 @@ public class CompatibilitySuite extends Suite {
 
         @Override
         protected Object createTest() throws Exception {
-            Object test = super.createTest();
-            if (PARENT_CLASS.isAssignableFrom(getTestClass().getJavaClass())) {
-                JongoTestCase jongoTestCase = (JongoTestCase) test;
-                jongoTestCase.prepareMarshallingStrategy(testContext.getMapper());
-            }
+            JongoTestCase test = (JongoTestCase) super.createTest();
+            test.prepareMarshallingStrategy(testContext.getMapper());
             return test;
         }
     }

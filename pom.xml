@@ -147,11 +147,16 @@
             <version>0.5-rc1</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
             <version>1.31</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.9-RC1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
