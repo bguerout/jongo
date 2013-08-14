@@ -27,30 +27,29 @@ import java.util.List;
 
 public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>> {
 
-    private final SimpleModule module;
+    private final SimpleModule module = new SimpleModule("jongo-custom-module");
 
-    private final List<MapperModifier> modifiers;
     private final ObjectMapper mapper;
+    private final List<MapperModifier> modifiers;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
     private MapperModifier visibilityModifier = new VisibilityModifier();
 
     public AbstractMappingBuilder() {
         this(new ObjectMapper(MongoBsonFactory.createFactory()));
-        registerModule(new BsonModule());
-        addModifier(new PropertyModifier());
     }
 
     public AbstractMappingBuilder(ObjectMapper mapper) {
         this.mapper = mapper;
-        this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
-        registerModule(module);
     }
 
     protected abstract T getBuilderInstance();
 
     protected Mapping innerMapping() {
+        registerModule(new BsonModule());
+        addModifier(new PropertyModifier());
+        registerModule(module);
         addModifier(visibilityModifier);
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
