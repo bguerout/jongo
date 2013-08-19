@@ -118,6 +118,10 @@ public class JsonQueryFactory implements QueryFactory {
         // Add remaining chars
         sb.append(query, start, query.length());
 
+        if (paramPos < parameters.length) {
+            throw new IllegalArgumentException("Too many parameters passed to query: " + query);
+        }
+
 
         final Object[] params = parameters;
 
@@ -156,9 +160,6 @@ public class JsonQueryFactory implements QueryFactory {
 
                     if (isStackEmpty()) {
                         // End of object
-                        if (paramPos != params.length) {
-                            throw new IllegalArgumentException("Too many parameters passed to query: " + query);
-                        }
                     }
 
                     return o;
