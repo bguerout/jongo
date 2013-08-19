@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
+ * Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com>, Yves AMSELLEM <amsellem dot yves at gmail dot com>
+ * and other contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,70 +17,160 @@
 
 package org.jongo.query;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import java.util.Collection;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.bson.BSON;
+import org.bson.BSONObject;
 import org.jongo.bson.Bson;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import com.mongodb.util.JSONCallback;
 
 public class JsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
     private final Marshaller marshaller;
-    private final Pattern pattern;
+
+    private static final String MAGIC_PROP = "$jgParam";
+    private static final String PRECEDING_VALUE_PARAM = ": ,[\t\r\n";
+
+    private static class BsonQuery implements Query {
+        private final DBObject dbo;
+
+        public BsonQuery(DBObject dbo) {
+            this.dbo = dbo;
+        }
+
+        public DBObject toDBObject() {
+            return dbo;
+        }
+    }
 
     public JsonQueryFactory(Marshaller marshaller) {
         this(marshaller, DEFAULT_TOKEN);
     }
 
     public JsonQueryFactory(Marshaller marshaller, String token) {
-        this.marshaller = marshaller;
         this.token = token;
-        this.pattern = Pattern.compile(token);
+        this.marshaller = marshaller;
     }
 
-    public final Query createQuery(String query, Object... parameters) {
+    public Query createQuery(final String query, Object... parameters) {
+
         if (parameters == null) {
             parameters = new Object[]{null};
         }
-        if (parameters.length == 0) {
-            return new JsonQuery(query);
-        }
-        return createQueryWithParameters(query, parameters);
-    }
 
-    private JsonQuery createQueryWithParameters(String template, Object[] parameters) {
-        String query = template;
-        assertThatParamsCanBeBound(query, parameters);
-        int paramIndex = 0;
-        int tokenIndex = 0;
-        while (true) {
-            tokenIndex = query.indexOf(token, tokenIndex);
-            if (tokenIndex < 0) {
-                break;
+        // We have two different cases:
+        //
+        // - tokens as property names "{scores.#: 1}": they must be expanded before going
+        //   through the JSON parser, and their toString() is inserted in the query
+        //
+        // - tokens as property values "{id: #}": they are resolved by the JSON parser and
+        //   therefore marshalled as DBObjects (actually LazyDBObjects).
+
+        StringBuilder sb = new StringBuilder();
+        int paramIncrement = 0; // how many params must be skipped by the next value param
+        int paramPos = 0;       // current position in the parameter list
+        int start = 0;          // start of the current string segment
+        int pos;                // position of the last token found
+        while ((pos = query.indexOf(token, start)) != -1) {
+            if (paramPos >= parameters.length) {
+                throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
             }
 
-            Object parameter = parameters[paramIndex++];
+            // Insert chars before the token
+            sb.append(query, start, pos);
 
-            String replacement;
-            try {
-                replacement = marshallParameter(parameter, true).toString();
-            } catch (RuntimeException e) {
-                String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
-                throw new IllegalArgumentException(message, e);
+            // Check if the character preceding the token is one that separates values.
+            // Otherwise, it's a property name substitution
+            boolean isValueParam = true;
+            if (pos > 0) {
+                char c = query.charAt(pos-1);
+                if (PRECEDING_VALUE_PARAM.indexOf(c) == -1) {
+                    isValueParam = false;
+                }
             }
 
-            query = query.substring(0, tokenIndex) + replacement + query.substring(tokenIndex + token.length());
-            tokenIndex += replacement.length();
+            if (isValueParam) {
+                // Will be resolved by the JSON parser below
+                sb.append("{\"").append(MAGIC_PROP).append("\":").append(paramIncrement).append("}");
+                paramIncrement = 0;
+            } else {
+                // Resolve it now
+                sb.append(parameters[paramPos]);
+                paramIncrement++;
+            }
+
+            paramPos++;
+            start = pos + token.length();
         }
 
-        return new JsonQuery(query);
+        // Add remaining chars
+        sb.append(query, start, query.length());
+
+
+        final Object[] params = parameters;
+
+        // Parse the query with a callback that will weave in marshalled parameters
+        DBObject dbo;
+        try {
+            dbo = (DBObject)JSON.parse(sb.toString(), new JSONCallback() {
+
+                int paramPos = 0;
+
+                @Override
+                public Object objectDone() {
+                    String name = curName();
+                    Object o = super.objectDone();
+
+                    if (o instanceof BSONObject && !(o instanceof List<?>)) {
+                        BSONObject dbo = (BSONObject)o;
+                        Object magicValue = dbo.get(MAGIC_PROP);
+                        if (magicValue != null) {
+                            paramPos += ((Number)magicValue).intValue();
+                            if (paramPos >= params.length) {
+                                throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
+                            }
+
+                            o = marshallParameter(params[paramPos++], false);
+
+                            // Replace value set by super.objectDone()
+                            if (!isStackEmpty()) {
+                                _put(name, o);
+                            } else {
+                                o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks( o );
+                                setRoot(o);
+                            }
+                        }
+                    }
+
+                    if (isStackEmpty()) {
+                        // End of object
+                        if (paramPos != params.length) {
+                            throw new IllegalArgumentException("Too many parameters passed to query: " + query);
+                        }
+                    }
+
+                    return o;
+                }
+            });
+
+        } catch(Exception e) {
+            throw new IllegalArgumentException("Cannot parse query: " + query, e);
+        }
+
+        return new BsonQuery(dbo);
+
     }
 
     private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
@@ -88,11 +179,11 @@ public class JsonQueryFactory implements QueryFactory {
                 return serializeBsonPrimitives ? JSON.serialize(parameter) : parameter;
             }
             if (parameter instanceof Enum) {
-                String name = ((Enum) parameter).name();
+                String name = ((Enum<?>) parameter).name();
                 return serializeBsonPrimitives ? JSON.serialize(name) : name;
             }
-            if (parameter instanceof List) {
-                return marshallArray(((List) parameter).toArray());
+            if (parameter instanceof Collection) {
+                return marshallCollection((Collection<?>) parameter);
             }
             if (parameter instanceof Object[]) {
                 return marshallArray((Object[]) parameter);
@@ -107,7 +198,15 @@ public class JsonQueryFactory implements QueryFactory {
     private DBObject marshallArray(Object[] parameters) {
         BasicDBList list = new BasicDBList();
         for (int i = 0; i < parameters.length; i++) {
-            list.put(i, marshallParameter(parameters[i], false));
+            list.add(marshallParameter(parameters[i], false));
+        }
+        return list;
+    }
+
+    private DBObject marshallCollection(Collection<?> parameters) {
+        BasicDBList list = new BasicDBList();
+        for (Object param : parameters) {
+            list.add(marshallParameter(param, false));
         }
         return list;
     }
@@ -115,23 +214,4 @@ public class JsonQueryFactory implements QueryFactory {
     private DBObject marshallDocument(Object parameter) {
         return marshaller.marshall(parameter).toDBObject();
     }
-
-    private void assertThatParamsCanBeBound(String template, Object[] parameters) {
-        int nbTokens = countTokens(template);
-        if (nbTokens != parameters.length) {
-            String message = String.format("Unable to bind parameters into query: %s. Tokens and parameters numbers mismatch " +
-                    "[tokens: %s / parameters:%s]", template, nbTokens, parameters.length);
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    private int countTokens(String template) {
-        int count = 0;
-        Matcher matcher = pattern.matcher(template);
-        while (matcher.find()) {
-            count++;
-        }
-        return count;
-    }
-
 }
