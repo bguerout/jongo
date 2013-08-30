@@ -48,7 +48,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
 
     protected abstract T getBuilderInstance();
 
-    protected Mapping innerMapping() {
+    protected Mapping createMapping() {
         registerModule(module);
         addModifier(visibilityModifier);
         for (MapperModifier modifier : modifiers) {

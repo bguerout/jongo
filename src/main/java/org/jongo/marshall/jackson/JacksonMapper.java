@@ -68,7 +68,7 @@ public class JacksonMapper implements Mapper {
         }
 
         public Mapper build() {
-            JacksonEngine jacksonEngine = new JacksonEngine(innerMapping());
+            JacksonEngine jacksonEngine = new JacksonEngine(createMapping());
             if (queryFactory == null) {
                 queryFactory = new JsonQueryFactory(jacksonEngine);
             }

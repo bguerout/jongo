@@ -60,7 +60,7 @@ public class Mapping {
         }
 
         public Mapping build() {
-            return innerMapping();
+            return createMapping();
         }
     }
 
