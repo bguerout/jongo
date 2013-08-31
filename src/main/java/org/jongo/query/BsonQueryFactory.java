@@ -19,9 +19,6 @@ package org.jongo.query;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bson.BSON;
 import org.bson.BSONObject;
@@ -34,7 +31,7 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONCallback;
 
-public class JsonQueryFactory implements QueryFactory {
+public class BsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
     private final String token;
@@ -55,11 +52,11 @@ public class JsonQueryFactory implements QueryFactory {
         }
     }
 
-    public JsonQueryFactory(Marshaller marshaller) {
+    public BsonQueryFactory(Marshaller marshaller) {
         this(marshaller, DEFAULT_TOKEN);
     }
 
-    public JsonQueryFactory(Marshaller marshaller, String token) {
+    public BsonQueryFactory(Marshaller marshaller, String token) {
         this.token = token;
         this.marshaller = marshaller;
     }

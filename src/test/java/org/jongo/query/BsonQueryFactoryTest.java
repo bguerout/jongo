@@ -20,7 +20,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 
-import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.util.ErrorObject;
@@ -29,13 +28,13 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JsonQueryFactoryTest {
+public class BsonQueryFactoryTest {
 
     private QueryFactory factory;
 
     @Before
     public void setUp() throws Exception {
-        factory = new JsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()));
+        factory = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -83,7 +82,7 @@ public class JsonQueryFactoryTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        QueryFactory factoryWithToken = new JsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "@");
+        QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "@");
 
         Query query = factoryWithToken.createQuery("{id:@}", 123);
 
