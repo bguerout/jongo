@@ -37,7 +37,7 @@ public class BsonQueryFactory implements QueryFactory {
     private final String token;
     private final Marshaller marshaller;
 
-    private static final String MAGIC_PROP = "$jgParam";
+    private static final String MARSHALL_OPERATOR = "$marshall";
     private static final String PRECEDING_VALUE_PARAM = ": ,[\t\r\n";
 
     private static class BsonQuery implements Query {
@@ -100,7 +100,7 @@ public class BsonQueryFactory implements QueryFactory {
 
             if (isValueParam) {
                 // Will be resolved by the JSON parser below
-                sb.append("{\"").append(MAGIC_PROP).append("\":").append(paramIncrement).append("}");
+                sb.append("{\"").append(MARSHALL_OPERATOR).append("\":").append(paramIncrement).append("}");
                 paramIncrement = 0;
             } else {
                 // Resolve it now
@@ -136,9 +136,9 @@ public class BsonQueryFactory implements QueryFactory {
 
                     if (o instanceof BSONObject && !(o instanceof List<?>)) {
                         BSONObject dbo = (BSONObject)o;
-                        Object magicValue = dbo.get(MAGIC_PROP);
-                        if (magicValue != null) {
-                            paramPos += ((Number)magicValue).intValue();
+                        Object marshallValue = dbo.get(MARSHALL_OPERATOR);
+                        if (marshallValue != null) {
+                            paramPos += ((Number)marshallValue).intValue();
                             if (paramPos >= params.length) {
                                 throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
                             }
