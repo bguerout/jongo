@@ -44,12 +44,12 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
     public AbstractMappingBuilder(ObjectMapper mapper) {
         this.mapper = mapper;
         this.modifiers = new ArrayList<MapperModifier>();
+        registerModule(module);
     }
 
     protected abstract T getBuilderInstance();
 
     protected Mapping createMapping() {
-        registerModule(module);
         addModifier(visibilityModifier);
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
