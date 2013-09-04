@@ -132,12 +132,12 @@ public class MongoCollection {
         return insert(new Object[]{pojo});
     }
 
-    public WriteResult insert(Object... pojos) {
-        return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insert(pojos);
-    }
-
     public WriteResult insert(String query) {
         return insert(query, NO_PARAMETERS);
+    }
+
+    public WriteResult insert(Object... pojos) {
+        return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insert(pojos);
     }
 
     public WriteResult insert(String query, Object... parameters) {

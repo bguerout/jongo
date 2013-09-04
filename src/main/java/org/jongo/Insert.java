@@ -58,6 +58,11 @@ class Insert {
         return collection.insert(dbos, writeConcern);
     }
 
+    public WriteResult insert(String query, Object... parameters) {
+        DBObject dbQuery = queryFactory.createQuery(query, parameters).toDBObject();
+        return collection.insert(dbQuery, writeConcern);
+    }
+
     private Object preparePojo(Object pojo) {
         if (objectIdUpdater.mustGenerateObjectId(pojo)) {
             ObjectId newOid = ObjectId.get();
@@ -65,11 +70,6 @@ class Insert {
             return newOid;
         }
         return objectIdUpdater.getId(pojo);
-    }
-
-    public WriteResult insert(String query, Object... parameters) {
-        DBObject dbQuery = queryFactory.createQuery(query, parameters).toDBObject();
-        return collection.insert(dbQuery, writeConcern);
     }
 
     private DBObject convertToDBObject(Object pojo, Object id) {
