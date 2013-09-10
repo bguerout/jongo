@@ -16,10 +16,13 @@
 
 package org.jongo;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+
+import org.bson.LazyBSONObject;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
@@ -58,7 +61,16 @@ public class Update {
 
     private void removeIdField(DBObject updateDbo) {
         DBObject pojoAsDbo = (DBObject) updateDbo.get("$set");
-        pojoAsDbo.removeField("_id");
+        if (pojoAsDbo.containsField("_id")) {
+            // Need to materialize lazy objects which are read only
+            if (pojoAsDbo instanceof LazyBSONObject) {
+                BasicDBObject expanded = new BasicDBObject();
+                expanded.putAll(pojoAsDbo);
+                updateDbo.put("$set", expanded);
+                pojoAsDbo = expanded;
+            }
+            pojoAsDbo.removeField("_id");
+        }
     }
 
     public Update upsert() {

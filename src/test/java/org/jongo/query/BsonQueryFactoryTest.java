@@ -17,7 +17,9 @@
 package org.jongo.query;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.util.ErrorObject;
@@ -26,13 +28,13 @@ import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JsonQueryFactoryTest {
+public class BsonQueryFactoryTest {
 
     private QueryFactory factory;
 
     @Before
     public void setUp() throws Exception {
-        factory = new JsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()));
+        factory = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -80,7 +82,7 @@ public class JsonQueryFactoryTest {
     @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
-        QueryFactory factoryWithToken = new JsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "@");
+        QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "@");
 
         Query query = factoryWithToken.createQuery("{id:@}", 123);
 
@@ -101,5 +103,42 @@ public class JsonQueryFactoryTest {
         Query query = factory.createQuery("{id:#}", "string with \" quotation mark");
 
         assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", "string with \" quotation mark"));
+    }
+
+    @Test
+    public void shouldBindNestedQuery() throws Exception {
+
+        DBObject dbo = factory.createQuery("{ a: #, b: { c: #, d: #}, e: #}", 1, Long.valueOf(2), 3, "hello").toDBObject();
+
+        assertThat(dbo.get("a")).isEqualTo(Integer.valueOf(1));
+        assertThat(dbo.get("e")).isEqualTo("hello");
+
+        DBObject dbo2 = (DBObject)dbo.get("b");
+        assertThat(dbo2.get("c")).isEqualTo(Long.valueOf(2));
+        assertThat(dbo2.get("d")).isEqualTo(Integer.valueOf(3));
+    }
+
+    public static class AnObject {
+        public int aa;
+        public long bb;
+    }
+
+    @Test
+    public void shouldBindNestedParameter() throws Exception {
+        AnObject ao = new AnObject();
+        ao.aa = 10;
+        ao.bb = 11;
+
+        DBObject dbo = factory.createQuery("{ a: #, b: { c: #, d: #}, e: #}", 1, Long.valueOf(2), ao, "hello").toDBObject();
+
+        assertThat(dbo.get("a")).isEqualTo(Integer.valueOf(1));
+        assertThat(dbo.get("e")).isEqualTo("hello");
+
+        DBObject dbo2 = (DBObject)dbo.get("b");
+        assertThat(dbo2.get("c")).isEqualTo(Long.valueOf(2));
+
+        DBObject dbo3 = (DBObject)dbo2.get("d");
+        assertThat(dbo3.get("aa")).isEqualTo(Integer.valueOf(10));
+        assertThat(dbo3.get("bb")).isEqualTo(Long.valueOf(11));
     }
 }

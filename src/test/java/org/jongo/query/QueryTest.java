@@ -28,7 +28,7 @@ public class QueryTest {
     @Test
     public void shouldConvertToDBObject() throws Exception {
 
-        Query query = new JsonQueryFactory(new JacksonEngine(Mapping.defaultMapping())).createQuery("{'value':1}");
+        Query query = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping())).createQuery("{'value':1}");
 
         DBObject dbObject = query.toDBObject();
 
