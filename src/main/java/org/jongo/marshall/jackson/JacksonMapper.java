@@ -17,6 +17,8 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bson.types.ObjectId;
+import org.jongo.MapObjectIdUpdater;
 import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.ReflectiveObjectIdUpdater;
@@ -25,6 +27,9 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.AbstractMappingBuilder;
 import org.jongo.query.BsonQueryFactory;
 import org.jongo.query.QueryFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class JacksonMapper implements Mapper {
 
@@ -58,6 +63,7 @@ public class JacksonMapper implements Mapper {
 
         private QueryFactory queryFactory;
         private ObjectIdUpdater objectIdUpdater;
+        private final Map<Class<?>, ObjectIdUpdater<?>> updaters = new HashMap<Class<?>, ObjectIdUpdater<?>>();
 
         public Builder() {
             super();
@@ -69,13 +75,23 @@ public class JacksonMapper implements Mapper {
 
         public Mapper build() {
             JacksonEngine jacksonEngine = new JacksonEngine(createMapping());
+            setDefaultsIfNeeded(jacksonEngine);
+            return new JacksonMapper(jacksonEngine, queryFactory, objectIdUpdater);
+        }
+
+        private void setDefaultsIfNeeded(JacksonEngine jacksonEngine) {
             if (queryFactory == null) {
                 queryFactory = new BsonQueryFactory(jacksonEngine);
             }
             if (objectIdUpdater == null) {
-                objectIdUpdater = new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector());
+                objectIdUpdater = createDefaultObjectIdUpdaters();
             }
-            return new JacksonMapper(jacksonEngine, queryFactory, objectIdUpdater);
+        }
+
+        private ObjectIdUpdater<?> createDefaultObjectIdUpdaters() {
+            ReflectiveObjectIdUpdater defaultObjectIdUpdater = new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector());
+            updaters.put(Map.class, new MapObjectIdUpdater());
+            return new MultiObjectIdUpdater(defaultObjectIdUpdater, updaters);
         }
 
         public Builder withQueryFactory(QueryFactory factory) {
@@ -88,9 +104,46 @@ public class JacksonMapper implements Mapper {
             return getBuilderInstance();
         }
 
+        public <T> Builder registerObjectIdUpdater(Class<T> clazz, ObjectIdUpdater<T> objectIdUpdater) {
+            updaters.put(clazz, objectIdUpdater);
+            return getBuilderInstance();
+        }
+
         @Override
         protected Builder getBuilderInstance() {
             return this;
+        }
+    }
+
+    private static class MultiObjectIdUpdater implements ObjectIdUpdater {
+
+        private final Map<Class<?>, ObjectIdUpdater<?>> updaters;
+        private final ObjectIdUpdater defaultObjectIdUpdater;
+
+        private MultiObjectIdUpdater(ObjectIdUpdater defaultObjectIdUpdater, Map<Class<?>, ObjectIdUpdater<?>> updaters) {
+            this.updaters = updaters;
+            this.defaultObjectIdUpdater = defaultObjectIdUpdater;
+        }
+
+        public boolean mustGenerateObjectId(Object pojo) {
+            return findUpdater(pojo.getClass()).mustGenerateObjectId(pojo);
+        }
+
+        public void setObjectId(Object obj, ObjectId id) {
+            findUpdater(obj.getClass()).setObjectId(obj, id);
+        }
+
+        public Object getId(Object obj) {
+            return findUpdater(obj.getClass()).getId(obj);
+        }
+
+        private ObjectIdUpdater findUpdater(Class<?> clazz) {
+            for (Class<?> registeredClass : updaters.keySet()) {
+                if (registeredClass.isAssignableFrom(clazz)) {
+                    return updaters.get(registeredClass);
+                }
+            }
+            return defaultObjectIdUpdater;
         }
     }
 }
