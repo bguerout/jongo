@@ -446,7 +446,7 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
                                       code possible.
                                     </p>
                                     <p>
-                                      Since .3, Jongo uses Mongo Java driver as a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it works at <code>byte[]</code> level (<i>note that query marhalling has been kept the old way, because of its specificities</i>).
+                                      Since .3, Jongo uses Mongo Java driver at a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it works at <code>byte[]</code> level (<i>note that query marhalling has been kept the old way, because of its specificities</i>).
                                     </p>
 
                                     <p>
