@@ -82,6 +82,18 @@ public class FindPartialFieldTest extends JongoTestCase {
         assertThat(result).isTrue();
     }
 
+    @Test
+    public void shouldIgnoreNullProjection() throws Exception {
+        /* given */
+        collection.save(friend);
+
+        /* when */
+        Friend result = collection.findOne("{name:'John'}").projection(null).as(Friend.class);
+
+        assertThat(friend.getName()).isEqualTo("John");
+        assertThat(friend.getAddress()).isEqualTo("22 Wall Street Avenue");
+    }
+
     private static class AssertionResultHandler implements ResultHandler<Boolean> {
         public Boolean map(DBObject result) {
             assertThat(result.containsField("address")).isFalse();

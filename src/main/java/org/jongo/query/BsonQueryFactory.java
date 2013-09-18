@@ -63,6 +63,9 @@ public class BsonQueryFactory implements QueryFactory {
 
     public Query createQuery(final String query, Object... parameters) {
 
+        if (query == null) {
+            return new BsonQuery((DBObject) JSON.parse(query));
+        }
         if (parameters == null) {
             parameters = new Object[]{null};
         }

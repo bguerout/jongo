@@ -56,6 +56,14 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldAllowToCreateNullQuery() throws Exception {
+
+        Query query = factory.createQuery(null);
+
+        assertThat(query.toDBObject()).isEqualTo(null);
+    }
+
+    @Test
     public void shouldBindOneParameter() throws Exception {
 
         Query query = factory.createQuery("{id:#}", 123);
