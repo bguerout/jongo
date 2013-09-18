@@ -19,7 +19,6 @@ package org.jongo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
-import org.bson.types.BasicBSONList;
 import org.fest.assertions.Condition;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;

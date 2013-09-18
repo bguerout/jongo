@@ -19,7 +19,6 @@ package org.jongo.query;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
-
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.util.ErrorObject;
@@ -121,7 +120,7 @@ public class BsonQueryFactoryTest {
         assertThat(dbo.get("a")).isEqualTo(Integer.valueOf(1));
         assertThat(dbo.get("e")).isEqualTo("hello");
 
-        DBObject dbo2 = (DBObject)dbo.get("b");
+        DBObject dbo2 = (DBObject) dbo.get("b");
         assertThat(dbo2.get("c")).isEqualTo(Long.valueOf(2));
         assertThat(dbo2.get("d")).isEqualTo(Integer.valueOf(3));
     }
@@ -142,10 +141,10 @@ public class BsonQueryFactoryTest {
         assertThat(dbo.get("a")).isEqualTo(Integer.valueOf(1));
         assertThat(dbo.get("e")).isEqualTo("hello");
 
-        DBObject dbo2 = (DBObject)dbo.get("b");
+        DBObject dbo2 = (DBObject) dbo.get("b");
         assertThat(dbo2.get("c")).isEqualTo(Long.valueOf(2));
 
-        DBObject dbo3 = (DBObject)dbo2.get("d");
+        DBObject dbo3 = (DBObject) dbo2.get("d");
         assertThat(dbo3.get("aa")).isEqualTo(Integer.valueOf(10));
         assertThat(dbo3.get("bb")).isEqualTo(Long.valueOf(11));
     }

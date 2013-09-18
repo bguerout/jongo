@@ -17,19 +17,18 @@
 
 package org.jongo.query;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import com.mongodb.util.JSONCallback;
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.jongo.bson.Bson;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-import com.mongodb.util.JSONCallback;
+import java.util.Collection;
+import java.util.List;
 
 public class BsonQueryFactory implements QueryFactory {
 
@@ -95,7 +94,7 @@ public class BsonQueryFactory implements QueryFactory {
             // Otherwise, it's a property name substitution
             boolean isValueParam = true;
             if (pos > 0) {
-                char c = query.charAt(pos-1);
+                char c = query.charAt(pos - 1);
                 if (PRECEDING_VALUE_PARAM.indexOf(c) == -1) {
                     isValueParam = false;
                 }
@@ -128,7 +127,7 @@ public class BsonQueryFactory implements QueryFactory {
         // Parse the query with a callback that will weave in marshalled parameters
         DBObject dbo;
         try {
-            dbo = (DBObject)JSON.parse(sb.toString(), new JSONCallback() {
+            dbo = (DBObject) JSON.parse(sb.toString(), new JSONCallback() {
 
                 int paramPos = 0;
 
@@ -138,10 +137,10 @@ public class BsonQueryFactory implements QueryFactory {
                     Object o = super.objectDone();
 
                     if (o instanceof BSONObject && !(o instanceof List<?>)) {
-                        BSONObject dbo = (BSONObject)o;
+                        BSONObject dbo = (BSONObject) o;
                         Object marshallValue = dbo.get(MARSHALL_OPERATOR);
                         if (marshallValue != null) {
-                            paramPos += ((Number)marshallValue).intValue();
+                            paramPos += ((Number) marshallValue).intValue();
                             if (paramPos >= params.length) {
                                 throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
                             }
@@ -152,7 +151,7 @@ public class BsonQueryFactory implements QueryFactory {
                             if (!isStackEmpty()) {
                                 _put(name, o);
                             } else {
-                                o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks( o );
+                                o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks(o);
                                 setRoot(o);
                             }
                         }
@@ -166,7 +165,7 @@ public class BsonQueryFactory implements QueryFactory {
                 }
             });
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Cannot parse query: " + query, e);
         }
 
