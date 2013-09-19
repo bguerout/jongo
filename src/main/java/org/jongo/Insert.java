@@ -46,14 +46,16 @@ class Insert {
 
     public WriteResult save(Object pojo) {
         Object id = preparePojo(pojo);
-        return collection.save(convertToDBObject(pojo, id), writeConcern);
+        DBObject dbo = convertToDBObject(pojo, id);
+        return collection.save(dbo, writeConcern);
     }
 
     public WriteResult insert(Object... pojos) {
         List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
         for (Object pojo : pojos) {
             Object id = preparePojo(pojo);
-            dbos.add(convertToDBObject(pojo, id));
+            DBObject dbo = convertToDBObject(pojo, id);
+            dbos.add(dbo);
         }
         return collection.insert(dbos, writeConcern);
     }
