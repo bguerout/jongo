@@ -16,6 +16,7 @@
 
 package org.jongo.spike;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.MongoCollection;
@@ -88,6 +89,14 @@ public class QuestionsSpikeTest extends JongoTestCase {
         String monday = collection.findOne("{version:1}").projection("{days:{$elemMatch:{name: 'monday'}}}").map(new JSONResultHandler());
 
         assertThat(monday).contains("\"days\" : [ { \"name\" : \"monday\"}]");
+    }
+
+    @Test
+    //https://github.com/bguerout/jongo/issues/147
+    public void canFindSaveAnObjectNode() throws Exception {
+        collection.insert("{friends:1}");
+        ObjectNode value = collection.findOne().as(ObjectNode.class);
+        collection.save(value);
     }
 
     @Test

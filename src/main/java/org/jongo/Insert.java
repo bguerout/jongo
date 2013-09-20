@@ -103,7 +103,7 @@ class Insert {
 
         @Override
         public Object get(String key) {
-            if ("_id".equals(key)) {
+            if ("_id".equals(key) && id != null) {
                 return id;
             }
             return super.get(key);

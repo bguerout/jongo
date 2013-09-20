@@ -184,4 +184,23 @@ public class InsertTest extends JongoTestCase {
         DBObject value = captor.getValue();
         assertThat(value.get("_id")).isEqualTo(deserializedOid);
     }
+
+    @Test
+    public void shouldNotPreventLazyDBObjectToBeDeserializedWhenOidIsNull() throws Exception {
+
+        ObjectId id = ObjectId.get();
+        Friend friend = new Friend(id, "John");
+        DBCollection mockedDBCollection = mock(DBCollection.class);
+        ObjectIdUpdater<Friend> objectIdUpdater = mock(ObjectIdUpdater.class);
+        ObjectId deserializedOid = null;
+        when(objectIdUpdater.getId(friend)).thenReturn(deserializedOid);
+        Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
+
+        insert.save(friend);
+
+        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.NONE));
+        DBObject value = captor.getValue();
+        assertThat(value.get("_id")).isNotNull();
+        assertThat(value.get("_id")).isEqualTo(id);
+    }
 }
