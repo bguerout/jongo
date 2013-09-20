@@ -26,7 +26,7 @@
 
     <groupId>org.jongo</groupId>
     <artifactId>jongo</artifactId>
-    <version>0.5-early-20130920-1924</version>
+    <version>0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Jongo</name>
     <description>Query in Java as in Mongo shell</description>
