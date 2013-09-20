@@ -18,11 +18,11 @@ package org.jongo;
 
 import org.bson.types.ObjectId;
 
-public interface ObjectIdUpdater<T> {
+public interface ObjectIdUpdater {
 
-    boolean mustGenerateObjectId(T pojo);
+    boolean mustGenerateObjectId(Object pojo);
 
-    Object getId(T pojo);
+    Object getId(Object pojo);
 
-    void setObjectId(T target, ObjectId id);
+    void setObjectId(Object target, ObjectId id);
 }

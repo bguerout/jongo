@@ -30,8 +30,6 @@ import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
-import org.jongo.model.Animal;
-import org.jongo.model.Fox;
 import org.jongo.model.Friend;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -40,8 +38,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class JacksonMapperTest {
 
@@ -118,7 +114,20 @@ public class JacksonMapperTest {
     }
 
     @Test
-    public void canAddQueryFactory() throws Exception {
+    public void canAddJongoInterfaces() throws Exception {
+
+        ObjectIdUpdater objectIdUpdater = new ObjectIdUpdater() {
+            public boolean mustGenerateObjectId(Object pojo) {
+                return false;
+            }
+
+            public void setObjectId(Object newPojo, ObjectId id) {
+            }
+
+            public Object getId(Object pojo) {
+                return null;
+            }
+        };
 
         QueryFactory factory = new QueryFactory() {
             public Query createQuery(String query, Object... parameters) {
@@ -126,56 +135,12 @@ public class JacksonMapperTest {
             }
         };
         Mapper mapper = new JacksonMapper.Builder()
+                .withObjectIdUpdater(objectIdUpdater)
                 .withQueryFactory(factory)
                 .build();
 
+        assertThat(mapper.getObjectIdUpdater()).isEqualTo(objectIdUpdater);
         assertThat(mapper.getQueryFactory()).isEqualTo(factory);
-    }
-
-    @Test
-    public void canRegisterDefaultObjectIdUpdater() throws Exception {
-
-        ObjectIdUpdater friendUpdater = mock(ObjectIdUpdater.class);
-
-        Mapper mapper = new JacksonMapper.Builder()
-                .withObjectIdUpdater(friendUpdater)
-                .build();
-
-        assertThat(mapper.getObjectIdUpdater()).isEqualTo(friendUpdater);
-    }
-
-    @Test
-    public void canRegisterCustomObjectIdUpdater() throws Exception {
-
-        ObjectIdUpdater<Friend> friendUpdater = mock(ObjectIdUpdater.class);
-        ObjectIdUpdater<Fox> foxUpdater = mock(ObjectIdUpdater.class);
-
-        Mapper mapper = new JacksonMapper.Builder()
-                .registerObjectIdUpdater(Friend.class, friendUpdater)
-                .registerObjectIdUpdater(Fox.class, foxUpdater)
-                .build();
-
-        Friend friend = new Friend();
-        mapper.getObjectIdUpdater().mustGenerateObjectId(friend);
-        verify(friendUpdater).mustGenerateObjectId(friend);
-
-        Fox fox = new Fox("fox", "black");
-        mapper.getObjectIdUpdater().mustGenerateObjectId(fox);
-        verify(foxUpdater).mustGenerateObjectId(fox);
-    }
-
-    @Test
-    public void canRegisterCustomObjectIdUpdaterForSubTypes() throws Exception {
-
-        ObjectIdUpdater<Animal> animalUpdater = mock(ObjectIdUpdater.class);
-
-        Mapper mapper = new JacksonMapper.Builder()
-                .registerObjectIdUpdater(Animal.class, animalUpdater)
-                .build();
-
-        Fox fox = new Fox("fox", "black");
-        mapper.getObjectIdUpdater().mustGenerateObjectId(fox);
-        verify(animalUpdater).mustGenerateObjectId(fox);
     }
 
     private static class DoeJsonSerializer extends JsonSerializer<String> {

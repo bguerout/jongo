@@ -173,7 +173,7 @@ public class InsertTest extends JongoTestCase {
 
         Friend friend = new Friend(ObjectId.get(), "John");
         DBCollection mockedDBCollection = mock(DBCollection.class);
-        ObjectIdUpdater<Friend> objectIdUpdater = mock(ObjectIdUpdater.class);
+        ObjectIdUpdater objectIdUpdater = mock(ObjectIdUpdater.class);
         ObjectId deserializedOid = ObjectId.get();
         when(objectIdUpdater.getId(friend)).thenReturn(deserializedOid);
         Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
@@ -191,7 +191,7 @@ public class InsertTest extends JongoTestCase {
         ObjectId id = ObjectId.get();
         Friend friend = new Friend(id, "John");
         DBCollection mockedDBCollection = mock(DBCollection.class);
-        ObjectIdUpdater<Friend> objectIdUpdater = mock(ObjectIdUpdater.class);
+        ObjectIdUpdater objectIdUpdater = mock(ObjectIdUpdater.class);
         ObjectId deserializedOid = null;
         when(objectIdUpdater.getId(friend)).thenReturn(deserializedOid);
         Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());

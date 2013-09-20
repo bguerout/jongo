@@ -21,11 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.mongodb.WriteConcern;
 import de.undercouch.bson4jackson.BsonFactory;
-import de.undercouch.bson4jackson.BsonParser;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 import org.jongo.MongoCollection;
-import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +51,7 @@ public class MongoDumpTest extends JongoTestCase {
     public void importBsonDumpFileIntoCollection() throws Exception {
 
         InputStream bsonDump = getClass().getClassLoader().getResourceAsStream("1000friends.bson");
-        MongoBsonFactory bsonFactory = new MongoBsonFactory();
+        BsonFactory bsonFactory = new BsonFactory();
         //bsonFactory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH); // fails when enabled
         ObjectReader reader = new ObjectMapper(bsonFactory).reader(BasicBSONObject.class);
 
