@@ -33,9 +33,11 @@ public abstract class JongoTestCase {
     private static MongoResource mongoResource;
 
     private Jongo jongo;
+    private Mapper mapper;
 
     public JongoTestCase() {
-        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), new JacksonMapper.Builder().build());
+        this.mapper = new JacksonMapper.Builder().build();
+        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
     }
 
     @BeforeClass
@@ -61,6 +63,10 @@ public abstract class JongoTestCase {
         return jongo;
     }
 
+    protected Mapper getMapper() {
+        return mapper;
+    }
+
     protected void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {
         int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
         CommandResult buildInfo = getDatabase().command("buildInfo");
@@ -70,6 +76,7 @@ public abstract class JongoTestCase {
     }
 
     public void prepareMarshallingStrategy(Mapper mapper) {
+        this.mapper = mapper;
         this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
     }
 

@@ -16,9 +16,7 @@
 
 package org.jongo;
 
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import com.mongodb.*;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
@@ -28,12 +26,19 @@ import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Captor;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class InsertTest extends JongoTestCase {
 
     private MongoCollection collection;
+    @Captor
+    private org.mockito.ArgumentCaptor<DBObject> captor;
 
     @Before
     public void setUp() throws Exception {
@@ -156,12 +161,27 @@ public class InsertTest extends JongoTestCase {
 
         collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
 
-
         try {
             collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "other value"));
             Assert.fail();
         } catch (MongoException.DuplicateKey e) {
         }
+    }
 
+    @Test
+    public void shouldPreventLazyDBObjectToBeDeserialized() throws Exception {
+
+        Friend friend = new Friend(ObjectId.get(), "John");
+        DBCollection mockedDBCollection = mock(DBCollection.class);
+        ObjectIdUpdater<Friend> objectIdUpdater = mock(ObjectIdUpdater.class);
+        ObjectId deserializedOid = ObjectId.get();
+        when(objectIdUpdater.getId(friend)).thenReturn(deserializedOid);
+        Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
+
+        insert.save(friend);
+
+        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.NONE));
+        DBObject value = captor.getValue();
+        assertThat(value.get("_id")).isEqualTo(deserializedOid);
     }
 }
