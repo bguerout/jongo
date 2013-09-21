@@ -92,14 +92,6 @@ public class QuestionsSpikeTest extends JongoTestCase {
     }
 
     @Test
-    //https://github.com/bguerout/jongo/issues/147
-    public void canFindSaveAnObjectNode() throws Exception {
-        collection.insert("{friends:1}");
-        ObjectNode value = collection.findOne().as(ObjectNode.class);
-        collection.save(value);
-    }
-
-    @Test
     //https://groups.google.com/forum/?fromgroups#!topic/jongo-user/p9CEKnkKX9Q
     public void canUpdateIntoAnArray() throws Exception {
 

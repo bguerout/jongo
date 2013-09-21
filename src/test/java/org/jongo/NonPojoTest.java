@@ -16,6 +16,9 @@
 
 package org.jongo;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.bson.types.ObjectId;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -73,6 +76,33 @@ public class NonPojoTest extends JongoTestCase {
         map.put("name", "Robert");
 
         collection.save(map);
+
+        Map result = collection.findOne().as(Map.class);
+        assertThat(result.get("name")).isEqualTo("Robert");
+        assertThat(result.get("_id")).isNotNull();
+    }
+
+    @Test
+    public void canSaveANewJsonNode() throws Exception {
+        JsonNodeFactory factory = new JsonNodeFactory(false);
+        ObjectNode node = factory.objectNode();
+        node.put("test", "value");
+
+        collection.save(node);
+
+        JsonNode result = collection.findOne().as(JsonNode.class);
+        assertThat(result.get("_id")).isNotNull();
+        assertThat(result.get("test").asText()).isEqualTo("value");
+    }
+
+    @Test
+    public void canFindAndSaveJsonNode() throws Exception {
+
+        collection.insert("{name:'John'}");
+        ObjectNode node = collection.findOne().as(ObjectNode.class);
+        node.put("name", "Robert");
+
+        collection.save(node);
 
         Map result = collection.findOne().as(Map.class);
         assertThat(result.get("name")).isEqualTo("Robert");
