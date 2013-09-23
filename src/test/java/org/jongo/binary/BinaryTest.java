@@ -2,7 +2,6 @@ package org.jongo.binary;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.BasicDBObject;
-import lombok.EqualsAndHashCode;
 import org.bson.types.Binary;
 import org.jongo.MongoCollection;
 import org.jongo.util.JongoTestCase;
@@ -15,24 +14,16 @@ import static org.junit.Assert.assertNull;
 
 public class BinaryTest extends JongoTestCase {
 
-    @EqualsAndHashCode(of = {"data", "type"})
-    private static class FriendId extends Binary {
-        public FriendId(byte[] data) {
-            super(data);
-        }
-    }
-
-    @EqualsAndHashCode(of = {"id", "name"})
     private static class Friend {
         @JsonProperty("_id")
         private Binary id;
         private String name;
 
-        public FriendId getId() {
-            return new FriendId(id.getData());
+        public Binary getId() {
+            return new Binary(id.getData());
         }
 
-        public void setId(FriendId id) {
+        public void setId(Binary id) {
             this.id = id;
         }
 
@@ -43,16 +34,36 @@ public class BinaryTest extends JongoTestCase {
         public void setName(String name) {
             this.name = name;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Friend)) return false;
+
+            Friend friend = (Friend) o;
+
+            if (id != null ? !id.equals(friend.id) : friend.id != null) return false;
+            if (name != null ? !name.equals(friend.name) : friend.name != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id != null ? id.hashCode() : 0;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            return result;
+        }
     }
 
     private Friend friend;
-    private FriendId friendId;
+    private Binary friendId;
     private MongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
         friend = new Friend();
-        friendId = new FriendId("jongo".getBytes());
+        friendId = new Binary("jongo".getBytes());
         friend.setId(friendId);
         friend.setName("jongo");
 
@@ -80,7 +91,7 @@ public class BinaryTest extends JongoTestCase {
     @Test
     public void testSave() throws Exception {
         Friend expected = new Friend();
-        FriendId expectedId = new FriendId("friend2".getBytes());
+        Binary expectedId = new Binary("friend2".getBytes());
         expected.setId(expectedId);
         expected.setName("friend2");
         collection.save(expected);
@@ -101,7 +112,7 @@ public class BinaryTest extends JongoTestCase {
     @Test
     public void testInsert() throws Exception {
         Friend expected = new Friend();
-        FriendId expectedId = new FriendId("friend2".getBytes());
+        Binary expectedId = new Binary("friend2".getBytes());
         expected.setId(expectedId);
         expected.setName("friend2");
         collection.insert("#", expected);
