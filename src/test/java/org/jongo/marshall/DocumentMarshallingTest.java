@@ -122,7 +122,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'timestamp' : { '$timestamp' : { '$t' : 1 , '$i' : 2}}"));
+        assertHasBeenPersistedAs(jsonify("'timestamp' : { '$timestamp' : { 't' : 1 , 'i' : 2}}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.timestamp).isEqualTo(new BSONTimestamp(1, 2));
     }
@@ -131,11 +131,11 @@ public class DocumentMarshallingTest extends JongoTestCase {
     public void canHandleISODate() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
-        type.date = new Date(0);
+        type.date = new Date(123);
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'date' : { '$date' : 0}"));
+        assertHasBeenPersistedAs(jsonify("'date' : { '$date' : 123}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.date).isEqualTo(new Date(0));
     }
@@ -180,13 +180,13 @@ public class DocumentMarshallingTest extends JongoTestCase {
     public void canHandleMapWithPrimitiveType() throws Exception {
 
         Map<String, Date> strings = new HashMap<String, Date>();
-        strings.put("key", new Date(0));
+        strings.put("key", new Date(456));
         BSONPrimitiveType type = new BSONPrimitiveType();
         type.mapWithDates = strings;
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'mapWithDates' : { 'key' : { '$date' : 0}}"));
+        assertHasBeenPersistedAs(jsonify("'mapWithDates' : { 'key' : { '$date' : 456}}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.mapWithDates).includes(entry("key", new Date(0)));
     }

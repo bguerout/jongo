@@ -75,7 +75,7 @@
     </prerequisites>
 
     <properties>
-        <mongo.version>[2.9.0,2.99)</mongo.version>
+        <mongo.version>[2.11.1,2.99)</mongo.version>
         <jackson.version>2.2.3</jackson.version>
         <bson4jackson.version>2.2.0</bson4jackson.version>
     </properties>
