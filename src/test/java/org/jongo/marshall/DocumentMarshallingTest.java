@@ -137,7 +137,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         assertHasBeenPersistedAs(jsonify("'date' : { '$date' : 123}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.date).isEqualTo(new Date(0));
+        assertThat(result.date).isEqualTo(new Date(123));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         assertHasBeenPersistedAs(jsonify("'mapWithDates' : { 'key' : { '$date' : 456}}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.mapWithDates).includes(entry("key", new Date(0)));
+        assertThat(result.mapWithDates).includes(entry("key", new Date(456)));
     }
 
     @Test
@@ -259,7 +259,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         assertHasBeenPersistedAs(jsonify("'dateList' : [ { '$date' : 123}]"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.dateList).contains(new Date(0));
+        assertThat(result.dateList).contains(new Date(123));
     }
 
     @Test
