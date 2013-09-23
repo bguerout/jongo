@@ -20,11 +20,11 @@ import com.google.common.collect.Lists;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
+import org.jongo.RawResultHandler;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.model.Gender;
 import org.jongo.model.LinkedFriend;
-import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -106,7 +106,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.insert("{name:{1:'John'}}");
 
         /* when */
-        DBObject result = collection.findOne("{name.#:'John'}", 1).map(new DBObjectResultHandler());
+        DBObject result = collection.findOne("{name.#:'John'}", 1).map(new RawResultHandler<DBObject>());
 
         /* then */
         assertThat(result).isNotNull();

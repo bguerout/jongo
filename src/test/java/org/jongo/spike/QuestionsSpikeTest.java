@@ -16,12 +16,14 @@
 
 package org.jongo.spike;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
+import org.jongo.util.JSONResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -73,6 +75,33 @@ public class QuestionsSpikeTest extends JongoTestCase {
         collection.update("{}").with("{$push:{friends:" + robert.toString() + "}}");
 
         assertThat(collection.count("{ 'friends.name' : 'Robert'}")).isEqualTo(1);
+    }
+
+    @Test
+    // https://groups.google.com/forum/?fromgroups=#!topic/jongo-user/UVOEmP-ql_k
+    public void canHandleElemMatchOperator() throws Exception {
+
+        assumeThatMongoVersionIsGreaterThan("2.1.1");
+
+        collection.insert("{version : 1, days:[{name:'monday'},{name:'sunday'}]}");
+        collection.insert("{version : 2, days:[{name:'wednesday'}]}");
+
+        String monday = collection.findOne("{version:1}").projection("{days:{$elemMatch:{name: 'monday'}}}").map(new JSONResultHandler());
+
+        assertThat(monday).contains("\"days\" : [ { \"name\" : \"monday\"}]");
+    }
+
+    @Test
+    //https://groups.google.com/forum/?fromgroups#!topic/jongo-user/p9CEKnkKX9Q
+    public void canUpdateIntoAnArray() throws Exception {
+
+        collection.insert("{friends:[{name:'Robert'},{name:'Peter'}]}");
+
+        collection.update("{ 'friends.name' : 'Peter' }").with("{ $set : { 'friends.$' : #} }", new Friend("John"));
+
+        Friends friends = collection.findOne().as(Friends.class);
+
+        assertThat(friends.friends).onProperty("name").containsExactly("Robert", "John");
     }
 
     private static class Friends {

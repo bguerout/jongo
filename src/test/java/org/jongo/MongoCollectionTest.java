@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class MongoCollectionTest extends JongoTestCase {
 
@@ -35,20 +34,12 @@ public class MongoCollectionTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createEmptyCollection("friends");
+        collection = createEmptyCollection("friends").withWriteConcern(WriteConcern.SAFE);
     }
 
     @After
     public void tearDown() throws Exception {
         dropCollection("friends");
-    }
-
-    @Test
-    public void canCreateACollection() throws Exception {
-
-        MongoCollection mongoCollection = new MongoCollection(null, mock(Mapper.class));
-
-        assertThat(mongoCollection).isNotNull();
     }
 
     @Test
@@ -72,10 +63,10 @@ public class MongoCollectionTest extends JongoTestCase {
     @Test
     public void createIndexWithUniqueAsOption() {
         collection.ensureIndex("{name: 1}", "{unique: true}");
-        collection.save(new Friend("John"), WriteConcern.SAFE);
+        collection.save(new Friend("John"));
 
         try {
-            collection.save(new Friend("John"), WriteConcern.SAFE);
+            collection.save(new Friend("John"));
             Assert.fail();
         } catch (DuplicateKey e) {
         }
@@ -101,13 +92,13 @@ public class MongoCollectionTest extends JongoTestCase {
 
         //given
         collection.ensureIndex("{name: 1}", "{unique: true}");
-        collection.save(new Friend("John"), WriteConcern.SAFE);
+        collection.save(new Friend("John"));
 
         //when
         collection.dropIndex("{name: 1}");
 
         //then
-        collection.save(new Friend("John"), WriteConcern.SAFE);
+        collection.save(new Friend("John"));
     }
 
     @Test
@@ -116,13 +107,13 @@ public class MongoCollectionTest extends JongoTestCase {
         //given
         collection.ensureIndex("{name: 1}", "{unique: true}");
         collection.ensureIndex("{way: 1}", "{unique: true}");
-        collection.save(new Friend("John", "way"), WriteConcern.SAFE);
+        collection.save(new Friend("John", "way"));
 
         //when
         collection.dropIndexes();
 
         //then
-        collection.save(new Friend("John", "way"), WriteConcern.SAFE);
+        collection.save(new Friend("John", "way"));
     }
 
     @Test

@@ -16,11 +16,13 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
@@ -66,6 +68,21 @@ public class JacksonMapperTest {
     }
 
     @Test
+    public void canSetVisibilityChecker() throws Exception {
+
+        PojoWithGetter robert = new PojoWithGetter("Robert", "Sax");
+
+        Mapper mapper = new JacksonMapper.Builder()
+                .setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.PUBLIC_ONLY).withFieldVisibility(JsonAutoDetect.Visibility.NONE))
+                .build();
+
+        BsonDocument document = mapper.getMarshaller().marshall(robert);
+
+        assertThat(document.toString()).isEqualTo("{ \"firstName\" : \"Robert\"}");
+    }
+
+
+    @Test
     public void canAddModule() throws Exception {
 
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
@@ -100,11 +117,15 @@ public class JacksonMapperTest {
     public void canAddJongoInterfaces() throws Exception {
 
         ObjectIdUpdater objectIdUpdater = new ObjectIdUpdater() {
-            public boolean canSetObjectId(Object target) {
+            public boolean mustGenerateObjectId(Object pojo) {
                 return false;
             }
 
-            public void setDocumentGeneratedId(Object target, ObjectId id) {
+            public void setObjectId(Object newPojo, ObjectId id) {
+            }
+
+            public Object getId(Object pojo) {
+                return null;
             }
         };
 
@@ -134,6 +155,20 @@ public class JacksonMapperTest {
         @Override
         public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             return "Doe";
+        }
+    }
+
+    private static class PojoWithGetter {
+        private String firstName;
+        private String lastName;
+
+        private PojoWithGetter(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public String getFirstName() {
+            return firstName;
         }
     }
 

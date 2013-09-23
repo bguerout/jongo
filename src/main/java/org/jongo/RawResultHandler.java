@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.id;
+package org.jongo;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import org.bson.types.ObjectId;
+import com.mongodb.DBObject;
 
-import java.io.IOException;
+public class RawResultHandler<T extends DBObject> implements ResultHandler<T> {
 
-public class ObjectIdSerializer extends JsonSerializer<String> {
+    private final Class<T> clazz;
 
-    @Override
-    public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeObject(new ObjectId(value));
+    public RawResultHandler(Class<T> clazz) {
+        this.clazz = clazz;
+    }
+
+    public RawResultHandler() {
+        this((Class<T>) DBObject.class);
+    }
+
+    public T map(DBObject result) {
+        return clazz.cast(result);
+    }
+
+    public static <T extends DBObject> RawResultHandler<T> asRaw(Class<T> clazz) {
+        return new RawResultHandler<T>(clazz);
     }
 }

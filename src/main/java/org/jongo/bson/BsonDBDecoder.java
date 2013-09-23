@@ -17,11 +17,12 @@
 package org.jongo.bson;
 
 import com.mongodb.*;
+import com.mongodb.gridfs.GridFSDBFile;
 import org.bson.LazyBSONCallback;
 
 import java.util.Iterator;
 
-public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
+public class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
     public final static DBDecoderFactory FACTORY = new BsonDBDecoderFactory();
 
@@ -42,14 +43,20 @@ public final class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
     private static class BsonDBCallback extends LazyDBCallback {
 
         private final DB db;
+        private final DBCollection collection;
 
         public BsonDBCallback(DBCollection collection) {
             super(collection);
+            this.collection = collection;
             this.db = collection == null ? null : collection.getDB();
         }
 
         @Override
         public Object createObject(byte[] data, int offset) {
+            if (GridFSDBFile.class.equals(collection.getObjectClass())) {
+                return DefaultDBDecoder.FACTORY.create().decode(data, collection);
+            }
+
             DBObject dbo = new RelaxedLazyDBObject(data, new LazyBSONCallback());
 
             Iterator it = dbo.keySet().iterator();

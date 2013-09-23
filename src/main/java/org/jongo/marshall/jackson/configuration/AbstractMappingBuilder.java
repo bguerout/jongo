@@ -17,6 +17,7 @@
 package org.jongo.marshall.jackson.configuration;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
@@ -26,29 +27,30 @@ import java.util.List;
 
 public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>> {
 
-    private final SimpleModule module;
+    private final SimpleModule module = new SimpleModule("jongo-custom-module");
 
-    private final List<MapperModifier> modifiers;
     private final ObjectMapper mapper;
+    private final List<MapperModifier> modifiers;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
+    private MapperModifier visibilityModifier = new VisibilityModifier();
 
     public AbstractMappingBuilder() {
         this(new ObjectMapper(MongoBsonFactory.createFactory()));
         registerModule(new BsonModule());
-        addModifier(new StandardModifier());
+        addModifier(new PropertyModifier());
     }
 
     public AbstractMappingBuilder(ObjectMapper mapper) {
         this.mapper = mapper;
-        this.module = new SimpleModule("jongo-custom-module");
         this.modifiers = new ArrayList<MapperModifier>();
         registerModule(module);
     }
 
     protected abstract T getBuilderInstance();
 
-    protected Mapping innerMapping() {
+    protected Mapping createMapping() {
+        addModifier(visibilityModifier);
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
         }
@@ -83,9 +85,18 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
         return getBuilderInstance();
     }
 
-    public T withView(final Class<?> viewClass) {
+    public T withView(Class<?> viewClass) {
         setReaderCallback(new ViewReaderCallback(viewClass));
         setWriterCallback(new ViewWriterCallback(viewClass));
+        return getBuilderInstance();
+    }
+
+    public T setVisibilityChecker(final VisibilityChecker<?> visibilityChecker) {
+        visibilityModifier = new MapperModifier() {
+            public void modify(ObjectMapper mapper) {
+                mapper.setVisibilityChecker(visibilityChecker);
+            }
+        };
         return getBuilderInstance();
     }
 

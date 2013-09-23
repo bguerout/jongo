@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Mark LEWIS <mark at fortressofgeekdom dot org>
+ * Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

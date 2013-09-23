@@ -25,7 +25,7 @@ import org.jongo.query.QueryFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Distinct {
+public class Distinct {
     private final DBCollection dbCollection;
     private final Unmarshaller unmarshaller;
     private final String key;

@@ -63,10 +63,11 @@ class BenchUtil {
         MongoCollection collection = getCollectionFromJongo(new JacksonMapper.Builder().build());
         collection.drop();
         for (int i = 0; i < nbDocuments; i++) {
-            collection.save(createFriend(i), WriteConcern.SAFE);
+            collection.withWriteConcern(WriteConcern.SAFE).save(createFriend(i));
         }
-        if (collection.count() < nbDocuments) {
-            System.exit(1);
+        long count = collection.count();
+        if (count < nbDocuments) {
+            throw new RuntimeException("Not enough documents have been saved into db : expected " + nbDocuments + "/ saved: " + count);
         }
     }
 }

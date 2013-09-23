@@ -16,19 +16,16 @@
 
 package org.jongo;
 
-import com.mongodb.CommandResult;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 public class AggregateTest extends JongoTestCase {
 
@@ -124,13 +121,5 @@ public class AggregateTest extends JongoTestCase {
 
         private Article() {
         }
-    }
-
-    private void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {
-        int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
-        CommandResult buildInfo = getDatabase().command("buildInfo");
-        String version = (String) buildInfo.get("version");
-        int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
-        assumeTrue(currentVersion >= expectedVersionAsInt);
     }
 }

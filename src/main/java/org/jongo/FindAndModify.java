@@ -24,7 +24,7 @@ import org.jongo.query.QueryFactory;
 
 import static org.jongo.ResultHandlerFactory.newMapper;
 
-public final class FindAndModify {
+public class FindAndModify {
 
     private final DBCollection collection;
     private final Unmarshaller unmarshaller;
@@ -64,7 +64,7 @@ public final class FindAndModify {
         return result == null ? null : resultHandler.map(result);
     }
 
-    public FindAndModify fields(String fields) {
+    public FindAndModify projection(String fields) {
         this.fields = queryFactory.createQuery(fields);
         return this;
     }

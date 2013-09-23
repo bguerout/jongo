@@ -28,7 +28,7 @@ import java.util.List;
 
 import static org.jongo.ResultHandlerFactory.newMapper;
 
-public final class Aggregate {
+public class Aggregate {
 
     private final DB db;
     private final String collectionName;

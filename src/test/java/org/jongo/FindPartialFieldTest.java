@@ -47,8 +47,18 @@ public class FindPartialFieldTest extends JongoTestCase {
         collection.save(friend);
 
         /* when */
-        collection.find("{name:'John'}").fields("{name:1}").map(new AssertionResultHandler());
+        collection.find("{name:'John'}").projection("{name:1}").map(new AssertionResultHandler());
     }
+
+    @Test
+    public void canFindWithProjectionParams() throws Exception {
+        /* given */
+        collection.save(friend);
+
+        /* when */
+        collection.find("{name:'John'}").projection("{name:#}", 1).map(new AssertionResultHandler());
+    }
+
 
     @Test
     public void canFindOne() throws Exception {
@@ -56,9 +66,32 @@ public class FindPartialFieldTest extends JongoTestCase {
         collection.save(friend);
 
         /* when */
-        Boolean result = collection.findOne("{name:'John'}").fields("{name:1}").map(new AssertionResultHandler());
+        Boolean result = collection.findOne("{name:'John'}").projection("{name:1}").map(new AssertionResultHandler());
 
         assertThat(result).isTrue();
+    }
+
+    @Test
+    public void canFindOneWithProjectionParams() throws Exception {
+        /* given */
+        collection.save(friend);
+
+        /* when */
+        Boolean result = collection.findOne("{name:'John'}").projection("{name:#}", 1).map(new AssertionResultHandler());
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldIgnoreNullProjection() throws Exception {
+        /* given */
+        collection.save(friend);
+
+        /* when */
+        Friend result = collection.findOne("{name:'John'}").projection(null).as(Friend.class);
+
+        assertThat(friend.getName()).isEqualTo("John");
+        assertThat(friend.getAddress()).isEqualTo("22 Wall Street Avenue");
     }
 
     private static class AssertionResultHandler implements ResultHandler<Boolean> {

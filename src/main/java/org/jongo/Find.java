@@ -19,22 +19,25 @@ package org.jongo;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.ReadPreference;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
 import static org.jongo.ResultHandlerFactory.newMapper;
 
-public final class Find {
+public class Find {
 
     private final DBCollection collection;
+    private final ReadPreference readPreference;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final Query query;
-    private Query fields, sort;
+    private Query fields, sort, hint;
     private Integer limit, skip;
 
-    Find(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+        this.readPreference = readPreference;
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryFactory = queryFactory;
@@ -46,7 +49,7 @@ public final class Find {
     }
 
     public <T> Iterable<T> map(ResultHandler<T> resultHandler) {
-        DBCursor cursor = collection.find(query.toDBObject(), getFieldsAsDBObject());
+        DBCursor cursor = new DBCursor(collection, query.toDBObject(), getFieldsAsDBObject(), readPreference);
         addOptionsOn(cursor);
         return new MongoIterator<T>(cursor, resultHandler);
     }
@@ -59,10 +62,18 @@ public final class Find {
         if (sort != null) {
             cursor.sort(sort.toDBObject());
         }
+        if (hint != null) {
+            cursor.hint(hint.toDBObject());
+        }
     }
 
-    public Find fields(String fields) {
+    public Find projection(String fields) {
         this.fields = queryFactory.createQuery(fields);
+        return this;
+    }
+
+    public Find projection(String fields, Object... parameters) {
+        this.fields = queryFactory.createQuery(fields, parameters);
         return this;
     }
 
@@ -81,7 +92,13 @@ public final class Find {
         return this;
     }
 
+    public Find hint(final String hint) {
+        this.hint = queryFactory.createQuery(hint);
+        return this;
+    }
+
     private DBObject getFieldsAsDBObject() {
         return fields == null ? null : fields.toDBObject();
     }
+
 }

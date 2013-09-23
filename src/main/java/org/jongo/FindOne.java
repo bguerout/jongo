@@ -18,23 +18,26 @@ package org.jongo;
 
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.ReadPreference;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
 import static org.jongo.ResultHandlerFactory.newMapper;
 
-public final class FindOne {
+public class FindOne {
 
     private final Unmarshaller unmarshaller;
     private final DBCollection collection;
+    private final ReadPreference readPreference;
     private final Query query;
     private Query fields;
     private final QueryFactory queryFactory;
 
-    FindOne(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    FindOne(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
+        this.readPreference = readPreference;
         this.queryFactory = queryFactory;
         this.query = this.queryFactory.createQuery(query, parameters);
     }
@@ -44,12 +47,17 @@ public final class FindOne {
     }
 
     public <T> T map(ResultHandler<T> resultHandler) {
-        DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject());
+        DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject(), readPreference);
         return result == null ? null : resultHandler.map(result);
     }
 
-    public FindOne fields(String fields) {
+    public FindOne projection(String fields) {
         this.fields = queryFactory.createQuery(fields);
+        return this;
+    }
+
+    public FindOne projection(String fields, Object... parameters) {
+        this.fields = queryFactory.createQuery(fields, parameters);
         return this;
     }
 

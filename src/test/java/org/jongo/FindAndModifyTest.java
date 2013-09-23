@@ -19,7 +19,6 @@ package org.jongo;
 import com.mongodb.DBObject;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
-import org.jongo.util.DBObjectResultHandler;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -65,7 +64,7 @@ public class FindAndModifyTest extends JongoTestCase {
         collection.save(new Friend("John", "22 Wall Street Avenue"));
 
         /* when */
-        DBObject dbo = collection.findAndModify("{name:#}", "John").with("{$set: {address: #}}", "A better place").map(new DBObjectResultHandler());
+        DBObject dbo = collection.findAndModify("{name:#}", "John").with("{$set: {address: #}}", "A better place").map(new RawResultHandler<DBObject>());
 
         /* then */
         assertThat(dbo.get("name")).isEqualTo("John");

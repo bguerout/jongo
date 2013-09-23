@@ -16,7 +16,7 @@
 
 package org.jongo.marshall;
 
-public final class MarshallingException extends RuntimeException {
+public class MarshallingException extends RuntimeException {
 
     public MarshallingException(String message) {
         super(message);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.id;
+package org.jongo.marshall.jackson.oid;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;

@@ -76,7 +76,7 @@ public class UpdateTest extends JongoTestCase {
         collection.save(new Friend("John"));
 
         /* when */
-        WriteResult writeResult = collection.update("{name:'John'}").multi().concern(WriteConcern.SAFE).with("{$unset:{name:1}}");
+        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
         Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
@@ -122,12 +122,40 @@ public class UpdateTest extends JongoTestCase {
     public void canUpsertWithWriteConcern() throws Exception {
 
         /* when */
-        WriteResult writeResult = collection.update("{}").upsert().concern(WriteConcern.SAFE).with("{$set:{name:'John'}}");
+        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).update("{}").upsert().with("{$set:{name:'John'}}");
 
         /* then */
         Friend john = collection.findOne("{name:'John'}").as(Friend.class);
         assertThat(john.getName()).isEqualTo("John");
         assertThat(writeResult).isNotNull();
         assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
+    }
+
+    @Test
+    public void canPartiallyUdpateWithAPreexistingDocument() throws Exception {
+        Friend friend = new Friend("John", "123 Wall Street");
+        collection.save(friend);
+        Friend preexistingDocument = new Friend(friend.getId(), "Johnny");
+
+        collection.update("{name:'John'}").with(preexistingDocument);
+
+        Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
+        assertThat(johnny).isNotNull();
+        assertThat(johnny.getName()).isEqualTo("Johnny");
+        assertThat(johnny.getAddress()).isEqualTo("123 Wall Street");
+    }
+
+    @Test
+    public void canPartiallyUdpateWithaNewDocument() throws Exception {
+        Friend friend = new Friend("John", "123 Wall Street");
+        collection.save(friend);
+        Friend newDocument = new Friend("Johnny");
+
+        collection.update("{name:'John'}").with(newDocument);
+
+        Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
+        assertThat(johnny).isNotNull();
+        assertThat(johnny.getName()).isEqualTo("Johnny");
+        assertThat(johnny.getAddress()).isEqualTo("123 Wall Street");
     }
 }

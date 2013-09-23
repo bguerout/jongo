@@ -14,13 +14,34 @@
  * limitations under the License.
  */
 
-package org.jongo.util;
+package org.jongo.model;
 
-import com.mongodb.DBObject;
-import org.jongo.ResultHandler;
+import org.jongo.marshall.jackson.oid.Id;
 
-public class DBObjectResultHandler implements ResultHandler<DBObject> {
-    public DBObject map(DBObject result) {
-        return result;
+public class ExternalFriend {
+
+    @Id
+    private int id;
+    private String name;
+
+    private ExternalFriend() {
+        //jackson
+    }
+
+    public ExternalFriend(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

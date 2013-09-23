@@ -16,20 +16,33 @@
 
 package org.jongo.util;
 
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
+import org.junit.BeforeClass;
 
 import java.net.UnknownHostException;
 
+import static org.junit.Assume.assumeTrue;
+
 public abstract class JongoTestCase {
 
+    private static MongoResource mongoResource;
+
     private Jongo jongo;
+    private Mapper mapper;
 
     public JongoTestCase() {
-        this.jongo = new Jongo(findDatabase(), new JacksonMapper.Builder().build());
+        this.mapper = new JacksonMapper.Builder().build();
+        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
+    }
+
+    @BeforeClass
+    public static void startMongo() throws Exception {
+        mongoResource = new MongoResource();
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
@@ -46,15 +59,25 @@ public abstract class JongoTestCase {
         return jongo.getDatabase();
     }
 
-    public void prepareMarshallingStrategy(Mapper mapper) {
-        this.jongo = new Jongo(findDatabase(), mapper);
+    protected Jongo getJongo() {
+        return jongo;
     }
 
-    private static DB findDatabase() {
-        try {
-            return MongoHolder.getInstance().getDB("jongo");
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("Unable to reach mongo database test instance", e);
-        }
+    protected Mapper getMapper() {
+        return mapper;
     }
+
+    protected void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {
+        int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
+        CommandResult buildInfo = getDatabase().command("buildInfo");
+        String version = (String) buildInfo.get("version");
+        int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
+        assumeTrue(currentVersion >= expectedVersionAsInt);
+    }
+
+    public void prepareMarshallingStrategy(Mapper mapper) {
+        this.mapper = mapper;
+        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
+    }
+
 }

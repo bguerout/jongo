@@ -17,7 +17,7 @@
 package org.jongo.bson;
 
 import com.mongodb.DBObject;
-import com.mongodb.LazyWriteableDBObject;
+import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
 import org.bson.io.BSONByteBuffer;
 
@@ -38,7 +38,7 @@ class LazyBsonDocument implements BsonDocument {
     }
 
     public DBObject toDBObject() {
-        return new LazyWriteableDBObject(bytes, new LazyBSONCallback());
+        return new LazyDBObject(bytes, new LazyBSONCallback());
     }
 
     @Override

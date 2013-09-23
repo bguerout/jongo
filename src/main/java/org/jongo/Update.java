@@ -16,31 +16,26 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import com.mongodb.*;
+import org.bson.LazyBSONObject;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-public final class Update {
+public class Update {
 
     private final DBCollection collection;
     private final Query query;
     private final QueryFactory queryFactory;
 
-    private WriteConcern concern;
+    private WriteConcern writeConcern;
     private boolean upsert = false;
     private boolean multi = false;
 
-    Update(DBCollection collection, QueryFactory queryFactory, String query, Object... parameters) {
+    Update(DBCollection collection, WriteConcern writeConcern, QueryFactory queryFactory, String query, Object... parameters) {
         this.collection = collection;
+        this.writeConcern = writeConcern;
         this.queryFactory = queryFactory;
         this.query = createQuery(query, parameters);
-    }
-
-    private WriteConcern determineWriteConcern() {
-        return concern == null ? collection.getWriteConcern() : concern;
     }
 
     public WriteResult with(String modifier) {
@@ -48,14 +43,29 @@ public final class Update {
     }
 
     public WriteResult with(String modifier, Object... parameters) {
-        DBObject dbQuery = query.toDBObject();
-        DBObject dbModifier = queryFactory.createQuery(modifier, parameters).toDBObject();
-        return collection.update(dbQuery, dbModifier, upsert, multi, determineWriteConcern());
+        Query updateQuery = queryFactory.createQuery(modifier, parameters);
+        return collection.update(this.query.toDBObject(), updateQuery.toDBObject(), upsert, multi, writeConcern);
     }
 
-    public Update concern(WriteConcern concern) {
-        this.concern = concern;
-        return this;
+    public WriteResult with(Object pojo) {
+
+        DBObject updateDbo = queryFactory.createQuery("{$set:#}", pojo).toDBObject();
+        removeIdField(updateDbo);
+        return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, writeConcern);
+    }
+
+    private void removeIdField(DBObject updateDbo) {
+        DBObject pojoAsDbo = (DBObject) updateDbo.get("$set");
+        if (pojoAsDbo.containsField("_id")) {
+            // Need to materialize lazy objects which are read only
+            if (pojoAsDbo instanceof LazyBSONObject) {
+                BasicDBObject expanded = new BasicDBObject();
+                expanded.putAll(pojoAsDbo);
+                updateDbo.put("$set", expanded);
+                pojoAsDbo = expanded;
+            }
+            pojoAsDbo.removeField("_id");
+        }
     }
 
     public Update upsert() {

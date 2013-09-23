@@ -14,33 +14,18 @@
  * limitations under the License.
  */
 
-package org.jongo.query;
+package org.jongo.marshall.jackson.oid;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-class JsonQuery implements Query {
+import java.lang.annotation.Retention;
 
-    private final DBObject dbo;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-    public JsonQuery(String query) {
-        this.dbo = marshallQuery(query);
-    }
+@Retention(RUNTIME)
+@JacksonAnnotationsInside
 
-    private DBObject marshallQuery(String query) {
-        try {
-            return (DBObject) JSON.parse(query);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(query + " cannot be parsed", e);
-        }
-    }
-
-    public DBObject toDBObject() {
-        return dbo;
-    }
-
-    @Override
-    public String toString() {
-        return dbo.toString();
-    }
+@JsonProperty("_id")
+public @interface Id {
 }

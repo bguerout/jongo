@@ -30,14 +30,13 @@ public class SaveBench extends SimpleBenchmark {
 
     @Param({"1"})
     int size = 1;
-    WriteConcern concern = WriteConcern.SAFE;
 
     private DBCollection dbCollection;
     private MongoCollection bsonCollection;
 
     protected void setUp() throws Exception {
 
-        bsonCollection = getCollectionFromJongo(new JacksonMapper.Builder().build());
+        bsonCollection = getCollectionFromJongo(new JacksonMapper.Builder().build()).withWriteConcern(WriteConcern.SAFE);
         dbCollection = getCollectionFromDriver();
 
         bsonCollection.drop();
@@ -46,7 +45,7 @@ public class SaveBench extends SimpleBenchmark {
     public void timeDriverSave(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                dbCollection.save(asDBObject(createFriend(reps + j)), concern);
+                dbCollection.save(asDBObject(createFriend(reps + j)));
             }
         }
     }
@@ -54,7 +53,7 @@ public class SaveBench extends SimpleBenchmark {
     public void timeJongoSave(int reps) {
         for (int i = 0; i < reps; i++) {
             for (int j = 0; j < size; j++) {
-                bsonCollection.save(createFriend(reps + j), concern);
+                bsonCollection.save(createFriend(reps + j));
             }
         }
     }
