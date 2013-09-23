@@ -82,10 +82,6 @@ class BsonDeserializers extends SimpleDeserializers {
         @Override
         public Binary deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             Object object = jp.getEmbeddedObject();
-// Should this be enabled? getEmbeddedObject could return a UUID, will break now
-//            if (object instanceof UUID) {
-//                return new Binary((byte[]) object);
-//            }
             return new Binary((byte[]) object);
         }
     }

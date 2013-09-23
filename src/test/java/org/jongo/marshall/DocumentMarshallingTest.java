@@ -252,12 +252,12 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
         List<Date> dates = new ArrayList<Date>();
-        dates.add(new Date(0));
+        dates.add(new Date(123));
         type.dateList = dates;
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'dateList' : [ { '$date' : 0}]"));
+        assertHasBeenPersistedAs(jsonify("'dateList' : [ { '$date' : 123}]"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.dateList).contains(new Date(0));
     }
