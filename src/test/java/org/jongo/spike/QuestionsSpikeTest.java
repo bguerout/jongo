@@ -16,10 +16,12 @@
 
 package org.jongo.spike;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.MongoCollection;
+import org.jongo.ResultHandler;
+import org.jongo.bson.BsonDocument;
+import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
@@ -66,10 +68,10 @@ public class QuestionsSpikeTest extends JongoTestCase {
     @Test
     // https://groups.google.com/forum/?hl=fr&fromgroups#!topic/jongo-user/ga3n5_ybYm4
     public void pushANonBSONObject() throws Exception {
-        Friends friends = new Friends();
-        friends.add(new Friend("john"));
-        friends.add(new Friend("peter"));
-        collection.save(friends);
+        Party party = new Party();
+        party.with(new Friend("john"));
+        party.with(new Friend("peter"));
+        collection.save(party);
 
         DBObject robert = new JacksonEngine(Mapping.defaultMapping()).marshall(new Friend("Robert")).toDBObject();
         collection.update("{}").with("{$push:{friends:" + robert.toString() + "}}");
@@ -92,6 +94,27 @@ public class QuestionsSpikeTest extends JongoTestCase {
     }
 
     @Test
+    //https://groups.google.com/forum/?fromgroups#!topic/jongo-user/Nu4J1tK0kAM
+    public void canSelectOnlyAField() throws Exception {
+
+        final Unmarshaller unmarshaller = getMapper().getUnmarshaller();
+        Party party = new Party();
+        party.with(new Friend("John"));
+        party.with(new Friend("Peter"));
+        party.with(new Friend("Robert"));
+        collection.save(party);
+
+        Friend friend = collection.findOne("{friends.name:'Peter'}").projection("{friends.$:1}").map(new ResultHandler<Friend>() {
+            public Friend map(DBObject dbo) {
+                Party result = unmarshaller.unmarshall((BsonDocument) dbo, Party.class);
+                return result.friends.get(0);
+            }
+        });
+
+        assertThat(friend.getName()).isEqualTo("Peter");
+    }
+
+    @Test
     //https://groups.google.com/forum/?fromgroups#!topic/jongo-user/p9CEKnkKX9Q
     public void canUpdateIntoAnArray() throws Exception {
 
@@ -99,16 +122,16 @@ public class QuestionsSpikeTest extends JongoTestCase {
 
         collection.update("{ 'friends.name' : 'Peter' }").with("{ $set : { 'friends.$' : #} }", new Friend("John"));
 
-        Friends friends = collection.findOne().as(Friends.class);
+        Party party = collection.findOne().as(Party.class);
 
-        assertThat(friends.friends).onProperty("name").containsExactly("Robert", "John");
+        assertThat(party.friends).onProperty("name").containsExactly("Robert", "John");
     }
 
-    private static class Friends {
+    private static class Party {
         private List<Friend> friends = new ArrayList<Friend>();
 
-        public void add(Friend buddy) {
-            friends.add(buddy);
+        public void with(Friend friend) {
+            friends.add(friend);
         }
     }
 }
