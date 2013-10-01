@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.bson.types.Binary;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
 
@@ -33,10 +34,10 @@ class BsonDeserializers extends SimpleDeserializers {
 
     public BsonDeserializers() {
         addDeserializer(Date.class, new DateDeserializer());
-        NativeDeserializer nativeDeserializer = new NativeDeserializer();
         addDeserializer(MinKey.class, new MinKeyDeserializer());
         addDeserializer(MaxKey.class, new MaxKeyDeserializer());
-        addDeserializer(DBObject.class, nativeDeserializer);
+        addDeserializer(Binary.class, new BinaryDeserializer());
+        addDeserializer(DBObject.class, new NativeDeserializer());
     }
 
     private static class DateDeserializer extends JsonDeserializer<Date> {
@@ -74,6 +75,14 @@ class BsonDeserializers extends SimpleDeserializers {
         public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             String asString = jp.readValueAsTree().toString();
             return (T) JSON.parse(asString);
+        }
+    }
+
+    private static class BinaryDeserializer extends JsonDeserializer<Binary> {
+        @Override
+        public Binary deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            Object object = jp.getEmbeddedObject();
+            return new Binary((byte[]) object);
         }
     }
 }
