@@ -13,5 +13,5 @@ Queries can be written as String, results can be unmarshalled as any Java object
 
 Documentation available at <a href="http://www.jongo.org/">jongo.org</a>
 
-
+Java docs at https://jongo.ci.cloudbees.com/job/jongo-ci/site/apidocs/index.html
 
