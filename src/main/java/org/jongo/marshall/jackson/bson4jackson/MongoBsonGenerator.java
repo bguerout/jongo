@@ -20,6 +20,7 @@ import de.undercouch.bson4jackson.BsonConstants;
 import de.undercouch.bson4jackson.BsonGenerator;
 import de.undercouch.bson4jackson.io.ByteOrderUtil;
 import org.bson.types.BSONTimestamp;
+import org.bson.types.Binary;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
 
@@ -66,6 +67,17 @@ class MongoBsonGenerator extends BsonGenerator {
         _writeArrayFieldNameIfNeeded();
         _verifyValueWrite("write boolean");
         _buffer.putByte(_typeMarker, BsonConstants.TYPE_MAXKEY);
+        flushBuffer();
+    }
+
+    public void writeBinary(Binary binary) throws IOException {
+        _writeArrayFieldNameIfNeeded();
+        _verifyValueWrite("write binary");
+        byte[] bytes = binary.getData();
+        _buffer.putByte(_typeMarker, BsonConstants.TYPE_BINARY);
+        _buffer.putInt(bytes.length);
+        _buffer.putByte(binary.getType());
+        _buffer.putBytes(binary.getData());
         flushBuffer();
     }
 }
