@@ -23,7 +23,7 @@ import org.jongo.model.Fox;
 import org.jongo.model.Views;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jongo.util.BsonUtil.bsonify;
 
 public class JacksonViewTest {

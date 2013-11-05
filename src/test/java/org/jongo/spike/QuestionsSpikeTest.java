@@ -34,7 +34,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionsSpikeTest extends JongoTestCase {
 
@@ -124,7 +124,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
 
         Party party = collection.findOne().as(Party.class);
 
-        assertThat(party.friends).onProperty("name").containsExactly("Robert", "John");
+        assertThat(party.friends).extracting("name").containsExactly("Robert", "John");
     }
 
     private static class Party {
