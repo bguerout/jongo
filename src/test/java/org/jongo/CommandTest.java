@@ -19,7 +19,7 @@ package org.jongo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
-import org.fest.assertions.Condition;
+import org.assertj.core.api.Condition;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommandTest extends JongoTestCase {
 
@@ -89,7 +89,7 @@ public class CommandTest extends JongoTestCase {
                 .as(Location.class);
 
         assertThat(locations.size()).isEqualTo(1);
-        assertThat(locations.get(0).dis).satisfies(new Condition<Double>() {
+        assertThat(locations.get(0).dis).has(new Condition<Double>() {
             @Override
             public boolean matches(Double value) {
                 return value instanceof Double && value > 1.7E-5 && value < 1.8E-5;

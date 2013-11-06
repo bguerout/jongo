@@ -31,7 +31,7 @@ import org.junit.Test;
 import java.util.Iterator;
 
 import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jongo.Oid.withOid;
 
 public class FindTest extends JongoTestCase {

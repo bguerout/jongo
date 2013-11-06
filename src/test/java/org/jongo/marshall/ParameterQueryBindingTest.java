@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParameterQueryBindingTest extends JongoTestCase {
 

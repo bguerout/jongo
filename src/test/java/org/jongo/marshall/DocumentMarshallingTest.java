@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.MapEntry.entry;
 import static org.jongo.util.JSONResultHandler.jsonify;
 
 public class DocumentMarshallingTest extends JongoTestCase {
@@ -188,7 +188,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         assertHasBeenPersistedAs(jsonify("'mapWithDates' : { 'key' : { '$date' : 456}}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.mapWithDates).includes(entry("key", new Date(456)));
+        assertThat(result.mapWithDates).contains(entry("key", new Date(456)));
     }
 
     @Test
@@ -204,7 +204,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         assertHasBeenPersistedAs(jsonify("'friends' : { 'key' : { 'name' : 'robert'}}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-        assertThat(result.friends).includes(entry("key", robert));
+        assertThat(result.friends).contains(entry("key", robert));
     }
 
     @Test

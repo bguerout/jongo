@@ -28,7 +28,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static junit.framework.Assert.fail;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jongo.util.BsonUtil.bsonify;
 
 
