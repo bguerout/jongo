@@ -1,15 +1,12 @@
-<img src="https://github.com/bguerout/jongo/raw/gh-pages/assets/img/jongo.png" alt="Jongo logo" title="Jongo" align="right">
+<img src="https://github.com/bguerout/jongo/raw/gh-pages/assets/img/jongo_big.png" alt="Jongo logo" title="Jongo" align="right">
 
-# Jongo
+### Jongo, Query in Java as in Mongo shell
 
-Using Mongo with it's Java driver can be tricky: 
-<br>
-Queries have to be written using a criteria like style, results are untyped and have to be manually mapped. 
+**Faithful spirit**, Mongo query language isn't available in Java, Jongo fixes that. Copy/paste your queries to string.
 
-Jongo makes it easy: 
-<br>
-Queries can be written as String, results can be unmarshalled as any Java object.
+**Object oriented**, Save & find objects into & from collections. Use embedded Jackson marshalling or your own.
 
+**Wood solid**, As fast as Mongo Java driver. Open source, fully tested & made of rock solid librairies.
 
 Documentation available at <a href="http://www.jongo.org/">jongo.org</a>
 
