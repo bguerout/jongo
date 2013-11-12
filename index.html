@@ -395,6 +395,13 @@ collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
                               <h2 id="count">Command</h2>
                               <p>Behaviour pretty similar to Java driver <a href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
                               <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(GeoNearResult.class);</pre>
+                              <p>You can map command results to a single result field.</p>
+
+                              <pre class="prettyprint">
+jongo.runCommand("{geoNear: 'friends', near : [48.690,9.140]}")
+          .throwOnError()
+          .field("results")
+          .as(GeoNearResult.class);</pre>
 
                               <h2 id="aggregation">Aggregation</h2>
 
