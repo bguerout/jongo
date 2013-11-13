@@ -18,15 +18,18 @@ package org.jongo.util;
 
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 import de.flapdoodle.embed.mongo.Command;
-import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.io.IStreamProcessor;
 import de.flapdoodle.embed.process.io.NullProcessor;
 import de.flapdoodle.embed.process.runtime.Network;
 
@@ -54,22 +57,23 @@ public class MongoResource {
      */
     private static class EmbeddedMongo {
 
-        public static final Version DEFAULT_VERSION = Version.V2_2_4;
+        private static MongoClient instance = getInstance();
 
-        private static Mongo instance = getInstance();
-
-        private static Mongo getInstance() {
+        private static MongoClient getInstance() {
             try {
-
                 int port = RandomPortNumberGenerator.pickAvailableRandomEphemeralPortNumber();
+                IStreamProcessor output = new NullProcessor();
+
                 IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
                         .defaults(Command.MongoD)
-                        .processOutput(new ProcessOutput(new NullProcessor(), new NullProcessor(), new NullProcessor()))//no logs
+                        .processOutput(new ProcessOutput(output, output, output))
                         .build();
-                MongodStarter runtime = MongodStarter.getInstance(runtimeConfig);
-                MongodConfig config = new MongodConfig(DEFAULT_VERSION, port, Network.localhostIsIPv6());
-                MongodExecutable exe = runtime.prepare(config);
-                exe.start();
+                IMongodConfig mongodConfig = new MongodConfigBuilder()
+                        .version(Version.Main.PRODUCTION)
+                        .net(new Net(port, Network.localhostIsIPv6()))
+                        .build();
+
+                MongodStarter.getInstance(runtimeConfig).prepare(mongodConfig).start();
 
                 return createClient(port);
 
@@ -81,9 +85,9 @@ public class MongoResource {
 
     public static class LocalMongo {
 
-        public static Mongo instance = getInstance();
+        public static MongoClient instance = getInstance();
 
-        private static Mongo getInstance() {
+        private static MongoClient getInstance() {
             try {
                 return createClient(27017);
             } catch (Exception e) {
@@ -92,12 +96,8 @@ public class MongoResource {
         }
     }
 
-    /**
-     * We use deprecated Mongo constructor to ensure backward compatibility with old drivers during compatibility tests.
-     * see src/test/sh/run-tests-against-all-driver-versions.sh
-     */
-    private static Mongo createClient(int port) throws UnknownHostException {
-        Mongo mongo = new Mongo("127.0.0.1", port);
+    private static MongoClient createClient(int port) throws UnknownHostException {
+        MongoClient mongo = new MongoClient("127.0.0.1", port);
         mongo.setWriteConcern(WriteConcern.FSYNC_SAFE);
         return mongo;
     }
