@@ -16,6 +16,8 @@
 
 package org.jongo.util.compatibility;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import org.jongo.util.JongoTestCase;
 import org.junit.internal.builders.JUnit4Builder;
 import org.junit.runner.Runner;
@@ -27,6 +29,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 import org.reflections.Reflections;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +44,18 @@ public class CompatibilitySuite extends Suite {
 
     public CompatibilitySuite(Class<?> clazz) throws Throwable {
         super(clazz, new Class<?>[]{});
-        builder = new ContextRunnerBuilder(getParameter(getTestClass()));
-        Reflections reflections = new Reflections(SCANNED_PACKAGE);
-        Set<Class<? extends JongoTestCase>> classes = reflections.getSubTypesOf(JongoTestCase.class);
-        runners.addAll(builder.runners(clazz, new ArrayList<Class<?>>(classes)));
+        Set<Class<? extends JongoTestCase>> classes = new Reflections(SCANNED_PACKAGE).getSubTypesOf(JongoTestCase.class);
+        TestContext testContext = getParameter(getTestClass());
+        builder = new ContextRunnerBuilder(testContext);
+        runners.addAll(builder.runners(clazz, getTestClassesToRun(classes, testContext.getIgnoredTests())));
+    }
+
+    private List<Class<?>> getTestClassesToRun(Set<Class<? extends JongoTestCase>> classes, final List<Class<?>> ignoredLists) {
+        return new ArrayList<Class<?>>(Collections2.filter(classes, new Predicate<Class<? extends JongoTestCase>>() {
+            public boolean apply(@Nullable Class<? extends JongoTestCase> input) {
+                return !ignoredLists.contains(input);
+            }
+        }));
     }
 
     @Override

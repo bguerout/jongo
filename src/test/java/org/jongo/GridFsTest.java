@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.gridfs;
+package org.jongo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.gridfs.GridFS;

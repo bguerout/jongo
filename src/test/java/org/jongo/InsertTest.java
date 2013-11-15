@@ -16,7 +16,9 @@
 
 package org.jongo;
 
-import com.mongodb.*;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
@@ -26,19 +28,12 @@ import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Captor;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class InsertTest extends JongoTestCase {
 
     private MongoCollection collection;
-    @Captor
-    private org.mockito.ArgumentCaptor<DBObject> captor;
 
     @Before
     public void setUp() throws Exception {
@@ -166,41 +161,5 @@ public class InsertTest extends JongoTestCase {
             Assert.fail();
         } catch (MongoException.DuplicateKey e) {
         }
-    }
-
-    @Test
-    public void shouldPreventLazyDBObjectToBeDeserialized() throws Exception {
-
-        Friend friend = new Friend(ObjectId.get(), "John");
-        DBCollection mockedDBCollection = mock(DBCollection.class);
-        ObjectIdUpdater objectIdUpdater = mock(ObjectIdUpdater.class);
-        ObjectId deserializedOid = ObjectId.get();
-        when(objectIdUpdater.getId(friend)).thenReturn(deserializedOid);
-        Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
-
-        insert.save(friend);
-
-        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.NONE));
-        DBObject value = captor.getValue();
-        assertThat(value.get("_id")).isEqualTo(deserializedOid);
-    }
-
-    @Test
-    public void shouldNotPreventLazyDBObjectToBeDeserializedWhenOidIsNull() throws Exception {
-
-        ObjectId id = ObjectId.get();
-        Friend friend = new Friend(id, "John");
-        DBCollection mockedDBCollection = mock(DBCollection.class);
-        ObjectIdUpdater objectIdUpdater = mock(ObjectIdUpdater.class);
-        ObjectId deserializedOid = null;
-        when(objectIdUpdater.getId(friend)).thenReturn(deserializedOid);
-        Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
-
-        insert.save(friend);
-
-        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.NONE));
-        DBObject value = captor.getValue();
-        assertThat(value.get("_id")).isNotNull();
-        assertThat(value.get("_id")).isEqualTo(id);
     }
 }

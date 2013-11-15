@@ -233,21 +233,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     @Test
-    public void canHandleBinary() throws Exception {
-
-        BSONPrimitiveType type = new BSONPrimitiveType();
-        type.binary = new Binary("abcde".getBytes());
-
-        collection.save(type);
-
-        assertHasBeenPersistedAs(jsonify("'binary' : { '$binary' : 'YWJjZGU=' , '$type' : 0}"));
-        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
-
-        assertThat(result.binary.getType()).isEqualTo(type.binary.getType());
-        assertThat(result.binary.getData()).isEqualTo(type.binary.getData());
-    }
-
-    @Test
     public void canHandleIterableWithPrimitiveType() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
@@ -299,7 +284,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
         List<Friend> complexList;
         List<Date> dateList;
         byte[] bytes;
-        Binary binary;
     }
 
     private static class JavaNativeType {
@@ -310,8 +294,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
     }
 
     private static enum Parameter {
-        TEST,
-        TEST2
+        TEST
     }
 
 }

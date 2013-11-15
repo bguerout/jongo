@@ -18,14 +18,18 @@ package org.jongo.util.compatibility;
 
 import org.jongo.Mapper;
 
+import java.util.List;
+
 public class TestContext {
 
     private final String contextName;
     private final Mapper mapper;
+    private final List<Class<?>> ignoredTests;
 
-    public TestContext(String contextName, Mapper mapper) {
+    public TestContext(String contextName, Mapper mapper, List<Class<?>> ignoredTests) {
         this.contextName = contextName;
         this.mapper = mapper;
+        this.ignoredTests = ignoredTests;
     }
 
     public Mapper getMapper() {
@@ -34,5 +38,9 @@ public class TestContext {
 
     public String getContextName() {
         return contextName;
+    }
+
+    public List<Class<?>> getIgnoredTests() {
+        return ignoredTests;
     }
 }
