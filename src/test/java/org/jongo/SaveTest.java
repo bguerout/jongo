@@ -125,6 +125,22 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
+    public void canUpdateWithObjectIdAsString() throws Exception {
+        String id = ObjectId.get().toString();
+        ExposableFriend robert = new ExposableFriend(id, "Robert");
+
+        collection.save(robert);
+        String johnId = robert.getId();
+
+        robert.setName("Hue"); // <-- "famous" french Robert
+        collection.save(robert);
+
+        ExposableFriend robertHue = collection.findOne("{_id:#}",johnId).as(ExposableFriend.class);
+        assertThat(robertHue.getId()).isEqualTo(johnId);
+        assertThat(robertHue.getName()).isEqualTo("Hue");
+    }
+
+    @Test
     public void canSaveWithAnEmptyObjectIdAsString() throws Exception {
 
         ExposableFriend john = new ExposableFriend("Robert");
