@@ -104,7 +104,8 @@ class Insert {
         @Override
         public Object get(String key) {
             if ("_id".equals(key) && id != null) {
-                return id;
+                ObjectId oid = ObjectId.massageToObjectId(id);
+                return oid != null ? oid : id;
             }
             return super.get(key);
         }

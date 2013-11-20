@@ -135,7 +135,7 @@ public class SaveTest extends JongoTestCase {
         robert.setName("Hue"); // <-- "famous" french Robert
         collection.save(robert);
 
-        ExposableFriend robertHue = collection.findOne("{_id:#}",johnId).as(ExposableFriend.class);
+        ExposableFriend robertHue = collection.findOne("{_id:{$oid:#}}", johnId).as(ExposableFriend.class);
         assertThat(robertHue.getId()).isEqualTo(johnId);
         assertThat(robertHue.getName()).isEqualTo("Hue");
     }
