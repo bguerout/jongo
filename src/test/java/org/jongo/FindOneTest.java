@@ -84,6 +84,20 @@ public class FindOneTest extends JongoTestCase {
     @Test
     public void canFindOneWithOid() throws Exception {
         /* given */
+        ObjectId id = ObjectId.get();
+        Friend john = new Friend(id, "John");
+        collection.save(john);
+
+        Friend foundFriend = collection.findOne("{_id:#}", id).as(Friend.class);
+
+        /* then */
+        assertThat(foundFriend).isNotNull();
+        assertThat(foundFriend.getId()).isEqualTo(id);
+    }
+
+    @Test
+    public void canFindOneWithOidAsString() throws Exception {
+        /* given */
         ObjectId id = new ObjectId();
         Friend john = new Friend(id, "John");
         collection.save(john);
