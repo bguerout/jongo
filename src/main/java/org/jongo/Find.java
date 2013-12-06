@@ -34,8 +34,8 @@ public class Find {
     private final QueryFactory queryFactory;
     private final Query query;
     private Query fields, sort, hint;
-    private Integer limit, skip, batchSize;
-    private int options;
+    private Integer limit, skip;
+    private CursorModifier cursorModifier;
 
     Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.readPreference = readPreference;
@@ -43,7 +43,6 @@ public class Find {
         this.collection = collection;
         this.queryFactory = queryFactory;
         this.query = this.queryFactory.createQuery(query, parameters);
-        this.options = collection.getOptions();
     }
 
     public <T> Iterable<T> as(final Class<T> clazz) {
@@ -57,7 +56,6 @@ public class Find {
     }
 
     private void configureCursor(DBCursor cursor) {
-        cursor.setOptions(options);
 
         if (limit != null)
             cursor.limit(limit);
@@ -67,8 +65,8 @@ public class Find {
             cursor.sort(sort.toDBObject());
         if (hint != null)
             cursor.hint(hint.toDBObject());
-        if (batchSize != null)
-            cursor.batchSize(batchSize);
+        if (cursorModifier != null)
+            cursorModifier.modify(cursor);
 
     }
 
@@ -97,13 +95,8 @@ public class Find {
         return this;
     }
 
-    public Find option(int option) {
-        this.options |= option;
-        return this;
-    }
-
-    public Find batchSize(int batchSize) {
-        this.batchSize = batchSize;
+    public Find with(CursorModifier cursorModifier) {
+        this.cursorModifier = cursorModifier;
         return this;
     }
 

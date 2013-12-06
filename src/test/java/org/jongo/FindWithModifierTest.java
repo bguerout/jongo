@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import com.mongodb.Bytes;
+import com.mongodb.DBCursor;
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
@@ -29,7 +29,7 @@ import java.util.Iterator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class FindWithConfigTest extends JongoTestCase {
+public class FindWithModifierTest extends JongoTestCase {
 
     private MongoCollection collection;
 
@@ -60,45 +60,24 @@ public class FindWithConfigTest extends JongoTestCase {
     }
 
     @Test
-    public void canAddOption() throws Exception {
+    public void canUseCursorModifier() throws Exception {
         /* given */
-        Friend friend = new Friend(new ObjectId(), "John");
-        collection.save(friend);
-
-        /* when */
-        Iterator<Friend> friends = collection.find().option(Bytes.QUERYOPTION_SLAVEOK).as(Friend.class).iterator();
-
-        /* then */
-        assertThat(friends.hasNext()).isTrue();
-    }
-
-    @Test
-    public void canAddOptions() throws Exception {
-        /* given */
-        Friend friend = new Friend(new ObjectId(), "John");
-        collection.save(friend);
+        collection.save(new Friend(new ObjectId(), "John"));
+        collection.save(new Friend(new ObjectId(), "Robert"));
 
         /* when */
         Iterator<Friend> friends = collection.find()
-                .option(Bytes.QUERYOPTION_SLAVEOK)
-                .option(Bytes.QUERYOPTION_NOTIMEOUT)
+                .with(new CursorModifier() {
+                    public void modify(DBCursor cursor) {
+                        cursor.addSpecial("$maxScan", 1);
+                    }
+                })
                 .as(Friend.class).iterator();
 
         /* then */
         assertThat(friends.hasNext()).isTrue();
-    }
-
-    @Test
-    public void canSetBatchSize() throws Exception {
-        /* given */
-        Friend friend = new Friend(new ObjectId(), "John");
-        collection.save(friend);
-
-        /* when */
-        Iterator<Friend> friends = collection.find().batchSize(1).as(Friend.class).iterator();
-
-        /* then */
-        assertThat(friends.hasNext()).isTrue();
+        friends.next();
+        assertThat(friends.hasNext()).isFalse();
     }
 
 }
