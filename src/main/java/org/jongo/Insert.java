@@ -23,10 +23,7 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.query.QueryFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class Insert {
 
@@ -62,7 +59,11 @@ class Insert {
 
     public WriteResult insert(String query, Object... parameters) {
         DBObject dbQuery = queryFactory.createQuery(query, parameters).toDBObject();
-        return collection.insert(dbQuery, writeConcern);
+        if (dbQuery instanceof BasicDBList) {
+            return insert(((BasicDBList) dbQuery).toArray());
+        } else {
+            return collection.insert(dbQuery, writeConcern);
+        }
     }
 
     private Object preparePojo(Object pojo) {

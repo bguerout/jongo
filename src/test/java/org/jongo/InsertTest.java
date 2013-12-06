@@ -162,4 +162,15 @@ public class InsertTest extends JongoTestCase {
         } catch (MongoException.DuplicateKey e) {
         }
     }
+
+    @Test
+    public void canInsertAListOfDocuments() throws Exception {
+
+        collection.insert("[{name: 'John'},{name: 'Robert'}]");
+
+        assertThat(collection.count()).isEqualTo(2);
+        Iterable<Friend> friends = collection.find().as(Friend.class);
+        assertThat(friends).extracting("name").containsExactly("John", "Robert");
+    }
+
 }
