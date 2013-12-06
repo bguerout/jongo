@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.Bytes;
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
@@ -28,7 +29,7 @@ import java.util.Iterator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class FindWithHintTest extends JongoTestCase {
+public class FindWithConfigTest extends JongoTestCase {
 
     private MongoCollection collection;
 
@@ -53,6 +54,48 @@ public class FindWithHintTest extends JongoTestCase {
         /* when */
         // force to use _id index instead of name index which is sparsed
         Iterator<Friend> friends = collection.find().hint("{$natural: 1}").sort("{name: 1}").as(Friend.class).iterator();
+
+        /* then */
+        assertThat(friends.hasNext()).isTrue();
+    }
+
+    @Test
+    public void canAddOption() throws Exception {
+        /* given */
+        Friend friend = new Friend(new ObjectId(), "John");
+        collection.save(friend);
+
+        /* when */
+        Iterator<Friend> friends = collection.find().option(Bytes.QUERYOPTION_SLAVEOK).as(Friend.class).iterator();
+
+        /* then */
+        assertThat(friends.hasNext()).isTrue();
+    }
+
+    @Test
+    public void canAddOptions() throws Exception {
+        /* given */
+        Friend friend = new Friend(new ObjectId(), "John");
+        collection.save(friend);
+
+        /* when */
+        Iterator<Friend> friends = collection.find()
+                .option(Bytes.QUERYOPTION_SLAVEOK)
+                .option(Bytes.QUERYOPTION_NOTIMEOUT)
+                .as(Friend.class).iterator();
+
+        /* then */
+        assertThat(friends.hasNext()).isTrue();
+    }
+
+    @Test
+    public void canSetBatchSize() throws Exception {
+        /* given */
+        Friend friend = new Friend(new ObjectId(), "John");
+        collection.save(friend);
+
+        /* when */
+        Iterator<Friend> friends = collection.find().batchSize(1).as(Friend.class).iterator();
 
         /* then */
         assertThat(friends.hasNext()).isTrue();

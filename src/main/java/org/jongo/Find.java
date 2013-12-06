@@ -34,7 +34,8 @@ public class Find {
     private final QueryFactory queryFactory;
     private final Query query;
     private Query fields, sort, hint;
-    private Integer limit, skip;
+    private Integer limit, skip, batchSize;
+    private int options;
 
     Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.readPreference = readPreference;
@@ -42,6 +43,7 @@ public class Find {
         this.collection = collection;
         this.queryFactory = queryFactory;
         this.query = this.queryFactory.createQuery(query, parameters);
+        this.options = collection.getOptions();
     }
 
     public <T> Iterable<T> as(final Class<T> clazz) {
@@ -50,21 +52,24 @@ public class Find {
 
     public <T> Iterable<T> map(ResultHandler<T> resultHandler) {
         DBCursor cursor = new DBCursor(collection, query.toDBObject(), getFieldsAsDBObject(), readPreference);
-        addOptionsOn(cursor);
+        configureCursor(cursor);
         return new MongoIterator<T>(cursor, resultHandler);
     }
 
-    private void addOptionsOn(DBCursor cursor) {
+    private void configureCursor(DBCursor cursor) {
+        cursor.setOptions(options);
+
         if (limit != null)
             cursor.limit(limit);
         if (skip != null)
             cursor.skip(skip);
-        if (sort != null) {
+        if (sort != null)
             cursor.sort(sort.toDBObject());
-        }
-        if (hint != null) {
+        if (hint != null)
             cursor.hint(hint.toDBObject());
-        }
+        if (batchSize != null)
+            cursor.batchSize(batchSize);
+
     }
 
     public Find projection(String fields) {
@@ -92,7 +97,17 @@ public class Find {
         return this;
     }
 
-    public Find hint(final String hint) {
+    public Find option(int option) {
+        this.options |= option;
+        return this;
+    }
+
+    public Find batchSize(int batchSize) {
+        this.batchSize = batchSize;
+        return this;
+    }
+
+    public Find hint(String hint) {
         this.hint = queryFactory.createQuery(hint);
         return this;
     }
