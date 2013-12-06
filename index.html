@@ -144,10 +144,10 @@ _gaq.push(['_trackPageview']);
             <div class="span9 header"><h1>Set up</h1></div>
             <div class="span9">
               <p>
-                First <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="_blank">install Mongo</a>, then <a href="#maven">download Jongo</a> and you're all set.
+                First <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="_blank">install Mongo</a>, then choose a driver's version, finally <a href="#maven">download Jongo</a> and you're all set.
               </p>
               <pre class="prettyprint">
-DB db = new Mongo().getDB("dbname");
+DB db = new MongoClient().getDB("dbname");
 
 Jongo jongo = new Jongo(db);
 MongoCollection friends = jongo.getCollection("friends");
@@ -210,14 +210,14 @@ friends.remove(new ObjectId("4c...e"));</pre>
                       <div class="span9 header"><h1>Object Mapping</h1></div>
                       <div class="span9">
                         <p>
-                          Query results are automatically mapped to objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg constructor, even private</strong>. If the object has to be immutable, <code>@JsonCreator</code> annotation can be use instead.
+                          Query results are automatically mapped to objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg constructor, even private</strong> (<i>if the object has to be immutable, <code>@JsonCreator</code> annotation can be use instead</i>).
                         </p>
                         <p>
                           <code>_id</code> is a unique identifier available on every Mongo document. <strong>If it isn't setted, it is generated</strong>. To handle it with Jongo, one attribute has to be named <code>_id</code> or annotated with <code>@Id</code> (<i>alias for <code>@JsonProperty("_id")</code></i>). It can be handled with the dedicated <code>ObjectId</code> class or with a simple <code>String</code> — annotated <code>@ObjectId</code>.
                         </p>
 
                         <p>
-                          Careful, saving a document with a custom <code>_id</code> (<i>ie: any Java type, other than array, so long as it is unique</i>) always involves to set it before persisting.
+                          Careful, saving a document with a custom <code>_id</code> (<i>ie: any Java type, other than array, so long as it is unique</i>) always involves to set it manually before persisting.
                         </p>
                       </div>
                     </div>
@@ -225,21 +225,21 @@ friends.remove(new ObjectId("4c...e"));</pre>
                       <div class="span3">
                         <pre class="prettyprint">
 public class Friend {
-    // generate it!
+    // manual
     private long _id;
 }</pre>
                     </div>
                     <div class="span3">
                       <pre class="prettyprint">
 public class Friend {
-    @Id // generate it!
+    @Id // manual
     private long key;
 }</pre>
                     </div>
                     <div class="span3">
                       <pre class="prettyprint">
 public class Friend {
-    @Id // generate it!
+    @Id // manual
     private String key;
 }</pre>
                     </div>
@@ -405,6 +405,13 @@ collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
                               <h2 id="count">Command</h2>
                               <p>Behaviour pretty similar to Java driver <a href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
                               <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(GeoNearResult.class);</pre>
+                              <p>You can map command results to a single result field.</p>
+
+                              <pre class="prettyprint">
+jongo.runCommand("{geoNear: 'friends', near : [48.690,9.140]}")
+          .throwOnError()
+          .field("results")
+          .as(GeoNearResult.class);</pre>
 
                               <h2 id="aggregation">Aggregation</h2>
 
@@ -456,7 +463,7 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
                                       code possible.
                                     </p>
                                     <p>
-                                      Since .3, Jongo uses Mongo Java driver as a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it works at <code>byte[]</code> level (<i>note that query marhalling has been kept the old way, because of its specificities</i>).
+                                      Since .3, Jongo uses Mongo Java driver at a deeper level to enhance performance. Instead of converting results into strings and unmarshalling strings into objects, it works at <code>byte[]</code> level (<i>query marhalling works the same since 1.0</i>).
                                     </p>
 
                                     <p>
@@ -570,7 +577,10 @@ Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
                               <h2 id="exposing-trough-jersey">Exposing objects through web services</h2>
 
                               <p>
-                                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey (<i>or Spring or any web services library</i>). If you decide to keep <code>ObjectId</code> in pojo attributes, the library (de)serialization have to be configured to support them (<i>using <code>@ObjectId</code> annotation on <code>String</code> avoid this problem</i>). For Jersey, use <a href="https://gist.github.com/3155831" target="_blank">this Jackson Provider</a> to expose <code>ObjectId</code> as <code>String</code>. For other web services libraries, adapting it won't be to hard.
+                                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey (<i>or Spring or any web services library</i>). If you decide to keep <code>ObjectId</code> in pojo attributes, the library (de)serialization have to be configured to support them (<i>using <code>@ObjectId</code> annotation on <code>String</code> avoid this problem</i>). 
+                              </p>
+                              <p>
+                                For Jersey, use <a href="https://github.com/yamsellem/jongo-jersey/blob/master/src/main/java/org/jongo/jersey/provider/JacksonMapperProvider.java" target="_blank">this Jackson Provider</a> to expose <code>ObjectId</code> as <code>String</code> (<i>and ignore <code>@ObjectId</code> annotation</i>). For other web services libraries, adapting it won't be to hard.
                               </p>
                               
                                 </div>
@@ -579,18 +589,15 @@ Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 
                             <section id="notes" class="offset1">
                               <div class="row">
-                                <div class="span9 header"><h1>Release notes (0.3→0.4)</h1></div>
+                                <div class="span9 header"><h1>Release notes (0.4→1.0)</h1></div>
                                 <div class="span9">
-                                  <p>Previous releases: <a href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a href="/tags/0.1/0.1.html">0.1</a></p>
+                                  <p>Previous releases: <a href="/tags/0.4/0.4.html">0.4</a>, <a href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a href="/tags/0.1/0.1.html">0.1</a></p>
                                   <dl class="dl-horizontal">
-                                    <dt class="strong">Update &amp; Insert</dt><dd>operations support with pojo as parameters</dd>
-                                    <dt>runCommand</dt><dd>operation support; ie: <code>geoNear</code> can now return distance from origin</dd>
-                                    <dt>@Id</dt><dd><i>breaking change</i>: just an alias now; to handle <code>ObjectId</code> as <code>String</code> use <code>@ObjectId</code></dd>
-                                    <dt>Read &amp; Write</dt><dd><code>ReadPreference</code> and <code>WriteConcern</code> on a query basis (<i>thanks to <a href="https://github.com/bgranvea" target="_blank">Boris Granveaud</a></i>)</dd>
-                                    <dt>find</dt><dd>a <a href="http://docs.mongodb.org/manual/reference/operator/hint/" target="_blank">hint</a> can now be specified with <code>Find.hint()</code> (<i>thanks to <a href="https://github.com/dwursteisen" target="_blank">David Wursteisen</a></i>)</dd>
-                                    <dt>—</dt><dd><code>Find.fields()</code> renamed to <code>Find.projection()</code> (<i>thanks to <a href="https://github.com/maximenowak" target="_blank">Maxime Nowak</a></i>)</dd>
-                                    <dt>#</dt><dd>hash sign can be used in query parameters (<i>thanks to <a href="https://github.com/michel-kraemer" target="_blank">Michel Kraemer</a></i>)</dd>
-                                    <dt>final</dt><dd>no more final modifier to ease unit testing (<i>thanks to <a href="https://github.com/ihr" target="_blank">Ivan Hristov</a></i>)</dd>
+                                    <dt class="strong">query marshalling</dt><dd>full bson marshalling (<i>big thanks to <a href="https://github.com/swallez" target="_blank">Sylvain Wallez</a></i>)</dd>
+                                    <dt class="strong">GridFS</dt><dd>full compatibility (<i>thanks to <a href="https://github.com/olim7t" target="_blank">Olivier Michallat</a></i>)</dd>
+                                    <dt>Update</dt><dd><code>update().merge(pojo)</code> renamed to <code>update().with(pojo)</code></dd>
+                                    <dt>mappers</dt><dd>extract alternative mappers to <a href="https://github.com/bguerout/jongo-extras" target="_blank">jongo-extras</a> repository</dd>
+                                    <dt>fixes</dt><dd>a lot of bug fixing &amp; improvements (<i>thanks to <a href="https://github.com/twillouer" target="_blank">William Delanoue</a>, <a href="https://github.com/adutra" target="_blank">Alexandre Dutra</a>, <a href="https://github.com/jblemee" target="_blank">Jean-Baptiste Lemée</a> and <a href="https://github.com/sjoerdmulder" target="_blank">Sjoerd Mulder</a></i>)</dd>
                                   </dl>
                                 </div>
                               </div>
@@ -601,7 +608,7 @@ Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
                                 <div class="span9 header"><h1>Download</h1></div>
                                 <div class="span9">
                                   <p>
-                                    Jongo relies upon <a href="https://github.com/FasterXML/jackson-databind" target="_blank">Jackson</a> 2.1, <a href="https://github.com/michel-kraemer/bson4jackson" target="_blank">Bson4Jackson</a> 2.1 and <a href="https://github.com/mongodb/mongo-java-driver" target="_blank">Mongo Java Driver</a> 2.9+. Its Maven dependency comes with the first two, you have to <a href="http://mvnrepository.com/artifact/org.mongodb/mongo-java-driver" target="_blank">provide a dependency</a> to the driver.
+                                    Jongo relies upon <a href="https://github.com/FasterXML/jackson-databind" target="_blank">Jackson</a> 2.2.3, <a href="https://github.com/michel-kraemer/bson4jackson" target="_blank">Bson4Jackson</a> 2.2.3 and <a href="https://github.com/mongodb/mongo-java-driver" target="_blank">Mongo Java Driver</a> 2.11+. Its Maven dependency comes with the first two, you have to <a href="http://mvnrepository.com/artifact/org.mongodb/mongo-java-driver" target="_blank">provide a dependency</a> to the driver.
                                   </p>
 
                                   <p>
@@ -612,7 +619,7 @@ Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 &lt;dependency&gt;
     &lt;groupId&gt;org.jongo&lt;/groupId&gt;
     &lt;artifactId&gt;jongo&lt;/artifactId&gt;
-    &lt;version&gt;0.4&lt;/version&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 
                                   </div>
