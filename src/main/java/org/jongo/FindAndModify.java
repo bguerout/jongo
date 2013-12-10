@@ -69,6 +69,11 @@ public class FindAndModify {
         return this;
     }
 
+    public FindAndModify projection(String fields, Object... parameters) {
+        this.fields = queryFactory.createQuery(fields, parameters);
+        return this;
+    }
+
     public FindAndModify sort(String sort) {
         this.sort = queryFactory.createQuery(sort);
         return this;
