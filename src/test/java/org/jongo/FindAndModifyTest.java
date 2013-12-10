@@ -124,4 +124,33 @@ public class FindAndModifyTest extends JongoTestCase {
             assertThat(e.getMessage()).contains(" \"error\" : \"NotaDate\"");
         }
     }
+
+    @Test
+    public void canFindWithProjection() throws Exception {
+
+        collection.save(new Friend("John", "Jermin Street"));
+
+        collection.findAndModify("{name:'John'}").with("{$set: {name:'Robert'}}").projection("{name:1}").map(new ResultHandler<Boolean>() {
+            public Boolean map(DBObject result) {
+                assertThat(result.containsField("name")).isTrue();
+                assertThat(result.containsField("address")).isFalse();
+                return true;
+            }
+        });
+    }
+
+    @Test
+    public void canFindWithProjectionParams() throws Exception {
+
+        collection.save(new Friend("John", "Jermin Street"));
+
+        collection.findAndModify("{name:'John'}").with("{$set: {name:'Robert'}}").projection("{name:#}", 1).map(new ResultHandler<Boolean>() {
+            public Boolean map(DBObject result) {
+                assertThat(result.containsField("name")).isTrue();
+                assertThat(result.containsField("address")).isFalse();
+                return true;
+            }
+        });
+    }
+
 }
