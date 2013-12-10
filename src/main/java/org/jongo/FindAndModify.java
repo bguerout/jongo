@@ -22,6 +22,8 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
+import java.util.Arrays;
+
 import static org.jongo.ResultHandlerFactory.newMapper;
 
 public class FindAndModify {
@@ -69,7 +71,7 @@ public class FindAndModify {
         return this;
     }
 
-    public FindAndModify projection(String fields, Object... parameters) {
+    public FindAndModify projection(String fields, Integer... parameters) {
         this.fields = queryFactory.createQuery(fields, parameters);
         return this;
     }
