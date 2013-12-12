@@ -66,6 +66,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
                 field.setAccessible(true);
                 field.set(target, id);
             } else if (field.getType().equals(String.class)) {
+                field.setAccessible(true);
                 field.set(target, id.toString());
             }
         } catch (IllegalAccessException e) {
