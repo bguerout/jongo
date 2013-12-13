@@ -19,10 +19,7 @@ package org.jongo;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonIdFieldSelector;
 import org.jongo.marshall.jackson.oid.Id;
-import org.jongo.model.Coordinate;
-import org.jongo.model.ExternalFriend;
-import org.jongo.model.Friend;
-import org.jongo.model.LinkedFriend;
+import org.jongo.model.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -130,11 +127,11 @@ public class ReflectiveObjectIdUpdaterTest {
     public void canSetObjectIdValueAsString() throws Exception {
 
         ObjectId oid = new ObjectId();
-        PojoWithStringId target = new PojoWithStringId();
+        ExposableFriend target = new ExposableFriend(null, "John");
 
         updater.setObjectId(target, oid);
 
-        assertThat(target._id).isEqualTo(oid.toString());
+        assertThat(target.getId()).isEqualTo(oid.toString());
     }
 
     @Test
@@ -171,10 +168,6 @@ public class ReflectiveObjectIdUpdaterTest {
     public void cannotSetPreexistingCustomId() throws Exception {
         final ExternalFriend custom = new ExternalFriend(122, "value");
         updater.setObjectId(custom, ObjectId.get());
-    }
-
-    private static class PojoWithStringId {
-        protected String _id;
     }
 
     private static class Parent {

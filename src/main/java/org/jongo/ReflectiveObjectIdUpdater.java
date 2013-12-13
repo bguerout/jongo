@@ -79,14 +79,15 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
             return fieldCache.get(clazz);
         }
 
-        while (!Object.class.equals(clazz)) {
-            for (Field f : clazz.getDeclaredFields()) {
+        Class<?> c = clazz;
+        while (!Object.class.equals(c)) {
+            for (Field f : c.getDeclaredFields()) {
                 if (idFieldSelector.isId(f)) {
                     fieldCache.put(clazz, f);
                     return f;
                 }
             }
-            clazz = clazz.getSuperclass();
+            c = c.getSuperclass();
         }
         return null;
     }
