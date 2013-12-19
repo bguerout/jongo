@@ -488,7 +488,8 @@ Jongo jongo = new Jongo(db,
 
                                       <h3>Features on/off</h3>
                                       <p>
-                                        Default <code>JacksonMapper.Builder()</code> comes with a set of <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/StandardModifier.java" target="_blank">predefined features</a> for the embedded Jackson <code>ObjectMapper</code>. Those can be overridden and extended with <code>enable(..)</code> and <code>disable(..)</code> methods.
+                                        Default <code>JacksonMapper.Builder()</code> comes with predefined features for the embedded Jackson <code>ObjectMapper</code> (see <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/VisibilityModifier.java" target="_blank">VisibilityModifier</a> and <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/PropertyModifier.java" target="_blank">PropertyModifier</a>).
+                                        Those can be overridden and extended with <code>enable(..)</code> and <code>disable(..)</code> methods.
                                       </p>
 
                                       <h3>Modules</h3>
