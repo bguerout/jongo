@@ -25,6 +25,8 @@ import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BsonQueryFactoryTest {
@@ -147,5 +149,13 @@ public class BsonQueryFactoryTest {
         DBObject dbo3 = (DBObject) dbo2.get("d");
         assertThat(dbo3.get("aa")).isEqualTo(Integer.valueOf(10));
         assertThat(dbo3.get("bb")).isEqualTo(Long.valueOf(11));
+    }
+
+    @Test
+    public void canSaveAndUpdateBytes() throws Exception {
+
+        DBObject dbo = factory.createQuery("{bytes:#}", "test".getBytes(StandardCharsets.UTF_8)).toDBObject();
+
+        assertThat(new String((byte[]) dbo.get("bytes"))).isEqualTo("test");
     }
 }

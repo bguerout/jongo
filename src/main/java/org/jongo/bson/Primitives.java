@@ -47,6 +47,7 @@ class Primitives {
         PRIMITIVES.add(DBRefBase.class);
         PRIMITIVES.add(CodeWScope.class);
         PRIMITIVES.add(Binary.class);
+        PRIMITIVES.add(byte[].class);
     }
 
     public static <T> boolean contains(Class<T> clazz) {

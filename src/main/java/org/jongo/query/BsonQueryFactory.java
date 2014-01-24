@@ -21,6 +21,8 @@ import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONCallback;
+import com.mongodb.util.JSONSerializers;
+import com.mongodb.util.ObjectSerializer;
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.jongo.bson.Bson;
@@ -33,11 +35,12 @@ import java.util.List;
 public class BsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
-    private final String token;
-    private final Marshaller marshaller;
-
     private static final String MARSHALL_OPERATOR = "$marshall";
     private static final String PRECEDING_VALUE_PARAM = ": ,[\t\r\n";
+
+    private final String token;
+    private final Marshaller marshaller;
+    private final ObjectSerializer jsonSerializer;
 
     private static class BsonQuery implements Query {
         private final DBObject dbo;
@@ -58,6 +61,7 @@ public class BsonQueryFactory implements QueryFactory {
     public BsonQueryFactory(Marshaller marshaller, String token) {
         this.token = token;
         this.marshaller = marshaller;
+        this.jsonSerializer = JSONSerializers.getStrict();
     }
 
     public Query createQuery(final String query, Object... parameters) {
@@ -176,11 +180,11 @@ public class BsonQueryFactory implements QueryFactory {
     private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
         try {
             if (parameter == null || Bson.isPrimitive(parameter)) {
-                return serializeBsonPrimitives ? JSON.serialize(parameter) : parameter;
+                return serializeBsonPrimitives ? jsonSerializer.serialize(parameter) : parameter;
             }
             if (parameter instanceof Enum) {
                 String name = ((Enum<?>) parameter).name();
-                return serializeBsonPrimitives ? JSON.serialize(name) : name;
+                return serializeBsonPrimitives ? jsonSerializer.serialize(name) : name;
             }
             if (parameter instanceof Collection) {
                 return marshallCollection((Collection<?>) parameter);
