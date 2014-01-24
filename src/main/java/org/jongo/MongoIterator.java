@@ -57,4 +57,8 @@ public class MongoIterator<E> implements Iterator<E>, Iterable<E>, AutoCloseable
     public void close() throws IOException {
         cursor.close();
     }
+
+    public int count() {
+        return cursor.count();
+    }
 }

@@ -92,6 +92,18 @@ public class FindTest extends JongoTestCase {
     }
 
     @Test
+    public void canFindAndCount() throws Exception {
+
+        Friend friend = new Friend(new ObjectId(), "John");
+        collection.save(friend);
+        MongoIterator<Friend> friends = collection.find("{name:'John'}").as(Friend.class);
+
+        int nbResults = friends.count();
+
+        assertThat(nbResults).isEqualTo(1);
+    }
+
+    @Test
     public void shouldFailWhenUnableToUnmarshallResult() throws Exception {
         /* given */
         collection.insert("{error: 'NotaDate'}");
