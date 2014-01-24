@@ -79,6 +79,19 @@ public class FindTest extends JongoTestCase {
     }
 
     @Test
+    public void canFindAndCloseCursor() throws Exception {
+        /* given */
+        Friend friend = new Friend(new ObjectId(), "John");
+        collection.save(friend);
+
+        /* when */
+        MongoIterator<Friend> friends = collection.find("{name:'John'}").as(Friend.class);
+
+        /* then */
+        friends.close();
+    }
+
+    @Test
     public void shouldFailWhenUnableToUnmarshallResult() throws Exception {
         /* given */
         collection.insert("{error: 'NotaDate'}");
