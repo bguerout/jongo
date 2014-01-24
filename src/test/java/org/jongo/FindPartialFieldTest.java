@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,17 +63,15 @@ public class FindPartialFieldTest extends JongoTestCase {
         collection.find("{name:'John'}").projection("{name:#}", 1).map(new AssertionResultHandler());
     }
 
-
     @Test
     public void canFindWithComplexProjection() throws Exception {
         /* given */
         collection.insert("{subElements: [{ name: \"foo\"},{ name: \"bar\"}]}");
 
         /* when */
-        Iterable<Map> maps = collection.find().projection("{ subElements: {$elemMatch: {name: #} } }", "bar").as(Map.class);
+        Iterator<Map> maps = collection.find().projection("{ subElements: {$elemMatch: {name: #} } }", "bar").as(Map.class);
 
-        assertThat(maps).isNotEmpty();
-        Map map = maps.iterator().next();
+        Map map = maps.next();
         assertThat(map.get("subElements")).isNotNull();
         List subElements = ((List) map.get("subElements"));
         assertThat(subElements).hasSize(1);

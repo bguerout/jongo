@@ -22,7 +22,7 @@ import com.mongodb.DBObject;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-class MongoIterator<E> implements Iterator<E>, Iterable<E> {
+public class MongoIterator<E> implements Iterator<E>, Iterable<E> {
 
     private final DBCursor cursor;
     private final ResultHandler<E> resultHandler;

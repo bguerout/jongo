@@ -45,11 +45,11 @@ public class Find {
         this.query = this.queryFactory.createQuery(query, parameters);
     }
 
-    public <T> Iterable<T> as(final Class<T> clazz) {
+    public <T> MongoIterator<T> as(final Class<T> clazz) {
         return map(newMapper(clazz, unmarshaller));
     }
 
-    public <T> Iterable<T> map(ResultHandler<T> resultHandler) {
+    public <T> MongoIterator<T> map(ResultHandler<T> resultHandler) {
         DBCursor cursor = new DBCursor(collection, query.toDBObject(), getFieldsAsDBObject(), readPreference);
         configureCursor(cursor);
         return new MongoIterator<T>(cursor, resultHandler);

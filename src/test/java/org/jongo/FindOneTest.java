@@ -127,7 +127,7 @@ public class FindOneTest extends JongoTestCase {
     public void whenNoResultShouldReturnNull() throws Exception {
         assertThat(collection.findOne("{_id:'invalid-id'}").as(Object.class)).isNull();
         assertThat(collection.findOne("{_id:'invalid-id'}").map(new IdResultHandler())).isNull();
-        assertThat(collection.find("{_id:'invalid-id'}").as(Object.class)).hasSize(0);
+        assertThat(collection.find("{_id:'invalid-id'}").as(Object.class).iterator()).hasSize(0);
     }
 
     @Test

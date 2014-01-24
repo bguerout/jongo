@@ -53,7 +53,7 @@ public class FindWithModifierTest extends JongoTestCase {
 
         /* when */
         // force to use _id index instead of name index which is sparsed
-        Iterator<Friend> friends = collection.find().hint("{$natural: 1}").sort("{name: 1}").as(Friend.class).iterator();
+        Iterator<Friend> friends = collection.find().hint("{$natural: 1}").sort("{name: 1}").as(Friend.class);
 
         /* then */
         assertThat(friends.hasNext()).isTrue();
@@ -72,7 +72,7 @@ public class FindWithModifierTest extends JongoTestCase {
                         cursor.addSpecial("$maxScan", 1);
                     }
                 })
-                .as(Friend.class).iterator();
+                .as(Friend.class);
 
         /* then */
         assertThat(friends.hasNext()).isTrue();

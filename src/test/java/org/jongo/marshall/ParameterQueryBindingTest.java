@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
+import org.jongo.MongoIterator;
 import org.jongo.RawResultHandler;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
@@ -93,7 +94,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         friend.setGender(Gender.FEMALE);
         collection.save(friend);
 
-        Iterator<Friend> results = collection.find("{'gender':#}", Gender.FEMALE).as(Friend.class).iterator();
+        Iterator<Friend> results = collection.find("{'gender':#}", Gender.FEMALE).as(Friend.class);
 
         assertThat(results.next().getGender()).isEqualTo(Gender.FEMALE);
         assertThat(results.hasNext()).isFalse();
@@ -135,10 +136,10 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.save(john);
         collection.save(peter);
 
-        Iterable<Friend> friends = collection.find("{$or :[{_id:{$oid:#}},{_id:{$oid:#}}]}", id1.toString(), id2.toString()).as(Friend.class);
+        MongoIterator<Friend> friends = collection.find("{$or :[{_id:{$oid:#}},{_id:{$oid:#}}]}", id1.toString(), id2.toString()).as(Friend.class);
 
         /* then */
-        assertThat(friends.iterator().hasNext()).isTrue();
+        assertThat(friends.hasNext()).isTrue();
         for (Friend friend : friends) {
             assertThat(friend.getId()).isIn(id1, id2);
         }
@@ -151,7 +152,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         LinkedFriend john = new LinkedFriend(id);
         collection.save(john);
 
-        Iterator<LinkedFriend> friends = collection.find("{friendRelationId:{$oid:#}}", id.toString()).as(LinkedFriend.class).iterator();
+        Iterator<LinkedFriend> friends = collection.find("{friendRelationId:{$oid:#}}", id.toString()).as(LinkedFriend.class);
 
         /* then */
         assertThat(friends.hasNext()).isTrue();
@@ -219,9 +220,9 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.insert("{type:'cool', properties:['p1','p2']}");
         List<String> properties = Lists.newArrayList("p1", "p2");
 
-        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+        Iterator<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
 
-        assertThat(results.iterator().hasNext()).isTrue();
+        assertThat(results.hasNext()).isTrue();
     }
 
     @Test
@@ -229,9 +230,9 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.insert("{type:'cool', properties:['p1','p2']}");
         String[] properties = new String[]{"p1", "p2"};
 
-        Iterable<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
+        Iterator<Friend> results = collection.find("{type: #, properties: {$all: #}}", "cool", properties).as(Friend.class);
 
-        assertThat(results.iterator().hasNext()).isTrue();
+        assertThat(results.hasNext()).isTrue();
     }
 
     @Test
@@ -264,9 +265,9 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.insert("{name:'Robert'}");
         List<Friend> friends = Lists.newArrayList(new Friend("John"), new Friend("Robert"));
 
-        Iterable<Friend> results = collection.find("{$or : #}", friends).as(Friend.class);
+        Iterator<Friend> results = collection.find("{$or : #}", friends).as(Friend.class);
 
-        assertThat(results.iterator().hasNext()).isTrue();
+        assertThat(results.hasNext()).isTrue();
     }
 
     @Test
@@ -274,9 +275,9 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.insert("{ name: ['John', 'Robert' ] }");
         List<Friend> friends = Lists.newArrayList(new Friend("John"), new Friend("Robert"));
 
-        Iterable<Friend> results = collection.find("{ $and: # }", friends).as(Friend.class);
+        Iterator<Friend> results = collection.find("{ $and: # }", friends).as(Friend.class);
 
-        assertThat(results.iterator().hasNext()).isTrue();
+        assertThat(results.hasNext()).isTrue();
     }
 
 
