@@ -24,12 +24,12 @@ import java.util.Iterator;
 import java.lang.Iterable;
 import java.util.NoSuchElementException;
 
-public class MongoIterator<E> implements Iterator<E>, Iterable<E>, AutoCloseable {
+public class MongoCursor<E> implements Iterator<E>, Iterable<E>, AutoCloseable {
 
     private final DBCursor cursor;
     private final ResultHandler<E> resultHandler;
 
-    public MongoIterator(DBCursor cursor, ResultHandler<E> resultHandler) {
+    public MongoCursor(DBCursor cursor, ResultHandler<E> resultHandler) {
         this.cursor = cursor;
         this.resultHandler = resultHandler;
     }

@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
-import org.jongo.MongoIterator;
+import org.jongo.MongoCursor;
 import org.jongo.RawResultHandler;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
@@ -136,7 +136,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         collection.save(john);
         collection.save(peter);
 
-        MongoIterator<Friend> friends = collection.find("{$or :[{_id:{$oid:#}},{_id:{$oid:#}}]}", id1.toString(), id2.toString()).as(Friend.class);
+        MongoCursor<Friend> friends = collection.find("{$or :[{_id:{$oid:#}},{_id:{$oid:#}}]}", id1.toString(), id2.toString()).as(Friend.class);
 
         /* then */
         assertThat(friends.hasNext()).isTrue();

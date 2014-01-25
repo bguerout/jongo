@@ -17,22 +17,44 @@
 package org.jongo;
 
 import com.mongodb.DBCursor;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class MongoIteratorTest {
+public class MongoCursorTest {
+
+    private DBCursor dbCursor;
+    private MongoCursor<String> mongoCursor;
+
+    @Before
+    public void setUp() throws Exception {
+        dbCursor = mock(DBCursor.class);
+        mongoCursor = new MongoCursor<String>(dbCursor, mock(ResultHandler.class));
+    }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailWhenNoMoreElements() throws Exception {
-        DBCursor cursor = mock(DBCursor.class);
-        when(cursor.hasNext()).thenReturn(false);
-        MongoIterator<String> iterator = new MongoIterator<String>(cursor, mock(ResultHandler.class));
 
-        iterator.next();
+        when(dbCursor.hasNext()).thenReturn(false);
+
+        mongoCursor.next();
+    }
+
+    @Test
+    public void shouldCloseDbCursor() throws Exception {
+
+        mongoCursor.close();
+
+        verify(dbCursor).close();
+    }
+
+    @Test
+    public void shouldReturnItSelfOnIterator() throws Exception {
+
+        assert mongoCursor.iterator() == mongoCursor;
     }
 
 }

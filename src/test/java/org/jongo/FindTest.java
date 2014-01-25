@@ -64,39 +64,11 @@ public class FindTest extends JongoTestCase {
     }
 
     @Test
-    public void canFindAndUseAnIterator() throws Exception {
-        /* given */
-        Friend friend = new Friend(new ObjectId(), "John");
-        collection.save(friend);
-
-        /* when */
-        Iterator<Friend> friends = collection.find("{name:'John'}").as(Friend.class).iterator();
-
-        /* then */
-        assertThat(friends.hasNext()).isTrue();
-        assertThat(friends.next().getName()).isEqualTo("John");
-        assertThat(friends.hasNext()).isFalse();
-    }
-
-    @Test
-    public void canFindAndCloseCursor() throws Exception {
-        /* given */
-        Friend friend = new Friend(new ObjectId(), "John");
-        collection.save(friend);
-
-        /* when */
-        MongoIterator<Friend> friends = collection.find("{name:'John'}").as(Friend.class);
-
-        /* then */
-        friends.close();
-    }
-
-    @Test
     public void canFindAndCount() throws Exception {
 
         Friend friend = new Friend(new ObjectId(), "John");
         collection.save(friend);
-        MongoIterator<Friend> friends = collection.find("{name:'John'}").as(Friend.class);
+        MongoCursor<Friend> friends = collection.find("{name:'John'}").as(Friend.class);
 
         int nbResults = friends.count();
 
@@ -127,7 +99,7 @@ public class FindTest extends JongoTestCase {
         collection.insert("{name:'Peter'}");
 
         /* when */
-        MongoIterator<Friend> friends = collection.find().as(Friend.class);
+        MongoCursor<Friend> friends = collection.find().as(Friend.class);
 
         /* then */
         assertThat(friends.hasNext()).isTrue();
@@ -192,7 +164,7 @@ public class FindTest extends JongoTestCase {
         collection.save(friend);
 
         /* when */
-        MongoIterator<Friend> friends = collection.withReadPreference(ReadPreference.primaryPreferred()).find("{name:'John'}").as(Friend.class);
+        MongoCursor<Friend> friends = collection.withReadPreference(ReadPreference.primaryPreferred()).find("{name:'John'}").as(Friend.class);
 
         /* then */
         assertThat(friends.hasNext()).isTrue();
