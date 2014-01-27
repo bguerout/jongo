@@ -19,12 +19,13 @@ package org.jongo;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 import java.lang.Iterable;
 import java.util.NoSuchElementException;
 
-public class MongoCursor<E> implements Iterator<E>, Iterable<E>, AutoCloseable {
+public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
 
     private final DBCursor cursor;
     private final ResultHandler<E> resultHandler;
