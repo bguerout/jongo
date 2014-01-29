@@ -24,6 +24,9 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.jongo.ResultHandlerFactory.newMapper;
 
 public class Find {
@@ -33,9 +36,8 @@ public class Find {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final Query query;
-    private Query fields, sort, hint;
-    private Integer limit, skip;
-    private QueryModifier queryModifier;
+    private final List<QueryModifier> modifiers;
+    private Query fields;
 
     Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.readPreference = readPreference;
@@ -43,6 +45,7 @@ public class Find {
         this.collection = collection;
         this.queryFactory = queryFactory;
         this.query = this.queryFactory.createQuery(query, parameters);
+        this.modifiers = new ArrayList<QueryModifier>();
     }
 
     public <T> MongoCursor<T> as(final Class<T> clazz) {
@@ -51,23 +54,10 @@ public class Find {
 
     public <T> MongoCursor<T> map(ResultHandler<T> resultHandler) {
         DBCursor cursor = new DBCursor(collection, query.toDBObject(), getFieldsAsDBObject(), readPreference);
-        configureCursor(cursor);
+        for (QueryModifier modifier : modifiers) {
+            modifier.modify(cursor);
+        }
         return new MongoCursor<T>(cursor, resultHandler);
-    }
-
-    private void configureCursor(DBCursor cursor) {
-
-        if (limit != null)
-            cursor.limit(limit);
-        if (skip != null)
-            cursor.skip(skip);
-        if (sort != null)
-            cursor.sort(sort.toDBObject());
-        if (hint != null)
-            cursor.hint(hint.toDBObject());
-        if (queryModifier != null)
-            queryModifier.modify(cursor);
-
     }
 
     public Find projection(String fields) {
@@ -80,28 +70,46 @@ public class Find {
         return this;
     }
 
-    public Find limit(int limit) {
-        this.limit = limit;
+    public Find limit(final int limit) {
+        this.modifiers.add(new QueryModifier() {
+            public void modify(DBCursor cursor) {
+                cursor.limit(limit);
+            }
+        });
         return this;
     }
 
-    public Find skip(int skip) {
-        this.skip = skip;
+    public Find skip(final int skip) {
+        this.modifiers.add(new QueryModifier() {
+            public void modify(DBCursor cursor) {
+                cursor.skip(skip);
+            }
+        });
         return this;
     }
 
     public Find sort(String sort) {
-        this.sort = queryFactory.createQuery(sort);
-        return this;
-    }
-
-    public Find with(QueryModifier queryModifier) {
-        this.queryModifier = queryModifier;
+        final DBObject sortDBObject = queryFactory.createQuery(sort).toDBObject();
+        this.modifiers.add(new QueryModifier() {
+            public void modify(DBCursor cursor) {
+                cursor.sort(sortDBObject);
+            }
+        });
         return this;
     }
 
     public Find hint(String hint) {
-        this.hint = queryFactory.createQuery(hint);
+        final DBObject hintDBObject = queryFactory.createQuery(hint).toDBObject();
+        this.modifiers.add(new QueryModifier() {
+            public void modify(DBCursor cursor) {
+                cursor.hint(hintDBObject);
+            }
+        });
+        return this;
+    }
+
+    public Find with(QueryModifier queryModifier) {
+        this.modifiers.add(queryModifier);
         return this;
     }
 
