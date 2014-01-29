@@ -60,14 +60,14 @@ public class FindWithModifierTest extends JongoTestCase {
     }
 
     @Test
-    public void canUseCursorModifier() throws Exception {
+    public void canUseQueryModifier() throws Exception {
         /* given */
         collection.save(new Friend(new ObjectId(), "John"));
         collection.save(new Friend(new ObjectId(), "Robert"));
 
         /* when */
         Iterator<Friend> friends = collection.find()
-                .with(new CursorModifier() {
+                .with(new QueryModifier() {
                     public void modify(DBCursor cursor) {
                         cursor.addSpecial("$maxScan", 1);
                     }

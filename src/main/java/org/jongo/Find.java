@@ -35,7 +35,7 @@ public class Find {
     private final Query query;
     private Query fields, sort, hint;
     private Integer limit, skip;
-    private CursorModifier cursorModifier;
+    private QueryModifier queryModifier;
 
     Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.readPreference = readPreference;
@@ -65,8 +65,8 @@ public class Find {
             cursor.sort(sort.toDBObject());
         if (hint != null)
             cursor.hint(hint.toDBObject());
-        if (cursorModifier != null)
-            cursorModifier.modify(cursor);
+        if (queryModifier != null)
+            queryModifier.modify(cursor);
 
     }
 
@@ -95,8 +95,8 @@ public class Find {
         return this;
     }
 
-    public Find with(CursorModifier cursorModifier) {
-        this.cursorModifier = cursorModifier;
+    public Find with(QueryModifier queryModifier) {
+        this.queryModifier = queryModifier;
         return this;
     }
 
