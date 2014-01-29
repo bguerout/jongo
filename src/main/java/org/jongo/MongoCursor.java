@@ -22,7 +22,6 @@ import com.mongodb.DBObject;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
-import java.lang.Iterable;
 import java.util.NoSuchElementException;
 
 public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
