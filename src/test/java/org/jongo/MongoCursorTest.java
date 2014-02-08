@@ -20,8 +20,10 @@ import com.mongodb.DBCursor;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class MongoCursorTest {
@@ -52,9 +54,15 @@ public class MongoCursorTest {
     }
 
     @Test
-    public void shouldReturnItSelfOnIterator() throws Exception {
+    public void shouldReturnACopyOfDbCursor() throws Exception {
 
-        assert mongoCursor.iterator() == mongoCursor;
+        when(dbCursor.copy()).thenReturn(dbCursor);
+
+        Iterator<String> iterator = mongoCursor.iterator();
+
+        assertThat(iterator).isNotNull();
+        assert mongoCursor != iterator;
+        verify(dbCursor).copy();
     }
 
 }

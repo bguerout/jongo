@@ -51,7 +51,7 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
     }
 
     public Iterator<E> iterator() {
-        return this;
+        return new MongoCursor<E>(cursor.copy(), resultHandler);
     }
 
     public void close() throws IOException {
