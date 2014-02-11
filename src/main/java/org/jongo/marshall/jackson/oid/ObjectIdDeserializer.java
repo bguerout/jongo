@@ -35,7 +35,7 @@ public class ObjectIdDeserializer extends JsonDeserializer<String> {
         JsonNode oid = ((JsonNode) treeNode).get(MONGO_QUERY_OID);
         if (oid != null)
             return oid.asText();
-        else if (JsonToken.VALUE_STRING == treeNode.asToken()) {
+        else if (JsonToken.VALUE_STRING == treeNode.asToken())
             return ((TextNode) treeNode).asText();
         else
             return treeNode.toString();
