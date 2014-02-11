@@ -23,7 +23,7 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
-import static org.jongo.ResultHandlerFactory.newMapper;
+import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class FindOne {
 
@@ -43,7 +43,7 @@ public class FindOne {
     }
 
     public <T> T as(final Class<T> clazz) {
-        return map(newMapper(clazz, unmarshaller));
+        return map(newResultHandler(clazz, unmarshaller));
     }
 
     public <T> T map(ResultHandler<T> resultHandler) {

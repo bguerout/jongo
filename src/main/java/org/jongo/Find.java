@@ -27,7 +27,7 @@ import org.jongo.query.QueryFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jongo.ResultHandlerFactory.newMapper;
+import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class Find {
 
@@ -49,7 +49,7 @@ public class Find {
     }
 
     public <T> MongoCursor<T> as(final Class<T> clazz) {
-        return map(newMapper(clazz, unmarshaller));
+        return map(newResultHandler(clazz, unmarshaller));
     }
 
     public <T> MongoCursor<T> map(ResultHandler<T> resultHandler) {

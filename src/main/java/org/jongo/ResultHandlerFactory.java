@@ -24,7 +24,7 @@ import org.jongo.marshall.Unmarshaller;
 class ResultHandlerFactory {
 
 
-    public static <T> ResultHandler<T> newMapper(final Class<T> clazz, final Unmarshaller unmarshaller) {
+    public static <T> ResultHandler<T> newResultHandler(final Class<T> clazz, final Unmarshaller unmarshaller) {
         return new UnmarshallingResultHandler<T>(unmarshaller, clazz);
     }
 
