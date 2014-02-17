@@ -40,7 +40,6 @@ public class BsonQueryFactory implements QueryFactory {
 
     private final String token;
     private final Marshaller marshaller;
-    private final ObjectSerializer jsonSerializer;
 
     private static class BsonQuery implements Query {
         private final DBObject dbo;
@@ -61,7 +60,6 @@ public class BsonQueryFactory implements QueryFactory {
     public BsonQueryFactory(Marshaller marshaller, String token) {
         this.token = token;
         this.marshaller = marshaller;
-        this.jsonSerializer = JSONSerializers.getStrict();
     }
 
     public Query createQuery(final String query, Object... parameters) {
@@ -149,7 +147,7 @@ public class BsonQueryFactory implements QueryFactory {
                                 throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
                             }
 
-                            o = marshallParameter(params[paramPos++], false);
+                            o = marshallParameter(params[paramPos++]);
 
                             // Replace value set by super.objectDone()
                             if (!isStackEmpty()) {
@@ -177,14 +175,13 @@ public class BsonQueryFactory implements QueryFactory {
 
     }
 
-    private Object marshallParameter(Object parameter, boolean serializeBsonPrimitives) {
+    private Object marshallParameter(Object parameter) {
         try {
             if (parameter == null || Bson.isPrimitive(parameter)) {
-                return serializeBsonPrimitives ? jsonSerializer.serialize(parameter) : parameter;
+                return parameter;
             }
             if (parameter instanceof Enum) {
-                String name = ((Enum<?>) parameter).name();
-                return serializeBsonPrimitives ? jsonSerializer.serialize(name) : name;
+                return ((Enum<?>) parameter).name();
             }
             if (parameter instanceof Collection) {
                 return marshallCollection((Collection<?>) parameter);
@@ -202,7 +199,7 @@ public class BsonQueryFactory implements QueryFactory {
     private DBObject marshallArray(Object[] parameters) {
         BasicDBList list = new BasicDBList();
         for (int i = 0; i < parameters.length; i++) {
-            list.add(marshallParameter(parameters[i], false));
+            list.add(marshallParameter(parameters[i]));
         }
         return list;
     }
@@ -210,7 +207,7 @@ public class BsonQueryFactory implements QueryFactory {
     private DBObject marshallCollection(Collection<?> parameters) {
         BasicDBList list = new BasicDBList();
         for (Object param : parameters) {
-            list.add(marshallParameter(param, false));
+            list.add(marshallParameter(param));
         }
         return list;
     }
