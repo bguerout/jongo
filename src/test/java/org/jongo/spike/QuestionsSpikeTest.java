@@ -32,7 +32,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -125,6 +127,20 @@ public class QuestionsSpikeTest extends JongoTestCase {
         Party party = collection.findOne().as(Party.class);
 
         assertThat(party.friends).extracting("name").containsExactly("Robert", "John");
+    }
+
+    @Test
+    //https://github.com/bguerout/jongo/issues/187
+    public void canUseElemMatchWithDateParams() throws Exception {
+
+        Date now = new Date();
+        collection.insert("{flag:'ko', values: [{name: 'Client2', type: 'void',value: ''}]}");
+        collection.insert("{flag:'ok', values: [{name: 'Client', type: 'void',value: ''},{name: 'Date',type: 'date',value: #}]}", now);
+
+        Map map = collection.findOne("{values: {$elemMatch: {value : #}}}", now).as(Map.class);
+
+        assertThat(map).isNotNull();
+        assertThat(map.get("flag")).isEqualTo("ok");
     }
 
     private static class Party {
