@@ -101,13 +101,19 @@ class Insert {
         public Object get(String key) {
             if ("_id".equals(key) && id != null) {
                 if (Bson.isPrimitive(id)) {
-                    ObjectId oid = ObjectId.massageToObjectId(id);
-                    return oid != null ? oid : id;
+                    return asPrimitiveId();
                 } else {
                     return asBsonDocument(marshaller, id).toDBObject();
                 }
             }
             return super.get(key);
+        }
+
+        private Object asPrimitiveId() {
+            if (id instanceof String && ObjectId.isValid((String) id)) {
+                return new ObjectId((String) id);
+            }
+            return id;
         }
 
         @Override
