@@ -19,6 +19,7 @@ package org.jongo;
 import com.mongodb.*;
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
+import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.query.QueryFactory;
@@ -80,6 +81,9 @@ class Insert {
 
     private DBObject convertToDBObject(Object pojo, Object id) {
         BsonDocument document = marshallDocument(pojo);
+        if (!Bson.isPrimitive(id)) {
+            id = marshallDocument(id).toDBObject();
+        }
         return new AlreadyCheckedDBObject(document.toByteArray(), id);
     }
 
