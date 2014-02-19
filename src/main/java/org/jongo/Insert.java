@@ -80,29 +80,19 @@ class Insert {
     }
 
     private DBObject convertToDBObject(Object pojo, Object id) {
-        BsonDocument document = marshallDocument(pojo);
-        if (!Bson.isPrimitive(id)) {
-            id = marshallDocument(id).toDBObject();
-        }
-        return new AlreadyCheckedDBObject(document.toByteArray(), id);
-    }
-
-    private BsonDocument marshallDocument(Object pojo) {
-        try {
-            return marshaller.marshall(pojo);
-        } catch (Exception e) {
-            String message = String.format("Unable to save object %s due to a marshalling error", pojo);
-            throw new IllegalArgumentException(message, e);
-        }
+        BsonDocument document = asBsonDocument(marshaller, pojo);
+        return new AlreadyCheckedDBObject(document.toByteArray(), marshaller, id);
     }
 
     private final static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
 
-        private final Set<String> keys;
         private final Object id;
+        private final Marshaller marshaller;
+        private final Set<String> keys;
 
-        private AlreadyCheckedDBObject(byte[] data, Object id) {
+        private AlreadyCheckedDBObject(byte[] data, Marshaller marshaller, Object id) {
             super(data, new LazyBSONCallback());
+            this.marshaller = marshaller;
             this.id = id;
             this.keys = new HashSet<String>();
         }
@@ -110,8 +100,12 @@ class Insert {
         @Override
         public Object get(String key) {
             if ("_id".equals(key) && id != null) {
-                ObjectId oid = ObjectId.massageToObjectId(id);
-                return oid != null ? oid : id;
+                if (Bson.isPrimitive(id)) {
+                    ObjectId oid = ObjectId.massageToObjectId(id);
+                    return oid != null ? oid : id;
+                } else {
+                    return asBsonDocument(marshaller, id).toDBObject();
+                }
             }
             return super.get(key);
         }
@@ -122,6 +116,15 @@ class Insert {
             combined.addAll(keys);
             combined.addAll(super.keySet());
             return combined;
+        }
+    }
+
+    private static BsonDocument asBsonDocument(Marshaller marshaller, Object obj) {
+        try {
+            return marshaller.marshall(obj);
+        } catch (Exception e) {
+            String message = String.format("Unable to save object %s due to a marshalling error", obj);
+            throw new IllegalArgumentException(message, e);
         }
     }
 }
