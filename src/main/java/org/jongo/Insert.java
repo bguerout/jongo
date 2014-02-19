@@ -80,9 +80,7 @@ class Insert {
 
     private DBObject convertToDBObject(Object pojo, Object id) {
         BsonDocument document = marshallDocument(pojo);
-        DBObject dbo = new AlreadyCheckedDBObject(document.toByteArray(), id);
-        dbo.put("_id", id);
-        return dbo;
+        return new AlreadyCheckedDBObject(document.toByteArray(), id);
     }
 
     private BsonDocument marshallDocument(Object pojo) {
