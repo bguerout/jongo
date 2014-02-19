@@ -201,9 +201,9 @@ public class SaveTest extends JongoTestCase {
     @Test
     public void canSaveWithCompositeKey() {
       
-      MapReduceData aggregate = new MapReduceData("group", new Date(), 1);
+        MapReduceData aggregate = new MapReduceData("group", new Date(), 1);
       
-      collection.save(aggregate);
+        collection.save(aggregate);
     }
 
 }
