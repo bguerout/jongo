@@ -16,22 +16,18 @@
 
 package org.jongo;
 
-import java.util.Date;
-
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.jongo.model.MapReduceData;
-import org.jongo.model.Coordinate;
-import org.jongo.model.ExposableFriend;
-import org.jongo.model.ExternalFriend;
-import org.jongo.model.Friend;
+import org.jongo.model.*;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -197,13 +193,13 @@ public class SaveTest extends JongoTestCase {
 
         assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
-    
+
     @Test
     public void canSaveWithCompositeKey() {
-      
-      MapReduceData aggregate = new MapReduceData("group", new Date(), 1);
-      
-      collection.save(aggregate);
+
+        MapReduceData aggregate = new MapReduceData("group", new Date(), 1);
+
+        collection.save(aggregate);
     }
 
 }
