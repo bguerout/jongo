@@ -101,19 +101,12 @@ class Insert {
         public Object get(String key) {
             if ("_id".equals(key) && id != null) {
                 if (Bson.isPrimitive(id)) {
-                    return asPrimitiveId();
+                    return asPrimitiveId(id);
                 } else {
                     return asBsonDocument(marshaller, id).toDBObject();
                 }
             }
             return super.get(key);
-        }
-
-        private Object asPrimitiveId() {
-            if (id instanceof String && ObjectId.isValid((String) id)) {
-                return new ObjectId((String) id);
-            }
-            return id;
         }
 
         @Override
@@ -132,5 +125,12 @@ class Insert {
             String message = String.format("Unable to save object %s due to a marshalling error", obj);
             throw new IllegalArgumentException(message, e);
         }
+    }
+
+    private static Object asPrimitiveId(Object id) {
+        if (id instanceof String && ObjectId.isValid((String) id)) {
+            return new ObjectId((String) id);
+        }
+        return id;
     }
 }
