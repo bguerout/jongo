@@ -415,6 +415,12 @@ collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
                               <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.</p>
                               <pre class="prettyprint">friends.count("{name: 'Joe'}");</pre>
 
+                              <p>Note that a <code>count()</code> method is also available on MongoCursor, behaviour similar to <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html#count()" target="_blank">DBCursor.count()</a></p>
+
+                              <pre class="prettyprint">
+MongoCursor&lt;Friend&gt; cursor = friends.find().as(Friend.class);
+int nbResults = cursor.count();</pre>
+
                               <h2 id="command">Command</h2>
                               <p>Behaviour pretty similar to Java driver <a href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
                               <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(GeoNearResult.class);</pre>
