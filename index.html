@@ -351,6 +351,15 @@ friends.find().limit(10).as(Friend.class);</pre>
                           <p>Behaviour similar to Java driver <a href="http://docs.mongodb.org/manual/reference/operator/hint/" target="_blank">Find.hint(..)</a>.</p>
                           <pre class="prettyprint">friends.find().hint("{age: 1}").as(Friend.class);</pre>
 
+                        <h3>Query modifiers</h3>
+                        <p><a href="http://docs.mongodb.org/manual/reference/operator/query-modifier/" target="_blank">Query modifiers</a> can be setted on <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a> by implementing QueryModifier.</p>
+                        <pre class="prettyprint">
+friends.find().with(new QueryModifier() {
+     public void modify(DBCursor cursor) {
+         cursor.batchSize(10);
+     }
+}).as(Friend.class);</pre>
+
                         <h3>Oid</h3>
                         <p>
                           As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated with a <code>String</code> annotated with <code>@ObjectId</code>. If you want to completly avoid using driver's <code>ObjectId</code>, Jongo offers the <code>Oid</code> class.
