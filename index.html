@@ -327,9 +327,9 @@ Friend joe = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
 
                         <h3>Projection or Field selection</h3>
                         <p>
-                          Field selection aka. partial loading is not written as in Mongo shell:
-                          Jongo exposes a <code>projection(..)</code> method. A json selector must be provided: <code>{field:
-                          1}</code> to include it, <code>{field: 0}</code> to exclude it.
+                            Field selection aka. partial loading is not written as in Mongo shell:
+                            Jongo exposes a <code>projection(..)</code> method. A json selector must be provided: <code>{field:
+                            1}</code> to include it, <code>{field: 0}</code> to exclude it.
                         </p>
                         <pre class="prettyprint">friends.find().projection("{lastname: 1, address: 1}").as(Friend.class);</pre>
 
@@ -377,6 +377,13 @@ friends.find("{address: #}", new Address(..)); //&rarr; will marshall Address ob
                             <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
 friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}</pre>
+
+                            <p>
+                                Projections can also be templated
+                            </p>
+                            <pre class="prettyprint">
+friends.find().projection("{name:#",1).as(Friend.class);
+friends.find().projection("{family:{$elemMatch:{name:#}}}","Daddy").as(Friend.class);</pre>
 
                               <h2 id="regex">Regular expressions</h2>
 
