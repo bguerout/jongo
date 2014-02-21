@@ -580,15 +580,15 @@ Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 
                             <section id="notes" class="offset1">
                               <div class="row">
-                                <div class="span9 header"><h1>Release notes (0.4&rarr;1.0)</h1></div>
+                                <div class="span9 header"><h1>Release notes (1.0&rarr;1.1)</h1></div>
                                 <div class="span9">
-                                  <p>Previous releases: <a href="/tags/0.4/0.4.html">0.4</a>, <a href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a href="/tags/0.1/0.1.html">0.1</a></p>
+                                  <p>Previous releases: <a href="/tags/1.0/1.0.html">1.0</a>, <a href="/tags/0.4/0.4.html">0.4</a>, <a href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a href="/tags/0.1/0.1.html">0.1</a></p>
                                   <dl class="dl-horizontal">
-                                    <dt class="strong">query marshalling</dt><dd>full bson marshalling (<i>big thanks to <a href="https://github.com/swallez" target="_blank">Sylvain Wallez</a></i>)</dd>
-                                    <dt class="strong">GridFS</dt><dd>full compatibility (<i>thanks to <a href="https://github.com/olim7t" target="_blank">Olivier Michallat</a></i>)</dd>
-                                    <dt>Update</dt><dd><code>update().merge(pojo)</code> renamed to <code>update().with(pojo)</code></dd>
-                                    <dt>mappers</dt><dd>extract alternative mappers to <a href="https://github.com/bguerout/jongo-extras" target="_blank">jongo-extras</a> repository</dd>
-                                    <dt>fixes</dt><dd>a lot of bug fixing & improvements (<i>thanks to <a href="https://github.com/twillouer" target="_blank">William Delanoue</a>, <a href="https://github.com/adutra" target="_blank">Alexandre Dutra</a>, <a href="https://github.com/jblemee" target="_blank">Jean-Baptiste Lemée</a> and <a href="https://github.com/sjoerdmulder" target="_blank">Sjoerd Mulder</a></i>)</dd>
+                                    <dt class="strong">Query modifiers</dt><dd>find queries can be modified with modifier operators</dd>
+                                    <dt class="strong">MongoCursor</dt><dd>find operation now returns a cursor</dd>
+                                    <dt>OSGI Compliant</dt><dd>jar can be loaded in a OSGI context (<i>thanks to <a href="https://github.com/lightoze" target="_blank">Vladimir Kulev</a></i>)</dd>
+                                    <dt>Projection templating</dt><dd>use parameters in projections queries (<i>thanks to <a href="https://github.com/xavier-calland" target="_blank">Xavier Calland</a></i>)</dd>
+                                    <dt>fixes</dt><dd><i>thanks to <a href="https://github.com/xhanin" target="_blank">Xavier Hanin</a></i></dd>
                                   </dl>
                                 </div>
                               </div>
