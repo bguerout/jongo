@@ -141,7 +141,7 @@ DB db = new MongoClient().getDB("dbname");
 Jongo jongo = new Jongo(db);
 MongoCollection friends = jongo.getCollection("friends");
 
-Iterable&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
+MongoCursor&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
 Friend one = friends.findOne("{name: 'Joe'}").as(Friend.class);</pre>
 
               </section>
@@ -316,7 +316,7 @@ Fox fantastic = (Fox)friend;</pre>
                       </p>
 
                       <pre class="prettyprint">
-Iterable&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
+MongoCursor&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
 
 Friend joe = friends.findOne("{name: 'Joe'}").as(Friend.class);
 Friend joe = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
@@ -572,14 +572,15 @@ Jongo jongo = new Jongo(mongo.getDB("dbname"), new GsonMapper());</pre>
                                   </p>
 
                                   <pre class="prettyprint">
-Iterable&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
+MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
     new ResultHandler&lt;Integer&gt;() {
         @Override
         public Integer handle(DBObject result) {
             //do manual stuff here
             return result.get("age");
         }
-});</pre>
+    }
+);</pre>
 
                               <h2 id="exposing-trough-jersey">Exposing objects through web services</h2>
 
