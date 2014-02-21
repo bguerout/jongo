@@ -25,9 +25,7 @@ import org.jongo.marshall.Marshaller;
 import org.jongo.query.QueryFactory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 class Insert {
 
@@ -81,20 +79,18 @@ class Insert {
 
     private DBObject convertToDBObject(Object pojo, Object id) {
         BsonDocument document = asBsonDocument(marshaller, pojo);
-        return new AlreadyCheckedDBObject(document.toByteArray(), marshaller, id);
+        return new LazyIdDBObject(document.toByteArray(), marshaller, id);
     }
 
-    private final static class AlreadyCheckedDBObject extends LazyWriteableDBObject {
+    private final static class LazyIdDBObject extends LazyWriteableDBObject {
 
         private final Object id;
         private final Marshaller marshaller;
-        private final Set<String> keys;
 
-        private AlreadyCheckedDBObject(byte[] data, Marshaller marshaller, Object id) {
+        private LazyIdDBObject(byte[] data, Marshaller marshaller, Object id) {
             super(data, new LazyBSONCallback());
             this.marshaller = marshaller;
             this.id = id;
-            this.keys = new HashSet<String>();
         }
 
         @Override
@@ -107,14 +103,6 @@ class Insert {
                 }
             }
             return super.get(key);
-        }
-
-        @Override
-        public Set<String> keySet() {
-            Set<String> combined = new HashSet<String>();
-            combined.addAll(keys);
-            combined.addAll(super.keySet());
-            return combined;
         }
     }
 
