@@ -360,6 +360,13 @@ friends.find().with(new QueryModifier() {
      }
 }).as(Friend.class);</pre>
 
+                        <h3>Closing cursor</h3>
+                        <p>You can close cursor manually by calling <code>close()</code> method on MongoCursor</p>
+                        <pre class="prettyprint">
+MongoCursor&lt;Friend&gt; cursor = friends.find().as(Friend.class);
+//iterate over it
+cursor.close();</pre>
+
                         <h3>Oid</h3>
                         <p>
                           As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated with a <code>String</code> annotated with <code>@ObjectId</code>. If you want to completly avoid using driver's <code>ObjectId</code>, Jongo offers the <code>Oid</code> class.
