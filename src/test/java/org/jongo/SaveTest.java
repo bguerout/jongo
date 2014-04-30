@@ -140,6 +140,20 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
+    public void canUpdateAPojoWithACustomId() throws Exception {
+
+        ExternalFriend externalFriend = new ExternalFriend(122, "John");
+        MongoCollection safeCollection = collection.withWriteConcern(WriteConcern.SAFE);
+
+        safeCollection.save(externalFriend);
+        externalFriend.setName("Robert");
+        safeCollection.save(externalFriend);
+
+        ExternalFriend result = collection.findOne("{name:'Robert'}").as(ExternalFriend.class);
+        assertThat(result.getId()).isEqualTo(122);
+    }
+
+    @Test
     public void canSaveWithAnEmptyObjectIdAsString() throws Exception {
 
         ExposableFriend john = new ExposableFriend("Robert");
