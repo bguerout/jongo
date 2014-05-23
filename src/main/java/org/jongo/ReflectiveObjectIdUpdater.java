@@ -53,7 +53,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
     public void setObjectId(Object newPojo, ObjectId id) {
         Field idField = selectIdField(newPojo.getClass());
         if (idField == null) {
-            return;     //TODO check if test exists
+            return;
         } else if (!mustGenerateObjectId(newPojo)) {
             throw new IllegalArgumentException("Unable to set objectid on class: " + newPojo.getClass());
         }
