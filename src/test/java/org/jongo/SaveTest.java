@@ -20,6 +20,7 @@ import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.model.*;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
@@ -166,6 +167,23 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
+    public void canUpdateAValidObjectIdString() {
+
+        Order order = new Order();
+        order.setBuyer("foo");
+
+        collection.save(order);
+        String id = order.getId();
+        assertThat(order.getId()).isNotNull();
+
+        order.setBuyer("bar");
+        collection.save(order);
+
+        assertThat(order.getId()).isEqualTo(id);
+        assertThat(order.getBuyer()).isEqualTo("bar");
+    }
+
+    @Test
     public void canSaveAnObjectWithoutIdAnnotation() throws Exception {
 
         Coordinate noId = new Coordinate(123, 1);
@@ -214,6 +232,32 @@ public class SaveTest extends JongoTestCase {
         MapReduceData aggregate = new MapReduceData("group", new Date(), 1);
 
         collection.save(aggregate);
+    }
+
+    private static class Order {
+
+        @Id
+        private String id;
+        private String buyer;
+
+        public Order() {
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getBuyer() {
+            return buyer;
+        }
+
+        public void setBuyer(String buyer) {
+            this.buyer = buyer;
+        }
     }
 
 }
