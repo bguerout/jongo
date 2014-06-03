@@ -31,7 +31,7 @@ public class FindOne {
     private final DBCollection collection;
     private final ReadPreference readPreference;
     private final Query query;
-    private Query fields;
+    private Query fields, orderBy;
     private final QueryFactory queryFactory;
 
     FindOne(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
@@ -47,7 +47,7 @@ public class FindOne {
     }
 
     public <T> T map(ResultHandler<T> resultHandler) {
-        DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject(), readPreference);
+        DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject(), getOrderByAsDBObject(), readPreference);
         return result == null ? null : resultHandler.map(result);
     }
 
@@ -61,7 +61,16 @@ public class FindOne {
         return this;
     }
 
+    public FindOne orderBy(String orderBy) {
+        this.orderBy = queryFactory.createQuery(orderBy);
+        return this;
+    }
+
     private DBObject getFieldsAsDBObject() {
         return fields == null ? null : fields.toDBObject();
+    }
+
+    private DBObject getOrderByAsDBObject() {
+        return orderBy == null ? null : orderBy.toDBObject();
     }
 }
