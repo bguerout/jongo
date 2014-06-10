@@ -41,7 +41,13 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
         if (idField != null) {
             try {
                 idField.setAccessible(true);
-                return idField.get(pojo);
+                Object id = idField.get(pojo);
+
+                if (idFieldSelector.isObjectId(idField)) {
+                    return new ObjectId(id.toString());
+                } else {
+                    return id;
+                }
 
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Unable to obtain objectid from field" + idField.getName() + ", class: " + idField.getClass(), e);
@@ -53,7 +59,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
     public void setObjectId(Object newPojo, ObjectId id) {
         Field idField = selectIdField(newPojo.getClass());
         if (idField == null) {
-            return;     //TODO check if test exists
+            return;
         } else if (!mustGenerateObjectId(newPojo)) {
             throw new IllegalArgumentException("Unable to set objectid on class: " + newPojo.getClass());
         }
@@ -66,6 +72,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
                 field.setAccessible(true);
                 field.set(target, id);
             } else if (field.getType().equals(String.class)) {
+                //TODO We should also check if field has @ObjectId annotation
                 field.setAccessible(true);
                 field.set(target, id.toString());
             }
@@ -103,5 +110,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
 
     public interface IdFieldSelector {
         public boolean isId(Field f);
+
+        public boolean isObjectId(Field f);
     }
 }

@@ -28,6 +28,11 @@ public class JacksonIdFieldSelector implements ReflectiveObjectIdUpdater.IdField
         return has_IdName(f) || hasJsonProperty(f) || hasIdAnnotation(f);
     }
 
+    public boolean isObjectId(Field f) {
+        org.jongo.marshall.jackson.oid.ObjectId annotation = f.getAnnotation(org.jongo.marshall.jackson.oid.ObjectId.class);
+        return annotation != null && f.getType().equals(String.class);
+    }
+
     private boolean has_IdName(Field f) {
         return "_id".equals(f.getName());
     }

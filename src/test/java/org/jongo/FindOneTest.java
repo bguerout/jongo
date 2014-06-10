@@ -143,4 +143,16 @@ public class FindOneTest extends JongoTestCase {
 
         // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
     }
+
+    @Test
+    public void canOrderBy() throws Exception {
+
+        collection.save(new Friend("John", "23 Wall Street Av."));
+        collection.save(new Friend("John", "21 Wall Street Av."));
+        collection.save(new Friend("John", "22 Wall Street Av."));
+
+        Friend friend = collection.findOne().orderBy("{address:1}").as(Friend.class);
+
+        assertThat(friend.getAddress()).isEqualTo("21 Wall Street Av.");
+    }
 }
