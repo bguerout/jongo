@@ -16,15 +16,21 @@
 
 package org.jongo.query;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
+import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -165,5 +171,24 @@ public class BsonQueryFactoryTest {
         DBObject dbo = factory.createQuery("{bytes:#}", "test".getBytes(StandardCharsets.UTF_8)).toDBObject();
 
         assertThat(new String((byte[]) dbo.get("bytes"))).isEqualTo("test");
+    }
+
+    @Test
+    public void canHandleAObjectSerializedAsAPrimitive() throws Exception {
+
+        Mapping mapping = new Mapping.Builder().addSerializer(Friend.class, new PrimitiveJsonSerializer()).build();
+        factory = new BsonQueryFactory(new JacksonEngine(mapping));
+
+        DBObject query = factory.createQuery("{bytes:#}", new Friend("Robert")).toDBObject();
+
+        assertThat(query.get("bytes")).isEqualTo("Robert");
+    }
+
+    private static class PrimitiveJsonSerializer extends JsonSerializer<Friend> {
+
+        @Override
+        public void serialize(Friend friend, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(friend.getName());
+        }
     }
 }
