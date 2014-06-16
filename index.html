@@ -338,6 +338,7 @@ Friend joe = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
                           for ascending, <code>{field: -1}</code> for descending.
                         </p>
                         <pre class="prettyprint">
+friends.findOne().orderBy("{firstname: 1}").as(Friend.class);
 friends.find().sort("{firstname: 1}").as(Friend.class);
 friends.find().sort("{lasttname: -1}").as(Friend.class);</pre>
 
