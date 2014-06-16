@@ -18,11 +18,10 @@
 package org.jongo.query;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONCallback;
-import com.mongodb.util.JSONSerializers;
-import com.mongodb.util.ObjectSerializer;
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.jongo.bson.Bson;
@@ -223,7 +222,8 @@ public class BsonQueryFactory implements QueryFactory {
         return list;
     }
 
-    private DBObject marshallDocument(Object parameter) {
-        return marshaller.marshall(parameter).toDBObject();
+    private Object marshallDocument(Object parameter) {
+        DBObject wrapper = new BasicDBObject("wrapped", parameter);
+        return marshaller.marshall(wrapper).toDBObject().get("wrapped");
     }
 }
