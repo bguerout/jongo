@@ -6,7 +6,7 @@
 
 **Object oriented**, Save & find objects into & from collections. Use embedded Jackson marshalling or your own.
 
-**Wood solid**, As fast as Mongo Java driver. Open source, fully tested & made of rock solid librairies.
+**Wood solid**, As fast as Mongo Java driver. Open source, fully tested & made of rock solid libraries.
 
 Documentation available at <a href="http://www.jongo.org/">jongo.org</a>
 
