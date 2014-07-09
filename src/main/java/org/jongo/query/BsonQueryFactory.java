@@ -94,12 +94,23 @@ public class BsonQueryFactory implements QueryFactory {
             // Check if the character preceding the token is one that separates values.
             // Otherwise, it's a property name substitution
             boolean isValueParam = true;
-            if (pos > 0) {
+            int comaIndex = query.indexOf(",", pos);
+            int doubleDotIndex =query.indexOf(":", pos);
+            if (comaIndex == -1 && doubleDotIndex == -1) {
+                isValueParam = true;
+            } else if (comaIndex == -1 && doubleDotIndex != -1) {
+                isValueParam = false;
+            } else if (comaIndex <  doubleDotIndex) {
+                isValueParam = true;
+            } else {
+                isValueParam = false;
+            }
+            /*if (pos > 0) {
                 char c = query.charAt(pos - 1);
                 if (PRECEDING_VALUE_PARAM.indexOf(c) == -1) {
                     isValueParam = false;
                 }
-            }
+            }*/
 
             if (isValueParam) {
                 // Will be resolved by the JSON parser below

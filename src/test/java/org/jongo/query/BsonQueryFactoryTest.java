@@ -87,6 +87,14 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldBindManyNames() throws Exception {
+
+        Query query = factory.createQuery("{#:123, #:456}", "id", "test");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).and("test").is(456).get());
+    }
+
+    @Test
     public void shouldBindNullParameter() throws Exception {
 
         Query query = factory.createQuery("{id:#}", null);
