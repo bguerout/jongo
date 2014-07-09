@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import java.io.IOException;
 
@@ -35,6 +36,6 @@ public class ObjectIdDeserializer extends JsonDeserializer<String> {
         if (oid != null)
             return oid.asText();
         else
-            return treeNode.toString();
+            return ((JsonNode) treeNode).asText();
     }
 }
