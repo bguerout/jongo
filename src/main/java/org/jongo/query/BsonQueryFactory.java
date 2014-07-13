@@ -35,7 +35,6 @@ public class BsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
     private static final String MARSHALL_OPERATOR = "$marshall";
-    private static final String PRECEDING_VALUE_PARAM = ": ,[\t\r\n";
 
     private final String token;
     private final Marshaller marshaller;
@@ -93,26 +92,7 @@ public class BsonQueryFactory implements QueryFactory {
 
             // Check if the character preceding the token is one that separates values.
             // Otherwise, it's a property name substitution
-            boolean isValueParam = true;
-            int comaIndex = query.indexOf(",", pos);
-            int doubleDotIndex =query.indexOf(":", pos);
-            if (comaIndex == -1 && doubleDotIndex == -1) {
-                isValueParam = true;
-            } else if (comaIndex == -1 && doubleDotIndex != -1) {
-                isValueParam = false;
-            } else if (comaIndex <  doubleDotIndex) {
-                isValueParam = true;
-            } else {
-                isValueParam = false;
-            }
-            /*if (pos > 0) {
-                char c = query.charAt(pos - 1);
-                if (PRECEDING_VALUE_PARAM.indexOf(c) == -1) {
-                    isValueParam = false;
-                }
-            }*/
-
-            if (isValueParam) {
+            if (isValueToken(query, pos)) {
                 // Will be resolved by the JSON parser below
                 sb.append("{\"").append(MARSHALL_OPERATOR).append("\":").append(paramIncrement).append("}");
                 paramIncrement = 0;
@@ -183,6 +163,18 @@ public class BsonQueryFactory implements QueryFactory {
 
         return new BsonQuery(dbo);
 
+    }
+
+    private boolean isValueToken(String query, int tokenIndex) {
+        for (int pos = tokenIndex; pos >= 0; pos--) {
+            char c = query.charAt(pos);
+            if (c == ':') {
+                return true;
+            } else if (c == ',' || c == '{' || c == '.') {
+                return false;
+            }
+        }
+        return true;
     }
 
     private Object marshallParameter(Object parameter) {

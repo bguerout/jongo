@@ -17,7 +17,6 @@
 package org.jongo.query;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mongodb.BasicDBObject;
@@ -82,14 +81,6 @@ public class BsonQueryFactoryTest {
     public void shouldBindManyParameters() throws Exception {
 
         Query query = factory.createQuery("{id:#, test:#}", 123, 456);
-
-        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).and("test").is(456).get());
-    }
-
-    @Test
-    public void shouldBindManyNames() throws Exception {
-
-        Query query = factory.createQuery("{#:123, #:456}", "id", "test");
 
         assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).and("test").is(456).get());
     }
@@ -182,6 +173,46 @@ public class BsonQueryFactoryTest {
         DBObject query = factory.createQuery("{bytes:#}", new Friend("Robert")).toDBObject();
 
         assertThat(query.get("bytes")).isEqualTo("Robert");
+    }
+
+    @Test
+    public void shouldBindKeyParameter() throws Exception {
+
+        Query query = factory.createQuery("{#: 123}", "id");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).get());
+    }
+
+    @Test
+    public void shouldBindKeyParameterAndIgnoreSpace() throws Exception {
+
+        Query query = factory.createQuery("{ #: 123}", "id");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).get());
+    }
+
+    @Test
+    public void shouldBindKeyParameterInSecondPosition() throws Exception {
+
+        Query query = factory.createQuery("{a: 'a', #: 'b'}", "id");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("a").is("a").and("id").is("b").get());
+    }
+
+    @Test
+    public void shouldBindANestedKeyParameter() throws Exception {
+
+        Query query = factory.createQuery("{ name.#: 'John'}", "first");
+
+        assertThat(query.toDBObject().toString()).isEqualTo("{ \"name.first\" : \"John\"}");
+    }
+
+    @Test
+    public void shouldBindASingleTokenAsParameter() throws Exception {
+
+        Query query = factory.createQuery("#", new Friend("John"));
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("name").is("John").get());
     }
 
     private static class PrimitiveJsonSerializer extends JsonSerializer<Friend> {
