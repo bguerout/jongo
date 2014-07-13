@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -37,7 +38,7 @@
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 
@@ -76,8 +77,8 @@
 
     <properties>
         <mongo.version>[2.11.0,2.99)</mongo.version>
-        <jackson.version>2.3.1</jackson.version>
-        <bson4jackson.version>2.3.1</bson4jackson.version>
+        <jackson.version>2.4.1</jackson.version>
+        <bson4jackson.version>2.4.0</bson4jackson.version>
     </properties>
 
     <dependencies>
@@ -262,7 +263,9 @@
                         <configuration>
                             <manifestLocation>${project.build.directory}</manifestLocation>
                             <instructions>
-                                <Import-Package>com.mongodb.*;version="${mongo.version}",org.bson.*;version="${mongo.version}",*</Import-Package>
+                                <Import-Package>
+                                    com.mongodb.*;version="${mongo.version}",org.bson.*;version="${mongo.version}",*
+                                </Import-Package>
                             </instructions>
                         </configuration>
                     </execution>
