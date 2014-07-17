@@ -165,7 +165,7 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
-    public void canHandleAObjectSerializedAsAPrimitive() throws Exception {
+    public void canHandleObjectSerializedAsAPrimitive() throws Exception {
 
         Mapping mapping = new Mapping.Builder().addSerializer(Friend.class, new PrimitiveJsonSerializer()).build();
         factory = new BsonQueryFactory(new JacksonEngine(mapping));

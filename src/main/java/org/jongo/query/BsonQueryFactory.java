@@ -18,18 +18,20 @@
 package org.jongo.query;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONCallback;
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.jongo.bson.Bson;
+import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BsonQueryFactory implements QueryFactory {
 
@@ -215,7 +217,9 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     private Object marshallDocument(Object parameter) {
-        DBObject wrapper = new BasicDBObject("wrapped", parameter);
-        return marshaller.marshall(wrapper).toDBObject().get("wrapped");
+        Map<String, Object> primitiveWrapper = new HashMap<String, Object>();
+        primitiveWrapper.put("wrapped", parameter);
+        BsonDocument document = marshaller.marshall(primitiveWrapper);
+        return document.toDBObject().get("wrapped");
     }
 }
