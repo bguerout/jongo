@@ -43,7 +43,7 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
                 idField.setAccessible(true);
                 Object id = idField.get(pojo);
 
-                if (idFieldSelector.isObjectId(idField)) {
+                if (idFieldSelector.isObjectId(idField) && String.class.isAssignableFrom(idField.getType())) {
                     return new ObjectId(id.toString());
                 } else {
                     return id;

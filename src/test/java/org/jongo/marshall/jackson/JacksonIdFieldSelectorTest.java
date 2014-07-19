@@ -71,6 +71,20 @@ public class JacksonIdFieldSelectorTest {
         public Integer id_custom;
     }
 
+    @Test
+    public void shouldDetectObjectIdByType() throws Exception {
+        assertThat(selector.isObjectId(OidWithoutAnnotation.class.getField("_id"))).isTrue();
+        assertThat(selector.isObjectId(OidWithoutAnnotation.class.getField("ignored"))).isTrue();
+        assertThat(selector.isObjectId(CustomWithoutAnnotation.class.getField("_id"))).isFalse();
+    }
+
+    @Test
+    public void shouldDetectObjectIdWithAnnotation() throws Exception {
+        assertThat(selector.isObjectId(AnnotatedObjectId.class.getField("_id"))).isTrue();
+        assertThat(selector.isObjectId(StringWithoutAnnotation.class.getField("_id"))).isFalse();
+
+    }
+
     private static class JsonPropertyAnnotated {
         @JsonProperty("_id")
         public ObjectId id;
@@ -98,6 +112,11 @@ public class JacksonIdFieldSelectorTest {
 
     private static class CustomWithoutAnnotation {
         public Integer _id;
+    }
+
+    private static class AnnotatedObjectId {
+        @org.jongo.marshall.jackson.oid.ObjectId
+        public String _id;
     }
 
 }

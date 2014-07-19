@@ -17,6 +17,7 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.bson.types.ObjectId;
 import org.jongo.ReflectiveObjectIdUpdater;
 import org.jongo.marshall.jackson.oid.Id;
 
@@ -29,8 +30,8 @@ public class JacksonIdFieldSelector implements ReflectiveObjectIdUpdater.IdField
     }
 
     public boolean isObjectId(Field f) {
-        org.jongo.marshall.jackson.oid.ObjectId annotation = f.getAnnotation(org.jongo.marshall.jackson.oid.ObjectId.class);
-        return annotation != null && f.getType().equals(String.class);
+        return f.isAnnotationPresent(org.jongo.marshall.jackson.oid.ObjectId.class)
+                || ObjectId.class.isAssignableFrom(f.getType());
     }
 
     private boolean has_IdName(Field f) {
