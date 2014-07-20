@@ -28,7 +28,7 @@ import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -216,9 +216,22 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     private Object marshallDocument(Object parameter) {
-        Map<String, Object> primitiveWrapper = new HashMap<String, Object>();
-        primitiveWrapper.put("wrapped", parameter);
-        BsonDocument document = marshaller.marshall(primitiveWrapper);
-        return document.toDBObject().get("wrapped");
+        BsonDocument document = marshaller.marshall(parameter);
+        DBObject obj = document.toDBObject();
+
+        if (obj.keySet().isEmpty()) {
+
+            // The object may have been serialized to a primitive type with a
+            // custom serializer, so try again after wrapping as an object property.
+            // We do this trick only as a fallback since it causes Jackson to consider the parameter
+            // as "Object" and thus ignore any annotations that may exist on its actual class.
+
+            Map<String, Object> primitiveWrapper = Collections.singletonMap("wrapped", parameter);
+            document = marshaller.marshall(primitiveWrapper);
+            return document.toDBObject().get("wrapped");
+
+        } else {
+            return obj;
+        }
     }
 }
