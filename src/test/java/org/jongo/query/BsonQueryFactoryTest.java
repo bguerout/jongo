@@ -204,7 +204,8 @@ public class BsonQueryFactoryTest {
 
         Query query = factory.createQuery("{a: [ # ]}", "test");
 
-        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("a").is(new String[]{"test"}).get());
+        DBObject expected = QueryBuilder.start("a").is(new String[]{"test"}).get();
+        assertThat(query.toDBObject().toString()).isEqualTo(expected.toString());
     }
 
     @Test
@@ -212,7 +213,8 @@ public class BsonQueryFactoryTest {
 
         Query query = factory.createQuery("{a: [#, 'test2', #]}", "test1", "test3");
 
-        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("a").is(new String[]{"test1", "test2", "test3"}).get());
+        DBObject expected = QueryBuilder.start("a").is(new String[]{"test1", "test2", "test3"}).get();
+        assertThat(query.toDBObject().toString()).isEqualTo(expected.toString());
     }
 
     @Test
