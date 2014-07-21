@@ -171,11 +171,25 @@ public class BsonQueryFactory implements QueryFactory {
             char c = query.charAt(pos);
             if (c == ':') {
                 return true;
-            } else if (c == ',' || c == '{' || c == '.') {
+            } else if (c == '{' || c == '.') {
                 return false;
+            } else if (c == ',') {
+                return !isPropertyName(query, pos-1);
             }
         }
         return true;
+    }
+
+    private boolean isPropertyName(String query, int tokenIndex) {
+        for (int pos = tokenIndex; pos >= 0; pos--) {
+            char c = query.charAt(pos);
+            if (c == '[') {
+                return false;
+            } else if (c == '{') {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Object marshallParameter(Object parameter) {

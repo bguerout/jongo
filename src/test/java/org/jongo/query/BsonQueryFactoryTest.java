@@ -200,6 +200,22 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldBindOneValueInAnArray() throws Exception {
+
+        Query query = factory.createQuery("{a: [ # ]}", "test");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("a").is(new String[]{"test"}).get());
+    }
+
+    @Test
+    public void shouldBindManyValuesInAnArray() throws Exception {
+
+        Query query = factory.createQuery("{a: [#, 'test2', #]}", "test1", "test3");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("a").is(new String[]{"test1", "test2", "test3"}).get());
+    }
+
+    @Test
     public void shouldBindANestedKeyParameter() throws Exception {
 
         Query query = factory.createQuery("{ name.#: 'John'}", "first");
