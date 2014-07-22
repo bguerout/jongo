@@ -12,7 +12,7 @@ stop_on_install_error() {
 }
 
 echo "Installing nodejs $NODE_VERSION"
-curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+curl https://raw.githubusercontent.com/creationix/nvm/v0.11.2/install.sh | bash
 . "$HOME/.nvm/nvm.sh"
 stop_on_install_error "nvm has not been installed"
 
