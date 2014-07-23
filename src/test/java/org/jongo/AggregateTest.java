@@ -104,7 +104,7 @@ public class AggregateTest extends JongoTestCase {
             collection.aggregate("{$invalid:{}}").as(Article.class);
             fail();
         } catch (Exception e) {
-            assertThat(e.getClass().toString()).contains("CommandFailure");
+            assertThat(e.getMessage()).contains("result undefined");
         }
     }
 

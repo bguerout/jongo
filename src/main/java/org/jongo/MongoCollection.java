@@ -16,7 +16,11 @@
 
 package org.jongo;
 
-import com.mongodb.*;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.query.Query;
 
@@ -169,7 +173,7 @@ public class MongoCollection {
     }
 
     public Aggregate aggregate(String pipelineOperator, Object... parameters) {
-        return new Aggregate(collection.getDB(), collection.getName(), mapper.getUnmarshaller(), mapper.getQueryFactory()).and(pipelineOperator, parameters);
+        return new Aggregate(collection, mapper.getUnmarshaller(), mapper.getQueryFactory()).and(pipelineOperator, parameters);
     }
 
     public void drop() {

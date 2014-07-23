@@ -16,32 +16,29 @@
 
 package org.jongo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.QueryFactory;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class Aggregate {
 
-    private final DB db;
-    private final String collectionName;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final List<DBObject> pipeline;
+    private final DBCollection collection;
 
-    Aggregate(DB db, String collectionName, Unmarshaller unmarshaller, QueryFactory queryFactory) {
-        this.db = db;
-        this.collectionName = collectionName;
+    Aggregate(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory) {
         this.unmarshaller = unmarshaller;
         this.queryFactory = queryFactory;
         this.pipeline = new ArrayList<DBObject>();
+        this.collection = collection;
     }
 
     public Aggregate and(String pipelineOperator, Object... parameters) {
@@ -55,23 +52,11 @@ public class Aggregate {
     }
 
     public <T> List<T> map(ResultHandler<T> resultHandler) {
-        List<DBObject> results = executeAggregateCommand();
-        List<T> mappedResult = new ArrayList<T>(results.size());
+        Iterable<DBObject> results = collection.aggregate(pipeline).results();
+        List<T> mappedResult = new LinkedList<T>();
         for (DBObject dbObject : results) {
             mappedResult.add(resultHandler.map(dbObject));
         }
         return mappedResult;
-    }
-
-    private List<DBObject> executeAggregateCommand() {
-        CommandResult commandResult = db.command(createCommand());
-        commandResult.throwOnError();
-        return (List<DBObject>) (commandResult.get("result"));
-    }
-
-    DBObject createCommand() {
-        BasicDBObject cmd = new BasicDBObject("aggregate", collectionName);
-        cmd.put("pipeline", pipeline);
-        return cmd;
     }
 }
