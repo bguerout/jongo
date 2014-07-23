@@ -546,14 +546,14 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
             </p>
 
             <p>
-                Since .3, Jongo uses Mongo Java driver at a deeper level to enhance performance. Instead of converting
+                Since 0.3, Jongo uses Mongo Java driver at a deeper level to enhance performance. Instead of converting
                 results into strings and unmarshalling strings into objects, it works at <code>byte[]</code> level (<i>query
                 marhalling works the same since 1.0</i>).
             </p>
 
             <p>
                 Several microbenchmarks (<i>using Caliper & Yourkit</i>) highlight this release net improvements: Jongo
-                .3 is 6 times faster than Jongo .2, which make it <strong>as fast as the driver!</strong> Have a look at
+                0.3 is 6 times faster than Jongo 0.2, which make it <strong>as fast as the driver!</strong> Have a look at
                 <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.FindBench2/2262004"
                    target="_blank">find microbenchmark</a> and <a
                     href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.SaveBench/2283001"
@@ -773,7 +773,7 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 &lt;dependency&gt;
     &lt;groupId&gt;org.jongo&lt;/groupId&gt;
     &lt;artifactId&gt;jongo&lt;/artifactId&gt;
-    &lt;version&gt;1.0&lt;/version&gt;
+    &lt;version&gt;1.1&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 
         </div>
