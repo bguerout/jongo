@@ -26,7 +26,8 @@ import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
-import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.distribution.Feature;
+import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.io.IStreamProcessor;
@@ -57,6 +58,16 @@ public class MongoResource {
      */
     private static class EmbeddedMongo {
 
+        private static final IFeatureAwareVersion MONGO_2_6 = new IFeatureAwareVersion() {
+            public boolean enabled(Feature feature) {
+                return feature == Feature.SYNC_DELAY;
+            }
+
+            public String asInDownloadPath() {
+                return "2.6.0";
+            }
+        };
+
         private static MongoClient instance = getInstance();
 
         private static MongoClient getInstance() {
@@ -69,7 +80,7 @@ public class MongoResource {
                         .processOutput(new ProcessOutput(output, output, output))
                         .build();
                 IMongodConfig mongodConfig = new MongodConfigBuilder()
-                        .version(Version.Main.PRODUCTION)
+                        .version(MONGO_2_6)
                         .net(new Net(port, Network.localhostIsIPv6()))
                         .build();
 

@@ -16,16 +16,14 @@
 
 package org.jongo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.QueryFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class Aggregate {
@@ -35,6 +33,7 @@ public class Aggregate {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final List<DBObject> pipeline;
+    private AggregationOptions options = defaultOptions();
 
     Aggregate(DB db, String collectionName, Unmarshaller unmarshaller, QueryFactory queryFactory) {
         this.db = db;
@@ -63,15 +62,51 @@ public class Aggregate {
         return mappedResult;
     }
 
+    public Aggregate options(AggregationOptions options) {
+        if (options != null) {
+            checkOptions(options);
+
+            this.options = options;
+        } else {
+            this.options = defaultOptions();
+        }
+
+        return this;
+    }
+
+    private AggregationOptions defaultOptions() {
+        return AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.INLINE).build();
+    }
+
     private List<DBObject> executeAggregateCommand() {
         CommandResult commandResult = db.command(createCommand());
         commandResult.throwOnError();
+
         return (List<DBObject>) (commandResult.get("result"));
     }
 
     DBObject createCommand() {
         BasicDBObject cmd = new BasicDBObject("aggregate", collectionName);
         cmd.put("pipeline", pipeline);
+        addOptionsToCommand(cmd, options);
         return cmd;
+    }
+
+    private void addOptionsToCommand(DBObject command, AggregationOptions options) {
+        checkOptions(options);
+
+        if (options.getMaxTime(MILLISECONDS) > 0) {
+            command.put("maxTimeMS", options.getMaxTime(MILLISECONDS));
+        }
+
+        if (options.getAllowDiskUse() != null) {
+            command.put("allowDiskUse", options.getAllowDiskUse());
+        }
+    }
+
+    private void checkOptions(AggregationOptions options) {
+        if (options.getOutputMode() == AggregationOptions.OutputMode.CURSOR) {
+            throw new IllegalArgumentException("Cursour output mode is not supported");
+        }
     }
 }

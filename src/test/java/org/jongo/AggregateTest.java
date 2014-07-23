@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.AggregationOptions;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.mongodb.AggregationOptions.OutputMode.CURSOR;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +37,7 @@ public class AggregateTest extends JongoTestCase {
     @Before
     public void setUp() throws Exception {
 
-        assumeThatMongoVersionIsGreaterThan("2.1.1");
+        assumeThatMongoVersionIsGreaterThan("2.6.0");
 
         collection = createEmptyCollection("articles");
         collection.save(new Article("Zombie Panic", "Kirsty Mckay", "horror", "virus"));
@@ -105,6 +107,30 @@ public class AggregateTest extends JongoTestCase {
             fail();
         } catch (Exception e) {
             assertThat(e.getClass().toString()).contains("CommandFailure");
+        }
+    }
+
+    @Test
+    public void shouldAggregateWithOptions() throws Exception {
+
+        List<Article> articles = collection
+                .aggregate("{$match:{tags:'virus'}}")
+                .options(AggregationOptions.builder().allowDiskUse(true).build())
+                .as(Article.class);
+
+        assertThat(articles.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWhenPassingOptionsWithCursorOutputMode() {
+
+        try {
+            Aggregate aggregate = collection.aggregate("{$match:{}}");
+            aggregate.options(AggregationOptions.builder().outputMode(CURSOR).build());
+            fail();
+        } catch (Exception e) {
+            assertThat(e instanceof IllegalArgumentException).isTrue();
+            assertThat(e.getMessage()).isEqualTo("Cursour output mode is not supported");
         }
     }
 
