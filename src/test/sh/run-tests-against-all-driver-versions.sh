@@ -3,7 +3,7 @@
 OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
 NEXUS_URL="https://oss.sonatype.org/service/local/data_index?g=org.mongodb&a=mongo-java-driver"
-MINIMAL_VERSION="2.11.0"
+MINIMAL_VERSION="2.12.3"
 A_VERSION_HAS_FAILED=false
 OPTS=$*
 
@@ -14,9 +14,10 @@ VERSIONS=`curl -so $MONGO_ARTIFACTS_FILE $NEXUS_URL &&  grep -e "version" $MONGO
 
 for version in $VERSIONS
 do
-    IFS='.' read -ra current <<< "$version"
-    IFS='.' read -ra minimal <<< "$MINIMAL_VERSION"
-    if [ ${current[0]} -ge ${minimal[0]} ] && [ ${current[1]} -ge ${minimal[1]} ];
+    CURRENT=$(echo "$version" | sed "s/\.//g" | sed "s/-.*//g")
+    MINIMAL=$(echo "$MINIMAL_VERSION" | sed "s/\.//g" | sed "s/-.*//g")
+
+    if [ ${CURRENT[0]} -ge ${MINIMAL[0]} ] && [ ${CURRENT[1]} -ge ${MINIMAL[1]} ];
     then
       mvn verify $OPTS -Dmongo.version=$version -DreportFormat=plain -DuseFile=false -l $OUTPUT_DIR/build-$version.log
 
