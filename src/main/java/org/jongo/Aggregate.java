@@ -21,9 +21,7 @@ import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.QueryFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.jongo.ResultHandlerFactory.newResultHandler;
 
@@ -47,16 +45,43 @@ public class Aggregate {
         return this;
     }
 
-    public <T> List<T> as(final Class<T> clazz) {
+    public <T> ResultsIterator<T> as(final Class<T> clazz) {
         return map(newResultHandler(clazz, unmarshaller));
     }
 
-    public <T> List<T> map(ResultHandler<T> resultHandler) {
+    public <T> ResultsIterator<T> map(ResultHandler<T> resultHandler) {
         Iterable<DBObject> results = collection.aggregate(pipeline).results();
-        List<T> mappedResult = new LinkedList<T>();
-        for (DBObject dbObject : results) {
-            mappedResult.add(resultHandler.map(dbObject));
+        return new ResultsIterator<T>(results, resultHandler);
+    }
+
+    public static class ResultsIterator<E> implements Iterator<E>, Iterable<E> {
+
+        private Iterator<DBObject> results;
+        private ResultHandler<E> resultHandler;
+
+        public ResultsIterator(Iterable<DBObject> results, ResultHandler<E> resultHandler) {
+            this.resultHandler = resultHandler;
+            this.results = results.iterator();
         }
-        return mappedResult;
+
+        public Iterator<E> iterator() {
+            return this;
+        }
+
+        public boolean hasNext() {
+            return results.hasNext();
+        }
+
+        public E next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+
+            DBObject dbObject = results.next();
+            return resultHandler.map(dbObject);
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException("remove() method is not supported");
+        }
     }
 }
