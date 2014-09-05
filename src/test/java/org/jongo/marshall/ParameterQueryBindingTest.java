@@ -90,7 +90,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-         public void canBindEnum() throws Exception {
+    public void canBindEnum() throws Exception {
 
         Friend friend = new Friend("John", new Coordinate(2, 31));
         friend.setGender(Gender.FEMALE);
@@ -110,22 +110,6 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         Map result = collection.findOne("{'type':#}", Type.EMPTY).as(Map.class);
 
         assertThat(result).isNotNull();
-    }
-
-    public static enum Type {
-        EMPTY(0), COMPLEX(1), UNIQUE(2);
-        private int value;
-        private Type(int value) {
-            this.value = value;
-        }
-
-        @JsonValue
-        public int getValue() {
-            return value;
-        }
-        public void setValue(int value) {
-            this.value = value;
-        }
     }
 
     @Test
@@ -337,6 +321,20 @@ public class ParameterQueryBindingTest extends JongoTestCase {
 
         public void add(Friend buddy) {
             friends.add(buddy);
+        }
+    }
+
+    private static enum Type {
+        EMPTY(0);
+        private int value;
+
+        private Type(int value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public int getValue() {
+            return value;
         }
     }
 
