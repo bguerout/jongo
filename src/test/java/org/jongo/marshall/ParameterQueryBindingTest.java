@@ -16,6 +16,7 @@
 
 package org.jongo.marshall;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.Lists;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static junit.framework.Assert.fail;
@@ -88,7 +90,7 @@ public class ParameterQueryBindingTest extends JongoTestCase {
     }
 
     @Test
-    public void canBindEnum() throws Exception {
+         public void canBindEnum() throws Exception {
 
         Friend friend = new Friend("John", new Coordinate(2, 31));
         friend.setGender(Gender.FEMALE);
@@ -98,6 +100,32 @@ public class ParameterQueryBindingTest extends JongoTestCase {
 
         assertThat(results.next().getGender()).isEqualTo(Gender.FEMALE);
         assertThat(results.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canBindEnumWithAnnotations() throws Exception {
+
+        collection.insert("{'type':0}");
+
+        Map result = collection.findOne("{'type':#}", Type.EMPTY).as(Map.class);
+
+        assertThat(result).isNotNull();
+    }
+
+    public static enum Type {
+        EMPTY(0), COMPLEX(1), UNIQUE(2);
+        private int value;
+        private Type(int value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public int getValue() {
+            return value;
+        }
+        public void setValue(int value) {
+            this.value = value;
+        }
     }
 
     @Test
