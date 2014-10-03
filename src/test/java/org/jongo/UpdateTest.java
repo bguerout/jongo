@@ -16,14 +16,20 @@
 
 package org.jongo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.JacksonMapper;
+import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,5 +163,18 @@ public class UpdateTest extends JongoTestCase {
         assertThat(johnny).isNotNull();
         assertThat(johnny.getName()).isEqualTo("Johnny");
         assertThat(johnny.getAddress()).isEqualTo("123 Wall Street");
+    }
+
+    @Test
+    public void canReplaceAllFields() throws Exception {
+
+        Friend friend = new Friend("Peter", "31 rue des Lilas");
+        collection.save(friend);
+
+        collection.update(friend.getId()).with("#", new Friend("John"));
+
+        Map map = collection.findOne().as(Map.class);
+        assertThat(map.get("name")).isEqualTo("John");
+        assertThat(map).doesNotContainKey("address");
     }
 }

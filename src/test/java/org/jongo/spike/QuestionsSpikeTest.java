@@ -16,13 +16,19 @@
 
 package org.jongo.spike;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+import org.jongo.Jongo;
+import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.ResultHandler;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonEngine;
+import org.jongo.marshall.jackson.JacksonMapper;
+import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
 import org.jongo.util.JSONResultHandler;
@@ -141,6 +147,27 @@ public class QuestionsSpikeTest extends JongoTestCase {
 
         assertThat(map).isNotNull();
         assertThat(map.get("flag")).isEqualTo("ok");
+    }
+
+    @Test
+    //https://github.com/bguerout/jongo/issues/226
+    public void canSetAFieldToNullDuringAnUpdate() throws Exception {
+
+        Mapper mapper = new JacksonMapper.Builder().addModifier(new MapperModifier() {
+            public void modify(ObjectMapper mapper) {
+                mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+            }
+        }).build();
+        Jongo jongo = new Jongo(getDatabase(), mapper);
+        MongoCollection friends = jongo.getCollection("friends");
+        Friend friend = new Friend("Peter", "31 rue des Lilas");
+        friends.save(friend);
+
+        friends.update(friend.getId()).with(new Friend("John"));
+
+        Friend updated = friends.findOne().as(Friend.class);
+        assertThat(updated.getName()).isEqualTo("John");
+        assertThat(updated.getAddress()).isNull();
     }
 
     private static class Party {
