@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import org.jongo.model.Friend;
 import org.jongo.query.Query;
 import org.jongo.util.JongoTestCase;
 import org.junit.Test;
@@ -43,5 +44,16 @@ public class JongoTest extends JongoTestCase {
         Query query = jongo.createQuery("{test:1}");
 
         assertThat(query.toDBObject().get("test")).isEqualTo(1);
+    }
+
+    @Test
+    public void canGetMapper() throws Exception {
+
+        Jongo jongo = new Jongo(getDatabase());
+
+        Mapper mapper = jongo.getMapper();
+
+        assertThat(mapper).isNotNull();
+        assertThat(mapper.getMarshaller().marshall(new Friend("test"))).isNotNull();
     }
 }

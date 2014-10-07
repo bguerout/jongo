@@ -48,6 +48,10 @@ public class Jongo {
         return database;
     }
 
+    public Mapper getMapper() {
+        return mapper;
+    }
+
     public Query createQuery(String query, Object... parameters) {
         return mapper.getQueryFactory().createQuery(query, parameters);
     }
