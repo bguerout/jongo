@@ -182,6 +182,17 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         assertThat(nb).isEqualTo(1);
     }
 
+    @Test
+    public void canBindAHashIntoParameter() throws Exception {
+
+        collection.insert("{name:#}", "test val#1");
+
+        Friend friend = collection.findOne("{name:#}", "test val#1").as(Friend.class);
+
+        assertThat(friend).isNotNull();
+        assertThat(friend.getName()).isEqualTo("test val#1");
+    }
+
 
     @Test
     public void canUseListWithANullElement() throws Exception {
