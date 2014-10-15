@@ -36,4 +36,8 @@ public class Animal {
     public ObjectId getId() {
         return _id;
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jongo.model.Animal;
@@ -78,6 +79,16 @@ public class PolymorphismTest extends JongoTestCase {
         assertThat(dog.discriminator).isEqualTo("B");
     }
 
+    @Test
+    public void canHandleInheritanceInASubDocument() throws Exception {
+
+        collection.save(new Zoo("Vincennes", new Fox("Zorro", "roux")));
+
+        Zoo zoo = collection.findOne().as(Zoo.class);
+        assertThat(zoo).isNotNull();
+        assertThat(zoo.mascot.getName()).isEqualTo("Zorro");
+    }
+
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
             include = JsonTypeInfo.As.PROPERTY,
@@ -95,6 +106,21 @@ public class PolymorphismTest extends JongoTestCase {
     }
 
     private static class Loulou extends Dog {
+    }
+
+    private static class Zoo {
+
+        private String name;
+        private Animal mascot;
+
+        private Zoo() {
+            //jackson
+        }
+
+        public Zoo(String name, Animal mascot) {
+            this.name = name;
+            this.mascot = mascot;
+        }
     }
 
 
