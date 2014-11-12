@@ -1,0 +1,20 @@
+WriteConcern.NONE => WriteConcern.UNACKNOWLEDGED
+
+Warning:(85, 55) java: com.mongodb.LazyWriteableDBObject in com.mongodb has been deprecated
+Warning:(20, 19) java: com.mongodb.DBRefBase in com.mongodb has been deprecated
+Warning:(33, 16) java: org.bson.io.BSONByteBuffer in org.bson.io has been deprecated
+Warning:(192, 19) java: ensureIndex(com.mongodb.DBObject) in com.mongodb.DBCollection has been deprecated
+Warning:(196, 19) java: ensureIndex(com.mongodb.DBObject,com.mongodb.DBObject) in com.mongodb.DBCollection has been deprecated
+/home/david/workspace/jongo/src/main/java/org/jongo/bson/BsonDBDecoder.java
+Warning:(64, 24) java: DBRef(com.mongodb.DB,org.bson.BSONObject) in com.mongodb.DBRef has been deprecated
+Warning:(41, 60) java: getTime() in org.bson.types.ObjectId has been deprecated
+Warning:(42, 50) java: getMachine() in org.bson.types.ObjectId has been deprecated
+Warning:(43, 46) java: getInc() in org.bson.types.ObjectId has been deprecated
+Warning:(30, 16) java: _input in org.bson.LazyBSONObject has been deprecated
+Warning:(52, 16) java: ObjectId(int,int,int) in org.bson.types.ObjectId has been deprecated
+Warning:(51, 29) java: Mongo() in com.mongodb.Mongo has been deprecated
+Warning:(115, 22) java: isNew() in org.bson.types.ObjectId has been deprecated
+Warning:(122, 11) java: notNew() in org.bson.types.ObjectId has been deprecated
+Warning:(150, 32) java: com.mongodb.MongoException.DuplicateKey in com.mongodb.MongoException has been deprecated
+Warning:(71, 23) java: isNew() in org.bson.types.ObjectId has been deprecated
+Warning:(111, 31) java: getLastConcern() in com.mongodb.WriteResult has been deprecated
