@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import com.mongodb.MongoException;
+import com.mongodb.DuplicateKeyException;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import junit.framework.Assert;
@@ -137,7 +137,7 @@ public class InsertTest extends JongoTestCase {
         try {
             collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
             Assert.fail();
-        } catch (MongoException.DuplicateKey e) {
+        } catch (DuplicateKeyException e) {
         }
     }
 
@@ -149,7 +149,7 @@ public class InsertTest extends JongoTestCase {
         try {
             collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "other value"));
             Assert.fail();
-        } catch (MongoException.DuplicateKey e) {
+        } catch (DuplicateKeyException e) {
         }
     }
 
