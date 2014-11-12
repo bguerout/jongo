@@ -112,18 +112,8 @@ public class InsertTest extends JongoTestCase {
         collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
 
         assertThat(collection.count("{name : 'John'}")).isEqualTo(1);
-        assertThat(id.isNew()).isFalse();
-    }
 
-    @Test
-    public void canInsertAPojoWithNotNewObjectId() throws Exception {
-
-        ObjectId id = ObjectId.get();
-        id.notNew();
-
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
-
-        Friend result = collection.findOne(id).as(Friend.class);
+        Friend result = collection.findOne("{name : 'John'}").as(Friend.class);
         assertThat(result.getId()).isEqualTo(id);
     }
 
