@@ -16,7 +16,13 @@
 
 package org.jongo.bench;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.WriteConcern;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
@@ -48,12 +54,12 @@ class BenchUtil {
     }
 
     public static DBCollection getCollectionFromDriver() throws UnknownHostException {
-        Mongo nativeMongo = new Mongo();
+        Mongo nativeMongo = new MongoClient();
         return nativeMongo.getDB("jongo").getCollection("benchmark");
     }
 
     public static MongoCollection getCollectionFromJongo(Mapper mapper) throws UnknownHostException {
-        Mongo mongo = new Mongo();
+        Mongo mongo = new MongoClient();
         DB db = mongo.getDB("jongo");
         Jongo jongo = new Jongo(db, mapper);
         return jongo.getCollection("benchmark");
