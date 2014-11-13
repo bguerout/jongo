@@ -19,7 +19,9 @@ package org.jongo.bson;
 import com.mongodb.DBObject;
 import com.mongodb.LazyDBObject;
 import org.bson.LazyBSONCallback;
-import org.bson.io.BSONByteBuffer;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 class LazyBsonDocument implements BsonDocument {
 
@@ -30,7 +32,9 @@ class LazyBsonDocument implements BsonDocument {
     }
 
     public int getSize() {
-        return BSONByteBuffer.wrap(bytes).getInt(0);
+        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
+        return buffer.getInt(0);
     }
 
     public byte[] toByteArray() {
