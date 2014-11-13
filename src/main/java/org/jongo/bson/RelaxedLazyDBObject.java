@@ -27,7 +27,7 @@ class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument {
     }
 
     public byte[] toByteArray() {
-        return _input.array();
+        return getBytes();
     }
 
     public DBObject toDBObject() {
