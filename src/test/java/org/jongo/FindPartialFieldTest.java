@@ -17,6 +17,7 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
+import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -124,6 +125,17 @@ public class FindPartialFieldTest extends JongoTestCase {
         assertThat(friend.getName()).isEqualTo("John");
         assertThat(friend.getAddress()).isEqualTo("22 Wall Street Avenue");
     }
+
+    @Test
+    public void canFindOneWithProjectionParamsWithDot() throws Exception {
+        collection.save(new Friend("John", "23 Wall Street Av.", new Coordinate(1, 1)));
+
+        Map map = collection.findOne("{name:'John'}").projection("{coordinate.lat:#}", 1).as(Map.class);
+
+        assertThat(((Map) map.get("coordinate")).get("lng")).isNull();
+        assertThat(((Map) map.get("coordinate")).get("lat")).isNotNull();
+    }
+
 
     private static class AssertionResultHandler implements ResultHandler<Boolean> {
         public Boolean map(DBObject result) {
