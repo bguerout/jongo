@@ -61,7 +61,7 @@ public class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
 
             Iterator it = dbo.keySet().iterator();
             if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {
-                return new DBRef(db, dbo);
+                return new DBRef(collection.getFullName(), dbo);
             }
             return dbo;
         }
