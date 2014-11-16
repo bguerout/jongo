@@ -49,6 +49,6 @@ class MongoBsonParser extends BsonParser {
     }
 
     private org.bson.types.ObjectId convertToNativeObjectId(ObjectId id) {
-        return new org.bson.types.ObjectId(id.getTime(), id.getMachine(), id.getInc());
+        return org.bson.types.ObjectId.createFromLegacyFormat(id.getTime(), id.getMachine(), id.getInc());
     }
 }
