@@ -82,25 +82,37 @@ class Insert {
         return new LazyIdDBObject(document.toByteArray(), marshaller, id);
     }
 
-    private final static class LazyIdDBObject extends LazyWriteableDBObject {
+    private final static class LazyIdDBObject extends LazyDBObject {
 
-        private final Object id;
+        private Object bsonId;
         private final Marshaller marshaller;
 
-        private LazyIdDBObject(byte[] data, Marshaller marshaller, Object id) {
+        private LazyIdDBObject(byte[] data, Marshaller marshaller, Object _id) {
             super(data, new LazyBSONCallback());
             this.marshaller = marshaller;
-            this.id = id;
+            this.bsonId = asBsonId(_id);
+        }
+
+        private Object asBsonId(Object _id) {
+            if (_id == null || Bson.isPrimitive(_id)) {
+                return _id;
+            }
+            return asBsonDocument(marshaller, _id).toDBObject();
+        }
+
+        @Override
+        public Object put(String key, Object v) {
+            if ("_id".equals(key)) {
+                this.bsonId = asBsonId(key);
+                return null; //fixme
+            }
+            throw new UnsupportedOperationException("Object is read only for fields others than _id");
         }
 
         @Override
         public Object get(String key) {
-            if ("_id".equals(key) && id != null) {
-                if (Bson.isPrimitive(id)) {
-                    return id;
-                } else {
-                    return asBsonDocument(marshaller, id).toDBObject();
-                }
+            if ("_id".equals(key) && bsonId != null) {
+                return this.bsonId;
             }
             return super.get(key);
         }
