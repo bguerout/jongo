@@ -37,13 +37,7 @@ class MongoBsonGenerator extends BsonGenerator {
         _writeArrayFieldNameIfNeeded();
         _verifyValueWrite("write datetime");
         _buffer.putByte(_typeMarker, BsonConstants.TYPE_OBJECTID);
-        // ObjectIds have their byte order flipped
-        int time = ByteOrderUtil.flip(Long.valueOf(objectId.getTime() / 1000L).intValue());
-        int machine = ByteOrderUtil.flip(objectId.getMachine());
-        int inc = ByteOrderUtil.flip(objectId.getInc());
-        _buffer.putInt(time);
-        _buffer.putInt(machine);
-        _buffer.putInt(inc);
+        _buffer.putBytes(objectId.toByteArray());
         flushBuffer();
     }
 
