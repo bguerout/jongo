@@ -181,6 +181,17 @@ public class ParameterQueryBindingTest extends JongoTestCase {
         assertThat(friend.getName()).isEqualTo("test val#1");
     }
 
+    @Test
+    public void canBindPrimitiveArrayParameter() throws Exception {
+
+        collection.insert("{value:42, other:true}");
+
+        assertThat(collection.count("{value:{$in:#}}", new int[]{42, 34})).isEqualTo(1);
+        assertThat(collection.count("{value:{$in:#}}", new long[]{42})).isEqualTo(1);
+        assertThat(collection.count("{value:{$in:#}}", new float[]{42})).isEqualTo(1);
+        assertThat(collection.count("{other:{$in:#}}", new boolean[]{true})).isEqualTo(1);
+    }
+
 
     @Test
     public void canUseListWithANullElement() throws Exception {

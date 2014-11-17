@@ -47,11 +47,10 @@ class Primitives {
         PRIMITIVES.add(DBRefBase.class);
         PRIMITIVES.add(CodeWScope.class);
         PRIMITIVES.add(Binary.class);
-        PRIMITIVES.add(byte[].class);
     }
 
     public static <T> boolean contains(Class<T> clazz) {
-        if (PRIMITIVES.contains(clazz))
+        if (PRIMITIVES.contains(clazz) || isAJavaPrimitiveArray(clazz))
             return true;
 
         for (Class<?> primitive : PRIMITIVES) {
@@ -60,6 +59,10 @@ class Primitives {
             }
         }
         return false;
+    }
+
+    private static <T> boolean isAJavaPrimitiveArray(Class<T> clazz) {
+        return clazz.isArray() && clazz.getComponentType().isPrimitive();
     }
 
     private Primitives() {
