@@ -207,26 +207,6 @@ public class SaveTest extends JongoTestCase {
     }
 
     @Test
-    public void canSaveWithWriteConcern() throws Exception {
-
-        Friend friend = new Friend("John", "22 Wall Street Avenue");
-
-        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).save(friend);
-
-        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
-    }
-
-    @Test
-    public void shouldUseDefaultWriteConcern() throws Exception {
-
-        Friend friend = new Friend("John", "22 Wall Street Avenue");
-
-        WriteResult writeResult = collection.save(friend);
-
-        assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
-    }
-
-    @Test
     public void canSaveWithCompositeKey() {
 
         MapReduceData aggregate = new MapReduceData("group", new Date(), 1);

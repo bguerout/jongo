@@ -16,13 +16,9 @@
 
 package org.jongo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.jackson.JacksonMapper;
-import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -67,12 +63,11 @@ public class UpdateTest extends JongoTestCase {
         collection.save(new Friend("John"));
 
         /* when */
-        WriteResult writeResult = collection.update("{name:'John'}").multi().with("{$unset:{name:1}}");
+        collection.update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
         Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
         assertThat(friends).hasSize(0);
-        assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
     }
 
     @Test
@@ -82,13 +77,11 @@ public class UpdateTest extends JongoTestCase {
         collection.save(new Friend("John"));
 
         /* when */
-        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).update("{name:'John'}").multi().with("{$unset:{name:1}}");
+        collection.withWriteConcern(WriteConcern.SAFE).update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
         Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
         assertThat(friends).hasSize(0);
-        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
-
     }
 
     @Test
@@ -122,19 +115,6 @@ public class UpdateTest extends JongoTestCase {
         Friend john = collection.findOne("{name:'John'}").as(Friend.class);
         assertThat(john.getName()).isEqualTo("John");
         assertThat(writeResult).isNotNull();
-    }
-
-    @Test
-    public void canUpsertWithWriteConcern() throws Exception {
-
-        /* when */
-        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).update("{}").upsert().with("{$set:{name:'John'}}");
-
-        /* then */
-        Friend john = collection.findOne("{name:'John'}").as(Friend.class);
-        assertThat(john.getName()).isEqualTo("John");
-        assertThat(writeResult).isNotNull();
-        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
 
     @Test

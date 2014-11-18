@@ -85,14 +85,6 @@ public class InsertTest extends JongoTestCase {
     }
 
     @Test
-    public void whenNoSpecifyShouldInsertWithCollectionWriteConcern() throws Exception {
-
-        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).insert("{name : 'Abby'}");
-
-        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
-    }
-
-    @Test
     public void canInsertAnObjectWithoutId() throws Exception {
 
         Coordinate noId = new Coordinate(123, 1);

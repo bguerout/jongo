@@ -16,7 +16,6 @@
 
 package org.jongo;
 
-import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
@@ -98,27 +97,5 @@ public class RemoveTest extends JongoTestCase {
         assertThat(writeResult).isNotNull();
         Friend friend = collection.findOne().as(Friend.class);
         assertThat(friend).isNull();
-    }
-
-    @Test
-    public void whenNoSpecifyShouldSaveWithCollectionWriteConcern() throws Exception {
-
-        Friend john = new Friend("John");
-        collection.save(john);
-
-        WriteResult writeResult = collection.save(john);
-
-        assertThat(writeResult.getLastConcern()).isEqualTo(collection.getDBCollection().getWriteConcern());
-    }
-
-    @Test
-    public void canRemoveWithWriteConcern() throws Exception {
-
-        Friend john = new Friend("John");
-        collection.save(john);
-
-        WriteResult writeResult = collection.withWriteConcern(WriteConcern.SAFE).remove();
-
-        assertThat(writeResult.getLastConcern()).isEqualTo(WriteConcern.SAFE);
     }
 }
