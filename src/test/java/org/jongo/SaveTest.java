@@ -17,7 +17,6 @@
 package org.jongo;
 
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.oid.Id;
@@ -52,11 +51,12 @@ public class SaveTest extends JongoTestCase {
         Friend friend = new Friend("John", "22 Wall Street Avenue");
 
         collection.save(friend);
+        long afterSave = new Date().getTime();
 
         Friend john = collection.findOne("{name:'John'}").as(Friend.class);
         assertThat(john).isNotNull();
         assertThat(john.getId()).isNotNull();
-        assertThat(john.getId().isNew()).isFalse();
+        assertThat(john.getId().getDate().getTime()).isLessThan(afterSave);
     }
 
     @Test
@@ -66,10 +66,11 @@ public class SaveTest extends JongoTestCase {
         Friend john = new Friend(oid, "John");
 
         collection.save(john);
+        long afterSave = new Date().getTime();
 
         Friend result = collection.findOne(oid).as(Friend.class);
         assertThat(result.getId()).isEqualTo(oid);
-        assertThat(oid.isNew()).isFalse();  //insert
+        assertThat(john.getId().getDate().getTime()).isLessThan(afterSave);  //insert
     }
 
     @Test

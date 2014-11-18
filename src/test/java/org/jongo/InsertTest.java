@@ -18,7 +18,6 @@ package org.jongo;
 
 import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
@@ -132,7 +131,6 @@ public class InsertTest extends JongoTestCase {
     public void canOnlyInsertOnceAPojoWithObjectId() throws Exception {
 
         ObjectId id = ObjectId.get();
-        id.notNew();
 
         collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
 
