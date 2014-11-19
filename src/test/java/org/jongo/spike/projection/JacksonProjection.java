@@ -47,7 +47,7 @@ public class JacksonProjection implements Projection {
             JsonSchema schema = mapper.generateJsonSchema(pojoClass);
             return schema.getSchemaNode();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to create field DBObject for class: " + pojoClass, e);
+            throw new RuntimeException("Unable to createLazyDBObject field DBObject for class: " + pojoClass, e);
         }
     }
 

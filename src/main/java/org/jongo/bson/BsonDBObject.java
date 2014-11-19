@@ -17,13 +17,13 @@
 package org.jongo.bson;
 
 import com.mongodb.DBObject;
+import com.mongodb.LazyDBCallback;
 import com.mongodb.LazyDBObject;
-import org.bson.LazyBSONCallback;
 
-class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument {
+class BsonDBObject extends LazyDBObject implements BsonDocument {
 
-    public RelaxedLazyDBObject(byte[] data, LazyBSONCallback cbk) {
-        super(data, cbk);
+    public BsonDBObject(byte[] data, int offset) {
+        super(data, offset, new BsonCallback());
     }
 
     public byte[] toByteArray() {
@@ -36,5 +36,17 @@ class RelaxedLazyDBObject extends LazyDBObject implements BsonDocument {
 
     public int getSize() {
         return getBSONSize();
+    }
+
+    static class BsonCallback extends LazyDBCallback {
+
+        public BsonCallback() {
+            super(null);
+        }
+
+        @Override
+        public Object createObject(byte[] bytes, int offset) {
+            return new LazyDBObject(bytes, offset, new BsonCallback());
+        }
     }
 }

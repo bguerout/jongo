@@ -18,7 +18,6 @@ package org.jongo.bson;
 
 import com.mongodb.*;
 import com.mongodb.gridfs.GridFSDBFile;
-import org.bson.LazyBSONCallback;
 
 import java.util.Iterator;
 
@@ -30,7 +29,7 @@ public class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
     }
 
     public DBCallback getDBCallback(DBCollection collection) {
-        return new BsonDBCallback(collection);
+        return new CollectionDBCallback(collection);
     }
 
     private static class BsonDBDecoderFactory implements DBDecoderFactory {
@@ -40,30 +39,36 @@ public class BsonDBDecoder extends LazyDBDecoder implements DBDecoder {
         }
     }
 
-    private static class BsonDBCallback extends LazyDBCallback {
+    private static class CollectionDBCallback extends LazyDBCallback {
 
-        private final DB db;
         private final DBCollection collection;
 
-        public BsonDBCallback(DBCollection collection) {
+        public CollectionDBCallback(DBCollection collection) {
             super(collection);
             this.collection = collection;
-            this.db = collection == null ? null : collection.getDB();
         }
 
         @Override
         public Object createObject(byte[] data, int offset) {
-            if (GridFSDBFile.class.equals(collection.getObjectClass())) {
+
+            if (isGridFSCollection()) {
                 return DefaultDBDecoder.FACTORY.create().decode(data, collection);
             }
 
-            DBObject dbo = new RelaxedLazyDBObject(data, new LazyBSONCallback());
-
-            Iterator it = dbo.keySet().iterator();
-            if (it.hasNext() && it.next().equals("$ref") && dbo.containsField("$id")) {
-                return new DBRef(collection.getFullName(), dbo);
+            DBObject dbo = new BsonDBObject(data, offset);
+            if (isDBRef(dbo)) {
+                return new DBRef((String) dbo.get("$ref"), dbo.get("$id"));
             }
             return dbo;
+        }
+
+        private boolean isGridFSCollection() {
+            return GridFSDBFile.class.equals(collection.getObjectClass());
+        }
+
+        private boolean isDBRef(DBObject dbo) {
+            Iterator<String> iterator = dbo.keySet().iterator();
+            return iterator.hasNext() && iterator.next().equals("$ref") && iterator.hasNext() && iterator.next().equals("$id");
         }
 
     }

@@ -24,6 +24,7 @@ import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.ResultHandler;
+import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonEngine;
@@ -114,7 +115,8 @@ public class QuestionsSpikeTest extends JongoTestCase {
 
         Friend friend = collection.findOne("{friends.name:'Peter'}").projection("{friends.$:1}").map(new ResultHandler<Friend>() {
             public Friend map(DBObject dbo) {
-                Party result = unmarshaller.unmarshall((BsonDocument) dbo, Party.class);
+                BsonDocument document = Bson.createDocument(dbo);
+                Party result = unmarshaller.unmarshall(document, Party.class);
                 return result.friends.get(0);
             }
         });
