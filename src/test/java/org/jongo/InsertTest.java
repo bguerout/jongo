@@ -121,10 +121,10 @@ public class InsertTest extends JongoTestCase {
     @Test
     public void canInsertAPojoWithACustomId() throws Exception {
 
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
+        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend("122", "value"));
 
         ExternalFriend result = collection.findOne("{name:'value'}").as(ExternalFriend.class);
-        assertThat(result.getId()).isEqualTo(122);
+        assertThat(result.getId()).isEqualTo("122");
     }
 
     @Test
@@ -144,10 +144,10 @@ public class InsertTest extends JongoTestCase {
     @Test
     public void canOnlyInsertOnceAPojoWithACustomId() throws Exception {
 
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "value"));
+        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend("122", "value"));
 
         try {
-            collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend(122, "other value"));
+            collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend("122", "other value"));
             Assert.fail();
         } catch (MongoException.DuplicateKey e) {
         }

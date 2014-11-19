@@ -37,7 +37,7 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void mustGenerateWhenPojoHasAnEmptyObjectId() throws Exception {
+    public void mustBeGeneratedWhenPojoHasAnEmptyObjectId() throws Exception {
 
         Friend friend = new Friend();
 
@@ -47,7 +47,7 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void mustNotGenerateNewWhenPojoHasNewObjectId() throws Exception {
+    public void mustNotBeGeneratedWhenPojoHasAnObjectId() throws Exception {
 
         Friend friend = new Friend(ObjectId.get(), "John");
 
@@ -57,7 +57,7 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void mustNotGenerateWhenWhenPojoDoesNotMapObjectId() throws Exception {
+    public void mustNotBeGeneratedWhenPojoDoesNotMapObjectId() throws Exception {
 
         Coordinate coordinate = new Coordinate(1, 1);
 
@@ -65,17 +65,7 @@ public class ReflectiveObjectIdUpdaterTest {
     }
 
     @Test
-    public void mustGenerateWhenObjectIdisInParent() throws Exception {
-
-        Child child = new Child();
-
-        boolean hasOid = updater.mustGenerateObjectId(child);
-
-        assertThat(hasOid).isTrue();
-    }
-
-    @Test
-    public void mustGenerateWhenObjectIdisInChildAndInParent() throws Exception {
+    public void mustBeGeneratedWhenPojoHasAnEmptyObjectId_and_AParentWithAnObjectId() throws Exception {
 
         ChildWithId child = new ChildWithId();
         child.id_parent = ObjectId.get();
@@ -83,6 +73,46 @@ public class ReflectiveObjectIdUpdaterTest {
         boolean hasOid = updater.mustGenerateObjectId(child);
 
         assertThat(hasOid).isTrue();
+    }
+
+    @Test
+    public void mustNotBeGeneratedWhenPojoHasAnObjectId_and_AParentWithAnObjectId() throws Exception {
+
+        ChildWithId child = new ChildWithId();
+        child.id = ObjectId.get();
+        child.id_parent = ObjectId.get();
+
+        boolean hasOid = updater.mustGenerateObjectId(child);
+
+        assertThat(hasOid).isFalse();
+    }
+
+    @Test
+    public void mustNotBeGeneratedWhenPojoHasAnObjectId_and_AParentWithAnEmptyObjectId() throws Exception {
+
+        ChildWithId child = new ChildWithId();
+        child.id = ObjectId.get();
+
+        boolean hasOid = updater.mustGenerateObjectId(child);
+
+        assertThat(hasOid).isFalse();
+    }
+
+    @Test
+    public void mustNotBeGeneratedWhenPojoHasntObjectIdMapping_and_AParentWithAnObjectId() throws Exception {
+
+        Child child = new Child();
+        child.id_parent = ObjectId.get();
+
+        boolean hasOid = updater.mustGenerateObjectId(child);
+
+        assertThat(hasOid).isFalse();
+    }
+
+    @Test
+    public void mustNotBeGeneratedWhenPojoHasCustomObjectId() throws Exception {
+        assertThat(updater.mustGenerateObjectId(new ExternalFriend(null, "John"))).isFalse();
+        assertThat(updater.mustGenerateObjectId(new ExternalFriend("id", "John"))).isFalse();
     }
 
     @Test
@@ -161,12 +191,12 @@ public class ReflectiveObjectIdUpdaterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSetCustomId() throws Exception {
-        updater.setObjectId(new ExternalFriend(122, "John"), ObjectId.get());
+        updater.setObjectId(new ExternalFriend("122", "John"), ObjectId.get());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSetPreexistingCustomId() throws Exception {
-        final ExternalFriend custom = new ExternalFriend(122, "value");
+        final ExternalFriend custom = new ExternalFriend("122", "value");
         updater.setObjectId(custom, ObjectId.get());
     }
 
@@ -181,6 +211,6 @@ public class ReflectiveObjectIdUpdaterTest {
 
     private static class ChildWithId extends Parent {
         @Id
-        Object id;
+        ObjectId id;
     }
 }

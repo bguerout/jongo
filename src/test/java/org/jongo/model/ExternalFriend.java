@@ -21,19 +21,19 @@ import org.jongo.marshall.jackson.oid.Id;
 public class ExternalFriend {
 
     @Id
-    private int id;
+    private String id;
     private String name;
 
     private ExternalFriend() {
         //jackson
     }
 
-    public ExternalFriend(int id, String name) {
+    public ExternalFriend(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -43,5 +43,11 @@ public class ExternalFriend {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static ExternalFriend createFriendWithoutId(String name) {
+        ExternalFriend friend = new ExternalFriend();
+        friend.setName(name);
+        return friend;
     }
 }
