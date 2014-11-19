@@ -32,7 +32,6 @@ import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
-import org.jongo.util.JSONResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -97,9 +96,10 @@ public class QuestionsSpikeTest extends JongoTestCase {
         collection.insert("{version : 1, days:[{name:'monday'},{name:'sunday'}]}");
         collection.insert("{version : 2, days:[{name:'wednesday'}]}");
 
-        String monday = collection.findOne("{version:1}").projection("{days:{$elemMatch:{name: 'monday'}}}").map(new JSONResultHandler());
+        Map result = collection.findOne("{version:1}").projection("{days:{$elemMatch:{name: 'monday'}}}").as(Map.class);
 
-        assertThat(monday).contains("\"days\" : [ { \"name\" : \"monday\"}]");
+        List days = (List) result.get("days");
+        assertThat(((Map) days.get(0)).get("name")).isEqualTo("monday");
     }
 
     @Test
@@ -129,7 +129,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
     public void canUpdateIntoAnArray() throws Exception {
 
         collection.insert("{friends:[{name:'Robert'},{name:'Peter'}]}");
-
+    
         collection.update("{ 'friends.name' : 'Peter' }").with("{ $set : { 'friends.$' : #} }", new Friend("John"));
 
         Party party = collection.findOne().as(Party.class);
