@@ -21,7 +21,6 @@ import com.mongodb.DBObject;
 import org.bson.types.*;
 import org.jongo.MongoCollection;
 import org.jongo.model.Friend;
-import org.jongo.util.JSONResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +32,6 @@ import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
-import static org.jongo.util.JSONResultHandler.jsonify;
 
 public class DocumentMarshallingTest extends JongoTestCase {
 
@@ -60,10 +58,10 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'number' : 100"));
-        assertHasBeenPersistedAs(jsonify("'string' : 'value'"));
-        assertHasBeenPersistedAs(jsonify("'bool' : false"));
-        assertHasBeenPersistedAs(jsonify("'anEnum' : 'TEST'"));
+        assertHasBeenPersistedAs("{'number' : 100}");
+        assertHasBeenPersistedAs("{'string' : 'value'}");
+        assertHasBeenPersistedAs("{'bool' : false}");
+        assertHasBeenPersistedAs("{'anEnum' : 'TEST'}");
         JavaNativeType result = collection.findOne("{}").as(JavaNativeType.class);
         assertThat(result.bool).isFalse();
         assertThat(result.string).isEqualTo("value");
@@ -80,8 +78,8 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'minKey' : { '$minKey' : 1}"));
-        assertHasBeenPersistedAs(jsonify("'maxKey' : { '$maxKey' : 1}"));
+        assertHasBeenPersistedAs("{'minKey' : { '$minKey' : 1}}");
+        assertHasBeenPersistedAs("{'maxKey' : { '$maxKey' : 1}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.minKey).isNotNull();
         assertThat(result.maxKey).isNotNull();
@@ -95,7 +93,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'key' : { '$oid' : '4fe83969e4b042bbbca47c48'}"));
+        assertHasBeenPersistedAs("{'key' : { '$oid' : '4fe83969e4b042bbbca47c48'}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.key).isEqualTo(new ObjectId("4fe83969e4b042bbbca47c48"));
     }
@@ -109,7 +107,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'pattern' : { '$regex' : '[a-z]'"));//options is not longer generated since 2.8.0
+        assertHasBeenPersistedAs("{'pattern' : { '$regex' : '[a-z]'}}");//options is not longer generated since 2.8.0
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.pattern.toString()).isEqualTo(chars.toString());
     }
@@ -122,7 +120,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'timestamp' : { '$timestamp' : { 't' : 1 , 'i' : 2}}"));
+        assertHasBeenPersistedAs("{'timestamp' : { '$timestamp' : { 't' : 1 , 'i' : 2}}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.timestamp).isEqualTo(new BSONTimestamp(1, 2));
     }
@@ -135,7 +133,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'date' : { '$date' : 123}"));
+        assertHasBeenPersistedAs("{'date' : { '$date' : 123}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.date).isEqualTo(new Date(123));
     }
@@ -158,7 +156,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'uuid' : { '$uuid' : 'cf0eddfa-2670-4929-a581-eb263d839cab'}"));
+        assertHasBeenPersistedAs("{'uuid' : { '$uuid' : 'cf0eddfa-2670-4929-a581-eb263d839cab'}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.uuid).isEqualTo(type.uuid);
     }
@@ -171,7 +169,6 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'dbo' : { 'key' : 'value'}"));
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.dbo).isEqualTo(type.dbo);
     }
@@ -186,7 +183,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'mapWithDates' : { 'key' : { '$date' : 456}}"));
+        assertHasBeenPersistedAs("{mapWithDates : { key : { $date : 456}}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.mapWithDates).contains(entry("key", new Date(456)));
     }
@@ -202,7 +199,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'friends' : { 'key' : { 'name' : 'robert'}}"));
+        assertHasBeenPersistedAs("{'friends' : { 'key' : { 'name' : 'robert'}}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.friends).contains(entry("key", robert));
     }
@@ -215,7 +212,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'array' : [ 1 , 2 , 3]"));
+        assertHasBeenPersistedAs("{'array' : [ 1 , 2 , 3]}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.array).contains(1, 2, 3);
     }
@@ -242,7 +239,7 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'dateList' : [ { '$date' : 123}]"));
+        assertHasBeenPersistedAs("{'dateList' : [ { '$date' : 123}]}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.dateList).contains(new Date(123));
     }
@@ -258,14 +255,13 @@ public class DocumentMarshallingTest extends JongoTestCase {
 
         collection.save(type);
 
-        assertHasBeenPersistedAs(jsonify("'complexList' : [ { 'name' : 'robert'}]"));
+        assertHasBeenPersistedAs("{'complexList' : [ { 'name' : 'robert'}]}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.complexList).contains(robert);
     }
 
     private void assertHasBeenPersistedAs(String expectedPersistedJSON) {
-        String result = collection.findOne("{}").map(new JSONResultHandler());
-        assertThat(result).contains(expectedPersistedJSON);
+        assertThat(collection.count(expectedPersistedJSON)).isEqualTo(1);
     }
 
     private static class BSONPrimitiveType {

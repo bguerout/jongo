@@ -18,14 +18,12 @@ package org.jongo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.Binary;
-import org.jongo.util.JSONResultHandler;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jongo.util.JSONResultHandler.jsonify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -104,7 +102,7 @@ public class BinaryTest extends JongoTestCase {
 
         collection.save(doc);
 
-        assertHasBeenPersistedAs(jsonify("'_id' : { '$binary' : 'YWJjZGU=' , '$type' : 0}"));
+        assertHasBeenPersistedAs("{'_id' : { '$binary' : 'YWJjZGU=' , '$type' : 0}}");
         BinaryFriend result = collection.findOne().as(BinaryFriend.class);
 
         assertThat(result.id.getType()).isEqualTo(doc.id.getType());
@@ -112,8 +110,7 @@ public class BinaryTest extends JongoTestCase {
     }
 
     private void assertHasBeenPersistedAs(String expectedPersistedJSON) {
-        String result = collection.findOne().map(new JSONResultHandler());
-        assertThat(result).contains(expectedPersistedJSON);
+        assertThat(collection.count(expectedPersistedJSON)).isEqualTo(1);
     }
 
     private static class BinaryFriend {
