@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import com.mongodb.MongoException.DuplicateKey;
+import com.mongodb.DuplicateKeyException;
 import com.mongodb.WriteConcern;
 import junit.framework.Assert;
 import org.jongo.model.Coordinate;
@@ -68,7 +68,7 @@ public class MongoCollectionTest extends JongoTestCase {
         try {
             collection.save(new Friend("John"));
             Assert.fail();
-        } catch (DuplicateKey e) {
+        } catch (DuplicateKeyException e) {
         }
     }
 

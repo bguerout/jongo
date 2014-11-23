@@ -41,11 +41,11 @@ public class AlreadyCheckDBObjectTest extends JongoTestCase {
         Friend friend = new Friend(ObjectId.get(), "John");
         ObjectId deserializedOid = ObjectId.get();
         when(objectIdUpdater.getId(friend)).thenReturn(deserializedOid);
-        Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
+        Insert insert = new Insert(mockedDBCollection, WriteConcern.UNACKNOWLEDGED, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
 
         insert.save(friend);
 
-        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.NONE));
+        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.UNACKNOWLEDGED));
         DBObject value = captor.getValue();
         assertThat(value.get("_id")).isEqualTo(deserializedOid);
     }
@@ -56,11 +56,11 @@ public class AlreadyCheckDBObjectTest extends JongoTestCase {
         ObjectId id = ObjectId.get();
         Friend friend = new Friend(id, "John");
         when(objectIdUpdater.getId(friend)).thenReturn(null);
-        Insert insert = new Insert(mockedDBCollection, WriteConcern.NONE, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
+        Insert insert = new Insert(mockedDBCollection, WriteConcern.UNACKNOWLEDGED, getMapper().getMarshaller(), objectIdUpdater, getMapper().getQueryFactory());
 
         insert.save(friend);
 
-        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.NONE));
+        verify(mockedDBCollection).save(captor.capture(), eq(WriteConcern.UNACKNOWLEDGED));
         DBObject value = captor.getValue();
         assertThat(value.get("_id")).isNotNull();
         assertThat(value.get("_id")).isEqualTo(id);

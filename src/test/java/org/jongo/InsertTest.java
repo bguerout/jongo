@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import com.mongodb.MongoException;
+import com.mongodb.DuplicateKeyException;
 import com.mongodb.WriteConcern;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
@@ -103,18 +103,8 @@ public class InsertTest extends JongoTestCase {
         collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
 
         assertThat(collection.count("{name : 'John'}")).isEqualTo(1);
-        assertThat(id.isNew()).isFalse();
-    }
 
-    @Test
-    public void canInsertAPojoWithNotNewObjectId() throws Exception {
-
-        ObjectId id = ObjectId.get();
-        id.notNew();
-
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
-
-        Friend result = collection.findOne(id).as(Friend.class);
+        Friend result = collection.findOne("{name : 'John'}").as(Friend.class);
         assertThat(result.getId()).isEqualTo(id);
     }
 
@@ -137,7 +127,7 @@ public class InsertTest extends JongoTestCase {
         try {
             collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
             Assert.fail();
-        } catch (MongoException.DuplicateKey e) {
+        } catch (DuplicateKeyException e) {
         }
     }
 
@@ -149,7 +139,7 @@ public class InsertTest extends JongoTestCase {
         try {
             collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend("122", "other value"));
             Assert.fail();
-        } catch (MongoException.DuplicateKey e) {
+        } catch (DuplicateKeyException e) {
         }
     }
 
