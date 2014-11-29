@@ -27,14 +27,15 @@ import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class FindOne {
 
-    private final Unmarshaller unmarshaller;
-    private final DBCollection collection;
-    private final ReadPreference readPreference;
-    private final Query query;
-    private Query fields, orderBy;
-    private final QueryFactory queryFactory;
+    protected final Unmarshaller unmarshaller;
+    protected final DBCollection collection;
+    protected final ReadPreference readPreference;
+    protected final Query query;
+    protected Query fields, orderBy;
+    protected final QueryFactory queryFactory;
 
-    FindOne(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    protected FindOne(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory
+        queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.readPreference = readPreference;

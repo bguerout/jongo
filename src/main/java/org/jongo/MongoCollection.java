@@ -32,10 +32,10 @@ public class MongoCollection {
     private static final Object[] NO_PARAMETERS = {};
     private static final String ALL = "{}";
 
-    private final DBCollection collection;
-    private final WriteConcern writeConcern;
-    private final ReadPreference readPreference;
-    private final Mapper mapper;
+    protected final DBCollection collection;
+    protected final WriteConcern writeConcern;
+    protected final ReadPreference readPreference;
+    protected final Mapper mapper;
 
     public MongoCollection(DBCollection dbCollection, Mapper mapper) {
         this(dbCollection, mapper, dbCollection.getWriteConcern(), dbCollection.getReadPreference());

@@ -29,13 +29,14 @@ import java.util.List;
 
 class Insert {
 
-    private final Marshaller marshaller;
-    private final DBCollection collection;
-    private final ObjectIdUpdater objectIdUpdater;
-    private final QueryFactory queryFactory;
-    private WriteConcern writeConcern;
+    protected final Marshaller marshaller;
+    protected final DBCollection collection;
+    protected final ObjectIdUpdater objectIdUpdater;
+    protected final QueryFactory queryFactory;
+    protected WriteConcern writeConcern;
 
-    Insert(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, QueryFactory queryFactory) {
+    protected Insert(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater
+        objectIdUpdater, QueryFactory queryFactory) {
         this.writeConcern = writeConcern;
         this.marshaller = marshaller;
         this.collection = collection;

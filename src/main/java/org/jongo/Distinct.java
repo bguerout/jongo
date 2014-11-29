@@ -26,13 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Distinct {
-    private final DBCollection dbCollection;
-    private final Unmarshaller unmarshaller;
-    private final String key;
-    private Query query;
-    private final QueryFactory queryFactory;
+    protected final DBCollection dbCollection;
+    protected final Unmarshaller unmarshaller;
+    protected final String key;
+    protected Query query;
+    protected final QueryFactory queryFactory;
 
-    Distinct(DBCollection dbCollection, Unmarshaller unmarshaller, QueryFactory queryFactory, String key) {
+    protected Distinct(DBCollection dbCollection, Unmarshaller unmarshaller, QueryFactory queryFactory, String key) {
         this.dbCollection = dbCollection;
         this.unmarshaller = unmarshaller;
         this.key = key;

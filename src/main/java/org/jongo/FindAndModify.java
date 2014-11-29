@@ -26,16 +26,17 @@ import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class FindAndModify {
 
-    private final DBCollection collection;
-    private final Unmarshaller unmarshaller;
-    private final QueryFactory queryFactory;
-    private final Query query;
-    private Query fields, sort, modifier;
-    private boolean remove = false;
-    private boolean returnNew = false;
-    private boolean upsert = false;
+    protected final DBCollection collection;
+    protected final Unmarshaller unmarshaller;
+    protected final QueryFactory queryFactory;
+    protected final Query query;
+    protected Query fields, sort, modifier;
+    protected boolean remove = false;
+    protected boolean returnNew = false;
+    protected boolean upsert = false;
 
-    FindAndModify(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    protected FindAndModify(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String
+        query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryFactory = queryFactory;

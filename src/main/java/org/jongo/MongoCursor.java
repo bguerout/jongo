@@ -26,8 +26,8 @@ import java.util.NoSuchElementException;
 
 public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
 
-    private final DBCursor cursor;
-    private final ResultHandler<E> resultHandler;
+    protected final DBCursor cursor;
+    protected final ResultHandler<E> resultHandler;
 
     public MongoCursor(DBCursor cursor, ResultHandler<E> resultHandler) {
         this.cursor = cursor;

@@ -31,11 +31,11 @@ import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class Command {
 
-    private final DB db;
-    private final Unmarshaller unmarshaller;
-    private final QueryFactory queryFactory;
-    private Query query;
-    private boolean throwOnError;
+    protected final DB db;
+    protected final Unmarshaller unmarshaller;
+    protected final QueryFactory queryFactory;
+    protected Query query;
+    protected boolean throwOnError;
 
     public Command(DB db, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.db = db;

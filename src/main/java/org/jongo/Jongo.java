@@ -25,8 +25,8 @@ import org.jongo.query.Query;
 
 public class Jongo {
 
-    private final DB database;
-    private final Mapper mapper;
+    protected final DB database;
+    protected final Mapper mapper;
 
     public Jongo(DB database) {
         this(database, new JacksonMapper.Builder().build());

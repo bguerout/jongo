@@ -27,12 +27,12 @@ import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class Aggregate {
 
-    private final Unmarshaller unmarshaller;
-    private final QueryFactory queryFactory;
-    private final List<DBObject> pipeline;
-    private final DBCollection collection;
+    protected final Unmarshaller unmarshaller;
+    protected final QueryFactory queryFactory;
+    protected final List<DBObject> pipeline;
+    protected final DBCollection collection;
 
-    Aggregate(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory) {
+    protected Aggregate(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory) {
         this.unmarshaller = unmarshaller;
         this.queryFactory = queryFactory;
         this.pipeline = new ArrayList<DBObject>();
