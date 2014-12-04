@@ -51,7 +51,12 @@ public class AnnotationsMisusedTest extends JongoTestCase {
         collection.withWriteConcern(WriteConcern.SAFE).save(friend);
 
         ExternalFriend externalFriend = collection.findOne().as(ExternalFriend.class);
-        assertThat(ObjectId.isValid(externalFriend.getId())).isTrue();//mapped because this is a String
+
+        /*
+        * Works because Bson4jackson try to convert ObjectId into String
+        * see com.fasterxml.jackson.databind.deser.std.StringDeserializer
+        */
+        assertThat(ObjectId.isValid(externalFriend.getId())).isTrue();
     }
 
     @Test
