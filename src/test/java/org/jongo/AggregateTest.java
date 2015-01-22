@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import com.mongodb.CommandFailureException;
+import com.mongodb.MongoCommandException;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -110,7 +110,7 @@ public class AggregateTest extends JongoTestCase {
             collection.aggregate("{$invalid:{}}").as(Article.class);
             fail();
         } catch (Exception e) {
-            assertThat(CommandFailureException.class).isAssignableFrom(e.getClass());
+            assertThat(MongoCommandException.class).isAssignableFrom(e.getClass());
         }
     }
 
