@@ -33,7 +33,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
     private final List<MapperModifier> modifiers;
     private ReaderCallback readerCallback;
     private WriterCallback writerCallback;
-    private MapperModifier visibilityModifier = new VisibilityModifier();
+    private MapperModifier visibilityModifier;
 
     public AbstractMappingBuilder() {
         this(new ObjectMapper(MongoBsonFactory.createFactory()));
@@ -50,7 +50,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
     protected abstract T getBuilderInstance();
 
     protected Mapping createMapping() {
-        addModifier(visibilityModifier);
+        addModifier(visibilityModifier == null ? new VisibilityModifier() : visibilityModifier);
         for (MapperModifier modifier : modifiers) {
             modifier.modify(mapper);
         }
