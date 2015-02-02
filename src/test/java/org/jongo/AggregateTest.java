@@ -158,6 +158,7 @@ public class AggregateTest extends JongoTestCase {
         }
 
         private Article() {
+            //used by jackson
         }
     }
 }

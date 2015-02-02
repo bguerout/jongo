@@ -16,14 +16,16 @@
 
 package org.jongo;
 
+import com.mongodb.AggregationOptions;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.AggregationOptions;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.QueryFactory;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.jongo.ResultHandlerFactory.newResultHandler;
@@ -75,7 +77,7 @@ public class Aggregate {
         private Iterator<DBObject> results;
         private ResultHandler<E> resultHandler;
 
-        public ResultsIterator(Iterator<DBObject> results, ResultHandler<E> resultHandler) {
+        private ResultsIterator(Iterator<DBObject> results, ResultHandler<E> resultHandler) {
             this.resultHandler = resultHandler;
             this.results = results;
         }
