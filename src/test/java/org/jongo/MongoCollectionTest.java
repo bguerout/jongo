@@ -78,7 +78,7 @@ public class MongoCollectionTest extends JongoTestCase {
         collection.save(new Friend("John", new Coordinate(1, 1)));
         collection.save(new Friend("Peter", new Coordinate(4, 4)));
 
-        collection.ensureIndex("{ 'coordinate' : '2d'}");
+        collection.ensureIndex("{ 'coordinate' : '2d'},{ 'coordinate' : '2d'}");
 
         /* then */
         assertThat(collection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class).iterator()).hasSize(1);
