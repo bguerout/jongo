@@ -35,14 +35,14 @@ public class Aggregate {
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final List<DBObject> pipeline;
-    private final AtomicReference<AggregationOptions> optionsRef;
+    private final AtomicReference<AggregationOptions> options;
     private final DBCollection collection;
 
     Aggregate(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory) {
         this.unmarshaller = unmarshaller;
         this.queryFactory = queryFactory;
         this.pipeline = new ArrayList<DBObject>();
-        this.optionsRef = new AtomicReference<AggregationOptions>();
+        this.options = new AtomicReference<AggregationOptions>();
         this.collection = collection;
     }
 
@@ -57,13 +57,13 @@ public class Aggregate {
     }
 
     public Aggregate options(AggregationOptions options) {
-        optionsRef.set(options);
+        this.options.set(options);
         return this;
     }
 
     public <T> ResultsIterator<T> map(ResultHandler<T> resultHandler) {
         Iterator<DBObject> results;
-        AggregationOptions options = optionsRef.get();
+        AggregationOptions options = this.options.get();
         if (options != null) {
             results = collection.aggregate(pipeline, options);
         } else {
