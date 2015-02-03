@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class NestedPolymorphismTest extends JongoTestCase {
         Owner owner2 = collection.findOne(owner.getId()).as(Owner.class);
         assertThat(owner2.getPet()).isInstanceOf(Cat.class);
 
-        Cat cat = (Cat)owner2.getPet();
+        Cat cat = (Cat) owner2.getPet();
         assertThat(cat.getName()).isEqualTo("Sylvester");
         assertThat(cat.getMiceEaten()).isEqualTo(42);
     }
@@ -52,7 +52,7 @@ public class NestedPolymorphismTest extends JongoTestCase {
         collection.update("{_id: #}", owner.getId()).with("{$set: {pet: #}}", new Cat("Tom", 0));
 
         Owner owner2 = collection.findOne(owner.getId()).as(Owner.class);
-        Cat cat = (Cat)owner2.getPet();
+        Cat cat = (Cat) owner2.getPet();
         assertThat(cat.getName()).isEqualTo("Tom");
         assertThat(cat.getMiceEaten()).isEqualTo(0);
 
@@ -60,6 +60,7 @@ public class NestedPolymorphismTest extends JongoTestCase {
 
     public static class Owner {
         @Id
+        @MongoId //see NewAnnotationsCompatibilitySuiteTest for more informations
         private ObjectId id;
 
         private Pet pet;
@@ -82,7 +83,7 @@ public class NestedPolymorphismTest extends JongoTestCase {
      * and cross-language than the default @class attribute
      */
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-    @JsonSubTypes({ @JsonSubTypes.Type(name="cat", value = Cat.class) })
+    @JsonSubTypes({@JsonSubTypes.Type(name = "cat", value = Cat.class)})
     public static class Pet {
         private String name;
 
@@ -98,12 +99,14 @@ public class NestedPolymorphismTest extends JongoTestCase {
     public static class Cat extends Pet {
         private int miceEaten;
 
-        public Cat() {}
+        public Cat() {
+        }
 
         public Cat(String name, int mice) {
             setName(name);
             setMiceEaten(mice);
         }
+
         public int getMiceEaten() {
             return miceEaten;
         }

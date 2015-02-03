@@ -16,17 +16,18 @@
 
 package org.jongo.marshall.jackson.oid;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.lang.annotation.Retention;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Deprecated
 @Retention(RUNTIME)
-@JacksonAnnotationsInside
-
-@JsonProperty("_id")
-public @interface Id {
+@JsonInclude(NON_NULL)
+@JsonSerialize(using = ObjectIdSerializer.class)
+@JsonDeserialize(using = ObjectIdDeserializer.class)
+public @interface MongoObjectId {
 }

@@ -18,10 +18,12 @@ package org.jongo.model;
 
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.MongoId;
 
 public class Friend {
 
     @Id
+    @MongoId //see NewAnnotationsCompatibilitySuiteTest for more informations
     private ObjectId id;
     private String name;
     private String address;

@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.jongo.ReflectiveObjectIdUpdater;
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.MongoId;
+import org.jongo.marshall.jackson.oid.MongoObjectId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +44,13 @@ public class JacksonIdFieldSelectorTest {
     }
 
     @Test
+    public void withMongoIdAnnotation() throws Exception {
+        assertThat(selector.isId(MongoIdAnnotated.class.getField("id"))).isTrue();
+        assertThat(selector.isId(MongoIdAnnotated.class.getField("id_string"))).isTrue();
+        assertThat(selector.isId(MongoIdAnnotated.class.getField("id_custom"))).isTrue();
+    }
+
+    @Test
     public void withJsonPropertyAnnotation() throws Exception {
         assertThat(selector.isId(JsonPropertyAnnotated.class.getField("id"))).isTrue();
         assertThat(selector.isId(JsonPropertyAnnotated.class.getField("id_string"))).isTrue();
@@ -60,6 +69,21 @@ public class JacksonIdFieldSelectorTest {
         assertThat(selector.isId(CustomWithoutAnnotation.class.getField("_id"))).isTrue();
     }
 
+    @Test
+    public void shouldDetectObjectIdByType() throws Exception {
+        assertThat(selector.isObjectId(OidWithoutAnnotation.class.getField("_id"))).isTrue();
+        assertThat(selector.isObjectId(OidWithoutAnnotation.class.getField("ignored"))).isTrue();
+        assertThat(selector.isObjectId(CustomWithoutAnnotation.class.getField("_id"))).isFalse();
+    }
+
+    @Test
+    public void shouldDetectObjectIdWithAnnotation() throws Exception {
+        assertThat(selector.isObjectId(ObjectIdAnnotated.class.getField("_id"))).isTrue();
+        assertThat(selector.isObjectId(MongoObjectIdAnnotated.class.getField("_id"))).isTrue();
+        assertThat(selector.isObjectId(StringWithoutAnnotation.class.getField("_id"))).isFalse();
+
+    }
+
     private static class IdAnnotated {
         @Id
         public ObjectId id;
@@ -71,18 +95,15 @@ public class JacksonIdFieldSelectorTest {
         public Integer id_custom;
     }
 
-    @Test
-    public void shouldDetectObjectIdByType() throws Exception {
-        assertThat(selector.isObjectId(OidWithoutAnnotation.class.getField("_id"))).isTrue();
-        assertThat(selector.isObjectId(OidWithoutAnnotation.class.getField("ignored"))).isTrue();
-        assertThat(selector.isObjectId(CustomWithoutAnnotation.class.getField("_id"))).isFalse();
-    }
+    private static class MongoIdAnnotated {
+        @MongoId
+        public ObjectId id;
 
-    @Test
-    public void shouldDetectObjectIdWithAnnotation() throws Exception {
-        assertThat(selector.isObjectId(AnnotatedObjectId.class.getField("_id"))).isTrue();
-        assertThat(selector.isObjectId(StringWithoutAnnotation.class.getField("_id"))).isFalse();
+        @MongoId
+        public String id_string;
 
+        @MongoId
+        public Integer id_custom;
     }
 
     private static class JsonPropertyAnnotated {
@@ -114,8 +135,13 @@ public class JacksonIdFieldSelectorTest {
         public Integer _id;
     }
 
-    private static class AnnotatedObjectId {
+    private static class ObjectIdAnnotated {
         @org.jongo.marshall.jackson.oid.ObjectId
+        public String _id;
+    }
+
+    private static class MongoObjectIdAnnotated {
+        @MongoObjectId
         public String _id;
     }
 

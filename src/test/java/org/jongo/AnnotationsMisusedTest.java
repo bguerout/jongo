@@ -21,6 +21,7 @@ import com.mongodb.WriteConcern;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.model.ExternalFriend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -75,6 +76,7 @@ public class AnnotationsMisusedTest extends JongoTestCase {
 
     private static class WithIntegerId {
         @Id
+        @MongoId //see NewAnnotationsCompatibilitySuiteTest for more informations
         private Integer id;
     }
 }

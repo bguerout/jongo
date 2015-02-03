@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package org.jongo.marshall.jackson.oid;
+package org.jongo.marshall.jackson;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector;
+import org.jongo.marshall.jackson.oid.MongoId;
+import org.jongo.marshall.jackson.oid.MongoObjectId;
 
-import java.lang.annotation.Retention;
+import java.lang.annotation.Annotation;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
 
-@Deprecated
-@Retention(RUNTIME)
-@JacksonAnnotationsInside
+    @Override
+    public boolean isAnnotationBundle(Annotation ann) {
+        boolean isJongoId = ann.annotationType().equals(MongoId.class) || ann.annotationType().equals(MongoObjectId.class);
+        return isJongoId ? isJongoId : super.isAnnotationBundle(ann);
+    }
 
-@JsonProperty("_id")
-public @interface Id {
+
 }

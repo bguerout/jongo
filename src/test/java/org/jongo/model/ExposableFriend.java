@@ -17,12 +17,16 @@
 package org.jongo.model;
 
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.MongoId;
+import org.jongo.marshall.jackson.oid.MongoObjectId;
 import org.jongo.marshall.jackson.oid.ObjectId;
 
 public class ExposableFriend {
 
     @Id
     @ObjectId
+    @MongoId //see NewAnnotationsCompatibilitySuiteTest for more informations
+    @MongoObjectId
     private String id;
     private String name;
 

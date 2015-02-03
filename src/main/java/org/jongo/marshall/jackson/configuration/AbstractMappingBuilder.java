@@ -39,6 +39,7 @@ public abstract class AbstractMappingBuilder<T extends AbstractMappingBuilder<T>
         this(new ObjectMapper(MongoBsonFactory.createFactory()));
         registerModule(new BsonModule());
         addModifier(new PropertyModifier());
+        addModifier(new AnnotationModifier());
     }
 
     public AbstractMappingBuilder(ObjectMapper mapper) {

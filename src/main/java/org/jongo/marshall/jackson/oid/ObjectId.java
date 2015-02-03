@@ -26,6 +26,7 @@ import java.lang.annotation.Retention;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+@Deprecated
 @Retention(RUNTIME)
 @JacksonAnnotationsInside
 

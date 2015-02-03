@@ -17,10 +17,12 @@
 package org.jongo.model;
 
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.MongoId;
 
 public class ExternalFriend {
 
     @Id
+    @MongoId //see NewAnnotationsCompatibilitySuiteTest for more informations
     private String id;
     private String name;
 

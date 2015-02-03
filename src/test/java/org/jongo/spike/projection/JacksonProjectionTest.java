@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import org.jongo.marshall.jackson.bson4jackson.BsonModule;
 import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
+import org.jongo.marshall.jackson.configuration.AnnotationModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.marshall.jackson.configuration.PropertyModifier;
 import org.jongo.model.Coordinate;
@@ -41,7 +42,8 @@ public class JacksonProjectionTest {
         Mapping.Builder builder = new Mapping.Builder(mapper);
         builder.registerModule(new BsonModule());
         builder.addModifier(new PropertyModifier());
-        Mapping mapping = builder.build();
+        builder.addModifier(new AnnotationModifier());
+        builder.build();
         projection = new JacksonProjection(mapper);
     }
 
