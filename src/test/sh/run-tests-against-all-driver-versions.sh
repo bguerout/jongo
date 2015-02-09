@@ -3,23 +3,24 @@
 OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
 NEXUS_URL="https://oss.sonatype.org/service/local/data_index?g=org.mongodb&a=mongo-java-driver"
-MINIMAL_VERSION="2.12.3"
+MINIMAL_VERSION="2.13.0"
+EXCLUDED_VERSION="2.13.0-rc0"
 A_VERSION_HAS_FAILED=false
 OPTS=$*
 
 echo "Executing tests with mongo-java-driver[$MINIMAL_VERSION+] dependencies available on Nexus http://repository.sonatype.org"
 
-mkdir -p $OUTPUT_DIR;
-VERSIONS=`curl -so $MONGO_ARTIFACTS_FILE $NEXUS_URL &&  grep -e "version" $MONGO_ARTIFACTS_FILE | sed 's/<version>//g' | sed 's/<\/version>//g' | tr -s " " | uniq`;
+mkdir -p "$OUTPUT_DIR";
+VERSIONS=$(curl -so "$MONGO_ARTIFACTS_FILE" "$NEXUS_URL" &&  grep -e "version" "$MONGO_ARTIFACTS_FILE" | sed 's/<version>//g' | sed 's/<\/version>//g' | tr -s " " | sort | uniq);
 
 for version in $VERSIONS
 do
     CURRENT=$(echo "$version" | sed "s/\.//g" | sed "s/-.*//g")
     MINIMAL=$(echo "$MINIMAL_VERSION" | sed "s/\.//g" | sed "s/-.*//g")
 
-    if [ ${CURRENT[0]} -ge ${MINIMAL[0]} ] && [ ${CURRENT[1]} -ge ${MINIMAL[1]} ];
+    if [ ${CURRENT[0]} -ge ${MINIMAL[0]} ] && [ ${CURRENT[1]} -ge ${MINIMAL[1]} ] && [[ $version != *"$EXCLUDED_VERSION"* ]];
     then
-      mvn verify $OPTS -Dmongo.version=$version -DreportFormat=plain -DuseFile=false -l $OUTPUT_DIR/build-$version.log
+      mvn verify $OPTS -Dmongo.version="$version" -DreportFormat=plain -DuseFile=false -l $OUTPUT_DIR/build-"$version".log
 
       if [ "$?" -ne "0" ];
       then
