@@ -16,46 +16,32 @@
 
 package org.jongo.util.compatibility;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import org.jongo.util.JongoTestCase;
 import org.junit.internal.builders.JUnit4Builder;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
-import org.reflections.Reflections;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class CompatibilitySuite extends Suite {
-
-    private static final String SCANNED_PACKAGE = "org.jongo";
 
     private final List<Runner> runners = new ArrayList<Runner>();
     private final ContextRunnerBuilder builder;
 
     public CompatibilitySuite(Class<?> clazz) throws Throwable {
         super(clazz, new Class<?>[]{});
-        Set<Class<? extends JongoTestCase>> classes = new Reflections(SCANNED_PACKAGE).getSubTypesOf(JongoTestCase.class);
+
         TestContext testContext = getParameter(getTestClass());
         builder = new ContextRunnerBuilder(testContext);
-        runners.addAll(builder.runners(clazz, getTestClassesToRun(classes, testContext.getIgnoredTests())));
-    }
-
-    private List<Class<?>> getTestClassesToRun(Set<Class<? extends JongoTestCase>> classes, final List<Class<?>> ignoredLists) {
-        return new ArrayList<Class<?>>(Collections2.filter(classes, new Predicate<Class<? extends JongoTestCase>>() {
-            public boolean apply(@Nullable Class<? extends JongoTestCase> input) {
-                return !ignoredLists.contains(input);
-            }
-        }));
+        runners.addAll(builder.runners(clazz, testContext.getTestCasesToRun()));
     }
 
     @Override
@@ -116,6 +102,14 @@ public class CompatibilitySuite extends Suite {
             JongoTestCase test = (JongoTestCase) super.createTest();
             test.prepareMarshallingStrategy(testContext.getMapper());
             return test;
+        }
+
+        @Override
+        protected void runChild(FrameworkMethod method, RunNotifier notifier) {
+            if (testContext.mustIgnoreTest(method.getName())) {
+                notifier.fireTestIgnored(describeChild(method));
+            }
+            super.runChild(method, notifier);
         }
     }
 }

@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 
 @RunWith(CompatibilitySuite.class)
 public class NewAnnotationsCompatibilitySuiteTest {
@@ -25,7 +24,7 @@ public class NewAnnotationsCompatibilitySuiteTest {
                 .addModifier(new FakeAnnotationModifier())
                 .build();
 
-        return new TestContext("New Annotations", mapper, new ArrayList<Class<?>>());
+        return new TestContext("New Annotations", mapper);
     }
 
     private static class FakeAnnotationModifier extends AnnotationModifier {

@@ -16,20 +16,38 @@
 
 package org.jongo.util.compatibility;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import org.jongo.Mapper;
+import org.jongo.util.JongoTestCase;
+import org.reflections.Reflections;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TestContext {
 
+    private static final String SCANNED_PACKAGE = "org.jongo";
+
     private final String contextName;
     private final Mapper mapper;
-    private final List<Class<?>> ignoredTests;
+    private final List<Class<? extends JongoTestCase>> ignoredTestCases;
+    private final List<String> ignoredMethods;
 
-    public TestContext(String contextName, Mapper mapper, List<Class<?>> ignoredTests) {
+    public TestContext(String contextName, Mapper mapper, List<Class<? extends JongoTestCase>> ignoredTestCases, List<String> ignoredTests) {
         this.contextName = contextName;
         this.mapper = mapper;
-        this.ignoredTests = ignoredTests;
+        this.ignoredTestCases = ignoredTestCases;
+        this.ignoredMethods = ignoredTests;
+    }
+
+    public TestContext(String contextName, Mapper mapper) {
+        this.contextName = contextName;
+        this.mapper = mapper;
+        this.ignoredTestCases = new ArrayList<Class<? extends JongoTestCase>>();
+        this.ignoredMethods = new ArrayList<String>();
     }
 
     public Mapper getMapper() {
@@ -40,7 +58,16 @@ public class TestContext {
         return contextName;
     }
 
-    public List<Class<?>> getIgnoredTests() {
-        return ignoredTests;
+    public List<Class<?>> getTestCasesToRun() {
+        Set<Class<? extends JongoTestCase>> allJongoTestCases = new Reflections(SCANNED_PACKAGE).getSubTypesOf(JongoTestCase.class);
+        return new ArrayList<Class<?>>(Collections2.filter(allJongoTestCases, new Predicate<Class<? extends JongoTestCase>>() {
+            public boolean apply(@Nullable Class<? extends JongoTestCase> input) {
+                return !ignoredTestCases.contains(input);
+            }
+        }));
+    }
+
+    public boolean mustIgnoreTest(String methodName) {
+        return ignoredMethods.contains(methodName);
     }
 }
