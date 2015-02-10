@@ -20,27 +20,22 @@ import org.jongo.Mapper;
 import org.jongo.util.JongoTestCase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TestContext {
 
     private final String contextName;
     private final Mapper mapper;
     private final List<Class<? extends JongoTestCase>> ignoredTestCases;
-    private final List<String> ignoredMethods;
-
-    public TestContext(String contextName, Mapper mapper, List<Class<? extends JongoTestCase>> ignoredTestCases, List<String> ignoredTests) {
-        this.contextName = contextName;
-        this.mapper = mapper;
-        this.ignoredTestCases = ignoredTestCases;
-        this.ignoredMethods = ignoredTests;
-    }
+    private final Map<Class<? extends JongoTestCase>, String> ignoredTests;
 
     public TestContext(String contextName, Mapper mapper) {
         this.contextName = contextName;
         this.mapper = mapper;
         this.ignoredTestCases = new ArrayList<Class<? extends JongoTestCase>>();
-        this.ignoredMethods = new ArrayList<String>();
+        this.ignoredTests = new HashMap<Class<? extends JongoTestCase>, String>();
     }
 
     public Mapper getMapper() {
@@ -55,7 +50,16 @@ public class TestContext {
         return ignoredTestCases.contains(clazz);
     }
 
-    public boolean mustIgnoreTest(String methodName) {
-        return ignoredMethods.contains(methodName);
+    public void ignoreTestCase(Class<? extends JongoTestCase> clazz) {
+        ignoredTestCases.add(clazz);
     }
+
+    public boolean mustIgnoreTest(Class<?> clazz, String methodName) {
+        return ignoredTests.containsKey(clazz) && ignoredTests.get(clazz).equals(methodName);
+    }
+
+    public void ignoreTest(Class<? extends JongoTestCase> clazz, String methodName) {
+        ignoredTests.put(clazz, methodName);
+    }
+
 }
