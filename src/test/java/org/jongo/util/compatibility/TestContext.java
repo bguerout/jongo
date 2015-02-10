@@ -16,20 +16,13 @@
 
 package org.jongo.util.compatibility;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import org.jongo.Mapper;
 import org.jongo.util.JongoTestCase;
-import org.reflections.Reflections;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class TestContext {
-
-    private static final String SCANNED_PACKAGE = "org.jongo";
 
     private final String contextName;
     private final Mapper mapper;
@@ -58,13 +51,8 @@ public class TestContext {
         return contextName;
     }
 
-    public List<Class<?>> getTestCasesToRun() {
-        Set<Class<? extends JongoTestCase>> allJongoTestCases = new Reflections(SCANNED_PACKAGE).getSubTypesOf(JongoTestCase.class);
-        return new ArrayList<Class<?>>(Collections2.filter(allJongoTestCases, new Predicate<Class<? extends JongoTestCase>>() {
-            public boolean apply(@Nullable Class<? extends JongoTestCase> input) {
-                return !ignoredTestCases.contains(input);
-            }
-        }));
+    public boolean mustIgnoreTestCase(Class<?> clazz) {
+        return ignoredTestCases.contains(clazz);
     }
 
     public boolean mustIgnoreTest(String methodName) {

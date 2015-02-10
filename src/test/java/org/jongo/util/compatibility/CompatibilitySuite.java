@@ -17,6 +17,7 @@
 package org.jongo.util.compatibility;
 
 import org.jongo.util.JongoTestCase;
+import org.junit.internal.builders.IgnoredClassRunner;
 import org.junit.internal.builders.JUnit4Builder;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
@@ -26,10 +27,12 @@ import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
+import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CompatibilitySuite extends Suite {
 
@@ -41,7 +44,8 @@ public class CompatibilitySuite extends Suite {
 
         TestContext testContext = getParameter(getTestClass());
         builder = new ContextRunnerBuilder(testContext);
-        runners.addAll(builder.runners(clazz, testContext.getTestCasesToRun()));
+        Set<Class<? extends JongoTestCase>> jongoTestCases = new Reflections("org.jongo").getSubTypesOf(JongoTestCase.class);
+        runners.addAll(builder.runners(clazz, new ArrayList<Class<?>>(jongoTestCases)));
     }
 
     @Override
@@ -79,6 +83,9 @@ public class CompatibilitySuite extends Suite {
 
         @Override
         public Runner runnerForClass(Class<?> testClass) throws Throwable {
+            if (testContext.mustIgnoreTestCase(testClass)) {
+                return new IgnoredClassRunner(testClass);
+            }
             return new ContextJUnit4ClassRunner(testClass, testContext);
         }
     }
@@ -106,10 +113,11 @@ public class CompatibilitySuite extends Suite {
 
         @Override
         protected void runChild(FrameworkMethod method, RunNotifier notifier) {
-            if (testContext.mustIgnoreTest(method.getName())) {
+            if (testContext.mustIgnoreTest(method.getMethod().getDeclaringClass(), method.getName())) {
                 notifier.fireTestIgnored(describeChild(method));
+            } else {
+                super.runChild(method, notifier);
             }
-            super.runChild(method, notifier);
         }
     }
 }
