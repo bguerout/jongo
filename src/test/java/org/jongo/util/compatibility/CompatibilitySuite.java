@@ -16,7 +16,6 @@
 
 package org.jongo.util.compatibility;
 
-import org.jongo.util.JongoTestCase;
 import org.junit.internal.builders.IgnoredClassRunner;
 import org.junit.internal.builders.JUnit4Builder;
 import org.junit.runner.Runner;
@@ -27,42 +26,32 @@ import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
-import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class CompatibilitySuite extends Suite {
 
-    private final List<Runner> runners = new ArrayList<Runner>();
-    private final ContextRunnerBuilder builder;
-
-    public CompatibilitySuite(Class<?> clazz) throws Throwable {
-        super(clazz, new Class<?>[]{});
-
-        TestContext testContext = getParameter(getTestClass());
-        builder = new ContextRunnerBuilder(testContext);
-        Set<Class<? extends JongoTestCase>> jongoTestCases = new Reflections("org.jongo").getSubTypesOf(JongoTestCase.class);
-        runners.addAll(builder.runners(clazz, new ArrayList<Class<?>>(jongoTestCases)));
+    public CompatibilitySuite(Class<?> suiteClass) throws Throwable {
+        super(suiteClass, new Class<?>[]{});
     }
 
     @Override
     protected List<Runner> getChildren() {
-        return runners;
+        try {
+            TestContext testContext = getTestContextFromParameter();
+            ContextRunnerBuilder builder = new ContextRunnerBuilder(testContext);
+
+            return builder.runners(getTestClass().getJavaClass(), testContext.findTestCases());
+        } catch (Throwable cause) {
+            throw new RuntimeException("Unable to create runners for this suite", cause);
+        }
     }
 
-    /**
-     * @see Parameterized
-     */
-    private TestContext getParameter(TestClass klass) throws Throwable {
-        return (TestContext) getParametersMethod(klass).invokeExplosively(null);
+    private TestContext getTestContextFromParameter() throws Throwable {
+        return (TestContext) getParametersMethod(getTestClass()).invokeExplosively(null);
     }
 
-    /**
-     * @see Parameterized
-     */
     private FrameworkMethod getParametersMethod(TestClass testClass) throws Exception {
         List<FrameworkMethod> methods = testClass.getAnnotatedMethods(Parameterized.Parameters.class);
         for (FrameworkMethod each : methods) {
@@ -106,9 +95,9 @@ public class CompatibilitySuite extends Suite {
 
         @Override
         protected Object createTest() throws Exception {
-            JongoTestCase test = (JongoTestCase) super.createTest();
-            test.prepareMarshallingStrategy(testContext.getMapper());
-            return test;
+            Object testCase = super.createTest();
+            testContext.prepareTestCase(testCase);
+            return testCase;
         }
 
         @Override

@@ -18,11 +18,9 @@ package org.jongo.util.compatibility;
 
 import org.jongo.Mapper;
 import org.jongo.util.JongoTestCase;
+import org.reflections.Reflections;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestContext {
 
@@ -36,10 +34,6 @@ public class TestContext {
         this.mapper = mapper;
         this.ignoredTestCases = new ArrayList<Class<? extends JongoTestCase>>();
         this.ignoredTests = new HashMap<Class<? extends JongoTestCase>, String>();
-    }
-
-    public Mapper getMapper() {
-        return mapper;
     }
 
     public String getContextName() {
@@ -60,6 +54,18 @@ public class TestContext {
 
     public void ignoreTest(Class<? extends JongoTestCase> clazz, String methodName) {
         ignoredTests.put(clazz, methodName);
+    }
+
+    public List<Class<?>> findTestCases() {
+        Set<Class<? extends JongoTestCase>> jongoTestCases = new Reflections("org.jongo").getSubTypesOf(JongoTestCase.class);
+        return new ArrayList<Class<?>>(jongoTestCases);
+    }
+
+    public void prepareTestCase(Object testCase) throws Exception {
+        if (testCase instanceof JongoTestCase) {
+            JongoTestCase test = (JongoTestCase) testCase;
+            test.prepareMarshallingStrategy(mapper);
+        }
     }
 
 }
