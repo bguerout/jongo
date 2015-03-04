@@ -63,4 +63,12 @@ public class Jongo {
     public Command runCommand(String query, Object... parameters) {
         return new Command(database, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
+
+    public void requestStart() {
+        database.requestStart();
+    }
+
+    public void requestDone() {
+        database.requestDone();
+    }
 }
