@@ -33,5 +33,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @JsonInclude(NON_NULL)
 @JsonSerialize(using = ObjectIdSerializer.class)
 @JsonDeserialize(using = ObjectIdDeserializer.class)
+/**
+ * This class has been deprecated because it has side effects when used with an external Jackson ObjectMapper.
+ * It will be removed in a future release.
+ * Use @MongoObjectId instead.
+ */
 public @interface ObjectId {
 }

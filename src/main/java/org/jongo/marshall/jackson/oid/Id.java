@@ -28,5 +28,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @JacksonAnnotationsInside
 
 @JsonProperty("_id")
+/**
+ * This class has been deprecated because it has side effects when used with an external Jackson ObjectMapper.
+ * It will be removed in a future release.
+ * Use @MongoId instead.
+ */
 public @interface Id {
 }
