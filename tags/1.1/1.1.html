@@ -17,35 +17,40 @@
 -->
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jongo {mongo-java-driver: 'with ease'}</title>
 
-    <link href="assets/img/jongo_favicon.png" rel="shortcut icon">
-    <link href="assets/css/jongo.less" type="text/css" rel="stylesheet/less" data-env="dev">
-    <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
-    <link href="assets/css/bootstrap-responsive.min.css" type="text/css" rel="stylesheet"/>
-    <link href="assets/css/prettify.css" type="text/css" rel="stylesheet"/>
+    <link href="assets/img/jongo_favicon.png" rel="shortcut icon" />
+    
+    <link href="assets/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link href="assets/css/bootstrap-responsive.min.css" type="text/css" rel="stylesheet" />
+    <link href="assets/css/prettify.css" type="text/css" rel="stylesheet" />
 
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
     <![endif]-->
-    <script type="text/javascript" src="assets/js/less.min.js" data-env="dev"></script>
+    
     <script type="text/javascript" src="assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="assets/js/jquery.smoothanchors.min.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/js/prettify.js"></script>
     <script type="text/javascript" src="assets/js/jongo.js"></script>
 
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="pragma" content="no-cache">
-    <meta charset="utf-8">
-    <meta name="description"
-          content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)"/>
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta charset="utf-8" />
+    <meta name="description" content="Query in Java as in Mongo shell (using strings), unmarshall results into Java objects (using Jackson)" />
 
-</head>
+<link href="assets/css/jongo.css" type="text/css" rel="stylesheet" /><script type="text/javascript" id="ga-script">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-30202616-1', 'auto');
+  ga('send', 'pageview');</script></head>
 
 <body data-spy="scroll" id="jongo">
 
@@ -54,7 +59,7 @@
         <div class="intro">
             <div class="row">
                 <div class="span12">
-                    <h1><img src="assets/img/jongo_big.png">Jongo</h1>
+                    <h1><img src="assets/img/jongo_big.png" />Jongo</h1>
                 </div>
             </div>
             <div class="row">
@@ -63,8 +68,7 @@
             <div class="row">
                 <div class="span9 offset2">
                     <span class="label shell">Shell</span>
-                    <pre class="prettyprint samplecode">db.friends.find(<span
-                            class="query">{age: {$gt: 18}}</span>)</pre>
+                    <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
 
                     <span class="label driver">Java Driver</span>
                     <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
@@ -83,22 +87,22 @@
             <div class="row">
                 <div class="span3">
                     <p class="lead">
-                        <img src="assets/img/faithful.png">
+                        <img src="assets/img/faithful.png" />
                         <strong>Faithful spirit</strong>Mongo query language isn't available in Java, Jongo fixes that.
                         Copy/paste your queries to string.
                     </p>
                 </div>
                 <div class="span3">
                     <p class="lead">
-                        <img src="assets/img/objects.png">
-                        <strong>Object oriented</strong>Save & find objects into & from collections. Use embedded
+                        <img src="assets/img/objects.png" />
+                        <strong>Object oriented</strong>Save &amp; find objects into &amp; from collections. Use embedded
                         Jackson marshalling or your own.
                     </p>
                 </div>
                 <div class="span3">
                     <p class="lead">
-                        <img src="assets/img/wood.png">
-                        <strong>Wood solid</strong>As fast as Mongo Java driver. Open source, fully tested & made of
+                        <img src="assets/img/wood.png" />
+                        <strong>Wood solid</strong>As fast as Mongo Java driver. Open source, fully tested &amp; made of
                         rock solid librairies.
                     </p>
                 </div>
@@ -123,8 +127,7 @@
                     <li><a href="#advanced">Advanced</a></li>
                 </ul>
                 <ul class="nav pull-right">
-                    <li><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-user" target="_blank"><i
-                            class="icon-envelope icon-white"></i> Mailinglist</a></li>
+                    <li><a href="https://groups.google.com/forum/?fromgroups#!forum/jongo-user" target="_blank"><i class="icon-envelope icon-white"></i> Mailinglist</a></li>
                     <li><a href="https://github.com/bguerout/jongo" target="_blank"><i class="icon-github"></i>
                         GitHub</a></li>
                     <li><a href="#maven"><i class="icon-download-alt icon-white"></i> Download</a></li>
@@ -176,8 +179,7 @@ friends.save(joe);
 
             <p>Update syntax is a bit different than in Mongo shell: <code>modifier</code> query has to be passed using
                 <code>with(..)</code>. You can update with a <code>String</code> or with an object. You can also
-                parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a
-                        href="#query-templating">query templating</a> for more details.
+                parameterize queries with <code>#</code> (<i>using primitives or complex objects</i>), see <a href="#query-templating">query templating</a> for more details.
             </p>
                     <pre class="prettyprint">
 friends.update("{name: 'Joe'}").with("{$inc: {age: 1}}");
@@ -283,7 +285,7 @@ public class Friend {
             <p>
                 <code>JSON</code> properties are automatically mapped to their equivalent object attributes (<i>and
                 complex ones mapped as sub-attributes</i>). <strong>No extra annotations needed</strong>. To ignore a
-                pojo attribute, annotate it with <code>@JsonIgnore</code>.<br>For fine grained control over
+                pojo attribute, annotate it with <code>@JsonIgnore</code>.<br />For fine grained control over
                 (un)marshalling, configure <a href="#jongo-mapper">Jongo mapper</a> or <a href="#custom-mapper">create
                 your own</a>.
             </p>
@@ -333,11 +335,11 @@ Fox fantastic = (Fox)friend;</pre>
         <div class="span9 header"><h1>Querying</h1></div>
         <div class="span9">
 
-            <h2 id="find">Find & FindOne</h2>
+            <h2 id="find">Find &amp; FindOne</h2>
 
             <p>
                 Query syntax is <i>almost</i> the same as in Mongo shell: copy/paste, it just works.
-                <br>Strings have to be escaped with single quotes <code>"{name: 'Joe'}"</code>, numbers don't <code>"{age:
+                <br />Strings have to be escaped with single quotes <code>"{name: 'Joe'}"</code>, numbers don't <code>"{age:
                 18}"</code>.
             </p>
 
@@ -372,23 +374,20 @@ friends.find().sort("{lasttname: -1}").as(Friend.class);</pre>
 
             <h3 id="skip">Skip and Limit</h3>
 
-            <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html"
-                                                   target="_blank">DBCursor</a>.</p>
+            <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a>.</p>
                           <pre class="prettyprint">
 friends.find().skip(20).as(Friend.class);
 friends.find().limit(10).as(Friend.class);</pre>
 
             <h3 id="hint">Hint</h3>
 
-            <p>Behaviour similar to Java driver <a href="http://docs.mongodb.org/manual/reference/operator/hint/"
-                                                   target="_blank">Find.hint(..)</a>.</p>
+            <p>Behaviour similar to Java driver <a href="http://docs.mongodb.org/manual/reference/operator/hint/" target="_blank">Find.hint(..)</a>.</p>
             <pre class="prettyprint">friends.find().hint("{age: 1}").as(Friend.class);</pre>
 
             <h3 id="modifiers">Query modifiers</h3>
 
             <p><a href="http://docs.mongodb.org/manual/reference/operator/query-modifier/" target="_blank">Query
-                modifiers</a> can be setted on <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html"
-                                                  target="_blank">DBCursor</a> by implementing QueryModifier.</p>
+                modifiers</a> can be setted on <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a> by implementing QueryModifier.</p>
                         <pre class="prettyprint">
 friends.find().with(new QueryModifier() {
      public void modify(DBCursor cursor) {
@@ -423,17 +422,16 @@ friends.find(withOid(joe.id)).as(Friend.class); // instead of new ObjectId(joe.i
 
             <p>
                 Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters
-                can be <a
-                    href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
+                can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
                 Primitives</a> or any complex type made of those.
             </p>
 
                             <pre class="prettyprint">
-friends.find("{name:#, age:#}", "Joe", 18); //&rarr; will produce {name: 'Joe', age: 18}
-friends.find("{address: #}", new Address(..)); //&rarr; will marshall Address object</pre>
+friends.find("{name:#, age:#}", "Joe", 18); //→ will produce {name: 'Joe', age: 18}
+friends.find("{address: #}", new Address(..)); //→ will marshall Address object</pre>
                             <pre class="prettyprint">
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
-friends.find("{age: {$in:#}}", ages); //&rarr; will produce {age: {$in:[22,63]}}</pre>
+friends.find("{age: {$in:#}}", ages); //→ will produce {age: {$in:[22,63]}}</pre>
 
             <p>
                 Projections can also be templated
@@ -456,13 +454,11 @@ collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
 
             <h2 id="count">Count</h2>
 
-            <p>Behaviour similar to Java driver <a
-                    href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.
+            <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.
             </p>
             <pre class="prettyprint">friends.count("{name: 'Joe'}");</pre>
 
-            <p>Note that a <code>count()</code> method is also available on MongoCursor, behaviour similar to <a
-                    href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html#count()" target="_blank">DBCursor.count()</a>
+            <p>Note that a <code>count()</code> method is also available on MongoCursor, behaviour similar to <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html#count()" target="_blank">DBCursor.count()</a>
             </p>
 
                               <pre class="prettyprint">
@@ -471,8 +467,7 @@ int nbResults = cursor.count();</pre>
 
             <h2 id="command">Command</h2>
 
-            <p>Behaviour pretty similar to Java driver <a
-                    href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
+            <p>Behaviour pretty similar to Java driver <a href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
             <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(GeoNearResult.class);</pre>
             <p>You can map command results to a single result field.</p>
 
@@ -512,7 +507,7 @@ collection.aggregate("{$project:{sender:1}}")
 friends.ensureIndex("{address: '2d'}");
 friends.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</pre>
 
-            <h3 id="readwrite">ReadPreference & WriteConcern</h3>
+            <h3 id="readwrite">ReadPreference &amp; WriteConcern</h3>
 
             <p><a href="http://docs.mongodb.org/manual/applications/replication/" target="_blank">Read and write
                 behaviors</a> can be configured on a query basis. <code>ReadPreference</code> defines how multiple
@@ -552,21 +547,13 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
             </p>
 
             <p>
-                Several microbenchmarks (<i>using Caliper & Yourkit</i>) highlight this release net improvements: Jongo
+                Several microbenchmarks (<i>using Caliper &amp; Yourkit</i>) highlight this release net improvements: Jongo
                 0.3 is 6 times faster than Jongo 0.2, which make it <strong>as fast as the driver!</strong> Have a look at
-                <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.FindBench2/2262004"
-                   target="_blank">find microbenchmark</a> and <a
-                    href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.SaveBench/2283001"
-                    target="_blank">save microbenchmark</a>, and at their implementations (<a
-                    href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/FindBench.java"
-                    target="_blank">find</a> & <a
-                    href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/SaveBench.java"
-                    target="_blank">save</a>).
+                <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.FindBench2/2262004" target="_blank">find microbenchmark</a> and <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.SaveBench/2283001" target="_blank">save microbenchmark</a>, and at their implementations (<a href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/FindBench.java" target="_blank">find</a> &amp; <a href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/SaveBench.java" target="_blank">save</a>).
             </p>
 
             <p>
-                <i class="icon-flag"></i> Not all benchmarks accurately reflect real world performance; <a
-                    href="http://code.google.com/p/caliper/wiki/JavaMicrobenchmarks" target="_blank">more on
+                <i class="icon-flag"></i> Not all benchmarks accurately reflect real world performance; <a href="http://code.google.com/p/caliper/wiki/JavaMicrobenchmarks" target="_blank">more on
                 microbenchmarks</a>.
             </p>
 
@@ -599,11 +586,7 @@ Jongo jongo = new Jongo(db,
 
             <p>
                 Default <code>JacksonMapper.Builder()</code> comes with predefined features for the embedded Jackson
-                <code>ObjectMapper</code> (see <a
-                    href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/VisibilityModifier.java"
-                    target="_blank">VisibilityModifier</a> and <a
-                    href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/PropertyModifier.java"
-                    target="_blank">PropertyModifier</a>).
+                <code>ObjectMapper</code> (see <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/VisibilityModifier.java" target="_blank">VisibilityModifier</a> and <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/PropertyModifier.java" target="_blank">PropertyModifier</a>).
                 Those can be overridden and extended with <code>enable(..)</code> and <code>disable(..)</code> methods.
             </p>
 
@@ -645,13 +628,11 @@ public class Views {
 
             <p>
                 Jongo uses the <code>MapperModifier</code> interface to configure a <code>JacksonMapper</code>. Looking
-                at <a
-                    href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/MapperFeatureModifier.java"
-                    target="_blank">one implementation</a> give a good feeling of how it can be used to further
+                at <a href="https://github.com/bguerout/jongo/blob/master/src/main/java/org/jongo/marshall/jackson/configuration/MapperFeatureModifier.java" target="_blank">one implementation</a> give a good feeling of how it can be used to further
                 configure a <code>JacksonMapper</code>.
             </p>
 
-            <h3 id="callbacks">Reader & WriterCallback</h3>
+            <h3 id="callbacks">Reader &amp; WriterCallback</h3>
 
             <p>
                 In certain circumstances, modifying Jackson <code>ObjectReader</code> or <code>ObjectWriter</code> will
@@ -660,8 +641,7 @@ public class Views {
             </p>
 
             <p>
-                <i class="icon-wrench"></i> For more options, refer to <a
-                    href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a>.
+                <i class="icon-wrench"></i> For more options, refer to <a href="http://wiki.fasterxml.com/JacksonDocumentation" target="_blank">Jackson documentation</a>.
             </p>
 
             <h2 id="custom-mapper">Using a custom Mapper</h2>
@@ -709,9 +689,7 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
             </p>
 
             <p>
-                For Jersey, use <a
-                    href="https://github.com/yamsellem/jongo-jersey/blob/master/src/main/java/org/jongo/jersey/provider/JacksonMapperProvider.java"
-                    target="_blank">this Jackson Provider</a> to expose <code>ObjectId</code> as <code>String</code>
+                For Jersey, use <a href="https://github.com/yamsellem/jongo-jersey/blob/master/src/main/java/org/jongo/jersey/provider/JacksonMapperProvider.java" target="_blank">this Jackson Provider</a> to expose <code>ObjectId</code> as <code>String</code>
                 (<i>and ignore <code>@ObjectId</code> annotation</i>). For other web services libraries, adapting it
                 won't be to hard.
             </p>
@@ -722,31 +700,22 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 
 <section id="release-notes" class="offset1">
     <div class="row">
-        <div class="span9 header"><h1>Release notes (1.1&rarr;1.2)</h1></div>
+        <div class="span9 header"><h1>Release notes (1.0→1.1)</h1></div>
         <div class="span9">
-            <p>Previous releases: <a href="/tags/1.1/1.1.html">1.1</a>,
-                <a href="/tags/1.0/1.0.html">1.0</a>, <a href="/tags/0.4/0.4.html">0.4</a>, <a
-                        href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a
-                        href="/tags/0.1/0.1.html">0.1</a></p>
+            <p>Previous releases: <a href="/tags/1.0/1.0.html">1.0</a>, <a href="/tags/0.4/0.4.html">0.4</a>, <a href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a href="/tags/0.1/0.1.html">0.1</a></p>
             <dl class="dl-horizontal">
                 <dt class="strong">Query modifiers</dt>
                 <dd>find queries can be modified with modifier operators</dd>
                 <dt class="strong">MongoCursor</dt>
                 <dd>find operation now returns a cursor</dd>
                 <dt>OSGI Compliant</dt>
-                <dd>jar can be loaded in a OSGI context (<i>thanks to <a href="https://github.com/lightoze"
-                                                                         target="_blank">Vladimir Kulev</a></i>)
+                <dd>jar can be loaded in a OSGI context (<i>thanks to <a href="https://github.com/lightoze" target="_blank">Vladimir Kulev</a></i>)
                 </dd>
                 <dt>Projection templating</dt>
-                <dd>use parameters in projections queries (<i>thanks to <a href="https://github.com/xavier-calland"
-                                                                           target="_blank">Xavier Calland</a></i>)
+                <dd>use parameters in projections queries (<i>thanks to <a href="https://github.com/xavier-calland" target="_blank">Xavier Calland</a></i>)
                 </dd>
                 <dt>fixes</dt>
-                <dd><i>thanks to <a href="https://github.com/xhanin" target="_blank">Xavier Hanin</a>, <a
-                        href="https://github.com/sukrit007" target="_blank">Sukrit Khera</a>, <a
-                        href="https://github.com/edaubert" target="_blank">Erwan Daubert</a>, <a
-                        href="https://github.com/ctrimble" target="_blank">Christian Trimble</a></i> and <i><a
-                        href="https://github.com/swallez" target="_blank">Sylvain Wallez</a></i></dd>
+                <dd><i>thanks to <a href="https://github.com/xhanin" target="_blank">Xavier Hanin</a>, <a href="https://github.com/sukrit007" target="_blank">Sukrit Khera</a>, <a href="https://github.com/edaubert" target="_blank">Erwan Daubert</a>, <a href="https://github.com/ctrimble" target="_blank">Christian Trimble</a></i> and <i><a href="https://github.com/swallez" target="_blank">Sylvain Wallez</a></i></dd>
             </dl>
         </div>
     </div>
@@ -760,14 +729,13 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
                 Jongo relies upon <a href="https://github.com/FasterXML/jackson-databind" target="_blank">Jackson</a>
                 2.4.1, <a href="https://github.com/michel-kraemer/bson4jackson" target="_blank">Bson4Jackson</a> 2.4.0
                 and <a href="https://github.com/mongodb/mongo-java-driver" target="_blank">Mongo Java Driver</a> 2.11+.
-                Its Maven dependency, an OSGI compliant jar, comes with the first two, you have to <a
-                    href="http://mvnrepository.com/artifact/org.mongodb/mongo-java-driver" target="_blank">provide a
+                Its Maven dependency, an OSGI compliant jar, comes with the first two, you have to <a href="http://mvnrepository.com/artifact/org.mongodb/mongo-java-driver" target="_blank">provide a
                 dependency</a> to the driver.
             </p>
 
             <p>
                 Jongo is deployed into OSS Sonatype (<i>Maven repository hosting service for open source
-                projects</i>).<br>Add the following dependency to your pom.xml
+                projects</i>).<br />Add the following dependency to your pom.xml
             </p>
 
                                   <pre class="linenums">
@@ -788,19 +756,16 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
         <div class="offset1">
             <div class="row">
                 <div class="span9 creators">
-                    Jongo is an open source Java library created by <a href="https://twitter.com/bguerout"
-                                                                       target="_blank">Benoît Guérout</a> and <a
-                        href="https://twitter.com/amsellemyves" target="_blank">Yves Amsellem</a>
+                    Jongo is an open source Java library created by <a href="https://twitter.com/bguerout" target="_blank">Benoît Guérout</a> and <a href="https://twitter.com/amsellemyves" target="_blank">Yves Amsellem</a>
                 </div>
             </div>
             <div class="row">
                 <div class="span2">
-                    <a href="https://jongo.ci.cloudbees.com/" target="_blank"><img
-                            src="assets/img/cloudbees-nb.png"></a>
+                    <a href="https://jongo.ci.cloudbees.com/" target="_blank"><img src="assets/img/cloudbees-nb.png" /></a>
                 </div>
                 <div class="span7">
                     <p>
-                        <a href="http://www.yourkit.com/" target="_blank"><img src="assets/img/yourkit-nb.png"></a>YourKit
+                        <a href="http://www.yourkit.com/" target="_blank"><img src="assets/img/yourkit-nb.png" /></a>YourKit
                         is kindly supporting open source projects with its full-featured Java Profiler.
                         YourKit, LLC is the creator of innovative and intelligent tools for profiling
                         Java and .NET applications. Take a look at YourKit's leading software products:
@@ -816,4 +781,3 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 </footer>
 
 </body>
-</html>
