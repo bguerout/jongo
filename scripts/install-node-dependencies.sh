@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NODE_VERSION=0.8.20
+NODE_VERSION=0.10.36
 
 stop_on_install_error() {
  if [ $? -ne 0 ] ; then
