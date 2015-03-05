@@ -23,7 +23,7 @@ stop_on_install_error "node has not been installed"
 
 #Download node dependencies
 echo "Installing npm dependencies"
-npm install express@3.0.5 jake@0.5.8 jsdom@0.3.3 less@1.3.1 wrench@1.4.4
+npm install
 stop_on_install_error "Unable to install npm dependencies"
 
 

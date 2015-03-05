@@ -1,0 +1,15 @@
+{
+  "name": "jongo",
+  "version": "1.0.0",
+  "description": "Jongo website",
+  "main": "index.tml",
+  "dependencies": {
+    "express": "^3.0.5",
+    "jake": "^0.5.8",
+    "jsdom": "^0.3.3",
+    "less": "^1.3.1",
+    "wrench": "^1.4.4"
+  },
+  "author": "bguerout",
+  "homepage": "https://github.com/bguerout/jongo"
+}
