@@ -18,7 +18,7 @@ do
     CURRENT=$(echo "$version" | sed "s/\.//g" | sed "s/-.*//g")
     MINIMAL=$(echo "$MINIMAL_VERSION" | sed "s/\.//g" | sed "s/-.*//g")
 
-    if [ ${CURRENT[0]} -ge ${MINIMAL[0]} ] && [ ${CURRENT[1]} -ge ${MINIMAL[1]} ] && [[ $version != *"$EXCLUDED_VERSION"* ]];
+    if [ ${CURRENT:0:1} -ge ${MINIMAL:0:1} ] && [ ${CURRENT:1:2} -ge ${MINIMAL:1:2} ] && [[ $version != *"$EXCLUDED_VERSION"* ]];
     then
       mvn verify $OPTS -Dmongo.version="$version" -DreportFormat=plain -DuseFile=false -l $OUTPUT_DIR/build-"$version".log
 
