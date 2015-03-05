@@ -16,9 +16,13 @@
 
 package org.jongo;
 
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.WriteConcern;
-import junit.framework.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
+
 import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
 import org.jongo.model.ExternalFriend;
@@ -28,7 +32,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.WriteConcern;
 
 public class InsertTest extends JongoTestCase {
 
@@ -70,6 +75,21 @@ public class InsertTest extends JongoTestCase {
         Friend friend2 = new Friend("Robert");
 
         collection.insert(friend, friend2);
+
+        assertThat(collection.count("{name:'John'}")).isEqualTo(1);
+        assertThat(collection.count("{name:'Robert'}")).isEqualTo(1);
+    }
+    
+    @Test
+    public void canInsertListOfPojos() throws Exception {
+
+        List<Friend> friends = new ArrayList<Friend>();
+        Friend friend = new Friend("John");
+        Friend friend2 = new Friend("Robert");
+        friends.add(friend);
+        friends.add(friend2);
+        
+        collection.insertListOfObjects(friends);
 
         assertThat(collection.count("{name:'John'}")).isEqualTo(1);
         assertThat(collection.count("{name:'Robert'}")).isEqualTo(1);

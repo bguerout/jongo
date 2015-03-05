@@ -17,6 +17,7 @@
 package org.jongo;
 
 import com.mongodb.*;
+
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.bson.Bson;
@@ -25,6 +26,7 @@ import org.jongo.marshall.Marshaller;
 import org.jongo.query.QueryFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class Insert {
@@ -50,7 +52,11 @@ class Insert {
     }
 
     public WriteResult insert(Object... pojos) {
-        List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
+        return insertListOfObjects(Arrays.asList(pojos));
+    }
+    
+    public WriteResult insertListOfObjects(List<?> pojos) {
+        List<DBObject> dbos = new ArrayList<DBObject>(pojos.size());
         for (Object pojo : pojos) {
             Object id = preparePojo(pojo);
             DBObject dbo = convertToDBObject(pojo, id);

@@ -16,13 +16,16 @@
 
 package org.jongo;
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.jongo.query.Query;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
-import org.bson.types.ObjectId;
-import org.jongo.query.Query;
 
 
 public class MongoCollection {
@@ -146,6 +149,10 @@ public class MongoCollection {
 
     public WriteResult insert(String query, Object... parameters) {
         return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insert(query, parameters);
+    }
+    
+    public WriteResult insertListOfObjects(List<?> pojos) {
+    	return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insertListOfObjects(pojos);
     }
 
     public WriteResult remove(ObjectId id) {
