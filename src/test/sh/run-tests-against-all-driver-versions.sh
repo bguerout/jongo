@@ -3,8 +3,8 @@
 OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
 NEXUS_URL="https://oss.sonatype.org/service/local/data_index?g=org.mongodb&a=mongo-java-driver"
-MINIMAL_VERSION="2.13.0"
-EXCLUDED_VERSION="2.13.0-rc0"
+MINIMAL_VERSION="3.0.0"
+EXCLUDED_VERSION="3.0.0-test-SNAPSHOT"
 A_VERSION_HAS_FAILED=false
 OPTS=$*
 
