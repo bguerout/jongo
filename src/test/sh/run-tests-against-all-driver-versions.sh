@@ -4,7 +4,7 @@ OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
 NEXUS_URL="https://oss.sonatype.org/service/local/data_index?g=org.mongodb&a=mongo-java-driver"
 MINIMAL_VERSION="2.13.0"
-EXCLUDED_VERSION="2.13.0-rc0"
+EXCLUDED_VERSIONS="2.13.0-rc0 3.0.0-test-SNAPSHOT"
 A_VERSION_HAS_FAILED=false
 OPTS=$*
 
@@ -18,7 +18,7 @@ do
     CURRENT=$(echo "$version" | sed "s/\.//g" | sed "s/-.*//g")
     MINIMAL=$(echo "$MINIMAL_VERSION" | sed "s/\.//g" | sed "s/-.*//g")
 
-    if [ ${CURRENT:0:1} -ge ${MINIMAL:0:1} ] && [ ${CURRENT:1:2} -ge ${MINIMAL:1:2} ] && [[ $version != *"$EXCLUDED_VERSION"* ]];
+    if [ ${CURRENT:0:1} -gt ${MINIMAL:0:1} ] || [ ${CURRENT:0:1} -eq ${MINIMAL:0:1} -a ${CURRENT:1} -ge ${MINIMAL:1} ] && [[ $EXCLUDED_VERSIONS != *"$version"* ]];
     then
       mvn verify $OPTS -Dmongo.version="$version" -DreportFormat=plain -DuseFile=false -l $OUTPUT_DIR/build-"$version".log
 
