@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
@@ -62,6 +63,19 @@ public class Distinct {
         }
     }
 
+    public <T> List<T> map(ResultHandler<T> resultHandler) {
+        DBObject ref = query.toDBObject();
+        final List<?> distinct = dbCollection.distinct(key, ref);
+
+        if (distinct.isEmpty() || resultsAreBSONPrimitive(distinct)) {
+            List<DBObject> objects = new ArrayList();
+            for(Object object:distinct) {
+                objects.add(new BasicDBObject(key, object));
+            }
+            return typedList(objects, resultHandler);
+        } else return typedList((List<DBObject>) distinct, resultHandler);
+    }
+
     private boolean resultsAreBSONPrimitive(List<?> distinct) {
         return !(distinct.get(0) instanceof DBObject);
     }
@@ -69,6 +83,14 @@ public class Distinct {
     private <T> List<T> typedList(List<DBObject> distinct, Class<T> clazz) {
         List<T> results = new ArrayList<T>();
         ResultHandler<T> handler = ResultHandlerFactory.newResultHandler(clazz, unmarshaller);
+        for (DBObject dbObject : distinct) {
+            results.add(handler.map(dbObject));
+        }
+        return results;
+    }
+
+    private <T> List<T> typedList(List<DBObject> distinct, ResultHandler<T> handler) {
+        List<T> results = new ArrayList<T>();
         for (DBObject dbObject : distinct) {
             results.add(handler.map(dbObject));
         }
