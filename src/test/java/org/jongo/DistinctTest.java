@@ -16,6 +16,7 @@
 
 package org.jongo;
 
+import com.mongodb.DBObject;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -127,5 +129,48 @@ public class DistinctTest extends JongoTestCase {
         assertThat(first.lat).isEqualTo(3);
         assertThat(first.lng).isEqualTo(4);
         assertThat(coordinates.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canDistinctAndMap() throws Exception {
+        /* given */
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
+        collection.save(new Friend("Peter", "22 Wall Street Avenue"));
+
+        List<DBObject> results = collection.distinct("name").map(new RawResultHandler<DBObject>());
+
+        /* when */
+        for (DBObject result : results) {
+            /* then */
+            assertThat(result.get("name")).isIn("John", "Peter");
+        }
+    }
+
+    @Test
+    public void canDistinctAndMapWhenNoResults() throws Exception {
+
+        List<DBObject> results = collection.distinct("name").map(new RawResultHandler<DBObject>());
+
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    public void distinctAndMapOnIntegerEntities() throws Exception {
+        /* given */
+        collection.save(new Friend("John", new Coordinate(1, 2)));
+        collection.save(new Friend("Peter", new Coordinate(1, 2)));
+        collection.save(new Friend("Paul", new Coordinate(125, 72)));
+
+        /* when */
+        Iterator<Integer> addresses = collection.distinct("coordinate.lat").map(new ResultHandler<Integer>() {
+            public Integer map(DBObject result) {
+                return (Integer) result.get("coordinate.lat");
+            }
+        }).iterator();
+
+        /* then */
+        assertThat(addresses.next()).isEqualTo(1);
+        assertThat(addresses.next()).isEqualTo(125);
+        assertThat(addresses.hasNext()).isFalse();
     }
 }

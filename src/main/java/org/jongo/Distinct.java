@@ -26,6 +26,8 @@ import org.jongo.query.QueryFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.jongo.ResultHandlerFactory.newResultHandler;
+
 public class Distinct {
     private final DBCollection dbCollection;
     private final Unmarshaller unmarshaller;
@@ -54,39 +56,36 @@ public class Distinct {
     @SuppressWarnings("unchecked")
     public <T> List<T> as(final Class<T> clazz) {
         DBObject ref = query.toDBObject();
-        final List<?> distinct = dbCollection.distinct(key, ref);
+        List<?> distinct = dbCollection.distinct(key, ref);
 
         if (distinct.isEmpty() || resultsAreBSONPrimitive(distinct))
             return (List<T>) distinct;
         else {
-            return typedList((List<DBObject>) distinct, clazz);
+            return typedList((List<DBObject>) distinct, newResultHandler(clazz, unmarshaller));
         }
     }
 
     public <T> List<T> map(ResultHandler<T> resultHandler) {
         DBObject ref = query.toDBObject();
-        final List<?> distinct = dbCollection.distinct(key, ref);
+        List<?> distinct = dbCollection.distinct(key, ref);
 
         if (distinct.isEmpty() || resultsAreBSONPrimitive(distinct)) {
-            List<DBObject> objects = new ArrayList();
-            for(Object object:distinct) {
-                objects.add(new BasicDBObject(key, object));
-            }
-            return typedList(objects, resultHandler);
-        } else return typedList((List<DBObject>) distinct, resultHandler);
+            return typedList(asDBObjectList(distinct), resultHandler);
+        } else {
+            return typedList((List<DBObject>) distinct, resultHandler);
+        }
+    }
+
+    private List<DBObject> asDBObjectList(List<?> distinct) {
+        List<DBObject> objects = new ArrayList<DBObject>();
+        for (Object object : distinct) {
+            objects.add(new BasicDBObject(key, object));
+        }
+        return objects;
     }
 
     private boolean resultsAreBSONPrimitive(List<?> distinct) {
         return !(distinct.get(0) instanceof DBObject);
-    }
-
-    private <T> List<T> typedList(List<DBObject> distinct, Class<T> clazz) {
-        List<T> results = new ArrayList<T>();
-        ResultHandler<T> handler = ResultHandlerFactory.newResultHandler(clazz, unmarshaller);
-        for (DBObject dbObject : distinct) {
-            results.add(handler.map(dbObject));
-        }
-        return results;
     }
 
     private <T> List<T> typedList(List<DBObject> distinct, ResultHandler<T> handler) {
