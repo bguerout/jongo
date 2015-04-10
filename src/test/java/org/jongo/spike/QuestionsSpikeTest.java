@@ -172,6 +172,16 @@ public class QuestionsSpikeTest extends JongoTestCase {
         assertThat(updated.getAddress()).isNull();
     }
 
+    @Test
+    public void canBindAParameterWithSingleQuote() throws Exception {
+
+        collection.insert("{email:\"bob.o'shea@gmail.com\"}");
+
+        long nb = collection.count("{email:#}", "bob.o'shea@gmail.com");
+
+        assertThat(nb).isEqualTo(1);
+    }
+
     private static class Party {
         private List<Friend> friends = new ArrayList<Friend>();
 
