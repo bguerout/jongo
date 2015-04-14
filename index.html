@@ -400,6 +400,7 @@ friends.find().limit(10).as(Friend.class);</pre>
 friends.find().with(new QueryModifier() {
      public void modify(DBCursor cursor) {
          cursor.batchSize(10);
+         cursor.addSpecial("$maxScan", 1);
      }
 }).as(Friend.class);</pre>
 
