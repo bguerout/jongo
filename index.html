@@ -738,24 +738,34 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
                         href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a
                         href="/tags/0.1/0.1.html">0.1</a></p>
             <dl class="dl-horizontal">
-                <dt class="strong">Query modifiers</dt>
-                <dd>find queries can be modified with modifier operators</dd>
-                <dt class="strong">MongoCursor</dt>
-                <dd>find operation now returns a cursor</dd>
-                <dt>OSGI Compliant</dt>
-                <dd>jar can be loaded in a OSGI context (<i>thanks to <a href="https://github.com/lightoze"
-                                                                         target="_blank">Vladimir Kulev</a></i>)
+
+                <dt class="strong">Mongo 3.0</dt>
+                <dd>jongo is now compatible with mongo-java-driver 3.0 (<i>thanks to <a
+                        href="https://github.com/dwursteisen"
+                        target="_blank">David Wursteisen</a></i>)
+                </dd>
+
+                <dt class="strong">Distinct Handler</dt>
+                <dd>use distinct operation with a ResultHandler (<i>thanks to <a
+                        href="https://github.com/XXXX"
+                        target="_blank">Rafael Garrote</a></i>)
+                </dd>
+
+                <dt>AggregateOptions</dt>
+                <dd>pass options to aggregate operation
+                    (<i>thanks to <a href="https://github.com/XXXX"
+                                     target="_blank">Keith Banks</a> and <a
+                            href="https://github.com/XXXX"
+                            target="_blank">XXXXXX</a></i>)
+                </dd>
+
                 </dd>
                 <dt>Projection templating</dt>
                 <dd>use parameters in projections queries (<i>thanks to <a href="https://github.com/xavier-calland"
                                                                            target="_blank">Xavier Calland</a></i>)
                 </dd>
                 <dt>fixes</dt>
-                <dd><i>thanks to <a href="https://github.com/xhanin" target="_blank">Xavier Hanin</a>, <a
-                        href="https://github.com/sukrit007" target="_blank">Sukrit Khera</a>, <a
-                        href="https://github.com/edaubert" target="_blank">Erwan Daubert</a>, <a
-                        href="https://github.com/ctrimble" target="_blank">Christian Trimble</a></i> and <i><a
-                        href="https://github.com/swallez" target="_blank">Sylvain Wallez</a></i></dd>
+                <dd><i>thanks to <a href="https://github.com/XXXXX" target="_blank">Julien Lavergne</a></i></dd>
             </dl>
         </div>
     </div>
@@ -783,7 +793,7 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 &lt;dependency&gt;
     &lt;groupId&gt;org.jongo&lt;/groupId&gt;
     &lt;artifactId&gt;jongo&lt;/artifactId&gt;
-    &lt;version&gt;1.1&lt;/version&gt;
+    &lt;version&gt;1.2&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 
         </div>
