@@ -59,6 +59,21 @@ public class FindAndModifyTest extends JongoTestCase {
     }
 
     @Test
+    public void canFindAndModifyWithNullValue() throws Exception {
+        /* given */
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
+
+        /* when */
+        Friend originalFriend = collection.findAndModify("{name:#}", "John").with("{$set: {address: #}}", null).as(Friend.class);
+
+        /* then */
+        assertThat(originalFriend.getAddress()).isEqualTo("22 Wall Street Avenue");
+
+        Friend updatedFriend = collection.findOne().as(Friend.class);
+        assertThat(updatedFriend.getAddress()).isNull();
+    }
+
+    @Test
     public void canFindAndModifyWithResultHandler() throws Exception {
         /* given */
         collection.save(new Friend("John", "22 Wall Street Avenue"));
