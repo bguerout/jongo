@@ -17,6 +17,7 @@
 package org.jongo.query;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONCallback;
@@ -166,6 +167,14 @@ public class BsonQueryFactory implements QueryFactory {
                                 } else {
                                     o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks(o);
                                     setRoot(o);
+                                }
+                            }
+                        } else {
+                            if (name != null && o instanceof BasicDBObject) {
+                                BasicDBObject basic = (BasicDBObject) o;
+                                if (basic.size() == 0 && removeKeyIfNull) {
+                                    cur().removeField(name);
+                                    return null;
                                 }
                             }
                         }
