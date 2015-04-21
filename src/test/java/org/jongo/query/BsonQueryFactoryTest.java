@@ -104,6 +104,26 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldRemoveNullField() throws Exception {
+
+        QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), true);
+
+        Query query = factoryWithToken.createQuery("{name:#}", null);
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject());
+    }
+
+    @Test
+    public void shouldRemoveNullFields() throws Exception {
+
+        QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), true);
+
+        Query query = factoryWithToken.createQuery("{name:#, firstname:#, lastname:#}", null, "John", null);
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("firstname", "John"));
+    }
+
+    @Test
     public void shouldBindHashSign() throws Exception {
 
         Query query = factory.createQuery("{id:#}", "string with # sign");

@@ -39,6 +39,7 @@ public class BsonQueryFactory implements QueryFactory {
 
     private final String token;
     private final Marshaller marshaller;
+    private boolean removeKeyIfNull;
 
     private static class BsonQuery implements Query {
         private final DBObject dbo;
@@ -57,8 +58,17 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     public BsonQueryFactory(Marshaller marshaller, String token) {
+        this(marshaller, token, false);
+    }
+
+    public BsonQueryFactory(Marshaller marshaller, boolean removeKeyIfNull) {
+        this(marshaller, DEFAULT_TOKEN, removeKeyIfNull);
+    }
+
+    public BsonQueryFactory(Marshaller marshaller, String token, boolean removeKeyIfNull) {
         this.token = token;
         this.marshaller = marshaller;
+        this.removeKeyIfNull = removeKeyIfNull;
     }
 
     public Query createQuery(final String query, Object... parameters) {
@@ -125,6 +135,13 @@ public class BsonQueryFactory implements QueryFactory {
                 int paramPos = 0;
 
                 @Override
+                public void gotNull(String name) {
+                    if (!removeKeyIfNull) {
+                        super.gotNull(name);
+                    }
+                }
+
+                @Override
                 public Object objectDone() {
                     String name = curName();
                     Object o = super.objectDone();
@@ -141,11 +158,15 @@ public class BsonQueryFactory implements QueryFactory {
                             o = marshallParameter(params[paramPos++]);
 
                             // Replace value set by super.objectDone()
-                            if (!isStackEmpty()) {
-                                _put(name, o);
+                            if (removeKeyIfNull && o == null) {
+                                cur().removeField(name);
                             } else {
-                                o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks(o);
-                                setRoot(o);
+                                if (!isStackEmpty()) {
+                                    _put(name, o);
+                                } else {
+                                    o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks(o);
+                                    setRoot(o);
+                                }
                             }
                         }
                     }
