@@ -744,20 +744,22 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
                 <dd>jongo is now compatible with mongo-java-driver 3.0 (<i>thanks to <a
                         href="https://github.com/dwursteisen"
                         target="_blank">David Wursteisen</a></i>)
-                </dd>
+
+                <dt class="strong">New Annotations</dt>
+                <dd>Fix external Jackson conflicts by replacing <code>@Id</code> and <code>@ObjectId</code> with new <code>@MongoId</code> and <code>@MongoObjectId</code></dd>
 
                 <dt class="strong">Distinct Handler</dt>
                 <dd>use distinct operation with a ResultHandler (<i>thanks to <a
-                        href="https://github.com/XXXX"
+                        href="https://github.com/rafaelgarrote"
                         target="_blank">Rafael Garrote</a></i>)
                 </dd>
 
                 <dt>AggregateOptions</dt>
                 <dd>pass options to aggregate operation
-                    (<i>thanks to <a href="https://github.com/XXXX"
-                                     target="_blank">Keith Banks</a> and <a
-                            href="https://github.com/XXXX"
-                            target="_blank">XXXXXX</a></i>)
+                    (<i>thanks to <a href="https://github.com/amorfis"
+                                     target="_blank">Paweł Stawicki</a> and <a
+                            href="https://github.com/staticgears"
+                            target="_blank">staticgears</a></i>)
                 </dd>
 
                 </dd>
