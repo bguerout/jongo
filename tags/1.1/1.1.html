@@ -54,63 +54,6 @@
 
 <body data-spy="scroll" id="jongo">
 
-<div class="container">
-    <section id="overview">
-        <div class="intro">
-            <div class="row">
-                <div class="span12">
-                    <h1><img src="assets/img/jongo_big.png" />Jongo</h1>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span12 pitch">Query in <strong>Java</strong> as in <strong>Mongo</strong> shell</div>
-            </div>
-            <div class="row">
-                <div class="span9 offset2">
-                    <span class="label shell">Shell</span>
-                    <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
-
-                    <span class="label driver">Java Driver</span>
-                    <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
-
-                    <span class="label jongo">Jongo</span>
-                    <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class)</pre>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
-
-<header class="nutshell">
-    <div class="container">
-        <div class="offset1">
-            <div class="row">
-                <div class="span3">
-                    <p class="lead">
-                        <img src="assets/img/faithful.png" />
-                        <strong>Faithful spirit</strong>Mongo query language isn't available in Java, Jongo fixes that.
-                        Copy/paste your queries to string.
-                    </p>
-                </div>
-                <div class="span3">
-                    <p class="lead">
-                        <img src="assets/img/objects.png" />
-                        <strong>Object oriented</strong>Save &amp; find objects into &amp; from collections. Use embedded
-                        Jackson marshalling or your own.
-                    </p>
-                </div>
-                <div class="span3">
-                    <p class="lead">
-                        <img src="assets/img/wood.png" />
-                        <strong>Wood solid</strong>As fast as Mongo Java driver. Open source, fully tested &amp; made of
-                        rock solid librairies.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
 <div class="navbar navbar-static-top">
     <div class="navbar-inner">
         <div class="container">
@@ -138,6 +81,18 @@
 </div>
 
 <div class="container">
+
+<section class="offset1">
+            <div class="page-header">
+                <h1>Document for Jongo v1.1</h1>
+            </div>
+            <div class="row">
+                <div class="span9 warning">
+                    1.1 is a deprecated version, please go to <a href="/">main page</a> to get up-to-date documentation
+                </div>
+            </div>
+        </section>
+
 <section id="usage" class="offset1">
     <div class="row">
         <div class="span9 header"><h1>Set up</h1></div>
