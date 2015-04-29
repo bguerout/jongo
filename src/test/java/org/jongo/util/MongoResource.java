@@ -77,7 +77,7 @@ public class MongoResource {
 
                 Net network = new Net(port, Network.localhostIsIPv6());
                 IMongodConfig mongodConfig = new MongodConfigBuilder()
-                        .version(Version.Main.PRODUCTION)
+                        .version(getVersion())
                         .net(network)
                         .build();
 
@@ -88,6 +88,14 @@ public class MongoResource {
             } catch (Exception e) {
                 throw new RuntimeException("Failed to initialize Embedded Mongo instance: " + e, e);
             }
+        }
+
+        private static Version.Main getVersion() {
+            String version = System.getProperty("jongo.test.db.version");
+            if (version == null) {
+                return Version.Main.PRODUCTION;
+            }
+            return Version.Main.valueOf("V" + version.replaceAll("\\.", "_"));
         }
     }
 
