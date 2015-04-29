@@ -54,63 +54,6 @@
 
 <body data-spy="scroll" id="jongo">
 
-<div class="container">
-    <section id="overview">
-        <div class="intro">
-            <div class="row">
-                <div class="span12">
-                    <h1><img src="assets/img/jongo_big.png" />Jongo</h1>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span12 pitch">Query in <strong>Java</strong> as in <strong>Mongo</strong> shell</div>
-            </div>
-            <div class="row">
-                <div class="span9 offset2">
-                    <span class="label shell">Shell</span>
-                    <pre class="prettyprint samplecode">db.friends.find(<span class="query">{age: {$gt: 18}}</span>)</pre>
-
-                    <span class="label driver">Java Driver</span>
-                    <pre class="prettyprint samplecode">friends.find(new BasicDBObject("age",new BasicDBObject("$gt",18)))</pre>
-
-                    <span class="label jongo">Jongo</span>
-                    <pre class="prettyprint maincode">friends.find("{age: {$gt: 18}}").as(Friend.class)</pre>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
-
-<header class="nutshell">
-    <div class="container">
-        <div class="offset1">
-            <div class="row">
-                <div class="span3">
-                    <p class="lead">
-                        <img src="assets/img/faithful.png" />
-                        <strong>Faithful spirit</strong>Mongo query language isn't available in Java, Jongo fixes that.
-                        Copy/paste your queries to string.
-                    </p>
-                </div>
-                <div class="span3">
-                    <p class="lead">
-                        <img src="assets/img/objects.png" />
-                        <strong>Object oriented</strong>Save &amp; find objects into &amp; from collections. Use embedded
-                        Jackson marshalling or your own.
-                    </p>
-                </div>
-                <div class="span3">
-                    <p class="lead">
-                        <img src="assets/img/wood.png" />
-                        <strong>Wood solid</strong>As fast as Mongo Java driver. Open source, fully tested &amp; made of
-                        rock solid librairies.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
 <div class="navbar navbar-static-top">
     <div class="navbar-inner">
         <div class="container">
@@ -138,6 +81,18 @@
 </div>
 
 <div class="container">
+
+<section class="offset1">
+            <div class="page-header">
+                <h1>Document for Jongo v1.1</h1>
+            </div>
+            <div class="row">
+                <div class="span9 warning">
+                    1.1 is a deprecated version, please go to <a href="/">main page</a> to get up-to-date documentation
+                </div>
+            </div>
+        </section>
+
 <section id="usage" class="offset1">
     <div class="row">
         <div class="span9 header"><h1>Set up</h1></div>
@@ -223,9 +178,8 @@ friends.remove(new ObjectId("4c...e"));</pre>
             <p>
                 <code>_id</code> is a unique identifier available on every Mongo document. <strong>If it isn't setted,
                 it is generated</strong>. To handle it with Jongo, one attribute has to be named <code>_id</code> or
-                annotated with <code>@MongoId</code> (<i>alias for <code>@JsonProperty("_id")</code></i>). It can be
-                handled
-                with the dedicated <code>ObjectId</code> class or with a simple <code>String</code> — annotated <code>@MongoObjectId</code>.
+                annotated with <code>@Id</code> (<i>alias for <code>@JsonProperty("_id")</code></i>). It can be handled
+                with the dedicated <code>ObjectId</code> class or with a simple <code>String</code> — annotated <code>@ObjectId</code>.
             </p>
 
             <p>
@@ -240,22 +194,19 @@ friends.remove(new ObjectId("4c...e"));</pre>
 public class Friend {
     // manual
     private long _id;
-
 }</pre>
         </div>
         <div class="span3">
                       <pre class="prettyprint">
 public class Friend {
-    // manual
-    @MongoId
+    @Id // manual
     private long key;
 }</pre>
         </div>
         <div class="span3">
                       <pre class="prettyprint">
 public class Friend {
-    // manual
-    @MongoId
+    @Id // manual
     private String key;
 }</pre>
         </div>
@@ -264,16 +215,14 @@ public class Friend {
         <div class="span3">
                         <pre class="prettyprint">
 public class Friend {
-    // auto
-    @MongoObjectId
+    @ObjectId // auto
     private String _id;
 }</pre>
         </div>
         <div class="span3">
                       <pre class="prettyprint">
 public class Friend {
-    @MongoId // auto
-    @MongoObjectId
+    @Id @ObjectId // auto
     private String key;
 }</pre>
         </div>
@@ -282,7 +231,6 @@ public class Friend {
 public class Friend {
     // auto
     private ObjectId _id;
-
 }</pre>
         </div>
     </div>
@@ -338,17 +286,17 @@ Fox fantastic = (Fox)friend;</pre>
 </section>
 
 <section id="querying" class="offset1">
-<div class="row">
-    <div class="span9 header"><h1>Querying</h1></div>
-    <div class="span9">
+    <div class="row">
+        <div class="span9 header"><h1>Querying</h1></div>
+        <div class="span9">
 
-        <h2 id="find">Find &amp; FindOne</h2>
+            <h2 id="find">Find &amp; FindOne</h2>
 
-        <p>
-            Query syntax is <i>almost</i> the same as in Mongo shell: copy/paste, it just works.
-            <br />Strings have to be escaped with single quotes <code>"{name: 'Joe'}"</code>, numbers don't <code>"{age:
-            18}"</code>.
-        </p>
+            <p>
+                Query syntax is <i>almost</i> the same as in Mongo shell: copy/paste, it just works.
+                <br />Strings have to be escaped with single quotes <code>"{name: 'Joe'}"</code>, numbers don't <code>"{age:
+                18}"</code>.
+            </p>
 
                       <pre class="prettyprint">
 MongoCursor&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
@@ -356,83 +304,82 @@ MongoCursor&lt;Friend&gt; all = friends.find("{name: 'Joe'}").as(Friend.class);
 Friend joe = friends.findOne("{name: 'Joe'}").as(Friend.class);
 Friend joe = friends.findOne(new ObjectId("4c...e")).as(Friend.class);</pre>
 
-        <p>
-            Field names need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
-        </p>
+            <p>
+                Field names need quotes when using dot notation <code>"{'address.city': 'London'}"</code>.
+            </p>
 
-        <h3>Projection or Field selection</h3>
+            <h3>Projection or Field selection</h3>
 
-        <p>
-            Field selection aka. partial loading is not written as in Mongo shell:
-            Jongo exposes a <code>projection(..)</code> method. A json selector must be provided: <code>{field:
-            1}</code> to include it, <code>{field: 0}</code> to exclude it.
-        </p>
-        <pre class="prettyprint">friends.find().projection("{lastname: 1, address: 1}").as(Friend.class);</pre>
+            <p>
+                Field selection aka. partial loading is not written as in Mongo shell:
+                Jongo exposes a <code>projection(..)</code> method. A json selector must be provided: <code>{field:
+                1}</code> to include it, <code>{field: 0}</code> to exclude it.
+            </p>
+            <pre class="prettyprint">friends.find().projection("{lastname: 1, address: 1}").as(Friend.class);</pre>
 
-        <h3 id="sorting">Sorting</h3>
+            <h3 id="sorting">Sorting</h3>
 
-        <p>Documents can be sorted in ascending or descending order using a json selector: <code>{field: 1}</code>
-            for ascending, <code>{field: -1}</code> for descending.
-        </p>
+            <p>Documents can be sorted in ascending or descending order using a json selector: <code>{field: 1}</code>
+                for ascending, <code>{field: -1}</code> for descending.
+            </p>
                         <pre class="prettyprint">
 friends.findOne().orderBy("{firstname: 1}").as(Friend.class);
 friends.find().sort("{firstname: 1}").as(Friend.class);
 friends.find().sort("{lasttname: -1}").as(Friend.class);</pre>
 
-        <h3 id="skip">Skip and Limit</h3>
+            <h3 id="skip">Skip and Limit</h3>
 
-        <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a>.</p>
+            <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a>.</p>
                           <pre class="prettyprint">
 friends.find().skip(20).as(Friend.class);
 friends.find().limit(10).as(Friend.class);</pre>
 
-        <h3 id="hint">Hint</h3>
+            <h3 id="hint">Hint</h3>
 
-        <p>Behaviour similar to Java driver <a href="http://docs.mongodb.org/manual/reference/operator/hint/" target="_blank">Find.hint(..)</a>.</p>
-        <pre class="prettyprint">friends.find().hint("{age: 1}").as(Friend.class);</pre>
+            <p>Behaviour similar to Java driver <a href="http://docs.mongodb.org/manual/reference/operator/hint/" target="_blank">Find.hint(..)</a>.</p>
+            <pre class="prettyprint">friends.find().hint("{age: 1}").as(Friend.class);</pre>
 
-        <h3 id="modifiers">Query modifiers</h3>
+            <h3 id="modifiers">Query modifiers</h3>
 
-        <p><a href="http://docs.mongodb.org/manual/reference/operator/query-modifier/" target="_blank">Query
-            modifiers</a> can be setted on <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a> by implementing QueryModifier.</p>
+            <p><a href="http://docs.mongodb.org/manual/reference/operator/query-modifier/" target="_blank">Query
+                modifiers</a> can be setted on <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html" target="_blank">DBCursor</a> by implementing QueryModifier.</p>
                         <pre class="prettyprint">
 friends.find().with(new QueryModifier() {
      public void modify(DBCursor cursor) {
          cursor.batchSize(10);
-         cursor.addSpecial("$maxScan", 1);
      }
 }).as(Friend.class);</pre>
 
-        <h3 id="closing">Closing cursor</h3>
+            <h3 id="closing">Closing cursor</h3>
 
-        <p>You can close cursor manually by calling <code>close()</code> method on MongoCursor</p>
+            <p>You can close cursor manually by calling <code>close()</code> method on MongoCursor</p>
                         <pre class="prettyprint">
 MongoCursor&lt;Friend&gt; cursor = friends.find().as(Friend.class);
 //iterate over it
 cursor.close();</pre>
 
-        <h3 id="oid">Oid</h3>
+            <h3 id="oid">Oid</h3>
 
-        <p>
-            As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated
-            with a <code>String</code> annotated with <code>@MongoObjectId</code>. If you want to completly avoid using
-            driver's <code>ObjectId</code>, Jongo offers the <code>Oid</code> class.
-        </p>
+            <p>
+                As said in the <a href="#mapping">mapping section</a>, <code>_id</code> identifier can be manipulated
+                with a <code>String</code> annotated with <code>@ObjectId</code>. If you want to completly avoid using
+                driver's <code>ObjectId</code>, Jongo offers the <code>Oid</code> class.
+            </p>
 
                         <pre class="prettyprint">
 import static org.jongo.Oid.withOid;
 
-Friend joe = new Friend(); // @MongoObjectId String _id
+Friend joe = new Friend(); // @ObjectId String _id
 friends.save(joe);
 friends.find(withOid(joe.id)).as(Friend.class); // instead of new ObjectId(joe.id)</pre>
 
-        <h2 id="query-templating">Query templating</h2>
+            <h2 id="query-templating">Query templating</h2>
 
-        <p>
-            Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters
-            can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
-            Primitives</a> or any complex type made of those.
-        </p>
+            <p>
+                Almost all queries in Jongo can be templated: add anchors <code>#</code> as follow. Binded parameters
+                can be <a href="http://stackoverflow.com/questions/3725386/java-types-in-org-bson-bsonobject">BSON
+                Primitives</a> or any complex type made of those.
+            </p>
 
                             <pre class="prettyprint">
 friends.find("{name:#, age:#}", "Joe", 18); //→ will produce {name: 'Joe', age: 18}
@@ -441,43 +388,43 @@ friends.find("{address: #}", new Address(..)); //→ will marshall Address objec
 List&lt;String&gt; ages = Lists.newArrayList(22, 63);
 friends.find("{age: {$in:#}}", ages); //→ will produce {age: {$in:[22,63]}}</pre>
 
-        <p>
-            Projections can also be templated
-        </p>
+            <p>
+                Projections can also be templated
+            </p>
                             <pre class="prettyprint">
 friends.find().projection("{name:#",1).as(Friend.class);
 friends.find().projection("{family:{$elemMatch:{name:#}}}","Daddy").as(Friend.class);</pre>
 
-        <h2 id="regex">Regular expressions</h2>
+            <h2 id="regex">Regular expressions</h2>
 
-        <p>
-            Classic <code>$regex: 'jo.*'</code> operator works in Jongo. It worth mentioning that <code>Pattern.compile("jo.*")</code>
-            also does. Unluckily, JavaScript syntax <code>/jo*/g</code> is not available in Mongo Java Driver and
-            Jongo cannot use it yet.
-        </p>
+            <p>
+                Classic <code>$regex: 'jo.*'</code> operator works in Jongo. It worth mentioning that <code>Pattern.compile("jo.*")</code>
+                also does. Unluckily, JavaScript syntax <code>/jo*/g</code> is not available in Mongo Java Driver and
+                Jongo cannot use it yet.
+            </p>
 
                               <pre class="prettyprint">
 collection.findOne("{name: {$regex: #}}", "jo.*").as(Friend.class); 
 collection.findOne("{name:#}", Pattern.compile("jo.*")).as(Friend.class);</pre>
 
-        <h2 id="count">Count</h2>
+            <h2 id="count">Count</h2>
 
-        <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.
-        </p>
-        <pre class="prettyprint">friends.count("{name: 'Joe'}");</pre>
+            <p>Behaviour similar to Java driver <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html#count()">DBCollection.count(..)</a>.
+            </p>
+            <pre class="prettyprint">friends.count("{name: 'Joe'}");</pre>
 
-        <p>Note that a <code>count()</code> method is also available on MongoCursor, behaviour similar to <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html#count()" target="_blank">DBCursor.count()</a>
-        </p>
+            <p>Note that a <code>count()</code> method is also available on MongoCursor, behaviour similar to <a href="http://api.mongodb.org/java/current/com/mongodb/DBCursor.html#count()" target="_blank">DBCursor.count()</a>
+            </p>
 
                               <pre class="prettyprint">
 MongoCursor&lt;Friend&gt; cursor = friends.find().as(Friend.class);
 int nbResults = cursor.count();</pre>
 
-        <h2 id="command">Command</h2>
+            <h2 id="command">Command</h2>
 
-        <p>Behaviour pretty similar to Java driver <a href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
-        <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(GeoNearResult.class);</pre>
-        <p>You can map command results to a single result field.</p>
+            <p>Behaviour pretty similar to Java driver <a href="http://docs.mongodb.org/manual/reference/method/db.runCommand">db.runCommand(..)</a>.</p>
+            <pre class="prettyprint">jongo.runCommand("{geoNear: 'friends', near: [48,9]}").as(GeoNearResult.class);</pre>
+            <p>You can map command results to a single result field.</p>
 
                               <pre class="prettyprint">
 jongo.runCommand("{geoNear: 'friends', near : [48.690,9.140]}")
@@ -485,54 +432,54 @@ jongo.runCommand("{geoNear: 'friends', near : [48.690,9.140]}")
           .field("results")
           .as(GeoNearResult.class);</pre>
 
-        <h2 id="aggregation">Aggregation</h2>
+            <h2 id="aggregation">Aggregation</h2>
 
-        <h3 id="distinct">Distinct</h3>
+            <h3 id="distinct">Distinct</h3>
 
-        <p>Distinct syntax is almost the same as Find/FindOne operations. Optional query can be setted using <code>query(..)</code>
-            method</p>
-        <pre class="prettyprint">List&lt;String&gt; names = friends.distinct("name").as(String.class);</pre>
-        <pre class="prettyprint">List&lt;Address&gt; addresses = friends.distinct("address").query("{name: 'Joe'}").as(Address.class);</pre>
+            <p>Distinct syntax is almost the same as Find/FindOne operations. Optional query can be setted using <code>query(..)</code>
+                method</p>
+            <pre class="prettyprint">List&lt;String&gt; names = friends.distinct("name").as(String.class);</pre>
+            <pre class="prettyprint">List&lt;Address&gt; addresses = friends.distinct("address").query("{name: 'Joe'}").as(Address.class);</pre>
 
-        <h3 id="aggregation-fwk">Aggregation Framework</h3>
+            <h3 id="aggregation-fwk">Aggregation Framework</h3>
 
-        <p>Careful, this feature is only available in the Mongo v2.2 release. All aggregation operators are
-            supported <code>$project, $match, $limit, $skip, $unwind, $group, $sort</code> and can be piped using
-            <code>and(..)</code> method</p>
+            <p>Careful, this feature is only available in the Mongo v2.2 release. All aggregation operators are
+                supported <code>$project, $match, $limit, $skip, $unwind, $group, $sort</code> and can be piped using
+                <code>and(..)</code> method</p>
                               <pre class="prettyprint">
 collection.aggregate("{$project:{sender:1}}")
           .and("{$match:{tags:'read'}}")
           .and("{$limit:10}")
           .as(Email.class);</pre>
 
-        <h2 id="advanced-query">Advanced query</h2>
+            <h2 id="advanced-query">Advanced query</h2>
 
-        <h3 id="geospacial">Geospacial indexing</h3>
+            <h3 id="geospacial">Geospacial indexing</h3>
 
-        <p>Using <a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing" target="_blank">Mongo geospacial
-            capacities</a> requires an index and some BSON operators.</p>
+            <p>Using <a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing" target="_blank">Mongo geospacial
+                capacities</a> requires an index and some BSON operators.</p>
                                 <pre class="prettyprint">
 friends.ensureIndex("{address: '2d'}");
 friends.find("{address: {$near: [0, 0], $maxDistance: 5}}").as(Address.class);</pre>
 
-        <h3 id="readwrite">ReadPreference &amp; WriteConcern</h3>
+            <h3 id="readwrite">ReadPreference &amp; WriteConcern</h3>
 
-        <p><a href="http://docs.mongodb.org/manual/applications/replication/" target="_blank">Read and write
-            behaviors</a> can be configured on a query basis. <code>ReadPreference</code> defines how multiple
-            instances are readed, <code>WriteConcern</code> defines how writes are done.</p>
-        <pre class="prettyprint">friends.withWriteConcern(SAFE).withReadPreference(primaryPreferred()).find(..);</pre>
+            <p><a href="http://docs.mongodb.org/manual/applications/replication/" target="_blank">Read and write
+                behaviors</a> can be configured on a query basis. <code>ReadPreference</code> defines how multiple
+                instances are readed, <code>WriteConcern</code> defines how writes are done.</p>
+            <pre class="prettyprint">friends.withWriteConcern(SAFE).withReadPreference(primaryPreferred()).find(..);</pre>
 
-        <h3 id="syntax">Complete query syntax</h3>
+            <h3 id="syntax">Complete query syntax</h3>
 
-        <p>Mongo uses a <a href="http://www.mongodb.org/display/DOCS/Mongo+Query+Language">behind the scenes
-            syntactic sugar</a> for methods like <code>sort(..)</code>, <code>limit(..)</code> and others. The
-            complete expression can also be used in Jongo.
-        </p>
+            <p>Mongo uses a <a href="http://www.mongodb.org/display/DOCS/Mongo+Query+Language">behind the scenes
+                syntactic sugar</a> for methods like <code>sort(..)</code>, <code>limit(..)</code> and others. The
+                complete expression can also be used in Jongo.
+            </p>
                                 <pre class="prettyprint">
 friends.find("{$query: {}, $maxScan: 2}").as(Friend.class);
 friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
+        </div>
     </div>
-</div>
 </section>
 
 <section id="advanced" class="offset1">
@@ -556,8 +503,7 @@ friends.find("{$query: {}, $orderby: {name: 1}}").as(Friend.class);</pre>
 
             <p>
                 Several microbenchmarks (<i>using Caliper &amp; Yourkit</i>) highlight this release net improvements: Jongo
-                0.3 is 6 times faster than Jongo 0.2, which make it <strong>as fast as the driver!</strong> Have a look
-                at
+                0.3 is 6 times faster than Jongo 0.2, which make it <strong>as fast as the driver!</strong> Have a look at
                 <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.FindBench2/2262004" target="_blank">find microbenchmark</a> and <a href="http://microbenchmarks.appspot.com/run/bguerout@gmail.com/org.jongo.bench.SaveBench/2283001" target="_blank">save microbenchmark</a>, and at their implementations (<a href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/FindBench.java" target="_blank">find</a> &amp; <a href="https://github.com/bguerout/jongo/blob/master/src/test/java/org/jongo/bench/SaveBench.java" target="_blank">save</a>).
             </p>
 
@@ -693,14 +639,13 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
             <p>
                 Because Jongo uses Jackson by default, the same objects can be exposed through Jersey (<i>or Spring or
                 any web services library</i>). If you decide to keep <code>ObjectId</code> in pojo attributes, the
-                library (de)serialization have to be configured to support them (<i>using <code>@MongoObjectId</code>
+                library (de)serialization have to be configured to support them (<i>using <code>@ObjectId</code>
                 annotation on <code>String</code> avoid this problem</i>).
             </p>
 
             <p>
                 For Jersey, use <a href="https://github.com/yamsellem/jongo-jersey/blob/master/src/main/java/org/jongo/jersey/provider/JacksonMapperProvider.java" target="_blank">this Jackson Provider</a> to expose <code>ObjectId</code> as <code>String</code>
-                (<i>and ignore <code>@MongoObjectId</code> annotation</i>). For other web services libraries, adapting
-                it
+                (<i>and ignore <code>@ObjectId</code> annotation</i>). For other web services libraries, adapting it
                 won't be to hard.
             </p>
 
@@ -710,33 +655,22 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 
 <section id="release-notes" class="offset1">
     <div class="row">
-        <div class="span9 header"><h1>Release notes (1.1→1.2)</h1></div>
+        <div class="span9 header"><h1>Release notes (1.0→1.1)</h1></div>
         <div class="span9">
-            <p>Previous releases: <a href="/tags/1.1/1.1.html">1.1</a>,
-                <a href="/tags/1.0/1.0.html">1.0</a>, <a href="/tags/0.4/0.4.html">0.4</a>, <a href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a href="/tags/0.1/0.1.html">0.1</a></p>
+            <p>Previous releases: <a href="/tags/1.0/1.0.html">1.0</a>, <a href="/tags/0.4/0.4.html">0.4</a>, <a href="/tags/0.3/0.3.html">0.3</a>, <a href="/tags/0.2/0.2.html">0.2</a>, <a href="/tags/0.1/0.1.html">0.1</a></p>
             <dl class="dl-horizontal">
-
-                <dt class="strong">Mongo 3.0</dt>
-                <dd>jongo is now compatible with mongo-java-driver 3.0 (<i>thanks to <a href="https://github.com/dwursteisen" target="_blank">David Wursteisen</a></i>)
-
-                <dt class="strong">New Annotations</dt>
-                <dd>Prevent external Jackson conflicts by replacing <code>@Id</code> and <code>@ObjectId</code> with new <code>@MongoId</code> and <code>@MongoObjectId</code></dd>
-
-                <dt class="strong">Distinct Handler</dt>
-                <dd>use distinct operation with a ResultHandler (<i>thanks to <a href="https://github.com/rafaelgarrote" target="_blank">Rafael Garrote</a></i>)
-                </dd>
-
-                <dt>AggregateOptions</dt>
-                <dd>pass options to aggregate operation
-                    (<i>thanks to <a href="https://github.com/amorfis" target="_blank">Paweł Stawicki</a> and <a href="https://github.com/staticgears" target="_blank">staticgears</a></i>)
-                </dd>
-
+                <dt class="strong">Query modifiers</dt>
+                <dd>find queries can be modified with modifier operators</dd>
+                <dt class="strong">MongoCursor</dt>
+                <dd>find operation now returns a cursor</dd>
+                <dt>OSGI Compliant</dt>
+                <dd>jar can be loaded in a OSGI context (<i>thanks to <a href="https://github.com/lightoze" target="_blank">Vladimir Kulev</a></i>)
                 </dd>
                 <dt>Projection templating</dt>
                 <dd>use parameters in projections queries (<i>thanks to <a href="https://github.com/xavier-calland" target="_blank">Xavier Calland</a></i>)
                 </dd>
                 <dt>fixes</dt>
-                <dd><i>thanks to <a href="https://github.com/XXXXX" target="_blank">Julien Lavergne</a></i></dd>
+                <dd><i>thanks to <a href="https://github.com/xhanin" target="_blank">Xavier Hanin</a>, <a href="https://github.com/sukrit007" target="_blank">Sukrit Khera</a>, <a href="https://github.com/edaubert" target="_blank">Erwan Daubert</a>, <a href="https://github.com/ctrimble" target="_blank">Christian Trimble</a></i> and <i><a href="https://github.com/swallez" target="_blank">Sylvain Wallez</a></i></dd>
             </dl>
         </div>
     </div>
@@ -763,7 +697,7 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 &lt;dependency&gt;
     &lt;groupId&gt;org.jongo&lt;/groupId&gt;
     &lt;artifactId&gt;jongo&lt;/artifactId&gt;
-    &lt;version&gt;1.2&lt;/version&gt;
+    &lt;version&gt;1.1&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 
         </div>
