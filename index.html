@@ -691,19 +691,9 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
             <h2 id="exposing-trough-jersey">Exposing objects through web services</h2>
 
             <p>
-                Because Jongo uses Jackson by default, the same objects can be exposed through Jersey (<i>or Spring or
-                any web services library</i>). If you decide to keep <code>ObjectId</code> in pojo attributes, the
-                library (de)serialization have to be configured to support them (<i>using <code>@MongoObjectId</code>
-                annotation on <code>String</code> avoid this problem</i>).
+                Because Jongo uses custom Jackson annotations <code>@MongoId</code> and <code>@MongoObjectId</code>,
+                your pojos can be exposed through Jersey (<i>or Spring or any web services library</i>) without any conflicts.
             </p>
-
-            <p>
-                For Jersey, use <a href="https://github.com/yamsellem/jongo-jersey/blob/master/src/main/java/org/jongo/jersey/provider/JacksonMapperProvider.java" target="_blank">this Jackson Provider</a> to expose <code>ObjectId</code> as <code>String</code>
-                (<i>and ignore <code>@MongoObjectId</code> annotation</i>). For other web services libraries, adapting
-                it
-                won't be to hard.
-            </p>
-
         </div>
     </div>
 </section>
@@ -720,7 +710,7 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
                 <dd>jongo is now compatible with mongo-java-driver 3.0 (<i>thanks to <a href="https://github.com/dwursteisen" target="_blank">David Wursteisen</a></i>)
 
                 <dt class="strong">New Annotations</dt>
-                <dd>Prevent external Jackson conflicts by replacing <code>@Id</code> and <code>@ObjectId</code> with new <code>@MongoId</code> and <code>@MongoObjectId</code></dd>
+                <dd>Prevent external Jackson ObjectMapper conflicts by replacing <code>@Id</code> and <code>@ObjectId</code> with new <code>@MongoId</code> and <code>@MongoObjectId</code></dd>
 
                 <dt class="strong">Distinct Handler</dt>
                 <dd>use distinct operation with a ResultHandler (<i>thanks to <a href="https://github.com/rafaelgarrote" target="_blank">Rafael Garrote</a></i>)
