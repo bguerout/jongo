@@ -24,6 +24,7 @@ import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
+import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.junit.Before;
@@ -165,14 +166,52 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
-    public void canHandleObjectSerializedAsAPrimitive() throws Exception {
+    public void canHandlePOJOSerializedAsString() throws Exception {
 
-        Mapping mapping = new Mapping.Builder().addSerializer(Friend.class, new PrimitiveJsonSerializer()).build();
-        factory = new BsonQueryFactory(new JacksonEngine(mapping));
+        Mapping mapping = new Mapping.Builder().addSerializer(Friend.class, new JsonSerializer<Friend>() {
 
-        DBObject query = factory.createQuery("{bytes:#}", new Friend("Robert")).toDBObject();
+            @Override
+            public void serialize(Friend friend, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+                jgen.writeString(friend.getName());
+            }
+        }).build();
+        QueryFactory customFactory = new BsonQueryFactory(new JacksonEngine(mapping));
 
-        assertThat(query.get("bytes")).isEqualTo("Robert");
+        DBObject query = customFactory.createQuery("{friend:#}", new Friend("Robert")).toDBObject();
+
+        assertThat(query.get("friend")).isEqualTo("Robert");
+    }
+
+    @Test
+    public void canHandlePOJOSerializedAsBoolean() throws Exception {
+
+        Mapping mapping = new Mapping.Builder().addSerializer(Friend.class, new JsonSerializer<Friend>() {
+            @Override
+            public void serialize(Friend value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+                jgen.writeBoolean(true);
+            }
+        }).build();
+        QueryFactory customFactory = new BsonQueryFactory(new JacksonEngine(mapping));
+
+        DBObject query = customFactory.createQuery("{friend:#}", new Friend("Robert")).toDBObject();
+
+        assertThat(query.get("friend")).isEqualTo(true);
+    }
+
+    @Test
+    public void canHandlePOJOSerializedAsNumber() throws Exception {
+
+        Mapping mapping = new Mapping.Builder().addSerializer(Coordinate.class, new JsonSerializer<Coordinate>() {
+            @Override
+            public void serialize(Coordinate value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+                jgen.writeNumber(value.lat);
+            }
+        }).build();
+        QueryFactory customFactory = new BsonQueryFactory(new JacksonEngine(mapping));
+
+        DBObject query = customFactory.createQuery("{coordinate:#}", new Coordinate(1, 1)).toDBObject();
+
+        assertThat(query.get("coordinate")).isEqualTo(1);
     }
 
     @Test
@@ -231,13 +270,5 @@ public class BsonQueryFactoryTest {
         Query query = factory.createQuery("#", new Friend("John"));
 
         assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("name").is("John").get());
-    }
-
-    private static class PrimitiveJsonSerializer extends JsonSerializer<Friend> {
-
-        @Override
-        public void serialize(Friend friend, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeString(friend.getName());
-        }
     }
 }

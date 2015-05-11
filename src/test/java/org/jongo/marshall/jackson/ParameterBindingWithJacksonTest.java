@@ -30,9 +30,19 @@ public class ParameterBindingWithJacksonTest extends JongoTestCase {
         assertThat(result).isNotNull();
     }
 
+    @Test
+    public void canBindStringWithJsonValue() throws Exception {
+
+        collection.insert("{'prefixer':'prefix_data'}");
+
+        Map result = collection.findOne("{'prefixer':#}", new StringWithPrefix("data")).as(Map.class);
+
+        assertThat(result).isNotNull();
+    }
 
     private static enum Type {
         EMPTY(0);
+
         private int value;
 
         private Type(int value) {
@@ -42,6 +52,21 @@ public class ParameterBindingWithJacksonTest extends JongoTestCase {
         @JsonValue
         public int getValue() {
             return value;
+        }
+
+    }
+
+    private static class StringWithPrefix {
+
+        private final String value;
+
+        private StringWithPrefix(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return "prefix_" + value;
         }
     }
 }

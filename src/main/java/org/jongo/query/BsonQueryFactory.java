@@ -242,7 +242,8 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     private boolean hasBeenSerializedAsPrimitive(BsonDocument document) {
-        return document.toByteArray()[0] == 0;
+        byte[] bytes = document.toByteArray();
+        return bytes.length == 1 || bytes.length != bytes[0];
     }
 
     /**
