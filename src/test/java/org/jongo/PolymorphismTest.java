@@ -16,9 +16,9 @@
 
 package org.jongo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.bson.types.ObjectId;
 import org.jongo.model.Animal;
 import org.jongo.model.Fox;
 import org.jongo.util.JongoTestCase;
@@ -89,6 +89,18 @@ public class PolymorphismTest extends JongoTestCase {
         assertThat(zoo.mascot.getName()).isEqualTo("Zorro");
     }
 
+    @Test
+    //https://github.com/bguerout/jongo/issues/258
+    public void canHandleInheritanceWithALongText() throws Exception {
+        Chiwawa custom = new Chiwawa();
+        collection.insert(custom);
+
+        collection.update(custom._id).with("#", custom);
+
+        Chiwawa result = collection.findOne().as(Chiwawa.class);
+        assertThat(result).isNotNull();
+    }
+
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
             include = JsonTypeInfo.As.PROPERTY,
@@ -96,9 +108,11 @@ public class PolymorphismTest extends JongoTestCase {
             visible = true)
     @JsonSubTypes({
             @JsonSubTypes.Type(value = Beagle.class, name = "B"),
-            @JsonSubTypes.Type(value = Loulou.class, name = "L")
+            @JsonSubTypes.Type(value = Loulou.class, name = "L"),
+            @JsonSubTypes.Type(value = Chiwawa.class, name = "C")
     })
     private static abstract class Dog {
+        ObjectId _id;
         String name, discriminator;
     }
 
@@ -106,6 +120,10 @@ public class PolymorphismTest extends JongoTestCase {
     }
 
     private static class Loulou extends Dog {
+    }
+
+    private static class Chiwawa extends Dog {
+        private String tooLongText = "chiwawa-chiwawa-chiwawa-chiwawa-chiwawachiwawachiwawachiwawachiwawachiwawa";
     }
 
     private static class Zoo {
