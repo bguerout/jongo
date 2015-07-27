@@ -199,6 +199,22 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void canHandlePOJOSerializedAsNegativeNumber() throws Exception {
+
+        Mapping mapping = new Mapping.Builder().addSerializer(Coordinate.class, new JsonSerializer<Coordinate>() {
+            @Override
+            public void serialize(Coordinate value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+                jgen.writeNumber(value.lat);
+            }
+        }).build();
+        QueryFactory customFactory = new BsonQueryFactory(new JacksonEngine(mapping));
+
+        DBObject query = customFactory.createQuery("{coordinate:#}", new Coordinate(-400, -1)).toDBObject();
+
+        assertThat(query.get("coordinate")).isEqualTo(-400);
+    }
+
+    @Test
     public void canHandlePOJOSerializedAsNumber() throws Exception {
 
         Mapping mapping = new Mapping.Builder().addSerializer(Coordinate.class, new JsonSerializer<Coordinate>() {

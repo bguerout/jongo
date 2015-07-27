@@ -91,11 +91,11 @@ public class PolymorphismTest extends JongoTestCase {
 
     @Test
     //https://github.com/bguerout/jongo/issues/258
-    public void canHandleInheritanceWithALongText() throws Exception {
-        Chiwawa custom = new Chiwawa();
-        collection.insert(custom);
+    public void canHandleInheritanceAsAQueryParameter() throws Exception {
+        Chiwawa chiwawa = new Chiwawa();
+        collection.insert(chiwawa);
 
-        collection.update(custom._id).with("#", custom);
+        collection.update(chiwawa._id).with("#", chiwawa);
 
         Chiwawa result = collection.findOne().as(Chiwawa.class);
         assertThat(result).isNotNull();
@@ -123,7 +123,7 @@ public class PolymorphismTest extends JongoTestCase {
     }
 
     private static class Chiwawa extends Dog {
-        private String tooLongText = "chiwawa-chiwawa-chiwawa-chiwawa-chiwawachiwawachiwawachiwawachiwawachiwawa";
+        private String longText = "chiwawa-chiwawa-chiwawa-chiwawa-chiwawachiwawachiwawachiwawachiwawachiwawa";
     }
 
     private static class Zoo {

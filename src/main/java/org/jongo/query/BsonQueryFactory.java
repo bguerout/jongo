@@ -27,10 +27,13 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static java.nio.ByteOrder.*;
 
 public class BsonQueryFactory implements QueryFactory {
 
@@ -243,7 +246,11 @@ public class BsonQueryFactory implements QueryFactory {
 
     private boolean hasBeenSerializedAsPrimitive(BsonDocument document) {
         byte[] bytes = document.toByteArray();
-        return bytes[0] >= 0 && (bytes.length == 1 || bytes.length != bytes[0]);
+        if (bytes.length > 4) {
+            int size = ByteBuffer.wrap(bytes, 0, 4).order(LITTLE_ENDIAN).getInt();
+            return bytes.length != size;
+        }
+        return true;
     }
 
     /**
