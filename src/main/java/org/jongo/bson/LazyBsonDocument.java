@@ -30,9 +30,7 @@ class LazyBsonDocument implements BsonDocument {
     }
 
     public int getSize() {
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        return buffer.getInt(0);
+        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(0);
     }
 
     public byte[] toByteArray() {
