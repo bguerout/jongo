@@ -9,7 +9,7 @@ A_VERSION_HAS_FAILED=false
 OPTS=$*
 
 mkdir -p "$OUTPUT_DIR";
-DB_VERSIONS=( "2.6" "3.0" )
+DB_VERSIONS="2.6 3.0"
 DRIVER_VERSIONS=$(curl -so "$MONGO_ARTIFACTS_FILE" "$NEXUS_URL" &&  grep -e "version" "$MONGO_ARTIFACTS_FILE" | sed 's/<version>//g' | sed 's/<\/version>//g' | tr -s " " | sort | uniq);
 
 echo "Executing tests for mongo-java-driver[$DRIVER_VERSIONS] dependencies available on Nexus http://repository.sonatype.org"
