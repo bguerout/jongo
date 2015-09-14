@@ -18,6 +18,7 @@ package org.jongo.marshall.jackson.oid;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,6 +35,8 @@ public class ObjectIdDeserializer extends JsonDeserializer<String> {
         JsonNode oid = ((JsonNode) treeNode).get(MONGO_QUERY_OID);
         if (oid != null)
             return oid.asText();
+        else if (JsonToken.VALUE_STRING == treeNode.asToken())
+            return ((TextNode) treeNode).asText();
         else
             return ((JsonNode) treeNode).asText();
     }
