@@ -18,6 +18,9 @@ package org.jongo;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.marshall.jackson.JacksonMapper;
@@ -28,6 +31,12 @@ public class Jongo {
     private final DB database;
     private final Mapper mapper;
 
+    public Jongo(MongoClient mongoClient, String dbName) {
+    	Mongo mongo = (Mongo) mongoClient;
+    	this.database = new DB(mongo, dbName);
+    	this.mapper = new JacksonMapper.Builder().build();    	
+    }
+    
     public Jongo(DB database) {
         this(database, new JacksonMapper.Builder().build());
     }
