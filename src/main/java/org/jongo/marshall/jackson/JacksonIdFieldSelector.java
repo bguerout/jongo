@@ -17,6 +17,7 @@
 package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.bson.types.ObjectId;
 import org.jongo.ReflectiveObjectIdUpdater;
 import org.jongo.marshall.jackson.oid.Id;
@@ -25,6 +26,7 @@ import org.jongo.marshall.jackson.oid.MongoObjectId;
 
 import java.lang.reflect.Field;
 
+@Deprecated
 public class JacksonIdFieldSelector implements ReflectiveObjectIdUpdater.IdFieldSelector {
 
     public boolean isId(Field f) {

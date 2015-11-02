@@ -23,6 +23,8 @@ import org.jongo.marshall.MarshallingException;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.Mapping;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -33,6 +35,10 @@ public class JacksonEngine implements Unmarshaller, Marshaller {
 
     public JacksonEngine(Mapping mapping) {
         this.mapping = mapping;
+    }
+    
+    public ObjectMapper getObjectMapper() {
+        return mapping.getObjectMapper();
     }
 
     @SuppressWarnings("unchecked")
