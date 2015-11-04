@@ -64,4 +64,8 @@ public class Mapping {
         }
     }
 
+    public ObjectMapper getObjectMapper() {
+        return mapper;
+    }
+
 }

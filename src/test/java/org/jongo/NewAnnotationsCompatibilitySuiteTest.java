@@ -36,8 +36,6 @@ public class NewAnnotationsCompatibilitySuiteTest {
             AnnotationIntrospector pair = new AnnotationIntrospectorPair(primary, secondary);
 
             mapper.setAnnotationIntrospector(pair);
-            mapper.getDeserializationConfig().with(pair);
-            mapper.getSerializationConfig().with(pair);
         }
     }
 
