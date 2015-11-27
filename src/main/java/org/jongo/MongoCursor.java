@@ -61,4 +61,9 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
     public int count() {
         return cursor.count();
     }
+    
+    public MongoCursor<E> addOption(final int option) {
+        cursor.addOption(option);
+        return this;
+    }
 }
