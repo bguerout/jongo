@@ -84,7 +84,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
     private static boolean isObjectId(BeanPropertyDefinition property) {
         boolean isObjectId = property.getPrimaryMember().getAnnotation(org.jongo.marshall.jackson.oid.ObjectId.class) != null 
                 || property.getPrimaryMember().getAnnotation(MongoObjectId.class) != null
-                || ObjectId.class.isAssignableFrom(property.getField().getRawType());
+                || ObjectId.class.isAssignableFrom(property.getAccessor().getRawType());
         return isObjectId;
     }
     
