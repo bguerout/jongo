@@ -61,4 +61,8 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
     public int count() {
         return cursor.count();
     }
+
+    public int size() {
+        return cursor.size();
+    }
 }
