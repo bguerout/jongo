@@ -25,6 +25,8 @@ import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.ExternalType;
 import org.jongo.model.ExternalType.ExternalTypeMixin;
 import org.jongo.model.Friend;
+import org.jongo.model.TypeWithNested;
+import org.jongo.model.TypeWithNested.NestedDocument;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -47,6 +49,7 @@ public class AggregateTest extends JongoTestCase {
     private MongoCollection collection;
     private MongoCollection friendCollection;
     private MongoCollection externalTypeCollection;
+    private MongoCollection nestedCollection;
     
     @SuppressWarnings("serial")
     public AggregateTest() {
@@ -73,6 +76,14 @@ public class AggregateTest extends JongoTestCase {
         
         externalTypeCollection = createEmptyCollection("external_type");
         externalTypeCollection.save(new ExternalType("value"));
+
+        nestedCollection = createEmptyCollection("nested");
+        nestedCollection.save(new TypeWithNested()
+            .addNested(new NestedDocument().withName("name1").withValue("value1"))
+            .addNested(new NestedDocument().withName("name2").withValue("value2")));
+        nestedCollection.save(new TypeWithNested()
+            .addNested(new NestedDocument().withName("name3").withValue("value3"))
+            .addNested(new NestedDocument().withName("name4").withValue("value4")));
     }
 
     @After
@@ -186,6 +197,20 @@ public class AggregateTest extends JongoTestCase {
         }
     }
     
+    @Test
+    public void shouldUnmarshalNestedDocuments() {
+      List<NestedDocument> nested = Lists.newArrayList((Iterable<NestedDocument>)nestedCollection
+          .aggregate("{$unwind: '$nested'}")
+          .and("{$project: {name: '$nested.name', value: '$nested.value'}}")
+          .as(NestedDocument.class));
+
+      assertThat(nested.isEmpty()).isEqualTo(false);
+      assertThat(nested.get(0)).isEqualToComparingFieldByField(new NestedDocument().withName("name1").withValue("value1"));
+      assertThat(nested.get(1)).isEqualToComparingFieldByField(new NestedDocument().withName("name2").withValue("value2"));
+      assertThat(nested.get(2)).isEqualToComparingFieldByField(new NestedDocument().withName("name3").withValue("value3"));
+      assertThat(nested.get(3)).isEqualToComparingFieldByField(new NestedDocument().withName("name4").withValue("value4"));
+    }
+
     // this test is not working with the compatibility test suite.
     @Ignore
     @Test
