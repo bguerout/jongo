@@ -16,9 +16,11 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -28,13 +30,13 @@ import static org.jongo.ResultHandlerFactory.newResultHandler;
 public class FindOne {
 
     private final Unmarshaller unmarshaller;
-    private final DBCollection collection;
+    private final MongoCollection<BasicDBObject> collection;
     private final ReadPreference readPreference;
     private final Query query;
     private Query fields, orderBy;
     private final QueryFactory queryFactory;
 
-    FindOne(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    FindOne(MongoCollection<BasicDBObject> collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.readPreference = readPreference;
@@ -47,8 +49,9 @@ public class FindOne {
     }
 
     public <T> T map(ResultHandler<T> resultHandler) {
-        DBObject result = collection.findOne(query.toDBObject(), getFieldsAsDBObject(), getOrderByAsDBObject(), readPreference);
-        return result == null ? null : resultHandler.map(result);
+        FindIterable<DBObject> result = collection.find(query.toBson(), DBObject.class);
+        DBObject first = result.first();
+        return first == null ? null : resultHandler.map(first);
     }
 
     public FindOne projection(String fields) {

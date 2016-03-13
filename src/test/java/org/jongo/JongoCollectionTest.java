@@ -28,9 +28,9 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MongoCollectionTest extends JongoTestCase {
+public class JongoCollectionTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

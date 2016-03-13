@@ -16,35 +16,32 @@
 
 package org.jongo;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import org.jongo.bson.BsonDBDecoder;
-import org.jongo.bson.BsonDBEncoder;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.query.Query;
 
 public class Jongo {
 
-    private final DB database;
+    private final MongoDatabase database;
     private final Mapper mapper;
 
-    public Jongo(DB database) {
+    public Jongo(MongoDatabase database) {
         this(database, new JacksonMapper.Builder().build());
     }
 
-    public Jongo(DB database, Mapper mapper) {
+    public Jongo(MongoDatabase database, Mapper mapper) {
         this.database = database;
         this.mapper = mapper;
     }
 
-    public MongoCollection getCollection(String name) {
-        DBCollection dbCollection = database.getCollection(name);
-        dbCollection.setDBDecoderFactory(BsonDBDecoder.FACTORY);
-        dbCollection.setDBEncoderFactory(BsonDBEncoder.FACTORY);
-        return new MongoCollection(dbCollection, mapper);
+    public JongoCollection getCollection(String name) {
+        MongoCollection<BasicDBObject> collection = database.getCollection(name, BasicDBObject.class);
+        return new JongoCollection(collection, mapper);
     }
 
-    public DB getDatabase() {
+    public MongoDatabase getDatabase() {
         return database;
     }
 

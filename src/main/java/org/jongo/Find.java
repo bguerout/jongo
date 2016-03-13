@@ -16,10 +16,12 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -31,7 +33,7 @@ import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class Find {
 
-    private final DBCollection collection;
+    private final MongoCollection<BasicDBObject> collection;
     private final ReadPreference readPreference;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
@@ -39,7 +41,7 @@ public class Find {
     private final List<QueryModifier> modifiers;
     private Query fields;
 
-    Find(DBCollection collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    Find(MongoCollection<BasicDBObject> collection, ReadPreference readPreference, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.readPreference = readPreference;
         this.unmarshaller = unmarshaller;
         this.collection = collection;
@@ -53,11 +55,11 @@ public class Find {
     }
 
     public <T> MongoCursor<T> map(ResultHandler<T> resultHandler) {
-        DBCursor cursor = new DBCursor(collection, query.toDBObject(), getFieldsAsDBObject(), readPreference);
+        FindIterable<BasicDBObject> basicDBObjects = collection.find(query.toBson());
         for (QueryModifier modifier : modifiers) {
-            modifier.modify(cursor);
+            modifier.modify(basicDBObjects);
         }
-        return new MongoCursor<T>(cursor, resultHandler);
+        return new MongoCursor<T>(basicDBObjects, resultHandler);
     }
 
     public Find projection(String fields) {
@@ -75,6 +77,10 @@ public class Find {
             public void modify(DBCursor cursor) {
                 cursor.limit(limit);
             }
+
+            public void modify(FindIterable<BasicDBObject> iterable) {
+                iterable.limit(limit);
+            }
         });
         return this;
     }
@@ -84,15 +90,23 @@ public class Find {
             public void modify(DBCursor cursor) {
                 cursor.skip(skip);
             }
+
+            public void modify(FindIterable<BasicDBObject> iterable) {
+                iterable.skip(skip);
+            }
         });
         return this;
     }
 
     public Find sort(String sort) {
-        final DBObject sortDBObject = queryFactory.createQuery(sort).toDBObject();
+        final Query sortDBObject = queryFactory.createQuery(sort);
         this.modifiers.add(new QueryModifier() {
             public void modify(DBCursor cursor) {
-                cursor.sort(sortDBObject);
+                cursor.sort(sortDBObject.toDBObject());
+            }
+
+            public void modify(FindIterable<BasicDBObject> iterable) {
+                iterable.sort(sortDBObject.toBson());
             }
         });
         return this;
@@ -103,6 +117,10 @@ public class Find {
         this.modifiers.add(new QueryModifier() {
             public void modify(DBCursor cursor) {
                 cursor.hint(hintDBObject);
+            }
+
+            public void modify(FindIterable<BasicDBObject> iterable) {
+                //TODO: couldn't find how to hint with the new driver
             }
         });
         return this;

@@ -22,7 +22,7 @@ import com.google.caliper.SimpleBenchmark;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import org.jongo.MongoCollection;
+import org.jongo.JongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
@@ -35,7 +35,7 @@ public class FindBench extends SimpleBenchmark {
     private static final int NB_DOCUMENTS = 100000;
     @Param({"1"})
     int size = 1;
-    private MongoCollection bsonCollection;
+    private JongoCollection bsonCollection;
     private DBCollection dbCollection;
 
     protected void setUp() throws Exception {

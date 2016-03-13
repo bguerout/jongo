@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import org.jongo.Jongo;
+import org.jongo.JongoCollection;
 import org.jongo.Mapper;
-import org.jongo.MongoCollection;
 import org.jongo.ResultHandler;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionsSpikeTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
@@ -161,7 +161,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
             }
         }).build();
         Jongo jongo = new Jongo(getDatabase(), mapper);
-        MongoCollection friends = jongo.getCollection("friends");
+        JongoCollection friends = jongo.getCollection("friends");
         Friend friend = new Friend("Peter", "31 rue des Lilas");
         friends.save(friend);
 

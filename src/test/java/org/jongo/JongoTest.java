@@ -30,7 +30,7 @@ public class JongoTest extends JongoTestCase {
 
         Jongo jongo = new Jongo(getDatabase());
 
-        MongoCollection collection = jongo.getCollection("collection-name");
+        JongoCollection collection = jongo.getCollection("collection-name");
 
         assertThat(collection).isNotNull();
         assertThat(collection.getName()).isEqualTo("collection-name");

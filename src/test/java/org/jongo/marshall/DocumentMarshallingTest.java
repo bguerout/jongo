@@ -19,7 +19,7 @@ package org.jongo.marshall;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.bson.types.*;
-import org.jongo.MongoCollection;
+import org.jongo.JongoCollection;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -35,7 +35,7 @@ import static org.assertj.core.data.MapEntry.entry;
 
 public class DocumentMarshallingTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

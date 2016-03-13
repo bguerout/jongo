@@ -16,45 +16,49 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.BasicDBObject;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.CountOptions;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.result.DeleteResult;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jongo.query.Query;
 
 
-public class MongoCollection {
+public class JongoCollection {
 
     public static final String MONGO_DOCUMENT_ID_NAME = "_id";
     public static final String MONGO_QUERY_OID = "$oid";
     private static final Object[] NO_PARAMETERS = {};
     private static final String ALL = "{}";
 
-    private final DBCollection collection;
+    private final MongoCollection<BasicDBObject> collection;
     private final WriteConcern writeConcern;
     private final ReadPreference readPreference;
     private final Mapper mapper;
 
-    public MongoCollection(DBCollection dbCollection, Mapper mapper) {
+    public JongoCollection(MongoCollection<BasicDBObject> dbCollection, Mapper mapper) {
         this(dbCollection, mapper, dbCollection.getWriteConcern(), dbCollection.getReadPreference());
 
     }
 
-    private MongoCollection(DBCollection dbCollection, Mapper mapper, WriteConcern writeConcern, ReadPreference readPreference) {
+    private JongoCollection(MongoCollection<BasicDBObject> dbCollection, Mapper mapper, WriteConcern writeConcern, ReadPreference readPreference) {
         this.collection = dbCollection;
         this.writeConcern = writeConcern;
         this.readPreference = readPreference;
         this.mapper = mapper;
     }
 
-    public MongoCollection withWriteConcern(WriteConcern concern) {
-        return new MongoCollection(collection, mapper, concern, readPreference);
+    public JongoCollection withWriteConcern(WriteConcern concern) {
+        return new JongoCollection(collection, mapper, concern, readPreference);
     }
 
-    public MongoCollection withReadPreference(ReadPreference readPreference) {
-        return new MongoCollection(collection, mapper, writeConcern, readPreference);
+    public JongoCollection withReadPreference(ReadPreference readPreference) {
+        return new JongoCollection(collection, mapper, writeConcern, readPreference);
     }
 
     public FindOne findOne(ObjectId id) {
@@ -101,7 +105,7 @@ public class MongoCollection {
     }
 
     public long count() {
-        return collection.getCount(readPreference);
+        return collection.count();
     }
 
     public long count(String query) {
@@ -109,8 +113,8 @@ public class MongoCollection {
     }
 
     public long count(String query, Object... parameters) {
-        DBObject dbQuery = createQuery(query, parameters).toDBObject();
-        return collection.getCount(dbQuery, null, readPreference);
+        Bson dbQuery = createQuery(query, parameters).toBson();
+        return collection.count(dbQuery, new CountOptions());
     }
 
     public Update update(String query) {
@@ -148,20 +152,20 @@ public class MongoCollection {
         return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insert(query, parameters);
     }
 
-    public WriteResult remove(ObjectId id) {
+    public DeleteResult remove(ObjectId id) {
         return remove("{" + MONGO_DOCUMENT_ID_NAME + ":#}", id);
     }
 
-    public WriteResult remove() {
+    public DeleteResult remove() {
         return remove(ALL);
     }
 
-    public WriteResult remove(String query) {
+    public DeleteResult remove(String query) {
         return remove(query, NO_PARAMETERS);
     }
 
-    public WriteResult remove(String query, Object... parameters) {
-        return collection.remove(createQuery(query, parameters).toDBObject(), writeConcern);
+    public DeleteResult remove(String query, Object... parameters) {
+        return collection.deleteOne(createQuery(query, parameters).toBson());
     }
 
     public Distinct distinct(String key) {
@@ -181,7 +185,7 @@ public class MongoCollection {
     }
 
     public void dropIndex(String keys) {
-        collection.dropIndex(createQuery(keys).toDBObject());
+        collection.dropIndex(createQuery(keys).toBson());
     }
 
     public void dropIndexes() {
@@ -189,18 +193,18 @@ public class MongoCollection {
     }
 
     public void ensureIndex(String keys) {
-        collection.createIndex(createQuery(keys).toDBObject());
+        collection.createIndex(createQuery(keys).toBson());
     }
 
     public void ensureIndex(String keys, String options) {
-        collection.createIndex(createQuery(keys).toDBObject(), createQuery(options).toDBObject());
+        collection.createIndex(createQuery(keys).toBson(), new IndexOptions());
     }
 
     public String getName() {
-        return collection.getName();
+        return collection.getNamespace().getCollectionName()
     }
 
-    public DBCollection getDBCollection() {
+    public MongoCollection<BasicDBObject> getDBCollection() {
         return collection;
     }
 
@@ -211,7 +215,7 @@ public class MongoCollection {
     @Override
     public String toString() {
         if (collection != null)
-            return "collection {" + "name: '" + collection.getName() + "', db: '" + collection.getDB().getName() + "'}";
+            return "collection {" + "name: '" + getName() + "', db: '" + collection.getNamespace().getDatabaseName() + "'}";
         else
             return super.toString();
     }

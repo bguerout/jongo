@@ -16,33 +16,35 @@
 
 package org.jongo;
 
-import com.mongodb.DBCursor;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.client.MongoIterable;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+//TODO I believe this class is now obsolete: the MongoDriver implements Iterable already
 public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
 
-    private final DBCursor cursor;
+    private final MongoIterable<BasicDBObject> cursor;
     private final ResultHandler<E> resultHandler;
 
-    public MongoCursor(DBCursor cursor, ResultHandler<E> resultHandler) {
+    public MongoCursor(MongoIterable<BasicDBObject> cursor, ResultHandler<E> resultHandler) {
         this.cursor = cursor;
         this.resultHandler = resultHandler;
     }
 
     public boolean hasNext() {
-        return cursor.hasNext();
+        return cursor.iterator().hasNext();
     }
 
     public E next() {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        DBObject dbObject = cursor.next();
+        DBObject dbObject = cursor.iterator().next();
         return resultHandler.map(dbObject);
     }
 
@@ -51,14 +53,15 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
     }
 
     public Iterator<E> iterator() {
-        return new MongoCursor<E>(cursor.copy(), resultHandler);
+        return new MongoCursor<E>(cursor, resultHandler);
     }
 
     public void close() throws IOException {
-        cursor.close();
+        //TODO does it need to close?
     }
 
+    //TODO does it make sense anymore?
     public int count() {
-        return cursor.count();
+        return 0;
     }
 }

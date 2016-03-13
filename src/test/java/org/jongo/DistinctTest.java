@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DistinctTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
     private String wallStreetAvenue;
 
     @Before

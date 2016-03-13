@@ -30,11 +30,11 @@ import static org.mockito.Mockito.*;
 public class WriteConcernTest {
 
     DBCollection mockedDBCollection = mock(DBCollection.class);
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
-        collection = new MongoCollection(mockedDBCollection, new JacksonMapper.Builder().build());
+        collection = new JongoCollection(mockedDBCollection, new JacksonMapper.Builder().build());
     }
 
     @Test

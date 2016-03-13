@@ -36,7 +36,7 @@ import static org.jongo.Oid.withOid;
 
 public class FindTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

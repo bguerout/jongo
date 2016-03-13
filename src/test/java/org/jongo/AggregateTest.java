@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import com.mongodb.AggregationOptions;
 import com.mongodb.MongoCommandException;
-
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.ExternalType;
 import org.jongo.model.ExternalType.ExternalTypeMixin;
@@ -44,9 +43,9 @@ import static org.mockito.Mockito.*;
 public class AggregateTest extends JongoTestCase {
 
 
-    private MongoCollection collection;
-    private MongoCollection friendCollection;
-    private MongoCollection externalTypeCollection;
+    private JongoCollection collection;
+    private JongoCollection friendCollection;
+    private JongoCollection externalTypeCollection;
     
     @SuppressWarnings("serial")
     public AggregateTest() {

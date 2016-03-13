@@ -17,6 +17,7 @@
 package org.jongo;
 
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import org.bson.LazyBSONCallback;
 import org.bson.types.ObjectId;
 import org.jongo.bson.Bson;
@@ -30,12 +31,12 @@ import java.util.List;
 class Insert {
 
     private final Marshaller marshaller;
-    private final DBCollection collection;
+    private final MongoCollection<BasicDBObject> collection;
     private final ObjectIdUpdater objectIdUpdater;
     private final QueryFactory queryFactory;
     private WriteConcern writeConcern;
 
-    Insert(DBCollection collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, QueryFactory queryFactory) {
+    Insert(MongoCollection<BasicDBObject> collection, WriteConcern writeConcern, Marshaller marshaller, ObjectIdUpdater objectIdUpdater, QueryFactory queryFactory) {
         this.writeConcern = writeConcern;
         this.marshaller = marshaller;
         this.collection = collection;
@@ -43,20 +44,20 @@ class Insert {
         this.queryFactory = queryFactory;
     }
 
-    public WriteResult save(Object pojo) {
+    public void save(Object pojo) {
         Object id = preparePojo(pojo);
         DBObject dbo = convertToDBObject(pojo, id);
-        return collection.save(dbo, writeConcern);
+        collection.insertOne(new BasicDBObject(dbo.toMap()));
     }
 
     public WriteResult insert(Object... pojos) {
         List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
         for (Object pojo : pojos) {
             Object id = preparePojo(pojo);
-            DBObject dbo = convertToDBObject(pojo, id);
+            LazyIdDBObject dbo = convertToDBObject(pojo, id);
             dbos.add(dbo);
         }
-        return collection.insert(dbos, writeConcern);
+        return collection.insertMany(dbos);
     }
 
     public WriteResult insert(String query, Object... parameters) {
@@ -77,7 +78,7 @@ class Insert {
         return objectIdUpdater.getId(pojo);
     }
 
-    private DBObject convertToDBObject(Object pojo, Object id) {
+    private LazyIdDBObject convertToDBObject(Object pojo, Object id) {
         BsonDocument document = asBsonDocument(marshaller, pojo);
         return new LazyIdDBObject(document.toByteArray(), marshaller, id);
     }

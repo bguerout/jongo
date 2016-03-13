@@ -16,8 +16,12 @@
 
 package org.jongo;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import com.mongodb.client.FindIterable;
 
 public interface QueryModifier {
     void modify(DBCursor cursor);
+
+    void modify(FindIterable<BasicDBObject> iterable);
 }

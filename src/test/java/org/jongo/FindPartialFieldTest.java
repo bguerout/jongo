@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FindPartialFieldTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
     private Friend friend;
 
     @Before
