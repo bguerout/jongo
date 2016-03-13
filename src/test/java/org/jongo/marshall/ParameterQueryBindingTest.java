@@ -19,7 +19,7 @@ package org.jongo.marshall;
 import com.google.common.collect.Lists;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
-import org.jongo.MongoCollection;
+import org.jongo.JongoCollection;
 import org.jongo.MongoCursor;
 import org.jongo.RawResultHandler;
 import org.jongo.model.Coordinate;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParameterQueryBindingTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

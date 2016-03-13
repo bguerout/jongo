@@ -16,14 +16,19 @@
 
 package org.jongo;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.LazyBSONObject;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
 public class Update {
 
-    private final DBCollection collection;
+    private final MongoCollection<BasicDBObject> collection;
     private final Query query;
     private final QueryFactory queryFactory;
 
@@ -31,27 +36,38 @@ public class Update {
     private boolean upsert = false;
     private boolean multi = false;
 
-    Update(DBCollection collection, WriteConcern writeConcern, QueryFactory queryFactory, String query, Object... parameters) {
+    Update(MongoCollection<BasicDBObject> collection, WriteConcern writeConcern, QueryFactory queryFactory, String query, Object... parameters) {
         this.collection = collection;
         this.writeConcern = writeConcern;
         this.queryFactory = queryFactory;
         this.query = createQuery(query, parameters);
     }
 
-    public WriteResult with(String modifier) {
+    public UpdateResult with(String modifier) {
         return with(modifier, new Object[0]);
     }
 
-    public WriteResult with(String modifier, Object... parameters) {
+    public UpdateResult with(String modifier, Object... parameters) {
         Query updateQuery = queryFactory.createQuery(modifier, parameters);
-        return collection.update(this.query.toDBObject(), updateQuery.toDBObject(), upsert, multi, writeConcern);
+        UpdateOptions updateOptions = new UpdateOptions();
+        updateOptions.upsert(this.upsert);
+
+        if (multi) {
+            return collection.updateMany(this.query.toBson(), updateQuery.toBson(), updateOptions);
+        } else {
+            return collection.updateOne(this.query.toBson(), updateQuery.toBson(), updateOptions);
+        }
     }
 
-    public WriteResult with(Object pojo) {
+    public UpdateResult with(Object pojo) {
+        Query updateDbo = queryFactory.createQuery("{$set:#}", pojo);
+        removeIdField(updateDbo.toDBObject());
 
-        DBObject updateDbo = queryFactory.createQuery("{$set:#}", pojo).toDBObject();
-        removeIdField(updateDbo);
-        return collection.update(this.query.toDBObject(), updateDbo, upsert, multi, writeConcern);
+        if (multi) {
+            return collection.updateMany(this.query.toBson(), updateDbo.toBson());
+        } else {
+            return collection.updateOne(this.query.toBson(), updateDbo.toBson());
+        }
     }
 
     private void removeIdField(DBObject updateDbo) {

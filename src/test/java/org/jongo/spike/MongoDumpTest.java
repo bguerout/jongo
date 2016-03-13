@@ -23,7 +23,7 @@ import com.mongodb.WriteConcern;
 import de.undercouch.bson4jackson.BsonFactory;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
-import org.jongo.MongoCollection;
+import org.jongo.JongoCollection;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoDumpTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

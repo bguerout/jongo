@@ -18,18 +18,13 @@ package org.jongo.marshall.jackson.oid;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 
-import org.bson.types.ObjectId;
-
-import static org.jongo.MongoCollection.MONGO_QUERY_OID;
+import static org.jongo.JongoCollection.MONGO_QUERY_OID;
 
 public class ObjectIdDeserializer extends JsonDeserializer<Object> implements ContextualDeserializer {
 

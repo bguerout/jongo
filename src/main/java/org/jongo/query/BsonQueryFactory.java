@@ -17,6 +17,7 @@
 package org.jongo.query;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONCallback;
@@ -27,13 +28,10 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static java.nio.ByteOrder.*;
 
 public class BsonQueryFactory implements QueryFactory {
 
@@ -52,6 +50,10 @@ public class BsonQueryFactory implements QueryFactory {
 
         public DBObject toDBObject() {
             return dbo;
+        }
+
+        public org.bson.conversions.Bson toBson() {
+            return new BasicDBObject(dbo.toMap());
         }
     }
 

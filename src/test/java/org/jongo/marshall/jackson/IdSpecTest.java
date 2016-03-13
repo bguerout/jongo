@@ -1,9 +1,11 @@
 package org.jongo.marshall.jackson;
 
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
-
+import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
+import org.jongo.JongoCollection;
+import org.jongo.MongoCursor;
+import org.jongo.util.JongoEmbeddedRule;
+import org.jongo.util.MongoEmbeddedRule;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -12,17 +14,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.mongodb.WriteResult;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.jongo.MongoCollection;
-import org.jongo.MongoCursor;
-import org.jongo.util.JongoEmbeddedRule;
-import org.jongo.util.MongoEmbeddedRule;
-
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.jongo.model.IdSpecSet.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests how Jongo handles different field/annotation/mixin combinations.
@@ -58,7 +57,7 @@ public class IdSpecTest {
   private Class<?> spec;
   private Class<?> equiv;
   private Class<?> mixIn;
-  private MongoCollection collection;
+    private JongoCollection collection;
   
   public IdSpecTest( Class<?> spec, Class<?> mixIn, Class<?> equiv ) {
       this.spec = spec;

@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNull;
 public class BinaryTest extends JongoTestCase {
 
     private Binary friendId;
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {

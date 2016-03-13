@@ -17,10 +17,10 @@
 package org.jongo.util;
 
 import com.mongodb.CommandResult;
-import com.mongodb.DB;
+import com.mongodb.client.MongoDatabase;
 import org.jongo.Jongo;
+import org.jongo.JongoCollection;
 import org.jongo.Mapper;
-import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.junit.BeforeClass;
 
@@ -49,8 +49,8 @@ public abstract class JongoTestCase {
         mongoResource = new MongoResource();
     }
 
-    protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
-        MongoCollection col = jongo.getCollection(collectionName);
+    protected JongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
+        JongoCollection col = jongo.getCollection(collectionName);
         col.drop();
         return col;
     }
@@ -59,7 +59,7 @@ public abstract class JongoTestCase {
         getDatabase().getCollection(collectionName).drop();
     }
 
-    protected DB getDatabase() throws UnknownHostException {
+    protected MongoDatabase getDatabase() throws UnknownHostException {
         return jongo.getDatabase();
     }
 

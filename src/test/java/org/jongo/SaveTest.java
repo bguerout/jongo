@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SaveTest extends JongoTestCase {
 
-    private MongoCollection collection;
+    private JongoCollection collection;
     
     @SuppressWarnings("serial")
     public SaveTest() {
@@ -190,7 +190,7 @@ public class SaveTest extends JongoTestCase {
     public void canUpdateAPojoWithACustomId() throws Exception {
 
         ExternalFriend externalFriend = new ExternalFriend("122", "John");
-        MongoCollection safeCollection = collection.withWriteConcern(WriteConcern.SAFE);
+        JongoCollection safeCollection = collection.withWriteConcern(WriteConcern.SAFE);
 
         safeCollection.save(externalFriend);
         externalFriend.setName("Robert");

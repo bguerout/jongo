@@ -16,8 +16,11 @@
 
 package org.jongo;
 
-import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -26,7 +29,7 @@ import static org.jongo.ResultHandlerFactory.newResultHandler;
 
 public class FindAndModify {
 
-    private final DBCollection collection;
+    private final MongoCollection<BasicDBObject> collection;
     private final Unmarshaller unmarshaller;
     private final QueryFactory queryFactory;
     private final Query query;
@@ -35,7 +38,7 @@ public class FindAndModify {
     private boolean returnNew = false;
     private boolean upsert = false;
 
-    FindAndModify(DBCollection collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
+    FindAndModify(MongoCollection<BasicDBObject> collection, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.unmarshaller = unmarshaller;
         this.collection = collection;
         this.queryFactory = queryFactory;
@@ -53,13 +56,13 @@ public class FindAndModify {
     }
 
     public <T> T map(ResultHandler<T> resultHandler) {
-        DBObject result = collection.findAndModify(query.toDBObject(),
-                getAsDBObject(fields),
-                getAsDBObject(sort),
-                remove,
-                getAsDBObject(modifier),
-                returnNew,
-                upsert);
+        FindOneAndUpdateOptions opts = new FindOneAndUpdateOptions();
+        opts.projection(fields.toBson());
+        opts.sort(sort.toBson());
+        opts.upsert(this.upsert);
+        opts.returnDocument(ReturnDocument.AFTER);
+
+        DBObject result = collection.findOneAndUpdate(query.toBson(), modifier.toBson(), opts);
 
         return result == null ? null : resultHandler.map(result);
     }
@@ -79,6 +82,7 @@ public class FindAndModify {
         return this;
     }
 
+    //TODO couldn't find option in new driver
     public FindAndModify remove() {
         this.remove = true;
         return this;

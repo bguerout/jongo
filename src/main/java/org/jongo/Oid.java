@@ -16,7 +16,7 @@
 
 package org.jongo;
 
-import static org.jongo.MongoCollection.MONGO_QUERY_OID;
+import static org.jongo.JongoCollection.MONGO_QUERY_OID;
 
 public class Oid {
 

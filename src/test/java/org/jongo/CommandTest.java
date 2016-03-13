@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommandTest extends JongoTestCase {
 
     private Jongo jongo;
-    private MongoCollection collection;
+    private JongoCollection collection;
 
     @Before
     public void setUp() throws Exception {
@@ -80,7 +80,7 @@ public class CommandTest extends JongoTestCase {
     @Test
     public void canRunAGeoNearCommand() throws Exception {
 
-        MongoCollection safeCollection = collection.withWriteConcern(WriteConcern.SAFE);
+        JongoCollection safeCollection = collection.withWriteConcern(WriteConcern.SAFE);
         safeCollection.insert("{loc:{lat:48.690833,lng:9.140556}, name:'Paris'}");
         safeCollection.ensureIndex("{loc:'2d'}");
 
