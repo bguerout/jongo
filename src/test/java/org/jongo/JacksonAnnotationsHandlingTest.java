@@ -17,6 +17,7 @@
 package org.jongo;
 
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -85,6 +86,17 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
         assertThat(result._id).isEqualTo(id);
     }
 
+    @Test
+    public void canHandleAnnotatedGetter() throws Exception {
+        POJOWithAnnotatedGetter pojo = new POJOWithAnnotatedGetter();
+        pojo.setId("id");
+
+        collection.save(pojo);
+
+        POJOWithAnnotatedGetter result = collection.findOne().as(POJOWithAnnotatedGetter.class);
+        assertThat(result.getId()).isEqualTo(pojo.getId());
+    }
+
     public static class POJOWithMisspelledGetter {
 
         private ObjectId _id;
@@ -109,4 +121,18 @@ public class JacksonAnnotationsHandlingTest extends JongoTestCase {
         private long _id;
 
     }
+
+    public static class POJOWithAnnotatedGetter {
+        private String someId;
+
+        @MongoId
+        public String getId() {
+            return someId;
+        }
+
+        public void setId(String id) {
+            someId = id;
+        }
+    }
+
 }
