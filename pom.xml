@@ -76,7 +76,8 @@
 
     <properties>
         <mongo.min.version>3.0.0</mongo.min.version>
-        <mongo.max.version>3.1.0</mongo.max.version>
+        <mongo.max.version>3.2.2</mongo.max.version>
+        <mongo.version>[${mongo.min.version},${mongo.max.version}]</mongo.version>
         <jackson.version>2.6.2</jackson.version>
         <bson4jackson.version>2.6.0</bson4jackson.version>
     </properties>
@@ -85,7 +86,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>[${mongo.min.version},${mongo.max.version}]</version>
+            <version>${mongo.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

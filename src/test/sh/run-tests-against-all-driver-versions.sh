@@ -3,16 +3,17 @@
 OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
 NEXUS_URL="https://oss.sonatype.org/service/local/data_index?g=org.mongodb&a=mongo-java-driver"
-MINIMAL_VERSION="2.13.0"
-EXCLUDED_VERSIONS="2.13.0-rc0 3.0.0-test-SNAPSHOT"
+MINIMAL_VERSION="3.0.0"
+EXCLUDED_VERSIONS="3.0.0-beta1 3.0.0-beta2 3.0.0-beta3 3.0.0-rc0 3.0.0-rc1 3.0.0-test-SNAPSHOT"
 A_VERSION_HAS_FAILED=false
 OPTS=$*
 
 mkdir -p "$OUTPUT_DIR";
 DB_VERSIONS="2.6 3.0"
-DRIVER_VERSIONS=$(curl -so "$MONGO_ARTIFACTS_FILE" "$NEXUS_URL" &&  grep -e "version" "$MONGO_ARTIFACTS_FILE" | sed 's/<version>//g' | sed 's/<\/version>//g' | tr -s " " | sort | uniq);
 
-echo "Executing tests for mongo-java-driver[$DRIVER_VERSIONS] dependencies available on Nexus http://repository.sonatype.org"
+echo "Fetching available mongo-java-driver dependencies from Nexus http://repository.sonatype.org"
+DRIVER_VERSIONS=$(curl -so "$MONGO_ARTIFACTS_FILE" "$NEXUS_URL" &&  grep -e "version" "$MONGO_ARTIFACTS_FILE" | sed 's/<version>//g' | sed 's/<\/version>//g' | tr -s " " | sort | uniq);
+echo "mongo-java-driver versions found\n[$DRIVER_VERSIONS]"
 
 for db_version in $DB_VERSIONS
 do
@@ -39,6 +40,8 @@ do
           else
             echo "${driver_version} SUCCESS"
           fi
+        else
+           echo "Ignoring version ${driver_version}"
         fi
     done
 done
