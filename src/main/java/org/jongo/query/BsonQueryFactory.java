@@ -212,8 +212,8 @@ public class BsonQueryFactory implements QueryFactory {
 
     private DBObject marshallArray(Object[] parameters) {
         BasicDBList list = new BasicDBList();
-        for (int i = 0; i < parameters.length; i++) {
-            list.add(marshallParameter(parameters[i]));
+        for (final Object parameter : parameters) {
+            list.add(marshallParameter(parameter));
         }
         return list;
     }
