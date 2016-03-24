@@ -33,15 +33,13 @@ public class Command {
 
     private final DB db;
     private final Unmarshaller unmarshaller;
-    private final QueryFactory queryFactory;
     private Query query;
     private boolean throwOnError;
 
     public Command(DB db, Unmarshaller unmarshaller, QueryFactory queryFactory, String query, Object... parameters) {
         this.db = db;
         this.unmarshaller = unmarshaller;
-        this.queryFactory = queryFactory;
-        this.query = this.queryFactory.createQuery(query, parameters);
+        this.query = queryFactory.createQuery(query, parameters);
     }
 
     public Command throwOnError() {
