@@ -35,7 +35,7 @@ import org.jongo.marshall.jackson.oid.MongoObjectId;
 @SuppressWarnings("deprecation")
 public class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
-    ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public JacksonObjectIdUpdater(ObjectMapper mapper) {
         this.mapper = mapper;
@@ -46,8 +46,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
             if (isIdProperty(def)) {
                 AnnotatedMember accessor = def.getAccessor();
                 accessor.fixAccess();
-                boolean mustGenerate = isObjectId(def) && accessor.getValue(pojo) == null;
-                return mustGenerate;
+                return isObjectId(def) && accessor.getValue(pojo) == null;
             }
         }
         return false;
@@ -96,10 +95,9 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
     }
 
     private static boolean isObjectId(BeanPropertyDefinition property) {
-        boolean isObjectId = property.getPrimaryMember().getAnnotation(org.jongo.marshall.jackson.oid.ObjectId.class) != null
+        return property.getPrimaryMember().getAnnotation(org.jongo.marshall.jackson.oid.ObjectId.class) != null
                 || property.getPrimaryMember().getAnnotation(MongoObjectId.class) != null
                 || ObjectId.class.isAssignableFrom(property.getAccessor().getRawType());
-        return isObjectId;
     }
 
     private static boolean hasIdName(BeanPropertyDefinition property) {
@@ -109,10 +107,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
     private static boolean hasIdAnnotation(BeanPropertyDefinition property) {
         if (property == null) return false;
         AnnotatedMember accessor = property.getPrimaryMember();
-        if (accessor == null) return false;
-        return
-                accessor.getAnnotation(MongoId.class) != null ||
-                        accessor.getAnnotation(Id.class) != null;
+        return accessor != null && (accessor.getAnnotation(MongoId.class) != null || accessor.getAnnotation(Id.class) != null);
     }
 
     private BasicBeanDescription beanDescription(Class<?> cls) {
