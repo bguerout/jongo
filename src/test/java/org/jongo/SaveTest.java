@@ -37,12 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SaveTest extends JongoTestCase {
 
     private MongoCollection collection;
-    
+
     @SuppressWarnings("serial")
     public SaveTest() {
         super(new JacksonMapper.Builder()
                 .registerModule(new SimpleModule() {{
-                    this.setMixInAnnotation(ExternalType.class, ExternalTypeMixin .class);
+                    this.setMixInAnnotation(ExternalType.class, ExternalTypeMixin.class);
                 }}).build());
 
     }
@@ -152,7 +152,7 @@ public class SaveTest extends JongoTestCase {
         assertThat(robertHue.getId()).isEqualTo(johnId);
         assertThat(robertHue.getName()).isEqualTo("Hue");
     }
-    
+
     @Test
     public void canUpdateWithObjectId() throws Exception {
         String id = ObjectId.get().toString();

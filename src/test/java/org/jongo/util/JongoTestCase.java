@@ -38,8 +38,8 @@ public abstract class JongoTestCase {
     public JongoTestCase() {
         this(new JacksonMapper.Builder().build());
     }
-    
-    protected JongoTestCase( Mapper mapper ) {
+
+    protected JongoTestCase(Mapper mapper) {
         this.mapper = mapper;
         this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
     }

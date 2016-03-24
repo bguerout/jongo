@@ -22,12 +22,13 @@ import org.junit.runners.model.Statement;
 
 /**
  * A JUnit rule for testing with embedded Mongo.
- * 
+ *
  * @author Alexandre Dutra
  * @author Christian Trimble
  */
 public class MongoEmbeddedRule implements TestRule {
     private MongoResource mongoResource;
+
     public Statement apply(final Statement base, Description description) {
         return new Statement() {
             @Override
@@ -37,7 +38,7 @@ public class MongoEmbeddedRule implements TestRule {
             }
         };
     }
-    
+
     public MongoResource getResource() {
         return mongoResource;
     }

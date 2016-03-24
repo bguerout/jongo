@@ -129,7 +129,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
     public void canUpdateIntoAnArray() throws Exception {
 
         collection.insert("{friends:[{name:'Robert'},{name:'Peter'}]}");
-    
+
         collection.update("{ 'friends.name' : 'Peter' }").with("{ $set : { 'friends.$' : #} }", new Friend("John"));
 
         Party party = collection.findOne().as(Party.class);

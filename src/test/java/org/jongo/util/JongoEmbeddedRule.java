@@ -16,11 +16,10 @@
 
 package org.jongo.util;
 
-import static org.junit.Assume.assumeTrue;
-
-import java.net.UnknownHostException;
-import java.util.Set;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
@@ -30,14 +29,14 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
+import java.net.UnknownHostException;
+import java.util.Set;
+
+import static org.junit.Assume.assumeTrue;
 
 /**
  * A JUnit test rule for testing Jongo with embedded Mongo.
- * 
+ *
  * @author Benoit Guérout
  * @author yamsellem
  * @author Alexandre Dutra
@@ -50,8 +49,8 @@ public class JongoEmbeddedRule implements TestRule {
     private MongoEmbeddedRule mongoRule;
     private Set<String> collectionNames = Sets.newHashSet();
     private JacksonMapper.Builder mapperBuilder = new JacksonMapper.Builder();
-    
-    public JongoEmbeddedRule( MongoEmbeddedRule mongoRule ) {
+
+    public JongoEmbeddedRule(MongoEmbeddedRule mongoRule) {
         this.mongoRule = mongoRule;
     }
 
@@ -63,16 +62,16 @@ public class JongoEmbeddedRule implements TestRule {
                 mapper = mapperBuilder.build();
                 jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
                 try {
-                  base.evaluate();
+                    base.evaluate();
                 } finally {
-                    for( String collectionName : collectionNames ) {
+                    for (String collectionName : collectionNames) {
                         dropCollection(collectionName);
                     }
                 }
             }
         };
     }
-    
+
     public MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
         collectionNames.add(collectionName);
         MongoCollection col = jongo.getCollection(collectionName);
@@ -113,7 +112,8 @@ public class JongoEmbeddedRule implements TestRule {
         mapperBuilder.addModifier(new MapperModifier() {
             public void modify(ObjectMapper mapper) {
                 mapper.addMixInAnnotations(spec, mixIn);
-            }});
+            }
+        });
         return this;
     }
 

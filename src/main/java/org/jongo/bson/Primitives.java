@@ -18,13 +18,7 @@ package org.jongo.bson;
 
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
-import org.bson.types.BSONTimestamp;
-import org.bson.types.Binary;
-import org.bson.types.Code;
-import org.bson.types.CodeWScope;
-import org.bson.types.MaxKey;
-import org.bson.types.MinKey;
-import org.bson.types.ObjectId;
+import org.bson.types.*;
 
 import java.util.Date;
 import java.util.HashSet;

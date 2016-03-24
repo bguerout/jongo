@@ -22,33 +22,30 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
-
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
 
 public class ObjectIdSerializer extends JsonSerializer<Object>
-  implements ContextualSerializer {
-    
+        implements ContextualSerializer {
+
     boolean fieldIsObjectId = false;
-    
+
     public ObjectIdSerializer() {
         this(false);
     }
-    
-    public ObjectIdSerializer( boolean serializeAsObjectId ) {
+
+    public ObjectIdSerializer(boolean serializeAsObjectId) {
         this.fieldIsObjectId = serializeAsObjectId;
     }
 
     @Override
     public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        if( value == null ) {
+        if (value == null) {
             jgen.writeNull();
-        }
-        else if( fieldIsObjectId ) {
+        } else if (fieldIsObjectId) {
             jgen.writeObject(value);
-        }
-        else {
+        } else {
             jgen.writeObject(new ObjectId(value.toString()));
         }
     }

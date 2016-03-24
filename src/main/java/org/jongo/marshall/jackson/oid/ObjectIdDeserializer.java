@@ -18,43 +18,37 @@ package org.jongo.marshall.jackson.oid;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
-
-import org.bson.types.ObjectId;
 
 import static org.jongo.MongoCollection.MONGO_QUERY_OID;
 
 public class ObjectIdDeserializer extends JsonDeserializer<Object> implements ContextualDeserializer {
 
     private boolean fieldIsObjectId = false;
-    
+
     public ObjectIdDeserializer() {
         this(false);
     }
-    
-    public ObjectIdDeserializer( boolean fieldIsObjectId ) {
+
+    public ObjectIdDeserializer(boolean fieldIsObjectId) {
         this.fieldIsObjectId = fieldIsObjectId;
     }
-    
+
     @Override
     public Object deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         TreeNode treeNode = jp.readValueAsTree();
         JsonNode oid = ((JsonNode) treeNode).get(MONGO_QUERY_OID);
-        if( fieldIsObjectId ) {
-            if( oid != null ) {
+        if (fieldIsObjectId) {
+            if (oid != null) {
                 return new ObjectId(oid.asText());
             } else {
-                return new ObjectId(((JsonNode)treeNode).asText());
+                return new ObjectId(((JsonNode) treeNode).asText());
             }
-        }
-        else {
+        } else {
             if (oid != null) {
                 return oid.asText();
             } else {

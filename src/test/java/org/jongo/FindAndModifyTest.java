@@ -17,6 +17,7 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.ExposableFriend;
 import org.jongo.model.Friend;
@@ -28,8 +29,6 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-
-import org.bson.types.ObjectId;
 
 public class FindAndModifyTest extends JongoTestCase {
 
@@ -170,7 +169,7 @@ public class FindAndModifyTest extends JongoTestCase {
             }
         });
     }
-    
+
     @Test
     public void canUpsertByObjectId() throws Exception {
         Friend expected = new Friend(new ObjectId(), "John");
@@ -192,7 +191,7 @@ public class FindAndModifyTest extends JongoTestCase {
                 .with("{$setOnInsert: {name: #}}", "John")
                 .as(ExposableFriend.class);
 
-        assertThat(actual).isEqualTo(expected);        
+        assertThat(actual).isEqualTo(expected);
     }
 
 }

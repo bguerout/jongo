@@ -32,7 +32,6 @@ import org.jongo.ObjectIdUpdater;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.model.ExposableFriend;
-import org.jongo.model.ExternalFriend;
 import org.jongo.model.ExternalType;
 import org.jongo.model.Friend;
 import org.jongo.query.Query;
@@ -84,7 +83,7 @@ public class JacksonMapperTest {
 
         assertThat(document.toString()).isEqualTo("{ \"firstName\" : \"Robert\"}");
     }
-    
+
     @SuppressWarnings("serial")
     @Test
     public void canUseMixins() throws Exception {
@@ -99,9 +98,9 @@ public class JacksonMapperTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(external);
 
-        assertThat(document.toString()).isEqualTo("{ \"_id\" : { \"$oid\" : \""+id+"\"} , \"name\" : \"Robert\"}");
+        assertThat(document.toString()).isEqualTo("{ \"_id\" : { \"$oid\" : \"" + id + "\"} , \"name\" : \"Robert\"}");
     }
-    
+
     @SuppressWarnings("serial")
     @Test
     public void canUseAnnotations() throws Exception {
@@ -116,7 +115,7 @@ public class JacksonMapperTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(external);
 
-        assertThat(document.toString()).isEqualTo("{ \"name\" : \"Robert\" , \"_id\" : { \"$oid\" : \""+id+"\"}}");
+        assertThat(document.toString()).isEqualTo("{ \"name\" : \"Robert\" , \"_id\" : { \"$oid\" : \"" + id + "\"}}");
     }
 
     @Test

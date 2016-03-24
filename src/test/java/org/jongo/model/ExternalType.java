@@ -16,23 +16,22 @@
 
 package org.jongo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.marshall.jackson.oid.MongoObjectId;
 import org.jongo.marshall.jackson.oid.ObjectId;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Models a type coming from a third party tool like JsonSchema2Pojo.
- * 
+ *
  * @author Christian Trimble
  */
 @SuppressWarnings("deprecation")
 public class ExternalType {
     /**
      * Mixin that supplies all of the mongo specific annotations.
-     * 
+     *
      * @author Christian Trimble
      */
     public static abstract class ExternalTypeMixin {
@@ -52,7 +51,7 @@ public class ExternalType {
         @MongoId
         @ObjectId
         @Id
-        public abstract void setId( String id );
+        public abstract void setId(String id);
     }
 
     @JsonProperty("id")
@@ -61,13 +60,14 @@ public class ExternalType {
     @JsonProperty("name")
     private String name;
 
-    public ExternalType() {}
+    public ExternalType() {
+    }
 
-    public ExternalType( String name ) {
+    public ExternalType(String name) {
         this.name = name;
     }
 
-    public ExternalType( String id, String name ) {
+    public ExternalType(String id, String name) {
         this.id = id;
         this.name = name;
     }

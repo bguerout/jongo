@@ -20,13 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector;
-
-import org.jongo.marshall.jackson.oid.Id;
-import org.jongo.marshall.jackson.oid.MongoId;
-import org.jongo.marshall.jackson.oid.MongoObjectId;
-import org.jongo.marshall.jackson.oid.ObjectId;
-import org.jongo.marshall.jackson.oid.ObjectIdDeserializer;
-import org.jongo.marshall.jackson.oid.ObjectIdSerializer;
+import org.jongo.marshall.jackson.oid.*;
 
 @SuppressWarnings("deprecation")
 public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
@@ -34,34 +28,34 @@ public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
 
     @Override
     public Include findSerializationInclusion(Annotated a, Include defValue) {
-        return hasMongoObjectId( a ) ? Include.NON_NULL : defValue;
+        return hasMongoObjectId(a) ? Include.NON_NULL : defValue;
     }
 
     @Override
     public Object findSerializer(Annotated a) {
-        return hasMongoObjectId( a ) ? ObjectIdSerializer.class : super.findSerializer(a);
+        return hasMongoObjectId(a) ? ObjectIdSerializer.class : super.findSerializer(a);
     }
-    
+
     @Override
     public Object findDeserializer(Annotated a) {
-        return hasMongoObjectId( a ) ? ObjectIdDeserializer.class : super.findDeserializer(a);
+        return hasMongoObjectId(a) ? ObjectIdDeserializer.class : super.findDeserializer(a);
     }
 
     @Override
     public PropertyName findNameForSerialization(Annotated a) {
-        return hasMongoId( a ) ? new PropertyName("_id") : super.findNameForSerialization(a);
+        return hasMongoId(a) ? new PropertyName("_id") : super.findNameForSerialization(a);
     }
-    
+
     @Override
     public PropertyName findNameForDeserialization(Annotated a) {
-        return hasMongoId( a ) ? new PropertyName("_id") : super.findNameForDeserialization(a);
+        return hasMongoId(a) ? new PropertyName("_id") : super.findNameForDeserialization(a);
     }
-    
-    private static boolean hasMongoId( Annotated a ) {
+
+    private static boolean hasMongoId(Annotated a) {
         return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class);
     }
-    
-    private static boolean hasMongoObjectId( Annotated a ) {
+
+    private static boolean hasMongoObjectId(Annotated a) {
         return a.hasAnnotation(MongoObjectId.class) || a.hasAnnotation(ObjectId.class);
     }
 }

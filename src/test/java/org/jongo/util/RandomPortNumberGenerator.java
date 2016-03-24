@@ -51,7 +51,7 @@ public class RandomPortNumberGenerator {
      * {@code min} inclusively and {@code max} exclusively.
      *
      * @return a random available port number between {@code min} inclusively and
-     *         {@code max} exclusively
+     * {@code max} exclusively
      */
     public static int pickAvailableRandomPortNumber(int min, int max) {
         while (true) {
@@ -67,7 +67,7 @@ public class RandomPortNumberGenerator {
      * {@code max} exclusively.
      *
      * @return a random port number between {@code min} inclusively and
-     *         {@code max} exclusively
+     * {@code max} exclusively
      */
     public static int pickRandomPortNumber(int min, int max) {
         return ((int) (Math.random() * (max - min))) + min;
@@ -77,7 +77,7 @@ public class RandomPortNumberGenerator {
      * Test whether a port number is available (i.e. not bound).
      *
      * @return a random port number between {@code min} inclusively and
-     *         {@code max} exclusively
+     * {@code max} exclusively
      */
     public static boolean isPortAvailable(int port) {
         ServerSocket ss = null;

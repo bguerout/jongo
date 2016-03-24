@@ -16,17 +16,16 @@
 
 package org.jongo.model;
 
-import java.lang.reflect.Field;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.marshall.jackson.oid.MongoObjectId;
 
-import com.fasterxml.jackson.annotation.*;
+import java.lang.reflect.Field;
 
 /**
  * A set of example id specifications.
- * 
+ *
  * @author Christian Trimble
  */
 public class IdSpecSet {
@@ -110,18 +109,17 @@ public class IdSpecSet {
         public String id;
     }
 
-    public static <T> T id( T specInstance, Object id ) {
+    public static <T> T id(T specInstance, Object id) {
         Field field = idField(specInstance.getClass());
         try {
             field.setAccessible(true);
-            if( ObjectId.class.isAssignableFrom(field.getType()) ) {
-                field.set(specInstance,  (ObjectId)id);
-            }
-            else {
+            if (ObjectId.class.isAssignableFrom(field.getType())) {
+                field.set(specInstance, (ObjectId) id);
+            } else {
                 field.set(specInstance, id.toString());
             }
             return specInstance;
-        } catch( Exception e ) {
+        } catch (Exception e) {
             throw new RuntimeException("could not set id field", e);
         }
     }
@@ -145,7 +143,7 @@ public class IdSpecSet {
         }
     }
 
-    public static Field idField( Class<?> spec ) {
+    public static Field idField(Class<?> spec) {
         try {
             return spec.getDeclaredField("_id");
         } catch (NoSuchFieldException e) {
