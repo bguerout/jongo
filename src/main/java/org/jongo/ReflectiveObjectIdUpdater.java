@@ -116,8 +116,8 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
     }
 
     public interface IdFieldSelector {
-        public boolean isId(Field f);
+        boolean isId(Field f);
 
-        public boolean isObjectId(Field f);
+        boolean isObjectId(Field f);
     }
 }
