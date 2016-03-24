@@ -17,11 +17,15 @@
 package org.jongo;
 
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Use {@link JacksonObjectIdUpdater} instead
+ */
 @Deprecated
 public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
 
