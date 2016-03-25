@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
+
 import org.bson.types.*;
 
 import java.io.IOException;
@@ -51,14 +53,26 @@ class BsonSerializers extends SimpleSerializers {
     static class BSONTimestampSerializer extends JsonSerializer<BSONTimestamp> {
 
         public void serialize(BSONTimestamp obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+          if( jsonGenerator instanceof MongoBsonGenerator ) {
             ((MongoBsonGenerator) jsonGenerator).writeBSONTimestamp(obj);
+          } else {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeNumberField("time", obj.getTime());
+            jsonGenerator.writeNumberField("inc", obj.getInc());
+            jsonGenerator.writeEndObject();
+          }
         }
     }
 
     static class BsonObjectIdSerializer extends JsonSerializer<ObjectId> {
 
         public void serialize(ObjectId obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+          if( jsonGenerator instanceof MongoBsonGenerator ) {
             ((MongoBsonGenerator) jsonGenerator).writeNativeObjectId(obj);
+          }
+          else {
+            jsonGenerator.writeString(obj.toHexString());
+          }
         }
     }
 
