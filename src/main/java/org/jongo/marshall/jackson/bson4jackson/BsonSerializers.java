@@ -39,14 +39,26 @@ class BsonSerializers extends SimpleSerializers {
     static class MaxKeySerializer extends JsonSerializer<MaxKey> {
 
         public void serialize(MaxKey obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            ((MongoBsonGenerator) jsonGenerator).writeMaxKey(obj);
+            if( jsonGenerator instanceof MongoBsonGenerator ) {
+              ((MongoBsonGenerator) jsonGenerator).writeMaxKey(obj);
+            } else {
+              jsonGenerator.writeStartObject();
+              jsonGenerator.writeNumberField("$maxKey", 1);
+              jsonGenerator.writeEndObject();
+            }
         }
     }
 
     static class MinKeySerializer extends JsonSerializer<MinKey> {
 
         public void serialize(MinKey obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            ((MongoBsonGenerator) jsonGenerator).writeMinKey(obj);
+            if( jsonGenerator instanceof MongoBsonGenerator ) {
+              ((MongoBsonGenerator) jsonGenerator).writeMinKey(obj);
+            } else {
+              jsonGenerator.writeStartObject();
+              jsonGenerator.writeNumberField("$minKey", 1);
+              jsonGenerator.writeEndObject();
+            }
         }
     }
 
@@ -57,8 +69,11 @@ class BsonSerializers extends SimpleSerializers {
             ((MongoBsonGenerator) jsonGenerator).writeBSONTimestamp(obj);
           } else {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeNumberField("time", obj.getTime());
-            jsonGenerator.writeNumberField("inc", obj.getInc());
+            jsonGenerator.writeFieldName("$timestamp");
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeNumberField("t", obj.getTime());
+            jsonGenerator.writeNumberField("i", obj.getInc());
+            jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
           }
         }
@@ -71,7 +86,9 @@ class BsonSerializers extends SimpleSerializers {
             ((MongoBsonGenerator) jsonGenerator).writeNativeObjectId(obj);
           }
           else {
-            jsonGenerator.writeString(obj.toHexString());
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("$oid", obj.toHexString());
+            jsonGenerator.writeEndObject();
           }
         }
     }
@@ -79,7 +96,15 @@ class BsonSerializers extends SimpleSerializers {
     static class BinarySerializer extends JsonSerializer<Binary> {
 
         public void serialize(Binary obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            ((MongoBsonGenerator) jsonGenerator).writeBinary(obj);
+            if( jsonGenerator instanceof MongoBsonGenerator ) {
+              ((MongoBsonGenerator) jsonGenerator).writeBinary(obj);
+            }
+            else {
+              jsonGenerator.writeStartObject();
+              jsonGenerator.writeBinaryField("$binary", obj.getData());
+              jsonGenerator.writeStringField("$type", Integer.toHexString(obj.getType()).toUpperCase());
+              jsonGenerator.writeEndObject();
+            }
         }
     }
 

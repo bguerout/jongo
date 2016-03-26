@@ -16,6 +16,8 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
+import com.fasterxml.jackson.core.Base64Variants;
+import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -23,8 +25,10 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
+import com.fasterxml.jackson.databind.node.BinaryNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.POJONode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -33,6 +37,7 @@ import org.bson.types.BSONTimestamp;
 import org.bson.types.Binary;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.util.Date;
@@ -44,7 +49,8 @@ class BsonDeserializers extends SimpleDeserializers {
         addDeserializer(MinKey.class, new MinKeyDeserializer());
         addDeserializer(MaxKey.class, new MaxKeyDeserializer());
         addDeserializer(Binary.class, new BinaryDeserializer());
-        addDeserializer(DBObject.class, new NativeDeserializer());
+        addDeserializer(DBObject.class, new NativeDeserializer<DBObject>());
+        addDeserializer(ObjectId.class, new ObjectIdDeserializer());
         addDeserializer(BSONTimestamp.class, new BSONTimestampDeserializer());
     }
 
@@ -67,14 +73,40 @@ class BsonDeserializers extends SimpleDeserializers {
     private static class MinKeyDeserializer extends JsonDeserializer<MinKey> {
         @Override
         public MinKey deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+          TreeNode tree = jp.getCodec().readTree(jp);
+          if( tree.isObject() ) {
+            int value = ((ValueNode)tree.get("$minKey")).asInt();
+            if( value == 1 ) {
+              return new MinKey();
+            }
+            throw ctxt.mappingException(MinKey.class);
+          } else if( tree instanceof POJONode ) {
+            return (MinKey)((POJONode)tree).getPojo();
+          } else if(tree instanceof TextNode ) {
             return new MinKey();
+          } else {
+            throw ctxt.mappingException(MinKey.class);
+          }
         }
     }
 
     private static class MaxKeyDeserializer extends JsonDeserializer<MaxKey> {
         @Override
         public MaxKey deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+          TreeNode tree = jp.getCodec().readTree(jp);
+          if( tree.isObject() ) {
+            int value = ((ValueNode)tree.get("$maxKey")).asInt();
+            if( value == 1 ) {
+              return new MaxKey();
+            }
+            throw ctxt.mappingException(MaxKey.class);
+          } else if( tree instanceof POJONode ) {
+            return (MaxKey)((POJONode)tree).getPojo();
+          } else if(tree instanceof TextNode ) {
             return new MaxKey();
+          } else {
+            throw ctxt.mappingException(MaxKey.class);
+          }
         }
     }
 
@@ -89,9 +121,37 @@ class BsonDeserializers extends SimpleDeserializers {
     private static class BinaryDeserializer extends JsonDeserializer<Binary> {
         @Override
         public Binary deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            Object object = jp.getEmbeddedObject();
-            return new Binary((byte[]) object);
+          TreeNode tree = jp.getCodec().readTree(jp);
+          if( tree.isObject() ) {
+            byte[] binary = Base64Variants.MIME_NO_LINEFEEDS.decode(((ValueNode)tree.get("$binary")).asText());
+            byte type = Integer.valueOf(((ValueNode)tree.get("$type")).asText().toLowerCase(), 16).byteValue();
+            return new Binary(type, binary);
+          } else if( tree instanceof POJONode ) {
+            return (Binary)((POJONode)tree).getPojo();
+          } else if( tree instanceof BinaryNode ) {
+            return new Binary(((BinaryNode)tree).binaryValue());
+          } else {
+            throw ctxt.mappingException(ObjectId.class);
+          }
         }
+    }
+    
+    private static class ObjectIdDeserializer extends JsonDeserializer<ObjectId> {
+      
+      @Override
+      public ObjectId deserialize(JsonParser jp, DeserializationContext ctxt)
+          throws IOException, JsonProcessingException {
+        TreeNode tree = jp.getCodec().readTree(jp);
+        if( tree.isObject() ) {
+          String hexString = ((ValueNode)tree.get("$oid")).asText();
+          return new ObjectId(hexString);
+        } else if( tree instanceof POJONode ) {
+          return (ObjectId)((POJONode)tree).getPojo();
+        } else {
+          throw ctxt.mappingException(ObjectId.class);
+        }
+      }
+      
     }
 
     private static class BSONTimestampDeserializer extends JsonDeserializer<BSONTimestamp> {
@@ -99,14 +159,15 @@ class BsonDeserializers extends SimpleDeserializers {
         public BSONTimestamp deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
           TreeNode tree = jp.getCodec().readTree(jp);
           if( tree.isObject() ) {
-            ObjectNode object = (ObjectNode)tree;
-            int time = ((ValueNode)tree.get("time")).asInt();
-            int inc = ((ValueNode)tree.get("inc")).asInt();
+            TreeNode timestamp = tree.get("$timestamp");
+            int time = ((ValueNode)timestamp.get("t")).asInt();
+            int inc = ((ValueNode)timestamp.get("i")).asInt();
             return new BSONTimestamp(time, inc);
           } else if( tree instanceof POJONode ) {
             return (BSONTimestamp)((POJONode)tree).getPojo();
           } else {
-            return null;
+            throw ctxt.mappingException(BSONTimestamp.class);
           }
         }
-    }}
+    }
+}
