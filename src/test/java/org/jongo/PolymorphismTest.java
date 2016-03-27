@@ -19,12 +19,10 @@ package org.jongo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import org.bson.types.BSONTimestamp;
 import org.bson.types.MinKey;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.oid.MongoId;
-import org.jongo.marshall.jackson.oid.MongoObjectId;
 import org.jongo.model.Animal;
 import org.jongo.model.Fox;
 import org.jongo.util.JongoTestCase;
@@ -149,9 +147,9 @@ public class PolymorphismTest extends JongoTestCase {
 
     @Test
     public void canFindInheritedWithBSONTimestamp() throws IOException {
-      BsonTypes entity = new BsonTypes();
-      entity._id = new BSONTimestamp(((int)System.currentTimeMillis()/1000), 0);
-      entity.value = new BSONTimestamp(((int)System.currentTimeMillis()/1000), 0);
+        BsonTypes entity = new BsonTypes();
+        entity._id = new BSONTimestamp(((int) System.currentTimeMillis() / 1000), 0);
+        entity.value = new BSONTimestamp(((int) System.currentTimeMillis() / 1000), 0);
         collection.save(entity);
 
         BsonTypes found = collection.findOne().as(BsonTypes.class);
@@ -160,41 +158,42 @@ public class PolymorphismTest extends JongoTestCase {
         assertThat(found._id).isEqualTo(entity._id);
         assertThat(found.value).isEqualTo(entity.value);
     }
-    
+
     @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "discriminator",
-        visible = true)
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.PROPERTY,
+            property = "discriminator",
+            visible = true)
     @JsonSubTypes({
-        @JsonSubTypes.Type(value = TimestampType.class, name = "timestamp"),
-        @JsonSubTypes.Type(value = MinKeyType.class, name = "minKey"),
+            @JsonSubTypes.Type(value = TimestampType.class, name = "timestamp"),
+            @JsonSubTypes.Type(value = MinKeyType.class, name = "minKey"),
     })
     private static class BsonTypes {
-      @MongoId
-      @JsonProperty("_id")
-      public BSONTimestamp _id;
-      public BSONTimestamp value;
+        @MongoId
+        @JsonProperty("_id")
+        public BSONTimestamp _id;
+        public BSONTimestamp value;
 
-      public BSONTimestamp get_Id() {
-        return _id;
-      }
-      
-      @JsonProperty
-      public BSONTimestamp getValue() {
-        return value;
-      }
-      @JsonProperty
-      public String discriminator;
+        public BSONTimestamp get_Id() {
+            return _id;
+        }
+
+        @JsonProperty
+        public BSONTimestamp getValue() {
+            return value;
+        }
+
+        @JsonProperty
+        public String discriminator;
     }
-    
+
     private static class TimestampType extends BsonTypes {
 
     }
-    
+
     private static class MinKeyType {
-      @JsonProperty
-      public MinKey value;
+        @JsonProperty
+        public MinKey value;
     }
 
 
