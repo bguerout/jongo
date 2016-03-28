@@ -1,1 +1,3 @@
 language: java
+after_success:
+- test $TRAVIS_BRANCH = "master" && sh ./src/test/sh/run-tests-against-all-driver-versions.sh
