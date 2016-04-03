@@ -1,4 +1,4 @@
-@font-face{font-family:'Adonais Regular';src:url('Adonais Regular.ttf');}@font-face{font-family:'Monaco Fallback';src:url('Monaco.ttf');}body{background:#f3f4eb;}
+@font-face{font-family:'Adonais Regular';src:url('Adonais%20Regular.ttf');}@font-face{font-family:'Monaco Fallback';src:url('Monaco.ttf');}body{padding-top:0px;background:#f3f4eb;}
 section{padding-top:50px;}section:first-child{padding-top:15px;}
 h2{line-height:27px;font-size:18px;color:#f3f4eb;background-color:#1d271c;padding:2px 8px;margin-bottom:20px;-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px;display:inline-block;}h2 small{font-size:14px;}
 h3{line-height:18px;font-size:14px;}h3 small{font-size:12px;}

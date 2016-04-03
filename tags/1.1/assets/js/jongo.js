@@ -20,4 +20,5 @@ $(document).ready(function() {
 
   adjust();
   $(window).resize(adjust);
+  $('.navbar').affix({ offset: { top: function () { return $(window).width() > 750 ? 705 + gap : 1036 + gap }}});
 });
