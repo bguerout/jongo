@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/usr/bin/env bash
 
 OUTPUT_DIR=./target/mongo-compatibility
 MONGO_ARTIFACTS_FILE=./target/mongo-versions
