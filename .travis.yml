@@ -5,5 +5,8 @@ sudo: required
 services:
   - docker
 
+before_install:
+  - docker build -t jongo-ci .
+
 script:
-  - docker run -it -v $(pwd):/root/sources -w /root/sources maven:3.3.3-jdk-8 mvn clean verify
+  - docker run -it -v $(pwd):/root/sources -w /root/sources jongo-ci bash build.sh --job CI
