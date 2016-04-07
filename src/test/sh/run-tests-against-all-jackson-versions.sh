@@ -36,12 +36,12 @@ do
         fi
 
         echo "Running tests against jackson ${jackson_version} and bson4jackson ${bson4jackson_version}"
-        log_file="$OUTPUT_DIR/build-$jackson_version-$bson4jackson_version.log"
         mvn verify $OPTS \
             -Djackson.version="$jackson_version" \
             -Dbson4jackson.version="$bson4jackson_version" \
             -DreportFormat=plain \
-            -DuseFile=false 2>&1 | tee "$log_file"
+            -DuseFile=false \
+            -l "$OUTPUT_DIR/build-$jackson_version-$bson4jackson_version.log"
 
 
       if [ "$?" -ne "0" ];

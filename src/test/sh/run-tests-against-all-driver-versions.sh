@@ -31,7 +31,7 @@ do
             -Dmongo.version="$driver_version" \
             -DreportFormat=plain \
             -DuseFile=false \
-            -l $OUTPUT_DIR/build-"$version".log
+            -l "$OUTPUT_DIR/build-mongo-$driver_version-$db_version.log"
 
           if [ "$?" -ne "0" ];
           then
