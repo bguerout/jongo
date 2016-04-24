@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import com.mongodb.AggregationOptions;
 import com.mongodb.MongoCommandException;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.ExternalType;
 import org.jongo.model.ExternalType.ExternalTypeMixin;
 import org.jongo.model.Friend;
@@ -39,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -52,10 +52,9 @@ public class AggregateTest extends JongoTestCase {
 
     @SuppressWarnings("serial")
     public AggregateTest() {
-        super(new JacksonMapper.Builder()
-                .registerModule(new SimpleModule() {{
-                    this.setMixInAnnotation(ExternalType.class, ExternalTypeMixin.class);
-                }}).build());
+        super(jacksonMapper().registerModule(new SimpleModule() {{
+            this.setMixInAnnotation(ExternalType.class, ExternalTypeMixin.class);
+        }}).build());
     }
 
     @Before

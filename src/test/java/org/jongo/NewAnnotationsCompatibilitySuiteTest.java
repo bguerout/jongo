@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.marshall.jackson.JongoAnnotationIntrospector;
 import org.jongo.marshall.jackson.configuration.AnnotationModifier;
 import org.jongo.util.compatibility.CompatibilitySuite;
@@ -30,13 +29,15 @@ import org.junit.runners.Parameterized;
 
 import java.lang.annotation.Annotation;
 
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
+
 @RunWith(CompatibilitySuite.class)
 public class NewAnnotationsCompatibilitySuiteTest {
 
     @Parameterized.Parameters
     public static TestContext context() {
 
-        Mapper mapper = new JacksonMapper.Builder()
+        Mapper mapper = jacksonMapper()
                 .addModifier(new FakeAnnotationModifier())
                 .build();
 

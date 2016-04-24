@@ -91,5 +91,9 @@ public class JacksonMapper implements Mapper {
         protected Builder getBuilderInstance() {
             return this;
         }
+
+        public static Builder jacksonMapper() {
+            return new Builder();
+        }
     }
 }

@@ -32,6 +32,7 @@ import org.junit.runners.model.Statement;
 import java.net.UnknownHostException;
 import java.util.Set;
 
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -48,7 +49,7 @@ public class JongoEmbeddedRule implements TestRule {
     private Mapper mapper;
     private MongoEmbeddedRule mongoRule;
     private Set<String> collectionNames = Sets.newHashSet();
-    private JacksonMapper.Builder mapperBuilder = new JacksonMapper.Builder();
+    private JacksonMapper.Builder mapperBuilder = jacksonMapper();
 
     public JongoEmbeddedRule(MongoEmbeddedRule mongoRule) {
         this.mongoRule = mongoRule;

@@ -21,11 +21,11 @@ import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.junit.BeforeClass;
 
 import java.net.UnknownHostException;
 
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 import static org.junit.Assume.assumeTrue;
 
 public abstract class JongoTestCase {
@@ -36,7 +36,7 @@ public abstract class JongoTestCase {
     private Mapper mapper;
 
     public JongoTestCase() {
-        this(new JacksonMapper.Builder().build());
+        this(jacksonMapper().build());
     }
 
     protected JongoTestCase(Mapper mapper) {

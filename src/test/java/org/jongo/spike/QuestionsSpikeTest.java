@@ -28,7 +28,6 @@ import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonEngine;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
@@ -43,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class QuestionsSpikeTest extends JongoTestCase {
 
@@ -155,7 +155,7 @@ public class QuestionsSpikeTest extends JongoTestCase {
     //https://github.com/bguerout/jongo/issues/226
     public void canSetAFieldToNullDuringAnUpdate() throws Exception {
 
-        Mapper mapper = new JacksonMapper.Builder().addModifier(new MapperModifier() {
+        Mapper mapper = jacksonMapper().addModifier(new MapperModifier() {
             public void modify(ObjectMapper mapper) {
                 mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
             }
