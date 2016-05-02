@@ -29,6 +29,7 @@ import org.jongo.marshall.jackson.oid.ObjectId;
  */
 @SuppressWarnings("deprecation")
 public class ExternalType {
+
     /**
      * Mixin that supplies all of the mongo specific annotations.
      *

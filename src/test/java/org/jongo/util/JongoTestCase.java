@@ -18,7 +18,9 @@ package org.jongo.util;
 
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
+import org.bson.conversions.Bson;
 import org.jongo.Jongo;
+import org.jongo.JongoNative;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.junit.BeforeClass;
@@ -33,6 +35,7 @@ public abstract class JongoTestCase {
     private static MongoResource mongoResource;
 
     private Jongo jongo;
+    private JongoNative jongoNative;
     private Mapper mapper;
 
     public JongoTestCase() {
@@ -42,6 +45,7 @@ public abstract class JongoTestCase {
     protected JongoTestCase(Mapper mapper) {
         this.mapper = mapper;
         this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
+        this.jongoNative = Jongo.useNative(mongoResource.getDatabase("test_jongo"), mapper);
     }
 
     @BeforeClass
@@ -49,17 +53,29 @@ public abstract class JongoTestCase {
         mongoResource = new MongoResource();
     }
 
-    protected MongoCollection createEmptyCollection(String collectionName) throws UnknownHostException {
+    protected MongoCollection createEmptyCollection(String collectionName) {
         MongoCollection col = jongo.getCollection(collectionName);
         col.drop();
         return col;
     }
 
-    protected void dropCollection(String collectionName) throws UnknownHostException {
+    protected <T> com.mongodb.client.MongoCollection<T> createNewCollection(String collectionName, Class<T> clazz) {
+        com.mongodb.client.MongoCollection<T> col = jongoNative.getCollection(collectionName, clazz);
+        col.drop();
+        return col;
+    }
+
+    protected com.mongodb.client.MongoCollection<Bson> createNewCollection(String collectionName) {
+        com.mongodb.client.MongoCollection<Bson> col = jongoNative.getCollection(collectionName);
+        col.drop();
+        return col;
+    }
+
+    protected void dropCollection(String collectionName) {
         getDatabase().getCollection(collectionName).drop();
     }
 
-    protected DB getDatabase() throws UnknownHostException {
+    protected DB getDatabase() {
         return jongo.getDatabase();
     }
 
@@ -69,6 +85,14 @@ public abstract class JongoTestCase {
 
     protected Mapper getMapper() {
         return mapper;
+    }
+
+    protected Bson q(String query, Object... parameters) {
+        return jongoNative.query(query, parameters);
+    }
+
+    protected Bson id(Object id) {
+        return jongoNative.id(id);
     }
 
     protected void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {

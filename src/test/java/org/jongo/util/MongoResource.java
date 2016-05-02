@@ -17,9 +17,9 @@
 package org.jongo.util;
 
 import com.mongodb.DB;
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
+import com.mongodb.client.MongoDatabase;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.*;
@@ -39,7 +39,11 @@ public class MongoResource {
         return getInstance().getDB(dbname);
     }
 
-    private Mongo getInstance() {
+    public MongoDatabase getDatabase(String dbname) {
+        return getInstance().getDatabase(dbname);
+    }
+
+    public MongoClient getInstance() {
         String isLocal = System.getProperty("jongo.test.mongo.local");
         if (isLocal != null && isLocal.equals("true")) {
             return LocalMongo.instance;
@@ -99,9 +103,9 @@ public class MongoResource {
         }
     }
 
-    public static class LocalMongo {
+    private static class LocalMongo {
 
-        public static MongoClient instance = getInstance();
+        private static MongoClient instance = getInstance();
 
         private static MongoClient getInstance() {
             try {
@@ -117,5 +121,4 @@ public class MongoResource {
         mongo.setWriteConcern(WriteConcern.FSYNC_SAFE);
         return mongo;
     }
-
 }
