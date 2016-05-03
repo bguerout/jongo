@@ -38,14 +38,6 @@ public class SaveTest extends JongoTestCase {
 
     private MongoCollection collection;
 
-    @SuppressWarnings("serial")
-    public SaveTest() {
-        super(jacksonMapper().registerModule(new SimpleModule() {{
-            this.setMixInAnnotation(ExternalType.class, ExternalTypeMixin.class);
-        }}).build());
-
-    }
-
     @Before
     public void setUp() throws Exception {
         collection = createEmptyCollection("friends");

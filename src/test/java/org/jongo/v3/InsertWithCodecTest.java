@@ -16,14 +16,15 @@
 
 package org.jongo.v3;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.MongoWriteException;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.jongo.model.*;
-import org.jongo.model.ExternalType.ExternalTypeMixin;
+import org.jongo.model.Coordinate;
+import org.jongo.model.ExposableFriend;
+import org.jongo.model.ExternalFriend;
+import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -33,18 +34,10 @@ import java.util.Date;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class InsertWithCodecTest extends JongoTestCase {
 
     private MongoCollection<Friend> collection;
-
-    @SuppressWarnings("serial")
-    public InsertWithCodecTest() {
-        super(jacksonMapper().registerModule(new SimpleModule() {{
-            this.setMixInAnnotation(ExternalType.class, ExternalTypeMixin.class);
-        }}).build());
-    }
 
     @Before
     public void setUp() throws Exception {

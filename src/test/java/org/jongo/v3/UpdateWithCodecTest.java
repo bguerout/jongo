@@ -16,7 +16,6 @@
 
 package org.jongo.v3;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import junit.framework.Assert;
@@ -24,8 +23,6 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.ExposableFriend;
 import org.jongo.model.ExternalFriend;
-import org.jongo.model.ExternalType;
-import org.jongo.model.ExternalType.ExternalTypeMixin;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
@@ -34,18 +31,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class UpdateWithCodecTest extends JongoTestCase {
 
     private MongoCollection<Friend> collection;
-
-    @SuppressWarnings("serial")
-    public UpdateWithCodecTest() {
-        super(jacksonMapper().registerModule(new SimpleModule() {{
-            this.setMixInAnnotation(ExternalType.class, ExternalTypeMixin.class);
-        }}).build());
-    }
 
     @Before
     public void setUp() throws Exception {
