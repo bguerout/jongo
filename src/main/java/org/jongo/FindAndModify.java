@@ -24,6 +24,8 @@ import org.jongo.query.QueryFactory;
 
 import static org.jongo.ResultHandlerFactory.newResultHandler;
 
+import org.jongo.function.Consumer;
+
 public class FindAndModify {
 
     private final DBCollection collection;
@@ -93,7 +95,12 @@ public class FindAndModify {
         this.upsert = true;
         return this;
     }
-
+  
+    public FindAndModify with(Consumer<FindAndModify> operations) {
+      operations.accept(this);
+      return this;
+    }
+    
     private DBObject getAsDBObject(Query query) {
         return query == null ? null : query.toDBObject();
     }

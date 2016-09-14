@@ -19,6 +19,7 @@ package org.jongo;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
+import org.jongo.function.Consumer;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
@@ -64,6 +65,25 @@ public class UpdateTest extends JongoTestCase {
 
         /* when */
         collection.update("{name:'John'}").multi().with("{$unset:{name:1}}");
+
+        /* then */
+        Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
+        assertThat(friends).hasSize(0);
+    }
+
+    @Test
+    public void canUpdateWithOperators() throws Exception {
+        Consumer<Update> multi = new Consumer<Update>() {
+          public void accept(Update t) {
+            t.multi();
+          }
+        };
+        /* given */
+        collection.save(new Friend("John"));
+        collection.save(new Friend("John"));
+
+        /* when */
+        collection.update("{name:'John'}").with(multi).with("{$unset:{name:1}}");
 
         /* then */
         Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);

@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.jongo.function.Consumer;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.ExposableFriend;
 import org.jongo.model.Friend;
@@ -188,6 +189,23 @@ public class FindAndModifyTest extends JongoTestCase {
         ExposableFriend actual = collection.findAndModify("{_id: #}", expected.getId())
                 .upsert()
                 .returnNew()
+                .with("{$setOnInsert: {name: #}}", "John")
+                .as(ExposableFriend.class);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void canUpsertWithOperators() throws Exception {
+        Consumer<FindAndModify> returnNew = new Consumer<FindAndModify>(){
+          public void accept(FindAndModify t) {
+            t.returnNew();
+          }
+        };
+        ExposableFriend expected = new ExposableFriend(new ObjectId().toString(), "John");
+        ExposableFriend actual = collection.findAndModify("{_id: #}", expected.getId())
+                .upsert()
+                .with(returnNew)
                 .with("{$setOnInsert: {name: #}}", "John")
                 .as(ExposableFriend.class);
 

@@ -19,6 +19,8 @@ package org.jongo;
 import com.google.common.collect.Lists;
 import com.mongodb.AggregationOptions;
 import com.mongodb.MongoCommandException;
+
+import org.jongo.function.Consumer;
 import org.jongo.model.ExternalType;
 import org.jongo.model.Friend;
 import org.jongo.model.TypeWithNested;
@@ -157,6 +159,21 @@ public class AggregateTest extends JongoTestCase {
     public void canAggregateWithManyOperators() throws Exception {
 
         Iterator<Article> articles = collection.aggregate("{$match:{tags:'virus'}}").and("{$limit:1}").as(Article.class);
+
+        articles.next();
+        assertThat(articles.hasNext()).isFalse();
+    }
+
+    @Test
+    public void canAggregateWithFunctionalOperators() throws Exception {
+      
+        Consumer<Aggregate> limit = new Consumer<Aggregate>() {
+            public void accept(Aggregate t) {
+                t.and("{$limit:1}");
+            }
+        };
+
+        Iterator<Article> articles = collection.aggregate("{$match:{tags:'virus'}}").with(limit).as(Article.class);
 
         articles.next();
         assertThat(articles.hasNext()).isFalse();

@@ -20,6 +20,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
+
+import org.jongo.function.Consumer;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -111,6 +113,11 @@ public class Find {
     public Find with(QueryModifier queryModifier) {
         this.modifiers.add(queryModifier);
         return this;
+    }
+    
+    public Find with(Consumer<Find> operations) {
+      operations.accept(this);
+      return this;
     }
 
     private DBObject getFieldsAsDBObject() {

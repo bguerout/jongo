@@ -19,6 +19,8 @@ package org.jongo;
 import com.mongodb.AggregationOptions;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+
+import org.jongo.function.Consumer;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.QueryFactory;
 
@@ -50,6 +52,11 @@ public class Aggregate {
         DBObject dbQuery = queryFactory.createQuery(pipelineOperator, parameters).toDBObject();
         pipeline.add(dbQuery);
         return this;
+    }
+    
+    public Aggregate with(Consumer<Aggregate> operations) {
+      operations.accept(this);
+      return this;
     }
 
     public <T> ResultsIterator<T> as(final Class<T> clazz) {

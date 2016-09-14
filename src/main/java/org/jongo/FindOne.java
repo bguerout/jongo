@@ -25,6 +25,8 @@ import org.jongo.query.QueryFactory;
 
 import static org.jongo.ResultHandlerFactory.newResultHandler;
 
+import org.jongo.function.Consumer;
+
 public class FindOne {
 
     private final Unmarshaller unmarshaller;
@@ -64,6 +66,11 @@ public class FindOne {
     public FindOne orderBy(String orderBy) {
         this.orderBy = queryFactory.createQuery(orderBy);
         return this;
+    }
+  
+    public FindOne with(Consumer<FindOne> operations) {
+      operations.accept(this);
+      return this;
     }
 
     private DBObject getFieldsAsDBObject() {

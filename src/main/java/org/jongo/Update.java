@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.*;
 import org.bson.LazyBSONObject;
+import org.jongo.function.Consumer;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
 
@@ -76,6 +77,11 @@ public class Update {
     public Update multi() {
         this.multi = true;
         return this;
+    }
+    
+    public Update with(Consumer<Update> operations) {
+      operations.accept(this);
+      return this;
     }
 
     private Query createQuery(String query, Object[] parameters) {

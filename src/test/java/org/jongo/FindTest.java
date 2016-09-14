@@ -16,8 +16,10 @@
 
 package org.jongo;
 
+import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
 import org.bson.types.ObjectId;
+import org.jongo.function.Consumer;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
 import org.jongo.model.ExposableFriend;
@@ -172,5 +174,39 @@ public class FindTest extends JongoTestCase {
         assertThat(friends.hasNext()).isFalse();
 
         // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
+    }
+
+    @Test
+    public void canFindWithProjection() throws Exception {
+
+        collection.save(new Friend("John", "Jermin Street"));
+
+        collection.find("{name:'John'}").projection("{name:1}").map(new ResultHandler<Boolean>() {
+            public Boolean map(DBObject result) {
+                assertThat(result.containsField("name")).isTrue();
+                assertThat(result.containsField("address")).isFalse();
+                return true;
+            }
+        });
+    }
+
+    @Test
+    public void canFindWithOperators() throws Exception {
+      
+        Consumer<Find> projectName = new Consumer<Find>() {
+          public void accept(Find t) {
+            t.projection("{name:1}");
+          }
+        };
+
+        collection.save(new Friend("John", "Jermin Street"));
+
+        collection.find("{name:'John'}").with(projectName).map(new ResultHandler<Boolean>() {
+            public Boolean map(DBObject result) {
+                assertThat(result.containsField("name")).isTrue();
+                assertThat(result.containsField("address")).isFalse();
+                return true;
+            }
+        });
     }
 }

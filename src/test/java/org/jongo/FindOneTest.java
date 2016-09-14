@@ -16,8 +16,10 @@
 
 package org.jongo;
 
+import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
 import org.bson.types.ObjectId;
+import org.jongo.function.Consumer;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
@@ -152,6 +154,24 @@ public class FindOneTest extends JongoTestCase {
         collection.save(new Friend("John", "22 Wall Street Av."));
 
         Friend friend = collection.findOne().orderBy("{address:1}").as(Friend.class);
+
+        assertThat(friend.getAddress()).isEqualTo("21 Wall Street Av.");
+    }
+
+    @Test
+    public void canFindWithOperations() throws Exception {
+      
+        Consumer<FindOne> orderByAddress = new Consumer<FindOne>() {
+          public void accept(FindOne t) {
+            t.orderBy("{address:1}");
+          }
+        };
+
+        collection.save(new Friend("John", "23 Wall Street Av."));
+        collection.save(new Friend("John", "21 Wall Street Av."));
+        collection.save(new Friend("John", "22 Wall Street Av."));
+
+        Friend friend = collection.findOne().with(orderByAddress).as(Friend.class);
 
         assertThat(friend.getAddress()).isEqualTo("21 Wall Street Av.");
     }
