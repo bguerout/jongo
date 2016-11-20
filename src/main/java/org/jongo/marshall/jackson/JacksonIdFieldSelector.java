@@ -25,6 +25,10 @@ import org.jongo.marshall.jackson.oid.MongoObjectId;
 
 import java.lang.reflect.Field;
 
+/**
+ * Use {@link JacksonObjectIdUpdater} instead
+ */
+@Deprecated
 public class JacksonIdFieldSelector implements ReflectiveObjectIdUpdater.IdFieldSelector {
 
     public boolean isId(Field f) {

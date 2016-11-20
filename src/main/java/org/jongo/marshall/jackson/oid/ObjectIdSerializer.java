@@ -17,16 +17,40 @@
 package org.jongo.marshall.jackson.oid;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
 
-public class ObjectIdSerializer extends JsonSerializer<String> {
+public class ObjectIdSerializer extends JsonSerializer<Object>
+        implements ContextualSerializer {
+
+    boolean fieldIsObjectId = false;
+
+    public ObjectIdSerializer() {
+        this(false);
+    }
+
+    public ObjectIdSerializer(boolean serializeAsObjectId) {
+        this.fieldIsObjectId = serializeAsObjectId;
+    }
 
     @Override
-    public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeObject(new ObjectId(value));
+    public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        if (value == null) {
+            jgen.writeNull();
+        } else if (fieldIsObjectId) {
+            jgen.writeObject(value);
+        } else {
+            jgen.writeObject(new ObjectId(value.toString()));
+        }
+    }
+
+    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
+        return new ObjectIdSerializer(ObjectId.class.isAssignableFrom(property.getType().getRawClass()));
     }
 }

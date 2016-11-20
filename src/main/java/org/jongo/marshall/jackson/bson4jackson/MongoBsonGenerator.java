@@ -18,7 +18,6 @@ package org.jongo.marshall.jackson.bson4jackson;
 
 import de.undercouch.bson4jackson.BsonConstants;
 import de.undercouch.bson4jackson.BsonGenerator;
-import de.undercouch.bson4jackson.io.ByteOrderUtil;
 import org.bson.types.BSONTimestamp;
 import org.bson.types.Binary;
 import org.bson.types.MaxKey;

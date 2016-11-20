@@ -23,12 +23,12 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.jongo.MongoCollection;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
 import static org.jongo.bench.BenchUtil.getCollectionFromDriver;
 import static org.jongo.bench.BenchUtil.getCollectionFromJongo;
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class FindBench extends SimpleBenchmark {
 
@@ -39,7 +39,7 @@ public class FindBench extends SimpleBenchmark {
     private DBCollection dbCollection;
 
     protected void setUp() throws Exception {
-        bsonCollection = getCollectionFromJongo(new JacksonMapper.Builder().build());
+        bsonCollection = getCollectionFromJongo(jacksonMapper().build());
         dbCollection = getCollectionFromDriver();
 
         if (dbCollection.count() < NB_DOCUMENTS) {

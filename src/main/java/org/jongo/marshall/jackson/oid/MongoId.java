@@ -16,13 +16,10 @@
 
 package org.jongo.marshall.jackson.oid;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention(RUNTIME)
-@JsonProperty("_id")
 public @interface MongoId {
 }

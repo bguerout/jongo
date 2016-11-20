@@ -16,20 +16,23 @@
 
 package org.jongo;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.WriteConcern;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
-import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.model.*;
+import org.jongo.model.ExternalType.ExternalTypeMixin;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class SaveTest extends JongoTestCase {
 
@@ -138,6 +141,39 @@ public class SaveTest extends JongoTestCase {
 
         ExposableFriend robertHue = collection.findOne("{_id:{$oid:#}}", johnId).as(ExposableFriend.class);
         assertThat(robertHue.getId()).isEqualTo(johnId);
+        assertThat(robertHue.getName()).isEqualTo("Hue");
+    }
+
+    @Test
+    public void canUpdateWithObjectId() throws Exception {
+        String id = ObjectId.get().toString();
+        ExposableFriend robert = new ExposableFriend(id, "Robert");
+
+        collection.save(robert);
+        assertThat(robert.getId()).isEqualTo(id);
+
+        robert.setName("Hue"); // <-- "famous" french Robert
+        collection.save(robert);
+
+        ExposableFriend robertHue = collection.findOne("{_id: #}", new ObjectId(id)).as(ExposableFriend.class);
+        assertThat(robertHue.getId()).isEqualTo(id);
+        assertThat(robertHue.getName()).isEqualTo("Hue");
+    }
+
+    // this test is not working with the compatibility test suite.
+    @Ignore
+    @Test
+    public void canUpdateWithObjectIdWithAnnotationOverride() throws Exception {
+        String id = ObjectId.get().toString();
+        ExternalType robert = new ExternalType(id, "Robert");
+
+        collection.save(robert);
+
+        robert.setName("Hue"); // <-- "famous" french Robert
+        collection.save(robert);
+
+        ExternalType robertHue = collection.findOne("{_id: #}", new ObjectId(id)).as(ExternalType.class);
+        assertThat(robertHue.getId()).isEqualTo(id);
         assertThat(robertHue.getName()).isEqualTo("Hue");
     }
 

@@ -16,19 +16,46 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.PropertyName;
+import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector;
-import org.jongo.marshall.jackson.oid.MongoId;
-import org.jongo.marshall.jackson.oid.MongoObjectId;
+import org.jongo.marshall.jackson.oid.*;
 
-import java.lang.annotation.Annotation;
-
+@SuppressWarnings("deprecation")
 public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
+    private static final long serialVersionUID = 1L;
 
     @Override
-    public boolean isAnnotationBundle(Annotation ann) {
-        boolean isJongoId = ann.annotationType().equals(MongoId.class) || ann.annotationType().equals(MongoObjectId.class);
-        return isJongoId ? isJongoId : super.isAnnotationBundle(ann);
+    public Include findSerializationInclusion(Annotated a, Include defValue) {
+        return hasMongoObjectId(a) ? Include.NON_NULL : defValue;
     }
 
+    @Override
+    public Object findSerializer(Annotated a) {
+        return hasMongoObjectId(a) ? ObjectIdSerializer.class : super.findSerializer(a);
+    }
 
+    @Override
+    public Object findDeserializer(Annotated a) {
+        return hasMongoObjectId(a) ? ObjectIdDeserializer.class : super.findDeserializer(a);
+    }
+
+    @Override
+    public PropertyName findNameForSerialization(Annotated a) {
+        return hasMongoId(a) ? new PropertyName("_id") : super.findNameForSerialization(a);
+    }
+
+    @Override
+    public PropertyName findNameForDeserialization(Annotated a) {
+        return hasMongoId(a) ? new PropertyName("_id") : super.findNameForDeserialization(a);
+    }
+
+    private static boolean hasMongoId(Annotated a) {
+        return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class);
+    }
+
+    private static boolean hasMongoObjectId(Annotated a) {
+        return a.hasAnnotation(MongoObjectId.class) || a.hasAnnotation(ObjectId.class);
+    }
 }

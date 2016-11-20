@@ -19,11 +19,11 @@ package org.jongo;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Friend;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -34,7 +34,7 @@ public class WriteConcernTest {
 
     @Before
     public void setUp() throws Exception {
-        collection = new MongoCollection(mockedDBCollection, new JacksonMapper.Builder().build());
+        collection = new MongoCollection(mockedDBCollection, jacksonMapper().build());
     }
 
     @Test

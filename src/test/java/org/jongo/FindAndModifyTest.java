@@ -17,7 +17,9 @@
 package org.jongo;
 
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
+import org.jongo.model.ExposableFriend;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestCase;
@@ -56,6 +58,21 @@ public class FindAndModifyTest extends JongoTestCase {
         Friend updatedFriend = collection.findOne().as(Friend.class);
         assertThat(updatedFriend.getAddress()).isEqualTo("A better place");
         assertThat(updatedFriend.getName()).isEqualTo("John");
+    }
+
+    @Test
+    public void canFindAndModifyWithNullValue() throws Exception {
+        /* given */
+        collection.save(new Friend("John", "22 Wall Street Avenue"));
+
+        /* when */
+        Friend originalFriend = collection.findAndModify("{name:#}", "John").with("{$set: {address: #}}", null).as(Friend.class);
+
+        /* then */
+        assertThat(originalFriend.getAddress()).isEqualTo("22 Wall Street Avenue");
+
+        Friend updatedFriend = collection.findOne().as(Friend.class);
+        assertThat(updatedFriend.getAddress()).isNull();
     }
 
     @Test
@@ -151,6 +168,30 @@ public class FindAndModifyTest extends JongoTestCase {
                 return true;
             }
         });
+    }
+
+    @Test
+    public void canUpsertByObjectId() throws Exception {
+        Friend expected = new Friend(new ObjectId(), "John");
+        Friend actual = collection.findAndModify("{_id: #}", expected.getId())
+                .upsert()
+                .returnNew()
+                .with("{$setOnInsert: {name: #}}", "John")
+                .as(Friend.class);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void canUpsertByStringId() throws Exception {
+        ExposableFriend expected = new ExposableFriend(new ObjectId().toString(), "John");
+        ExposableFriend actual = collection.findAndModify("{_id: #}", expected.getId())
+                .upsert()
+                .returnNew()
+                .with("{$setOnInsert: {name: #}}", "John")
+                .as(ExposableFriend.class);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
 }

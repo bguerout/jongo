@@ -47,6 +47,7 @@ public class MongoBsonFactory extends BsonFactory {
 
     @Override
     public BsonGenerator createGenerator(OutputStream out, JsonEncoding enc) throws IOException {
+
         IOContext ctxt = _createContext(out, true);
         ctxt.setEncoding(enc);
         if (enc == JsonEncoding.UTF8 && _outputDecorator != null) {
@@ -57,6 +58,10 @@ public class MongoBsonFactory extends BsonFactory {
         if (codec != null) {
             g.setCodec(codec);
         }
+        if (_characterEscapes != null) {
+            g.setCharacterEscapes(_characterEscapes);
+        }
         return g;
+
     }
 }

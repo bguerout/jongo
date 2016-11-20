@@ -18,23 +18,46 @@ package org.jongo.marshall.jackson.oid;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 
 import static org.jongo.MongoCollection.MONGO_QUERY_OID;
 
-public class ObjectIdDeserializer extends JsonDeserializer<String> {
+public class ObjectIdDeserializer extends JsonDeserializer<Object> implements ContextualDeserializer {
+
+    private boolean fieldIsObjectId = false;
+
+    public ObjectIdDeserializer() {
+        this(false);
+    }
+
+    public ObjectIdDeserializer(boolean fieldIsObjectId) {
+        this.fieldIsObjectId = fieldIsObjectId;
+    }
 
     @Override
-    public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+    public Object deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         TreeNode treeNode = jp.readValueAsTree();
         JsonNode oid = ((JsonNode) treeNode).get(MONGO_QUERY_OID);
-        if (oid != null)
-            return oid.asText();
-        else
-            return ((JsonNode) treeNode).asText();
+        if (fieldIsObjectId) {
+            if (oid != null) {
+                return new ObjectId(oid.asText());
+            } else {
+                return new ObjectId(((JsonNode) treeNode).asText());
+            }
+        } else {
+            if (oid != null) {
+                return oid.asText();
+            } else {
+                return ((JsonNode) treeNode).asText();
+            }
+        }
+    }
+
+    public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+        return new ObjectIdDeserializer(ObjectId.class.isAssignableFrom(property.getType().getRawClass()));
     }
 }

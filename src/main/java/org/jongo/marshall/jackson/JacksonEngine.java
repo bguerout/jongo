@@ -16,6 +16,7 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
@@ -33,6 +34,10 @@ public class JacksonEngine implements Unmarshaller, Marshaller {
 
     public JacksonEngine(Mapping mapping) {
         this.mapping = mapping;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return mapping.getObjectMapper();
     }
 
     @SuppressWarnings("unchecked")

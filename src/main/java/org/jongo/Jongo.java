@@ -18,20 +18,25 @@ package org.jongo;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.client.MongoDatabase;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
-import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.query.Query;
 
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
+
 public class Jongo {
+
 
     private final DB database;
     private final Mapper mapper;
 
+    @Deprecated
     public Jongo(DB database) {
-        this(database, new JacksonMapper.Builder().build());
+        this(database, jacksonMapper().build());
     }
 
+    @Deprecated
     public Jongo(DB database, Mapper mapper) {
         this.database = database;
         this.mapper = mapper;
@@ -64,11 +69,11 @@ public class Jongo {
         return new Command(database, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
-    public void requestStart() {
-        database.requestStart();
+    public static JongoNative useNative(MongoDatabase mongoDatabase) {
+        return new JongoNative(mongoDatabase);
     }
 
-    public void requestDone() {
-        database.requestDone();
+    public static JongoNative useNative(MongoDatabase mongoDatabase, Mapper mapper) {
+        return new JongoNative(mongoDatabase, mapper);
     }
 }

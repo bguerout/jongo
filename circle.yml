@@ -1,0 +1,16 @@
+machine:
+  services:
+    - docker
+
+branches:
+    ignore:
+      - gh-pages
+      - site
+
+dependencies:
+  override:
+    - docker info
+    - docker build -t jongo-ci .
+test:
+  override:
+    - docker run -it -v $(pwd):/root/sources -w /root/sources jongo-ci bash build.sh --job CI

@@ -19,18 +19,15 @@ package org.jongo.marshall.jackson.configuration;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.jongo.marshall.jackson.JongoAnnotationIntrospector;
 
 public class AnnotationModifier implements MapperModifier {
 
     public void modify(ObjectMapper mapper) {
         AnnotationIntrospector jongoIntrospector = new JongoAnnotationIntrospector();
-        AnnotationIntrospector defaultIntrospector = new JacksonAnnotationIntrospector();
+        AnnotationIntrospector defaultIntrospector = mapper.getSerializationConfig().getAnnotationIntrospector();
         AnnotationIntrospector pair = new AnnotationIntrospectorPair(jongoIntrospector, defaultIntrospector);
 
         mapper.setAnnotationIntrospector(pair);
-        mapper.getDeserializationConfig().with(pair);
-        mapper.getSerializationConfig().with(pair);
     }
 }

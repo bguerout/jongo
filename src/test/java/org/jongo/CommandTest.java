@@ -73,7 +73,8 @@ public class CommandTest extends JongoTestCase {
 
         DBObject result = jongo.runCommand("{ count: #}", "friends").map(new RawResultHandler<DBObject>());
 
-        assertThat(result.get("n")).isEqualTo(1.0);
+        Number n = (Number) result.get("n");
+        assertThat(n.intValue()).isEqualTo(1);
     }
 
     @Test
@@ -128,7 +129,7 @@ public class CommandTest extends JongoTestCase {
         try {
             jongo.runCommand("{forceerror:1}").throwOnError().as(Validate.class);
         } catch (RuntimeException e) {
-            assertThat(e.getMessage()).contains("forced error");
+            assertThat(e.getMessage()).contains("errmsg");
         }
     }
 

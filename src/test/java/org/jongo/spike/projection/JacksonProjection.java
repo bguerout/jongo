@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import org.bson.BsonDocumentWrapper;
+import org.bson.conversions.Bson;
 import org.jongo.query.Query;
 
 import java.util.Iterator;
@@ -78,6 +81,10 @@ public class JacksonProjection implements Projection {
 
         public DBObject toDBObject() {
             return dbo;
+        }
+
+        public Bson toBson() {
+            return BsonDocumentWrapper.asBsonDocument(dbo, MongoClient.getDefaultCodecRegistry());
         }
     }
 }

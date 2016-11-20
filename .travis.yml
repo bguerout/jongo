@@ -1,0 +1,12 @@
+language: bash
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t jongo-ci .
+
+script:
+  - docker run -it -v $(pwd):/root/sources -w /root/sources jongo-ci bash build.sh --job CI

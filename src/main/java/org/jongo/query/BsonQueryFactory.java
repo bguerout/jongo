@@ -18,10 +18,12 @@ package org.jongo.query;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONCallback;
 import org.bson.BSON;
 import org.bson.BSONObject;
+import org.bson.BsonDocumentWrapper;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
@@ -49,6 +51,10 @@ public class BsonQueryFactory implements QueryFactory {
 
         public DBObject toDBObject() {
             return dbo;
+        }
+
+        public org.bson.conversions.Bson toBson() {
+            return BsonDocumentWrapper.asBsonDocument(dbo, MongoClient.getDefaultCodecRegistry());
         }
     }
 
@@ -212,8 +218,8 @@ public class BsonQueryFactory implements QueryFactory {
 
     private DBObject marshallArray(Object[] parameters) {
         BasicDBList list = new BasicDBList();
-        for (int i = 0; i < parameters.length; i++) {
-            list.add(marshallParameter(parameters[i]));
+        for (final Object parameter : parameters) {
+            list.add(marshallParameter(parameter));
         }
         return list;
     }
@@ -242,7 +248,11 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     private boolean hasBeenSerializedAsPrimitive(BsonDocument document) {
-        return document.toByteArray()[0] == 0;
+        byte[] bytes = document.toByteArray();
+        if (bytes.length > 4) {
+            return bytes.length != document.getSize();
+        }
+        return true;
     }
 
     /**

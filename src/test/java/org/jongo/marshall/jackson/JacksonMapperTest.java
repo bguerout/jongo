@@ -24,12 +24,15 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
+import org.jongo.model.ExposableFriend;
+import org.jongo.model.ExternalType;
 import org.jongo.model.Friend;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -38,6 +41,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class JacksonMapperTest {
 
@@ -45,7 +49,7 @@ public class JacksonMapperTest {
     public void canAddDeserializer() throws Exception {
 
         BsonDocument document = Bson.createDocument(new BasicDBObject("name", "robert"));
-        Mapper mapper = new JacksonMapper.Builder()
+        Mapper mapper = jacksonMapper()
                 .addDeserializer(String.class, new DoeJsonDeserializer())
                 .build();
 
@@ -58,7 +62,7 @@ public class JacksonMapperTest {
     public void canAddSerializer() throws Exception {
 
         Friend robert = new Friend("Robert");
-        Mapper mapper = new JacksonMapper.Builder()
+        Mapper mapper = jacksonMapper()
                 .addSerializer(String.class, new DoeJsonSerializer())
                 .build();
 
@@ -72,7 +76,7 @@ public class JacksonMapperTest {
 
         PojoWithGetter robert = new PojoWithGetter("Robert", "Sax");
 
-        Mapper mapper = new JacksonMapper.Builder()
+        Mapper mapper = jacksonMapper()
                 .setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.PUBLIC_ONLY).withFieldVisibility(JsonAutoDetect.Visibility.NONE))
                 .build();
 
@@ -81,13 +85,46 @@ public class JacksonMapperTest {
         assertThat(document.toString()).isEqualTo("{ \"firstName\" : \"Robert\"}");
     }
 
+    @SuppressWarnings("serial")
+    @Test
+    public void canUseMixins() throws Exception {
+        String id = "563667f82249254c42530fe3";
+        ExternalType external = new ExternalType(id, "Robert");
+
+        Mapper mapper = jacksonMapper()
+                .registerModule(new SimpleModule() {{
+                    this.setMixInAnnotation(ExternalType.class, ExternalType.ExternalTypeMixin.class);
+                }})
+                .build();
+
+        BsonDocument document = mapper.getMarshaller().marshall(external);
+
+        assertThat(document.toString()).isEqualTo("{ \"_id\" : { \"$oid\" : \"" + id + "\"} , \"name\" : \"Robert\"}");
+    }
+
+    @SuppressWarnings("serial")
+    @Test
+    public void canUseAnnotations() throws Exception {
+        String id = "563667f82249254c42530fe3";
+        ExposableFriend external = new ExposableFriend(id, "Robert");
+
+        Mapper mapper = jacksonMapper()
+                .registerModule(new SimpleModule() {{
+                    this.setMixInAnnotation(ExternalType.class, ExternalType.ExternalTypeMixin.class);
+                }})
+                .build();
+
+        BsonDocument document = mapper.getMarshaller().marshall(external);
+
+        assertThat(document.toString()).isEqualTo("{ \"name\" : \"Robert\" , \"_id\" : { \"$oid\" : \"" + id + "\"}}");
+    }
 
     @Test
     public void canAddModule() throws Exception {
 
         ObjectId oid = new ObjectId("504482e5e4b0d1b2c47fff66");
         Friend friend = new Friend(oid, "Robert");
-        Mapper mapper = new JacksonMapper.Builder()
+        Mapper mapper = jacksonMapper()
                 .registerModule(new Module() {
                     @Override
                     public String getModuleName() {
@@ -134,7 +171,7 @@ public class JacksonMapperTest {
                 return null;
             }
         };
-        Mapper mapper = new JacksonMapper.Builder()
+        Mapper mapper = jacksonMapper()
                 .withObjectIdUpdater(objectIdUpdater)
                 .withQueryFactory(factory)
                 .build();

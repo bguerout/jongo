@@ -17,11 +17,16 @@
 package org.jongo;
 
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Use {@link JacksonObjectIdUpdater} instead
+ */
+@Deprecated
 public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
 
     private final Map<Class<?>, Field> fieldCache = new HashMap<Class<?>, Field>();
@@ -111,8 +116,8 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
     }
 
     public interface IdFieldSelector {
-        public boolean isId(Field f);
+        boolean isId(Field f);
 
-        public boolean isObjectId(Field f);
+        boolean isObjectId(Field f);
     }
 }

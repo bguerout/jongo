@@ -19,7 +19,6 @@ package org.jongo.marshall.jackson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jongo.Mapper;
 import org.jongo.ObjectIdUpdater;
-import org.jongo.ReflectiveObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.AbstractMappingBuilder;
@@ -73,7 +72,7 @@ public class JacksonMapper implements Mapper {
                 queryFactory = new BsonQueryFactory(jacksonEngine);
             }
             if (objectIdUpdater == null) {
-                objectIdUpdater = new ReflectiveObjectIdUpdater(new JacksonIdFieldSelector());
+                objectIdUpdater = new JacksonObjectIdUpdater(jacksonEngine.getObjectMapper());
             }
             return new JacksonMapper(jacksonEngine, queryFactory, objectIdUpdater);
         }
@@ -91,6 +90,10 @@ public class JacksonMapper implements Mapper {
         @Override
         protected Builder getBuilderInstance() {
             return this;
+        }
+
+        public static Builder jacksonMapper() {
+            return new Builder();
         }
     }
 }
