@@ -59,6 +59,19 @@ class Insert {
         return collection.insert(dbos, writeConcern);
     }
 
+    public WriteResult insertSkipDuplicates(Object... pojos) {
+        List<DBObject> dbos = new ArrayList<DBObject>(pojos.length);
+        for (Object pojo : pojos) {
+            Object id = preparePojo(pojo);
+            DBObject dbo = convertToDBObject(pojo, id);
+            dbos.add(dbo);
+        }
+        InsertOptions io = new InsertOptions();
+        io = io.continueOnError(true).writeConcern(writeConcern);
+        return collection.insert(dbos,io);
+    }
+
+
     public WriteResult insert(String query, Object... parameters) {
         DBObject dbQuery = queryFactory.createQuery(query, parameters).toDBObject();
         if (dbQuery instanceof BasicDBList) {
