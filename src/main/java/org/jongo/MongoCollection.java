@@ -140,6 +140,10 @@ public class MongoCollection {
         return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insert(pojos);
     }
 
+    public WriteResult insertSkipDuplicates(Object... pojos) {
+        return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insertSkipDuplicates(pojos);
+    }
+
     public WriteResult insert(String query, Object... parameters) {
         return new Insert(collection, writeConcern, mapper.getMarshaller(), mapper.getObjectIdUpdater(), mapper.getQueryFactory()).insert(query, parameters);
     }

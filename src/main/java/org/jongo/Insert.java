@@ -67,8 +67,12 @@ class Insert {
             dbos.add(dbo);
         }
         InsertOptions io = new InsertOptions();
-        io = io.continueOnError(true).writeConcern(writeConcern);
-        return collection.insert(dbos,io);
+        io = io.continueOnError(true).writeConcern(writeConcern).bypassDocumentValidation(true);
+        try {
+            return collection.insert(dbos, io);
+        } catch (DuplicateKeyException e) {
+            return WriteResult.unacknowledged();
+        }
     }
 
 

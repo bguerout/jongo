@@ -76,6 +76,20 @@ public class InsertTest extends JongoTestCase {
     }
 
     @Test
+    public void canInsertPojosSkipDuplicates() throws Exception {
+
+        Friend friend = new Friend("John");
+        Friend friend2 = new Friend("Robert");
+        Friend friend3 = new Friend("John"); //Again
+        collection.ensureIndex("{name:true}", "{unique:true}");
+        collection.insertSkipDuplicates(friend, friend2, friend3);
+
+        assertThat(collection.count("{name:'John'}")).isEqualTo(1);
+        assertThat(collection.count("{name:'Robert'}")).isEqualTo(1);
+    }
+
+
+    @Test
     public void canInsertWithParameters() throws Exception {
 
         collection.insert("{name : #}", "Abby");
