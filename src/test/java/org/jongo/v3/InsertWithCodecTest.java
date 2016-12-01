@@ -41,7 +41,7 @@ public class InsertWithCodecTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createNewCollection("friends", Friend.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = createNativeCollection("friends", Friend.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
     }
 
     @After
@@ -147,7 +147,7 @@ public class InsertWithCodecTest extends JongoTestCase {
     @Test
     public void canOnlyInsertOnceAPojoWithACustomId() throws Exception {
 
-        MongoCollection<ExternalFriend> friends = createNewCollection("friends", ExternalFriend.class);
+        MongoCollection<ExternalFriend> friends = createNativeCollection("friends", ExternalFriend.class);
 
         friends.insertOne(new ExternalFriend("122", "value"));
 

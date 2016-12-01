@@ -38,7 +38,7 @@ public class UpdateWithCodecTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createNewCollection("friends", Friend.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = createNativeCollection("friends", Friend.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
     }
 
     @After

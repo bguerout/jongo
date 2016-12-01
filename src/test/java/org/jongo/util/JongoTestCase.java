@@ -63,13 +63,13 @@ public abstract class JongoTestCase {
         return col;
     }
 
-    protected <T> com.mongodb.client.MongoCollection<T> createNewCollection(String collectionName, Class<T> clazz) {
+    protected <T> com.mongodb.client.MongoCollection<T> createNativeCollection(String collectionName, Class<T> clazz) {
         com.mongodb.client.MongoCollection<T> col = jongoNative.getCollection(collectionName, clazz);
         col.drop();
         return col;
     }
 
-    protected com.mongodb.client.MongoCollection<Bson> createNewCollection(String collectionName) {
+    protected com.mongodb.client.MongoCollection<Bson> createNativeCollection(String collectionName) {
         com.mongodb.client.MongoCollection<Bson> col = jongoNative.getCollection(collectionName);
         col.drop();
         return col;

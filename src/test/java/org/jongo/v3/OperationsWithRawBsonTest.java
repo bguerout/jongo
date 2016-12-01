@@ -36,7 +36,7 @@ public class OperationsWithRawBsonTest extends JongoTestCase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createNewCollection("friends").withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = createNativeCollection("friends").withWriteConcern(WriteConcern.ACKNOWLEDGED);
     }
 
     @Test
