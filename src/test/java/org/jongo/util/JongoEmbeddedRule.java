@@ -33,7 +33,6 @@ import java.net.UnknownHostException;
 import java.util.Set;
 
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
-import static org.junit.Assume.assumeTrue;
 
 /**
  * A JUnit test rule for testing Jongo with embedded Mongo.
@@ -94,19 +93,6 @@ public class JongoEmbeddedRule implements TestRule {
 
     public Mapper getMapper() {
         return mapper;
-    }
-
-    public void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {
-        int expectedVersionAsInt = Integer.valueOf(expectedVersion.replaceAll("\\.", ""));
-        CommandResult buildInfo = getDatabase().command("buildInfo");
-        String version = (String) buildInfo.get("version");
-        int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
-        assumeTrue(currentVersion >= expectedVersionAsInt);
-    }
-
-    public void prepareMarshallingStrategy(Mapper mapper) {
-        this.mapper = mapper;
-        this.jongo = new Jongo(mongoRule.getResource().getDb("test_jongo"), mapper);
     }
 
     public JongoEmbeddedRule withMixIn(final Class<?> spec, final Class<?> mixIn) {
