@@ -29,7 +29,7 @@ public abstract class NativeTestBase {
 
     private static MongoResource MONGO_RESOURCE;
 
-    private JongoNative jongoNative;
+    private JongoNative jongo;
     private Mapper mapper;
 
     public NativeTestBase() {
@@ -38,7 +38,7 @@ public abstract class NativeTestBase {
 
     protected NativeTestBase(Mapper mapper) {
         this.mapper = mapper;
-        this.jongoNative = Jongo.useNative(MONGO_RESOURCE.getDatabase("test_jongo"), mapper);
+        this.jongo = Jongo.useNative(MONGO_RESOURCE.getDatabase("test_jongo"), mapper);
     }
 
     @BeforeClass
@@ -47,13 +47,13 @@ public abstract class NativeTestBase {
     }
 
     protected <T> com.mongodb.client.MongoCollection<T> createNativeCollection(String collectionName, Class<T> clazz) {
-        com.mongodb.client.MongoCollection<T> col = jongoNative.getCollection(collectionName, clazz);
+        com.mongodb.client.MongoCollection<T> col = jongo.getCollection(collectionName, clazz);
         col.drop();
         return col;
     }
 
     protected com.mongodb.client.MongoCollection<Bson> createNativeCollection(String collectionName) {
-        com.mongodb.client.MongoCollection<Bson> col = jongoNative.getCollection(collectionName);
+        com.mongodb.client.MongoCollection<Bson> col = jongo.getCollection(collectionName);
         col.drop();
         return col;
     }
@@ -67,10 +67,10 @@ public abstract class NativeTestBase {
     }
 
     protected Bson q(String query, Object... parameters) {
-        return jongoNative.query(query, parameters);
+        return jongo.query(query, parameters);
     }
 
     protected Bson id(Object id) {
-        return jongoNative.id(id);
+        return jongo.id(id);
     }
 }
