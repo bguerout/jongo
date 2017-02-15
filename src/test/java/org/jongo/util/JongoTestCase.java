@@ -19,9 +19,7 @@ package org.jongo.util;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
-import org.bson.conversions.Bson;
 import org.jongo.Jongo;
-import org.jongo.JongoNative;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.model.ExternalType;
@@ -34,7 +32,7 @@ import static org.junit.Assume.assumeTrue;
 
 public abstract class JongoTestCase {
 
-    private static MongoResource mongoResource;
+    private static MongoResource MONGO_RESOURCE;
 
     private Jongo jongo;
     private Mapper mapper;
@@ -47,12 +45,12 @@ public abstract class JongoTestCase {
 
     protected JongoTestCase(Mapper mapper) {
         this.mapper = mapper;
-        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
+        this.jongo = new Jongo(MONGO_RESOURCE.getDb("test_jongo"), mapper);
     }
 
     @BeforeClass
     public static void startMongo() throws Exception {
-        mongoResource = new MongoResource();
+        MONGO_RESOURCE = new MongoResource();
     }
 
     protected MongoCollection createEmptyCollection(String collectionName) {
@@ -87,7 +85,7 @@ public abstract class JongoTestCase {
 
     public void prepareMarshallingStrategy(Mapper mapper) {
         this.mapper = mapper;
-        this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
+        this.jongo = new Jongo(MONGO_RESOURCE.getDb("test_jongo"), mapper);
     }
 
 }

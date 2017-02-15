@@ -27,7 +27,7 @@ import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public abstract class NativeTestBase {
 
-    private static MongoResource mongoResource;
+    private static MongoResource MONGO_RESOURCE;
 
     private JongoNative jongoNative;
     private Mapper mapper;
@@ -38,12 +38,12 @@ public abstract class NativeTestBase {
 
     protected NativeTestBase(Mapper mapper) {
         this.mapper = mapper;
-        this.jongoNative = Jongo.useNative(mongoResource.getDatabase("test_jongo"), mapper);
+        this.jongoNative = Jongo.useNative(MONGO_RESOURCE.getDatabase("test_jongo"), mapper);
     }
 
     @BeforeClass
     public static void startMongo() throws Exception {
-        mongoResource = new MongoResource();
+        MONGO_RESOURCE = new MongoResource();
     }
 
     protected <T> com.mongodb.client.MongoCollection<T> createNativeCollection(String collectionName, Class<T> clazz) {
