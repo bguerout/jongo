@@ -25,14 +25,13 @@ import org.jongo.model.ExposableFriend;
 import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
-import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UpdateWithCodecTest extends JongoTestCase {
+public class UpdateWithCodecTest extends NativeTestBase {
 
     private MongoCollection<Friend> collection;
 

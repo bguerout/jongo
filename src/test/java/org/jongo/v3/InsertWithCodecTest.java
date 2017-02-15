@@ -25,7 +25,6 @@ import org.jongo.model.Coordinate;
 import org.jongo.model.ExposableFriend;
 import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +34,7 @@ import java.util.Date;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InsertWithCodecTest extends JongoTestCase {
+public class InsertWithCodecTest extends NativeTestBase {
 
     private MongoCollection<Friend> collection;
 

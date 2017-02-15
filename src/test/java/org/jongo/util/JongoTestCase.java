@@ -37,7 +37,6 @@ public abstract class JongoTestCase {
     private static MongoResource mongoResource;
 
     private Jongo jongo;
-    private JongoNative jongoNative;
     private Mapper mapper;
 
     public JongoTestCase() {
@@ -49,7 +48,6 @@ public abstract class JongoTestCase {
     protected JongoTestCase(Mapper mapper) {
         this.mapper = mapper;
         this.jongo = new Jongo(mongoResource.getDb("test_jongo"), mapper);
-        this.jongoNative = Jongo.useNative(mongoResource.getDatabase("test_jongo"), mapper);
     }
 
     @BeforeClass
@@ -59,18 +57,6 @@ public abstract class JongoTestCase {
 
     protected MongoCollection createEmptyCollection(String collectionName) {
         MongoCollection col = jongo.getCollection(collectionName);
-        col.drop();
-        return col;
-    }
-
-    protected <T> com.mongodb.client.MongoCollection<T> createNativeCollection(String collectionName, Class<T> clazz) {
-        com.mongodb.client.MongoCollection<T> col = jongoNative.getCollection(collectionName, clazz);
-        col.drop();
-        return col;
-    }
-
-    protected com.mongodb.client.MongoCollection<Bson> createNativeCollection(String collectionName) {
-        com.mongodb.client.MongoCollection<Bson> col = jongoNative.getCollection(collectionName);
         col.drop();
         return col;
     }
@@ -89,14 +75,6 @@ public abstract class JongoTestCase {
 
     protected Mapper getMapper() {
         return mapper;
-    }
-
-    protected Bson q(String query, Object... parameters) {
-        return jongoNative.query(query, parameters);
-    }
-
-    protected Bson id(Object id) {
-        return jongoNative.id(id);
     }
 
     protected void assumeThatMongoVersionIsGreaterThan(String expectedVersion) throws UnknownHostException {

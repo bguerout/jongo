@@ -24,13 +24,12 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
-import org.jongo.util.JongoTestCase;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OperationsWithRawBsonTest extends JongoTestCase {
+public class OperationsWithRawBsonTest extends NativeTestBase {
 
     private MongoCollection<Bson> collection;
 
@@ -74,7 +73,6 @@ public class OperationsWithRawBsonTest extends JongoTestCase {
             }
         });
     }
-
 
 
 }
