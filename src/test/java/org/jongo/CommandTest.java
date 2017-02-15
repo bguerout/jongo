@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import org.assertj.core.api.Condition;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CommandTest extends JongoTestCase {
+public class CommandTest extends JongoTestBase {
 
     private Jongo jongo;
     private MongoCollection collection;

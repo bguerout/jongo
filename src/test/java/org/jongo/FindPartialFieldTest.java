@@ -19,7 +19,7 @@ package org.jongo;
 import com.mongodb.DBObject;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FindPartialFieldTest extends JongoTestCase {
+public class FindPartialFieldTest extends JongoTestBase {
 
     private MongoCollection collection;
     private Friend friend;

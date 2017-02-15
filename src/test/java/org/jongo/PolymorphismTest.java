@@ -25,7 +25,7 @@ import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.model.Animal;
 import org.jongo.model.Fox;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PolymorphismTest extends JongoTestCase {
+public class PolymorphismTest extends JongoTestBase {
 
     private MongoCollection collection;
 

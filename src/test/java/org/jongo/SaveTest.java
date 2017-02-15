@@ -16,14 +16,12 @@
 
 package org.jongo;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.WriteConcern;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
 import org.jongo.model.*;
-import org.jongo.model.ExternalType.ExternalTypeMixin;
 import org.jongo.util.ErrorObject;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -32,9 +30,8 @@ import org.junit.Test;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
-public class SaveTest extends JongoTestCase {
+public class SaveTest extends JongoTestBase {
 
     private MongoCollection collection;
 

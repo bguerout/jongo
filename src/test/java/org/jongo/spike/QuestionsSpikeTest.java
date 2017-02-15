@@ -31,7 +31,7 @@ import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
-public class QuestionsSpikeTest extends JongoTestCase {
+public class QuestionsSpikeTest extends JongoTestBase {
 
     private MongoCollection collection;
 

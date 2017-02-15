@@ -18,14 +18,14 @@ package org.jongo;
 
 import com.mongodb.DBObject;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FindWithResultMapperTest extends JongoTestCase {
+public class FindWithResultMapperTest extends JongoTestBase {
 
     private MongoCollection collection;
 

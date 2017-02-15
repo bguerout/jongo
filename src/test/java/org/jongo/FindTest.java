@@ -23,7 +23,7 @@ import org.jongo.model.Coordinate;
 import org.jongo.model.ExposableFriend;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jongo.Oid.withOid;
 
-public class FindTest extends JongoTestCase {
+public class FindTest extends JongoTestBase {
 
     private MongoCollection collection;
 

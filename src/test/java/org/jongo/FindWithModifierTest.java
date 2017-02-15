@@ -19,7 +19,7 @@ package org.jongo;
 import com.mongodb.DBCursor;
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import java.util.Iterator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class FindWithModifierTest extends JongoTestCase {
+public class FindWithModifierTest extends JongoTestBase {
 
     private MongoCollection collection;
 

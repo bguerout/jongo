@@ -23,7 +23,7 @@ import org.jongo.model.ExternalType;
 import org.jongo.model.Friend;
 import org.jongo.model.TypeWithNested;
 import org.jongo.model.TypeWithNested.NestedDocument;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class AggregateTest extends JongoTestCase {
+public class AggregateTest extends JongoTestBase {
 
 
     private MongoCollection collection;

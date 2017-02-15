@@ -30,20 +30,20 @@ import java.net.UnknownHostException;
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 import static org.junit.Assume.assumeTrue;
 
-public abstract class JongoTestCase {
+public abstract class JongoTestBase {
 
     private static MongoResource MONGO_RESOURCE;
 
     private Jongo jongo;
     private Mapper mapper;
 
-    public JongoTestCase() {
+    public JongoTestBase() {
         this(jacksonMapper().registerModule(new SimpleModule() {{
             this.setMixInAnnotation(ExternalType.class, ExternalType.ExternalTypeMixin.class);
         }}).build());
     }
 
-    protected JongoTestCase(Mapper mapper) {
+    protected JongoTestBase(Mapper mapper) {
         this.mapper = mapper;
         this.jongo = new Jongo(MONGO_RESOURCE.getDb("test_jongo"), mapper);
     }

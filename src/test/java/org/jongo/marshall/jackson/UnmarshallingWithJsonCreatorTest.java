@@ -23,7 +23,7 @@ import org.bson.types.BSONTimestamp;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.oid.MongoId;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UnmarshallingWithJsonCreatorTest extends JongoTestCase {
+public class UnmarshallingWithJsonCreatorTest extends JongoTestBase {
 
     private MongoCollection collection;
 

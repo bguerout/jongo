@@ -18,14 +18,14 @@ package org.jongo;
 
 import com.mongodb.ReadPreference;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CountTest extends JongoTestCase {
+public class CountTest extends JongoTestBase {
 
     private MongoCollection collection;
 

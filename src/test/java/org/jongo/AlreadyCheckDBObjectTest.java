@@ -21,7 +21,7 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
 import org.bson.types.ObjectId;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-public class AlreadyCheckDBObjectTest extends JongoTestCase {
+public class AlreadyCheckDBObjectTest extends JongoTestBase {
 
     ArgumentCaptor<DBObject> captor = ArgumentCaptor.forClass(DBObject.class);
     DBCollection mockedDBCollection = mock(DBCollection.class);

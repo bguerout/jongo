@@ -18,12 +18,12 @@ package org.jongo;
 
 import org.jongo.model.Friend;
 import org.jongo.query.Query;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JongoTest extends JongoTestCase {
+public class JongoTest extends JongoTestBase {
 
     @Test
     public void canObtainACollection() throws Exception {

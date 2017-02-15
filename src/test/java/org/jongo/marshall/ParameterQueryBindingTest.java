@@ -27,7 +27,7 @@ import org.jongo.model.Friend;
 import org.jongo.model.Gender;
 import org.jongo.model.LinkedFriend;
 import org.jongo.util.ErrorObject;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ParameterQueryBindingTest extends JongoTestCase {
+public class ParameterQueryBindingTest extends JongoTestBase {
 
     private MongoCollection collection;
 

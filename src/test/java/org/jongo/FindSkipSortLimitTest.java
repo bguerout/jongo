@@ -17,7 +17,7 @@
 package org.jongo;
 
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FindSkipSortLimitTest extends JongoTestCase {
+public class FindSkipSortLimitTest extends JongoTestBase {
 
     private MongoCollection collection;
 

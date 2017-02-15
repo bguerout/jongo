@@ -22,7 +22,7 @@ import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Friend;
 import org.jongo.util.ErrorObject;
 import org.jongo.util.IdResultHandler;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import org.junit.Test;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FindOneTest extends JongoTestCase {
+public class FindOneTest extends JongoTestBase {
 
     private MongoCollection collection;
 

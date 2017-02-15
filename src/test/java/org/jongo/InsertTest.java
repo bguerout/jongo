@@ -23,14 +23,14 @@ import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
 import org.jongo.model.ExternalFriend;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InsertTest extends JongoTestCase {
+public class InsertTest extends JongoTestBase {
 
     private MongoCollection collection;
 

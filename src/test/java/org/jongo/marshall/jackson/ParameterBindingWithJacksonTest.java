@@ -19,7 +19,7 @@ package org.jongo.marshall.jackson;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.jongo.MongoCollection;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ParameterBindingWithJacksonTest extends JongoTestCase {
+public class ParameterBindingWithJacksonTest extends JongoTestBase {
 
     private MongoCollection collection;
 

@@ -18,7 +18,7 @@ package org.jongo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.Binary;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class BinaryTest extends JongoTestCase {
+public class BinaryTest extends JongoTestBase {
 
     private Binary friendId;
     private MongoCollection collection;

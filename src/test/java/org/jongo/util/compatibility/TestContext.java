@@ -17,7 +17,7 @@
 package org.jongo.util.compatibility;
 
 import org.jongo.Mapper;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.reflections.Reflections;
 
 import java.util.*;
@@ -26,14 +26,14 @@ public class TestContext {
 
     private final String contextName;
     private final Mapper mapper;
-    private final List<Class<? extends JongoTestCase>> ignoredTestCases;
-    private final Map<Class<? extends JongoTestCase>, String> ignoredTests;
+    private final List<Class<? extends JongoTestBase>> ignoredTestCases;
+    private final Map<Class<? extends JongoTestBase>, String> ignoredTests;
 
     public TestContext(String contextName, Mapper mapper) {
         this.contextName = contextName;
         this.mapper = mapper;
-        this.ignoredTestCases = new ArrayList<Class<? extends JongoTestCase>>();
-        this.ignoredTests = new HashMap<Class<? extends JongoTestCase>, String>();
+        this.ignoredTestCases = new ArrayList<Class<? extends JongoTestBase>>();
+        this.ignoredTests = new HashMap<Class<? extends JongoTestBase>, String>();
     }
 
     public String getContextName() {
@@ -44,7 +44,7 @@ public class TestContext {
         return ignoredTestCases.contains(clazz);
     }
 
-    public void ignoreTestCase(Class<? extends JongoTestCase> clazz) {
+    public void ignoreTestCase(Class<? extends JongoTestBase> clazz) {
         ignoredTestCases.add(clazz);
     }
 
@@ -52,18 +52,18 @@ public class TestContext {
         return ignoredTests.containsKey(clazz) && ignoredTests.get(clazz).equals(methodName);
     }
 
-    public void ignoreTest(Class<? extends JongoTestCase> clazz, String methodName) {
+    public void ignoreTest(Class<? extends JongoTestBase> clazz, String methodName) {
         ignoredTests.put(clazz, methodName);
     }
 
     public List<Class<?>> findTestCases() {
-        Set<Class<? extends JongoTestCase>> jongoTestCases = new Reflections("org.jongo").getSubTypesOf(JongoTestCase.class);
+        Set<Class<? extends JongoTestBase>> jongoTestCases = new Reflections("org.jongo").getSubTypesOf(JongoTestBase.class);
         return new ArrayList<Class<?>>(jongoTestCases);
     }
 
     public void prepareTestCase(Object testCase) throws Exception {
-        if (testCase instanceof JongoTestCase) {
-            JongoTestCase test = (JongoTestCase) testCase;
+        if (testCase instanceof JongoTestBase) {
+            JongoTestBase test = (JongoTestBase) testCase;
             test.prepareMarshallingStrategy(mapper);
         }
     }

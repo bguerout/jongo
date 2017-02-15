@@ -21,7 +21,7 @@ import com.mongodb.DBObject;
 import org.bson.types.*;
 import org.jongo.MongoCollection;
 import org.jongo.model.Friend;
-import org.jongo.util.JongoTestCase;
+import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 
-public class DocumentMarshallingTest extends JongoTestCase {
+public class DocumentMarshallingTest extends JongoTestBase {
 
     private MongoCollection collection;
 
