@@ -13,7 +13,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class QueryBuilderTest extends NativeTestBase {
+public class QueryNativeTest extends NativeTestBase {
 
     private MongoCollection<Bson> collection;
 
@@ -23,7 +23,7 @@ public class QueryBuilderTest extends NativeTestBase {
     }
 
     @Test
-    public void canQueryWithABuilder() throws Exception {
+    public void canQueryWithNativeDocument() throws Exception {
 
         Document document = new Document("name", "Abby").append("address", "123 Wall Street");
 
@@ -32,6 +32,5 @@ public class QueryBuilderTest extends NativeTestBase {
         Bson result = collection.find(new Document("address", "123 Wall Street")).first();
         BsonDocument bsonDocument = result.toBsonDocument(DBObject.class, MongoClient.getDefaultCodecRegistry());
         assertThat(bsonDocument.toJson()).contains("123 Wall Street");
-
     }
 }

@@ -29,38 +29,37 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OperationsWithRawBsonTest extends NativeTestBase {
+public class RawBsonNativeTest extends NativeTestBase {
 
-    private MongoCollection<Bson> collection;
+    private MongoCollection<Bson> rawCollection;
 
     @Before
     public void setUp() throws Exception {
-        collection = createNativeCollection("friends").withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        rawCollection = createNativeCollection("friends").withWriteConcern(WriteConcern.ACKNOWLEDGED);
     }
 
     @Test
     public void canInsert() throws Exception {
 
-        collection.insertOne(q("{name : 'Abby'}"));
+        rawCollection.insertOne(q("{name : 'Abby'}"));
 
-        assertThat(collection.count(q("{name : 'Abby'}"))).isEqualTo(1);
+        assertThat(rawCollection.count(q("{name : 'Abby'}"))).isEqualTo(1);
     }
 
     @Test
     public void canInsertWithParameters() throws Exception {
 
-        collection.insertOne(q("{name : #}", "Abby"));
+        rawCollection.insertOne(q("{name : #}", "Abby"));
 
-        assertThat(collection.count(q("{name : 'Abby'}"))).isEqualTo(1);
+        assertThat(rawCollection.count(q("{name : 'Abby'}"))).isEqualTo(1);
     }
-
 
     @Test
     public void canFindWithProjectionParams() throws Exception {
 
-        collection.insertOne(q("{name : 'Abby'}"));
+        rawCollection.insertOne(q("{name : 'Abby'}"));
 
-        FindIterable<Bson> results = collection.find(q("{name:'Abby'}")).projection(q("{name:#}", 1));
+        FindIterable<Bson> results = rawCollection.find(q("{name:'Abby'}")).projection(q("{name:#}", 1));
 
         assertThat(results).isNotEmpty();
         results.map(new Function<Bson, String>() {

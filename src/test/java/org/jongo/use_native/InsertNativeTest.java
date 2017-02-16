@@ -34,7 +34,7 @@ import java.util.Date;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InsertWithCodecTest extends NativeTestBase {
+public class InsertNativeTest extends NativeTestBase {
 
     private MongoCollection<Friend> collection;
 

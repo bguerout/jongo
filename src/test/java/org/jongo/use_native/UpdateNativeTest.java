@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UpdateWithCodecTest extends NativeTestBase {
+public class UpdateNativeTest extends NativeTestBase {
 
     private MongoCollection<Friend> collection;
 

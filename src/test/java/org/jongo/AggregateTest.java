@@ -19,6 +19,7 @@ package org.jongo;
 import com.google.common.collect.Lists;
 import com.mongodb.AggregationOptions;
 import com.mongodb.MongoCommandException;
+import org.jongo.model.Article;
 import org.jongo.model.Friend;
 import org.jongo.model.TypeWithNested;
 import org.jongo.model.TypeWithNested.NestedDocument;
@@ -27,7 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -82,7 +82,7 @@ public class AggregateTest extends JongoTestBase {
 
         assertThat(articles.iterator().hasNext()).isTrue();
         for (Article article : articles) {
-            assertThat(article.title).isIn("Zombie Panic", "Apocalypse Zombie", "World War Z");
+            assertThat(article.getTitle()).isIn("Zombie Panic", "Apocalypse Zombie", "World War Z");
         }
     }
 
@@ -93,7 +93,7 @@ public class AggregateTest extends JongoTestBase {
 
         assertThat(articles.iterator().hasNext()).isTrue();
         for (Article article : articles) {
-            assertThat(article.title).isIn("Zombie Panic", "Apocalypse Zombie", "World War Z");
+            assertThat(article.getTitle()).isIn("Zombie Panic", "Apocalypse Zombie", "World War Z");
         }
     }
 
@@ -106,7 +106,7 @@ public class AggregateTest extends JongoTestBase {
 
         assertThat(articles.iterator().hasNext()).isTrue();
         for (Article article : articles) {
-            assertThat(article.title).isIn("Zombie Panic", "Apocalypse Zombie", "World War Z");
+            assertThat(article.getTitle()).isIn("Zombie Panic", "Apocalypse Zombie", "World War Z");
         }
         verify(options, atLeastOnce()).getAllowDiskUse();
         verify(options, atLeastOnce()).getMaxTime(any(TimeUnit.class));
@@ -122,7 +122,7 @@ public class AggregateTest extends JongoTestBase {
         assertThat(articles.iterator().hasNext()).isTrue();
         int size = 0;
         for (Article article : articles) {
-            assertThat(article.tags).contains("virus");
+            assertThat(article.getTags()).contains("virus");
             size++;
         }
         assertThat(size).isEqualTo(2);
@@ -133,7 +133,7 @@ public class AggregateTest extends JongoTestBase {
 
         Iterator<Article> articles = collection.aggregate("{$match:{tags:#}}", "pandemic").as(Article.class);
 
-        assertThat(articles.next().title).isEqualTo("World War Z");
+        assertThat(articles.next().getTitle()).isEqualTo("World War Z");
         assertThat(articles.hasNext()).isFalse();
     }
 
@@ -143,7 +143,7 @@ public class AggregateTest extends JongoTestBase {
         Iterator<Article> articles = collection.aggregate("{$match:{tags:'virus'}}").and("{$match:{tags:'pandemic'}}").as(Article.class);
 
         Article firstArticle = articles.next();
-        assertThat(firstArticle.title).isEqualTo("World War Z");
+        assertThat(firstArticle.getTitle()).isEqualTo("World War Z");
         assertThat(articles.hasNext()).isFalse();
     }
 
@@ -193,20 +193,4 @@ public class AggregateTest extends JongoTestBase {
         assertThat(nested.get(3)).isEqualToComparingFieldByField(new NestedDocument().withName("name4").withValue("value4"));
     }
 
-    private final static class Article {
-        private String title;
-        @SuppressWarnings("unused")
-        private String author;
-        private List<String> tags;
-
-        private Article(String title, String author, String... tags) {
-            this.title = title;
-            this.author = author;
-            this.tags = Arrays.asList(tags);
-        }
-
-        private Article() {
-            //used by jackson
-        }
-    }
 }
