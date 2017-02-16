@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.v3;
+package org.jongo.use_native;
 
 import org.bson.conversions.Bson;
 import org.jongo.Jongo;

@@ -1,4 +1,4 @@
-package org.jongo.v3;
+package org.jongo.use_native;
 
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
