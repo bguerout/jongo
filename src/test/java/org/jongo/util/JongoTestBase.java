@@ -16,13 +16,11 @@
 
 package org.jongo.util;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
-import org.jongo.model.ExternalType;
 import org.junit.BeforeClass;
 
 import java.net.UnknownHostException;
@@ -38,9 +36,7 @@ public abstract class JongoTestBase {
     private Mapper mapper;
 
     public JongoTestBase() {
-        this(jacksonMapper().registerModule(new SimpleModule() {{
-            this.setMixInAnnotation(ExternalType.class, ExternalType.ExternalTypeMixin.class);
-        }}).build());
+        this(jacksonMapper().build());
     }
 
     protected JongoTestBase(Mapper mapper) {

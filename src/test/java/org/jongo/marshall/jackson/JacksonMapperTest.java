@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Mapper;
@@ -32,7 +31,6 @@ import org.jongo.ObjectIdUpdater;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.model.ExposableFriend;
-import org.jongo.model.ExternalType;
 import org.jongo.model.Friend;
 import org.jongo.query.Query;
 import org.jongo.query.QueryFactory;
@@ -87,32 +85,11 @@ public class JacksonMapperTest {
 
     @SuppressWarnings("serial")
     @Test
-    public void canUseMixins() throws Exception {
-        String id = "563667f82249254c42530fe3";
-        ExternalType external = new ExternalType(id, "Robert");
-
-        Mapper mapper = jacksonMapper()
-                .registerModule(new SimpleModule() {{
-                    this.setMixInAnnotation(ExternalType.class, ExternalType.ExternalTypeMixin.class);
-                }})
-                .build();
-
-        BsonDocument document = mapper.getMarshaller().marshall(external);
-
-        assertThat(document.toString()).isEqualTo("{ \"_id\" : { \"$oid\" : \"" + id + "\"} , \"name\" : \"Robert\"}");
-    }
-
-    @SuppressWarnings("serial")
-    @Test
     public void canUseAnnotations() throws Exception {
         String id = "563667f82249254c42530fe3";
         ExposableFriend external = new ExposableFriend(id, "Robert");
 
-        Mapper mapper = jacksonMapper()
-                .registerModule(new SimpleModule() {{
-                    this.setMixInAnnotation(ExternalType.class, ExternalType.ExternalTypeMixin.class);
-                }})
-                .build();
+        Mapper mapper = jacksonMapper().build();
 
         BsonDocument document = mapper.getMarshaller().marshall(external);
 
@@ -208,6 +185,4 @@ public class JacksonMapperTest {
             return firstName;
         }
     }
-
-
 }

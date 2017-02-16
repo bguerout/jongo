@@ -19,14 +19,12 @@ package org.jongo;
 import com.google.common.collect.Lists;
 import com.mongodb.AggregationOptions;
 import com.mongodb.MongoCommandException;
-import org.jongo.model.ExternalType;
 import org.jongo.model.Friend;
 import org.jongo.model.TypeWithNested;
 import org.jongo.model.TypeWithNested.NestedDocument;
 import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -44,7 +42,6 @@ public class AggregateTest extends JongoTestBase {
 
     private MongoCollection collection;
     private MongoCollection friendCollection;
-    private MongoCollection externalTypeCollection;
     private MongoCollection nestedCollection;
 
     @Before
@@ -61,9 +58,6 @@ public class AggregateTest extends JongoTestBase {
         friendCollection.save(new Friend("William"));
         friendCollection.save(new Friend("John"));
         friendCollection.save(new Friend("Richard"));
-
-        externalTypeCollection = createEmptyCollection("external_type");
-        externalTypeCollection.save(new ExternalType("value"));
 
         nestedCollection = createEmptyCollection("nested");
         nestedCollection.save(new TypeWithNested()
@@ -197,20 +191,6 @@ public class AggregateTest extends JongoTestBase {
         assertThat(nested.get(1)).isEqualToComparingFieldByField(new NestedDocument().withName("name2").withValue("value2"));
         assertThat(nested.get(2)).isEqualToComparingFieldByField(new NestedDocument().withName("name3").withValue("value3"));
         assertThat(nested.get(3)).isEqualToComparingFieldByField(new NestedDocument().withName("name4").withValue("value4"));
-    }
-
-    // this test is not working with the compatibility test suite.
-    @Ignore
-    @Test
-    public void shouldPopulateIdsWithMixins() throws Exception {
-        List<ExternalType> externalTypes = Lists.newArrayList(
-                (Iterable<ExternalType>) externalTypeCollection.aggregate("{$project: {_id: '$_id', name: '$name'}}")
-                        .as(ExternalType.class));
-
-        assertThat(externalTypes.size()).as("on found").isEqualTo(1);
-        for (ExternalType externalType : externalTypes) {
-            assertThat(externalType.getId()).as("id not null").isNotNull();
-        }
     }
 
     private final static class Article {

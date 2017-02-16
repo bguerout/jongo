@@ -149,27 +149,10 @@ public class SaveTest extends JongoTestBase {
         collection.save(robert);
         assertThat(robert.getId()).isEqualTo(id);
 
-        robert.setName("Hue"); // <-- "famous" french Robert
+        robert.setName("Hue");
         collection.save(robert);
 
         ExposableFriend robertHue = collection.findOne("{_id: #}", new ObjectId(id)).as(ExposableFriend.class);
-        assertThat(robertHue.getId()).isEqualTo(id);
-        assertThat(robertHue.getName()).isEqualTo("Hue");
-    }
-
-    // this test is not working with the compatibility test suite.
-    @Ignore
-    @Test
-    public void canUpdateWithObjectIdWithAnnotationOverride() throws Exception {
-        String id = ObjectId.get().toString();
-        ExternalType robert = new ExternalType(id, "Robert");
-
-        collection.save(robert);
-
-        robert.setName("Hue"); // <-- "famous" french Robert
-        collection.save(robert);
-
-        ExternalType robertHue = collection.findOne("{_id: #}", new ObjectId(id)).as(ExternalType.class);
         assertThat(robertHue.getId()).isEqualTo(id);
         assertThat(robertHue.getName()).isEqualTo("Hue");
     }
