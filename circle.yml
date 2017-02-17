@@ -13,4 +13,4 @@ dependencies:
     - docker build -t jongo-ci .
 test:
   override:
-    - docker run -it -v $(pwd):/root/sources -w /root/sources jongo-ci bash build.sh --job CI
+    - docker run -it -w /root/sources jongo-ci bash build.sh --job CI
