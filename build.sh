@@ -57,7 +57,7 @@ CI)
 IT)
     mvn clean install ${MVN_COMMONS_OPTS}
     bash $BASEDIR/src/test/sh/run-tests-against-all-driver-versions.sh
-    bash BASEDIR/src/test/sh/run-tests-against-all-jackson-versions.sh
+    bash $BASEDIR/src/test/sh/run-tests-against-all-jackson-versions.sh
     ;;
 EARLY)
     import_gpg
