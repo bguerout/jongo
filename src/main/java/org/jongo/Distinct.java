@@ -84,8 +84,29 @@ public class Distinct {
         return objects;
     }
 
+    public <T> List<T> map(ResultHandler<T> resultHandler) {
+        DBObject ref = query.toDBObject();
+        final List<?> distinct = dbCollection.distinct(key, ref);
+
+        if (distinct.isEmpty() || resultsAreBSONPrimitive(distinct)) {
+            List<DBObject> objects = new ArrayList();
+            for(Object object:distinct) {
+                objects.add(new BasicDBObject(key, object));
+            }
+            return typedList(objects, resultHandler);
+        } else return typedList((List<DBObject>) distinct, resultHandler);
+    }
+
     private boolean resultsAreBSONPrimitive(List<?> distinct) {
         return !(distinct.get(0) instanceof DBObject);
+    }
+
+    private <T> List<T> typedList(List<DBObject> distinct, ResultHandler<T> handler) {
+        List<T> results = new ArrayList<T>();
+        for (DBObject dbObject : distinct) {
+            results.add(handler.map(dbObject));
+        }
+        return results;
     }
 
     private <T> List<T> typedList(List<DBObject> distinct, ResultHandler<T> handler) {
