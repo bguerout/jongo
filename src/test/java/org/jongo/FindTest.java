@@ -17,6 +17,8 @@
 package org.jongo;
 
 import com.mongodb.ReadPreference;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
@@ -33,6 +35,11 @@ import java.util.Iterator;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jongo.Oid.withOid;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FindTest extends JongoTestBase {
 
@@ -172,5 +179,25 @@ public class FindTest extends JongoTestBase {
         assertThat(friends.hasNext()).isFalse();
 
         // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
+    }
+
+    @Test
+    public void testObservableFind() {
+        /* given */
+        Friend friend = new Friend(new ObjectId(), "John");
+        Friend friend2 = new Friend(new ObjectId(), "Smith");
+        collection.save(friend);
+        collection.save(friend2);
+
+        /* when */
+        Observer<Friend> observer = mock(Observer.class);
+        Observable<Friend> friendObservable = collection.find().as(Friend.class).toObservable();
+        friendObservable.subscribe(observer);
+
+        /* then */
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext(friend);
+        verify(observer, times(1)).onNext(friend2);
     }
 }
