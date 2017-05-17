@@ -19,10 +19,15 @@ package org.jongo;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Action;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
 
@@ -61,4 +66,22 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
     public int count() {
         return cursor.count();
     }
+
+    public Observable<E> toObservable() {
+        return Observable.create(
+                new ObservableOnSubscribe<E>() {
+                    public void subscribe(ObservableEmitter<E> e) throws Exception {
+                        while (hasNext() && !e.isDisposed()) {
+                            e.onNext(next());
+                        }
+                        e.onComplete();
+                    }
+                })
+                .doOnDispose(new Action() {
+                    public void run() throws Exception {
+                        cursor.close();
+                    }
+                });
+    }
+
 }
