@@ -77,9 +77,9 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
                         e.onComplete();
                     }
                 })
-                .doOnDispose(new Action() {
+                .doOnComplete(new Action() {
                     public void run() throws Exception {
-                        cursor.close();
+                        close();
                     }
                 });
     }
