@@ -19,6 +19,8 @@ package org.jongo;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -27,7 +29,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 
 public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
 
@@ -82,6 +83,10 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
                         close();
                     }
                 });
+    }
+
+    public Flowable<E> toFlowable() {
+        return toObservable().toFlowable(BackpressureStrategy.BUFFER);
     }
 
 }
