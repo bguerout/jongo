@@ -19,12 +19,6 @@ package org.jongo;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.functions.Action;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
@@ -68,25 +62,8 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
         return cursor.count();
     }
 
-    public Observable<E> toObservable() {
-        return Observable.create(
-                new ObservableOnSubscribe<E>() {
-                    public void subscribe(ObservableEmitter<E> e) throws Exception {
-                        while (hasNext() && !e.isDisposed()) {
-                            e.onNext(next());
-                        }
-                        e.onComplete();
-                    }
-                })
-                .doOnComplete(new Action() {
-                    public void run() throws Exception {
-                        close();
-                    }
-                });
-    }
-
-    public Flowable<E> toFlowable() {
-        return toObservable().toFlowable(BackpressureStrategy.BUFFER);
+    public <R> R to(Function<MongoCursor<E>, R> toType) {
+        return toType.apply(this);
     }
 
 }

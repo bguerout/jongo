@@ -16,9 +16,19 @@
 
 package org.jongo;
 
+import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.jongo.Oid.withOid;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.mongodb.ReadPreference;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import java.util.Iterator;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
@@ -29,17 +39,6 @@ import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static junit.framework.Assert.fail;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.jongo.Oid.withOid;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 public class FindTest extends JongoTestBase {
 
@@ -191,7 +190,7 @@ public class FindTest extends JongoTestBase {
 
         /* when */
         Observer<Friend> observer = mock(Observer.class);
-        Observable<Friend> friendObservable = collection.find().as(Friend.class).toObservable();
+        Observable<Friend> friendObservable = collection.find().as(Friend.class).to(RxJongo.<Friend>toObservable());
         friendObservable.subscribe(observer);
 
         /* then */
