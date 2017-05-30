@@ -16,12 +16,7 @@
 
 package org.jongo;
 
-import static junit.framework.Assert.fail;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.jongo.Oid.withOid;
-
 import com.mongodb.ReadPreference;
-import java.util.Iterator;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.MarshallingException;
 import org.jongo.model.Coordinate;
@@ -32,6 +27,12 @@ import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Iterator;
+
+import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.jongo.Oid.withOid;
 
 public class FindTest extends JongoTestBase {
 
@@ -172,4 +173,6 @@ public class FindTest extends JongoTestBase {
 
         // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
     }
+
+
 }
