@@ -80,7 +80,6 @@
         <mongo.max.version>3.4.0</mongo.max.version>
         <mongo.version>[${mongo.min.version},${mongo.max.version}]</mongo.version>
         <jackson.version>2.7.8</jackson.version>
-        <rx.version>2.1.0</rx.version>
         <bson4jackson.version>2.7.0</bson4jackson.version>
     </properties>
 
@@ -124,12 +123,6 @@
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>${rx.version}</version>
-            <optional>true</optional>
         </dependency>
 
         <!-- TEST -->
