@@ -173,6 +173,4 @@ public class FindTest extends JongoTestBase {
 
         // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
     }
-
-
 }
