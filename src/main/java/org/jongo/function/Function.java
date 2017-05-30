@@ -1,4 +1,4 @@
-package org.jongo;
+package org.jongo.function;
 
 /**
  * A functional interface that takes a value and returns another value.

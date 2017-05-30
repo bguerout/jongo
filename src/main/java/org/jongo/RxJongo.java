@@ -6,6 +6,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Action;
+import org.jongo.function.Function;
 
 public class RxJongo {
 
