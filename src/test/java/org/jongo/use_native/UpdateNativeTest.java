@@ -37,12 +37,12 @@ public class UpdateNativeTest extends NativeTestBase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createNativeCollection("friends", Friend.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = jongo.wrap(database.getCollection("friends", Friend.class));
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("friends");
+        collection.drop();
     }
 
     @Test

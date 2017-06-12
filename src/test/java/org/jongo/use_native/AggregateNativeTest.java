@@ -16,7 +16,6 @@
 
 package org.jongo.use_native;
 
-import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import org.bson.conversions.Bson;
 import org.jongo.model.Article;
@@ -35,7 +34,7 @@ public class AggregateNativeTest extends NativeTestBase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createNativeCollection("articles", Article.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = jongo.wrap(database.getCollection("articles", Article.class));
         collection.insertOne(new Article("Zombie Panic", "Kirsty Mckay", "horror", "virus"));
         collection.insertOne(new Article("Apocalypse Zombie", "Maberry Jonathan", "horror", "dead"));
         collection.insertOne(new Article("World War Z", "Max Brooks", "horror", "virus", "pandemic"));
@@ -43,7 +42,7 @@ public class AggregateNativeTest extends NativeTestBase {
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("articles");
+        this.collection.drop();
     }
 
     @Test

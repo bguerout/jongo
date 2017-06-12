@@ -16,6 +16,7 @@
 
 package org.jongo.use_native;
 
+import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
 import org.jongo.Jongo;
 import org.jongo.JongoNative;
@@ -29,41 +30,21 @@ public abstract class NativeTestBase {
 
     private static MongoResource MONGO_RESOURCE;
 
-    private JongoNative jongo;
-    private Mapper mapper;
+    protected JongoNative jongo;
+    protected MongoDatabase database;
 
     public NativeTestBase() {
         this(jacksonMapper().build());
     }
 
     protected NativeTestBase(Mapper mapper) {
-        this.mapper = mapper;
-        this.jongo = Jongo.useNative(MONGO_RESOURCE.getDatabase("test_jongo"), mapper);
+        this.jongo = Jongo.useNative(mapper);
+        this.database = MONGO_RESOURCE.getDatabase("test_jongo");
     }
 
     @BeforeClass
     public static void startMongo() throws Exception {
         MONGO_RESOURCE = new MongoResource();
-    }
-
-    protected <T> com.mongodb.client.MongoCollection<T> createNativeCollection(String collectionName, Class<T> clazz) {
-        com.mongodb.client.MongoCollection<T> col = jongo.getCollection(collectionName, clazz);
-        col.drop();
-        return col;
-    }
-
-    protected com.mongodb.client.MongoCollection<Bson> createNativeCollection(String collectionName) {
-        com.mongodb.client.MongoCollection<Bson> col = jongo.getCollection(collectionName);
-        col.drop();
-        return col;
-    }
-
-    protected void dropCollection(String collectionName) {
-        createNativeCollection(collectionName).drop();
-    }
-
-    protected Mapper getMapper() {
-        return mapper;
     }
 
     protected Bson q(String query, Object... parameters) {

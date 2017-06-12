@@ -2,24 +2,29 @@ package org.jongo.use_native;
 
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class QueryNativeTest extends NativeTestBase {
+public class WithDocumentNativeTest extends NativeTestBase {
 
     private MongoCollection<Bson> collection;
 
     @Before
     public void setUp() throws Exception {
-        collection = createNativeCollection("friends").withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = jongo.raw(database.getCollection("friends"));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        collection.drop();
     }
 
     @Test

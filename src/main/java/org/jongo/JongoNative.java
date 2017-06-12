@@ -18,7 +18,6 @@ package org.jongo;
 
 
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
 import org.bson.codecs.BsonValueCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -30,16 +29,14 @@ import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 public class JongoNative {
 
     private final Mapper mapper;
-    private final MongoDatabase mongoDatabase;
     private final CodecRegistry codecRegistry;
 
-    public JongoNative(MongoDatabase mongoDatabase) {
-        this(mongoDatabase, jacksonMapper().build());
+    public JongoNative() {
+        this(jacksonMapper().build());
     }
 
-    public JongoNative(MongoDatabase mongoDatabase, Mapper mapper) {
+    public JongoNative(Mapper mapper) {
         this.mapper = mapper;
-        this.mongoDatabase = mongoDatabase;
         this.codecRegistry = createCodecRegistry(mapper);
     }
 
@@ -52,15 +49,15 @@ public class JongoNative {
         return query("{_id:#}", id);
     }
 
-    public <T> com.mongodb.client.MongoCollection<T> getCollection(String name, Class<T> clazz) {
-        return mongoDatabase.getCollection(name, clazz).withCodecRegistry(codecRegistry);
+    public <T> com.mongodb.client.MongoCollection<T> wrap(com.mongodb.client.MongoCollection<T> collection) {
+        return collection.withCodecRegistry(codecRegistry);
     }
 
-    public com.mongodb.client.MongoCollection<Bson> getCollection(String name) {
-        return mongoDatabase.getCollection(name).withCodecRegistry(codecRegistry).withDocumentClass(Bson.class);
+    public com.mongodb.client.MongoCollection<Bson> raw(com.mongodb.client.MongoCollection<?> collection) {
+        return wrap(collection).withDocumentClass(Bson.class);
     }
 
-    private static CodecRegistry createCodecRegistry(Mapper mapper) {
+    private CodecRegistry createCodecRegistry(Mapper mapper) {
 
         CodecRegistry defaultRegistry = MongoClient.getDefaultCodecRegistry();
         CodecRegistry jongoRegistry = CodecRegistries.fromProviders(new BsonValueCodecProvider(), new JongoCodecProvider(mapper));

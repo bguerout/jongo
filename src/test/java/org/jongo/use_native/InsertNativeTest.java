@@ -17,7 +17,6 @@
 package org.jongo.use_native;
 
 import com.mongodb.MongoWriteException;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import junit.framework.Assert;
 import org.bson.types.ObjectId;
@@ -40,12 +39,12 @@ public class InsertNativeTest extends NativeTestBase {
 
     @Before
     public void setUp() throws Exception {
-        collection = createNativeCollection("friends", Friend.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = jongo.wrap(database.getCollection("friends", Friend.class));
     }
 
     @After
     public void tearDown() throws Exception {
-        dropCollection("friends");
+        collection.drop();
     }
 
     @Test
@@ -146,7 +145,7 @@ public class InsertNativeTest extends NativeTestBase {
     @Test
     public void canOnlyInsertOnceAPojoWithACustomId() throws Exception {
 
-        MongoCollection<ExternalFriend> friends = createNativeCollection("friends", ExternalFriend.class);
+        MongoCollection<ExternalFriend> friends = jongo.wrap(database.getCollection("friends", ExternalFriend.class));
 
         friends.insertOne(new ExternalFriend("122", "value"));
 

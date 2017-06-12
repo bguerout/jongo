@@ -24,42 +24,51 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
+import org.jongo.model.Friend;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RawBsonNativeTest extends NativeTestBase {
+public class WithStringNativeTest extends NativeTestBase {
 
-    private MongoCollection<Bson> rawCollection;
+    private MongoCollection<Bson> collection;
 
     @Before
     public void setUp() throws Exception {
-        rawCollection = createNativeCollection("friends").withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        MongoCollection<Friend> friends = database.getCollection("friends", Friend.class)
+                .withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = jongo.raw(friends);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        collection.drop();
     }
 
     @Test
     public void canInsert() throws Exception {
 
-        rawCollection.insertOne(q("{name : 'Abby'}"));
+        collection.insertOne(q("{name : 'Abby'}"));
 
-        assertThat(rawCollection.count(q("{name : 'Abby'}"))).isEqualTo(1);
+        assertThat(collection.count(q("{name : 'Abby'}"))).isEqualTo(1);
     }
 
     @Test
     public void canInsertWithParameters() throws Exception {
 
-        rawCollection.insertOne(q("{name : #}", "Abby"));
+        collection.insertOne(q("{name : #}", "Abby"));
 
-        assertThat(rawCollection.count(q("{name : 'Abby'}"))).isEqualTo(1);
+        assertThat(collection.count(q("{name : 'Abby'}"))).isEqualTo(1);
     }
 
     @Test
     public void canFindWithProjectionParams() throws Exception {
 
-        rawCollection.insertOne(q("{name : 'Abby'}"));
+        collection.insertOne(q("{name : 'Abby'}"));
 
-        FindIterable<Bson> results = rawCollection.find(q("{name:'Abby'}")).projection(q("{name:#}", 1));
+        FindIterable<Bson> results = collection.find(q("{name:'Abby'}")).projection(q("{name:#}", 1));
 
         assertThat(results).isNotEmpty();
         results.map(new Function<Bson, String>() {
