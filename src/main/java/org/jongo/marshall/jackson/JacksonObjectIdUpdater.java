@@ -45,7 +45,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         for (BeanPropertyDefinition def : beanDescription(pojo.getClass()).findProperties()) {
             if (isIdProperty(def)) {
                 AnnotatedMember accessor = def.getAccessor();
-                accessor.fixAccess();
+                accessor.fixAccess(true);
                 return isObjectId(def) && accessor.getValue(pojo) == null;
             }
         }
@@ -57,7 +57,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         for (BeanPropertyDefinition def : beanDescription.findProperties()) {
             if (isIdProperty(def)) {
                 AnnotatedMember accessor = def.getAccessor();
-                accessor.fixAccess();
+                accessor.fixAccess(true);
                 Object id = accessor.getValue(pojo);
                 if (id instanceof String && isObjectId(def)) {
                     return new ObjectId(id.toString());
@@ -73,12 +73,12 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
         for (BeanPropertyDefinition def : beanDescription(target.getClass()).findProperties()) {
             if (isIdProperty(def)) {
                 AnnotatedMember accessor = def.getAccessor();
-                accessor.fixAccess();
+                accessor.fixAccess(true);
                 if (accessor.getValue(target) != null) {
                     throw new IllegalArgumentException("Unable to set objectid on class: " + target.getClass());
                 }
                 AnnotatedMember field = def.getField();
-                field.fixAccess();
+                field.fixAccess(true);
                 Class<?> type = field.getRawType();
                 if (ObjectId.class.isAssignableFrom(type)) {
                     field.setValue(target, id);
