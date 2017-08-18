@@ -31,26 +31,32 @@ public class MongoCollection {
     private final DBCollection collection;
     private final WriteConcern writeConcern;
     private final ReadPreference readPreference;
+    private final ReadConcern readConcern;
     private final Mapper mapper;
 
     public MongoCollection(DBCollection dbCollection, Mapper mapper) {
-        this(dbCollection, mapper, dbCollection.getWriteConcern(), dbCollection.getReadPreference());
+        this(dbCollection, mapper, dbCollection.getWriteConcern(), dbCollection.getReadPreference(), dbCollection.getReadConcern());
 
     }
 
-    private MongoCollection(DBCollection dbCollection, Mapper mapper, WriteConcern writeConcern, ReadPreference readPreference) {
+    private MongoCollection(DBCollection dbCollection, Mapper mapper, WriteConcern writeConcern, ReadPreference readPreference, ReadConcern readConcern) {
         this.collection = dbCollection;
         this.writeConcern = writeConcern;
         this.readPreference = readPreference;
         this.mapper = mapper;
+        this.readConcern = readConcern;
     }
 
     public MongoCollection withWriteConcern(WriteConcern concern) {
-        return new MongoCollection(collection, mapper, concern, readPreference);
+        return new MongoCollection(collection, mapper, concern, readPreference, readConcern);
     }
 
     public MongoCollection withReadPreference(ReadPreference readPreference) {
-        return new MongoCollection(collection, mapper, writeConcern, readPreference);
+        return new MongoCollection(collection, mapper, writeConcern, readPreference, readConcern);
+    }
+
+    public MongoCollection withReadConcern(ReadConcern readConcern) {
+        return new MongoCollection(collection, mapper, writeConcern, readPreference, readConcern);
     }
 
     public FindOne findOne(ObjectId id) {

@@ -46,6 +46,7 @@ public class Jongo {
         DBCollection dbCollection = database.getCollection(name);
         dbCollection.setDBDecoderFactory(BsonDBDecoder.FACTORY);
         dbCollection.setDBEncoderFactory(BsonDBEncoder.FACTORY);
+        dbCollection.setReadConcern(database.getReadConcern());
         return new MongoCollection(dbCollection, mapper);
     }
 
