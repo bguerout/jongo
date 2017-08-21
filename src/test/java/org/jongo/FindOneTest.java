@@ -156,7 +156,7 @@ public class FindOneTest extends JongoTestBase {
         /* then */
         assertThat(friend.getName()).isEqualTo("John");
 
-        // warning: we cannot check that ReadPreference is really used by driver, this unit test only checks the API
+        // warning: we cannot check that ReadConcern is really used by driver, this unit test only checks the API
     }
 
 
