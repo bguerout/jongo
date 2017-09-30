@@ -77,8 +77,8 @@
 
     <properties>
         <mongo.min.version>3.3.0</mongo.min.version>
-        <mongo.max.version>3.4.0</mongo.max.version>
-        <mongo.version>[${mongo.min.version},${mongo.max.version}]</mongo.version>
+        <mongo.max.version>3.5.0</mongo.max.version>
+        <mongo.version>3.5.0</mongo.version>
         <jackson.version>2.7.8</jackson.version>
         <bson4jackson.version>2.7.0</bson4jackson.version>
     </properties>
