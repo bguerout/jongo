@@ -35,7 +35,7 @@ do
 
           if [ "$?" -ne "0" ];
           then
-            echo "${driver_version} with db ${db_version} FAILED, please check file $OUTPUT_DIR/build-$version.log"
+            echo "${driver_version} with db ${db_version} FAILED, please check file $OUTPUT_DIR/build-$driver_version-$db_version.log"
             A_VERSION_HAS_FAILED=true;
           else
             echo "${driver_version} SUCCESS"
