@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.jongo.model.Coordinate;
 import org.jongo.model.ExposableFriend;
 import org.jongo.model.ExternalFriend;
+import org.jongo.model.PersistenceFriend;
 import org.jongo.model.Friend;
 import org.junit.After;
 import org.junit.Before;
@@ -73,6 +74,19 @@ public class InsertNativeTest extends NativeTestBase {
         Friend result = collection.find(id(oid)).first();
         assertThat(result.getId()).isEqualTo(oid);
         assertThat(john.getId().getDate().getTime()).isLessThan(afterSave);  //insert
+    }
+
+    @Test
+    public void canInsertWithPersistenceId() throws Exception {
+
+        MongoCollection<PersistenceFriend> friends = collection.withDocumentClass(PersistenceFriend.class);
+
+        String id = ObjectId.get().toString();
+        PersistenceFriend john = new PersistenceFriend(id, "Robert");
+        friends.insertOne(john);
+
+        PersistenceFriend result = friends.find().first();
+        assertThat(result.getId()).isEqualTo(id);
     }
 
     @Test
