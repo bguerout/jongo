@@ -52,10 +52,10 @@ public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
     }
 
     private static boolean hasMongoId(Annotated a) {
-        return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class);
+        return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class) || a.hasAnnotation(javax.persistence.Id.class);
     }
 
     private static boolean hasMongoObjectId(Annotated a) {
-        return a.hasAnnotation(MongoObjectId.class) || a.hasAnnotation(ObjectId.class);
+        return a.hasAnnotation(MongoObjectId.class) || a.hasAnnotation(ObjectId.class) || a.hasAnnotation(javax.persistence.Id.class);
     }
 }

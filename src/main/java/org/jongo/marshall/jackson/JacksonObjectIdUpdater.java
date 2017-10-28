@@ -97,6 +97,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
     private static boolean isObjectId(BeanPropertyDefinition property) {
         return property.getPrimaryMember().getAnnotation(org.jongo.marshall.jackson.oid.ObjectId.class) != null
                 || property.getPrimaryMember().getAnnotation(MongoObjectId.class) != null
+                || property.getPrimaryMember().getAnnotation(javax.persistence.Id.class) != null
                 || ObjectId.class.isAssignableFrom(property.getAccessor().getRawType());
     }
 
@@ -107,7 +108,9 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
     private static boolean hasIdAnnotation(BeanPropertyDefinition property) {
         if (property == null) return false;
         AnnotatedMember accessor = property.getPrimaryMember();
-        return accessor != null && (accessor.getAnnotation(MongoId.class) != null || accessor.getAnnotation(Id.class) != null);
+        return accessor != null && (accessor.getAnnotation(MongoId.class) != null
+                || accessor.getAnnotation(Id.class) != null
+                || accessor.getAnnotation(javax.persistence.Id.class) != null);
     }
 
     private BasicBeanDescription beanDescription(Class<?> cls) {
