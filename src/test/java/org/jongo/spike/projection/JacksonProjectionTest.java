@@ -19,11 +19,7 @@ package org.jongo.spike.projection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
-import org.jongo.marshall.jackson.bson4jackson.BsonModule;
-import org.jongo.marshall.jackson.bson4jackson.MongoBsonFactory;
-import org.jongo.marshall.jackson.configuration.AnnotationModifier;
-import org.jongo.marshall.jackson.configuration.Mapping;
-import org.jongo.marshall.jackson.configuration.PropertyModifier;
+import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -38,12 +34,7 @@ public class JacksonProjectionTest {
 
     @Before
     public void setUp() throws Exception {
-        ObjectMapper mapper = new ObjectMapper(MongoBsonFactory.createFactory());
-        Mapping.Builder builder = new Mapping.Builder(mapper);
-        builder.registerModule(new BsonModule());
-        builder.addModifier(new PropertyModifier());
-        builder.addModifier(new AnnotationModifier());
-        builder.build();
+        ObjectMapper mapper = JacksonMapper.Builder.defaultObjectMapper();
         projection = new JacksonProjection(mapper);
     }
 

@@ -22,6 +22,7 @@ import org.jongo.ObjectIdUpdater;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.configuration.AbstractMappingBuilder;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.query.BsonQueryFactory;
 import org.jongo.query.QueryFactory;
 
@@ -94,6 +95,10 @@ public class JacksonMapper implements Mapper {
 
         public static Builder jacksonMapper() {
             return new Builder();
+        }
+
+        public static ObjectMapper defaultObjectMapper() {
+            return Mapping.defaultMapping().getObjectMapper();
         }
     }
 }
