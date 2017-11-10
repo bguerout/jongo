@@ -68,12 +68,13 @@ public class JacksonMapper implements Mapper {
         }
 
         public Mapper build() {
-            JacksonEngine jacksonEngine = new JacksonEngine(createMapping());
+            Mapping mapping = createMapping();
+            JacksonEngine jacksonEngine = new JacksonEngine(mapping);
             if (queryFactory == null) {
                 queryFactory = new BsonQueryFactory(jacksonEngine);
             }
             if (objectIdUpdater == null) {
-                objectIdUpdater = new JacksonObjectIdUpdater(jacksonEngine.getObjectMapper());
+                objectIdUpdater = new JacksonObjectIdUpdater(mapping.getObjectMapper());
             }
             return new JacksonMapper(jacksonEngine, queryFactory, objectIdUpdater);
         }

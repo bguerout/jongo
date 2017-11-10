@@ -36,6 +36,10 @@ public class JacksonEngine implements Unmarshaller, Marshaller {
         this.mapping = mapping;
     }
 
+    /**
+     * @deprecated Use {@link Mapping#getObjectMapper()} instead
+     */
+    @Deprecated
     public ObjectMapper getObjectMapper() {
         return mapping.getObjectMapper();
     }
