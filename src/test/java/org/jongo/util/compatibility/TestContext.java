@@ -40,6 +40,10 @@ public class TestContext {
         return contextName;
     }
 
+    public Mapper getMapper() {
+        return mapper;
+    }
+
     public boolean mustIgnoreTestCase(Class<?> clazz) {
         return ignoredTestCases.contains(clazz);
     }
@@ -67,5 +71,4 @@ public class TestContext {
             test.prepareMarshallingStrategy(mapper);
         }
     }
-
 }
