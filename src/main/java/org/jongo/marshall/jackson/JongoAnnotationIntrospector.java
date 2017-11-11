@@ -28,34 +28,34 @@ public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
 
     @Override
     public Include findSerializationInclusion(Annotated a, Include defValue) {
-        return hasMongoObjectId(a) ? Include.NON_NULL : defValue;
+        return hasObjectIdAnnotation(a) ? Include.NON_NULL : defValue;
     }
 
     @Override
     public Object findSerializer(Annotated a) {
-        return hasMongoObjectId(a) ? ObjectIdSerializer.class : super.findSerializer(a);
+        return hasObjectIdAnnotation(a) ? ObjectIdSerializer.class : super.findSerializer(a);
     }
 
     @Override
     public Object findDeserializer(Annotated a) {
-        return hasMongoObjectId(a) ? ObjectIdDeserializer.class : super.findDeserializer(a);
+        return hasObjectIdAnnotation(a) ? ObjectIdDeserializer.class : super.findDeserializer(a);
     }
 
     @Override
     public PropertyName findNameForSerialization(Annotated a) {
-        return hasMongoId(a) ? new PropertyName("_id") : super.findNameForSerialization(a);
+        return hasIdAnnotation(a) ? new PropertyName("_id") : super.findNameForSerialization(a);
     }
 
     @Override
     public PropertyName findNameForDeserialization(Annotated a) {
-        return hasMongoId(a) ? new PropertyName("_id") : super.findNameForDeserialization(a);
+        return hasIdAnnotation(a) ? new PropertyName("_id") : super.findNameForDeserialization(a);
     }
 
-    private static boolean hasMongoId(Annotated a) {
+    protected boolean hasIdAnnotation(Annotated a) {
         return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class);
     }
 
-    private static boolean hasMongoObjectId(Annotated a) {
+    protected boolean hasObjectIdAnnotation(Annotated a) {
         return a.hasAnnotation(MongoObjectId.class) || a.hasAnnotation(ObjectId.class);
     }
 }
