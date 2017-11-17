@@ -67,8 +67,8 @@ public class TestContext {
 
     public void prepareTestCase(Object testCase) throws Exception {
         if (testCase instanceof JongoTestBase) {
-            JongoTestBase test = (JongoTestBase) testCase;
-            test.prepareMarshallingStrategy(mapper);
+            JongoTestBase currentTestCase = (JongoTestBase) testCase;
+            currentTestCase.configure(mapper);
         }
     }
 }

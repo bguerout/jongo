@@ -16,15 +16,17 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
+import org.jongo.Mapper;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
-import org.jongo.util.JongoEmbeddedRule;
-import org.jongo.util.MongoEmbeddedRule;
+import org.jongo.marshall.Marshaller;
+import org.jongo.marshall.Unmarshaller;
+import org.jongo.marshall.jackson.configuration.MapperModifier;
+import org.jongo.util.JongoTestBase;
 import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -36,6 +38,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 import static org.jongo.model.IdSpecSet.*;
 import static org.junit.Assert.assertThat;
 
@@ -45,7 +48,11 @@ import static org.junit.Assert.assertThat;
  * @author Christian Trimble
  */
 @RunWith(Parameterized.class)
-public class IdSpecTest {
+public class IdSpecTest extends JongoTestBase {
+
+    private Marshaller marshaller;
+    private Unmarshaller unmarshaller;
+
     @Parameters
     public static List<Object[]> parameters() {
         return Arrays.asList(new Object[][]{
@@ -66,13 +73,6 @@ public class IdSpecTest {
         });
     }
 
-    public static
-    @ClassRule
-    MongoEmbeddedRule mongoRule = new MongoEmbeddedRule();
-    public
-    @Rule
-    JongoEmbeddedRule jongoRule = new JongoEmbeddedRule(mongoRule);
-
     private Class<?> spec;
     private Class<?> equiv;
     private Class<?> mixIn;
@@ -82,14 +82,17 @@ public class IdSpecTest {
         this.spec = spec;
         this.equiv = equiv;
         this.mixIn = mixIn;
-        if (this.mixIn != null) {
-            jongoRule.withMixIn(spec, this.mixIn);
-        }
     }
 
     @Before
     public void setUp() throws UnknownHostException {
-        this.collection = jongoRule.createEmptyCollection("spec");
+        if (this.mixIn != null) {
+            Mapper mapper = newMapperWithMixIns(spec, this.mixIn);
+            configure(mapper);
+        }
+        this.collection = createEmptyCollection("spec");
+        this.marshaller = getMapper().getMarshaller();
+        this.unmarshaller = getMapper().getUnmarshaller();
     }
 
     @Test
@@ -108,14 +111,14 @@ public class IdSpecTest {
     @Test
     public void marshalledHasIdField() {
         Object instance = newInstanceWithId(spec, new ObjectId());
-        org.jongo.bson.BsonDocument document = jongoRule.getMapper().getMarshaller().marshall(instance);
+        org.jongo.bson.BsonDocument document = marshaller.marshall(instance);
         assertThat(document.toDBObject().containsField("_id"), equalTo(true));
     }
 
     @Test
     public void marshalledHasCorrectIdType() {
         Object instance = newInstanceWithId(spec, new ObjectId());
-        org.jongo.bson.BsonDocument document = jongoRule.getMapper().getMarshaller().marshall(instance);
+        org.jongo.bson.BsonDocument document = marshaller.marshall(instance);
         Object id = mongoId(instance);
         assertThat(document.toDBObject().get("_id"), instanceOf(id.getClass()));
     }
@@ -123,8 +126,8 @@ public class IdSpecTest {
     @Test
     public void marchalRoundTrip() {
         Object instance = newInstanceWithId(spec, new ObjectId());
-        org.jongo.bson.BsonDocument document = jongoRule.getMapper().getMarshaller().marshall(instance);
-        Object roundTrip = jongoRule.getMapper().getUnmarshaller().unmarshall(document, spec);
+        org.jongo.bson.BsonDocument document = marshaller.marshall(instance);
+        Object roundTrip = unmarshaller.unmarshall(document, spec);
         assertThat(id(roundTrip), equalTo(id(instance)));
     }
 
@@ -148,5 +151,13 @@ public class IdSpecTest {
 
     private static Class<?> noMixIn() {
         return null;
+    }
+
+    private Mapper newMapperWithMixIns(final Class<?> spec, final Class<?> mixIn) {
+        return jacksonMapper().addModifier(new MapperModifier() {
+            public void modify(ObjectMapper mapper) {
+                mapper.addMixInAnnotations(spec, mixIn);
+            }
+        }).build();
     }
 }

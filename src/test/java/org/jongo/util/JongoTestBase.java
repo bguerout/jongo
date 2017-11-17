@@ -40,6 +40,10 @@ public abstract class JongoTestBase {
     }
 
     protected JongoTestBase(Mapper mapper) {
+        configure(mapper);
+    }
+
+    public void configure(Mapper mapper) {
         this.mapper = mapper;
         this.jongo = new Jongo(MONGO_RESOURCE.getDb("test_jongo"), mapper);
     }
@@ -78,10 +82,4 @@ public abstract class JongoTestBase {
         int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
         assumeTrue(currentVersion >= expectedVersionAsInt);
     }
-
-    public void prepareMarshallingStrategy(Mapper mapper) {
-        this.mapper = mapper;
-        this.jongo = new Jongo(MONGO_RESOURCE.getDb("test_jongo"), mapper);
-    }
-
 }

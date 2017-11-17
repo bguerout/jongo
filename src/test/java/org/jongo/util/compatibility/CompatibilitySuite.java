@@ -16,8 +16,10 @@
 
 package org.jongo.util.compatibility;
 
+import org.junit.internal.builders.AnnotatedBuilder;
 import org.junit.internal.builders.IgnoredClassRunner;
 import org.junit.internal.builders.JUnit4Builder;
+import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -40,7 +42,7 @@ public class CompatibilitySuite extends Suite {
     protected List<Runner> getChildren() {
         try {
             TestContext testContext = getTestContextFromParameter();
-            ContextRunnerBuilder builder = new ContextRunnerBuilder(testContext);
+            CompatibilitySuiteRunner builder = new CompatibilitySuiteRunner(testContext);
 
             return builder.runners(getTestClass().getJavaClass(), testContext.findTestCases());
         } catch (Throwable cause) {
@@ -62,11 +64,11 @@ public class CompatibilitySuite extends Suite {
         throw new Exception("No public static parameters method on class " + testClass.getName());
     }
 
-    private static class ContextRunnerBuilder extends JUnit4Builder {
+    private static class CompatibilitySuiteRunner extends JUnit4Builder {
 
         private TestContext testContext;
 
-        public ContextRunnerBuilder(TestContext testContext) {
+        public CompatibilitySuiteRunner(TestContext testContext) {
             this.testContext = testContext;
         }
 
@@ -75,15 +77,19 @@ public class CompatibilitySuite extends Suite {
             if (testContext.mustIgnoreTestCase(testClass)) {
                 return new IgnoredClassRunner(testClass);
             }
-            return new ContextJUnit4ClassRunner(testClass, testContext);
+            RunWith annotation = testClass.getAnnotation(RunWith.class);
+            if (annotation != null) {
+                return new AnnotatedBuilder(this).runnerForClass(testClass);
+            }
+            return new JongoTestClassRunner(testClass, testContext);
         }
     }
 
-    private static class ContextJUnit4ClassRunner extends BlockJUnit4ClassRunner {
+    private static class JongoTestClassRunner extends BlockJUnit4ClassRunner {
 
         private TestContext testContext;
 
-        public ContextJUnit4ClassRunner(Class<?> aClass, TestContext testContext) throws InitializationError {
+        public JongoTestClassRunner(Class<?> aClass, TestContext testContext) throws InitializationError {
             super(aClass);
             this.testContext = testContext;
         }
