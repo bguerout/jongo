@@ -17,6 +17,7 @@
 package org.jongo;
 
 import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.IdSelector;
 import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
 
 import java.lang.reflect.Field;
@@ -115,7 +116,8 @@ public class ReflectiveObjectIdUpdater implements ObjectIdUpdater {
         return false;
     }
 
-    public interface IdFieldSelector {
+    @Deprecated
+    public interface IdFieldSelector extends IdSelector<Field>{
         boolean isId(Field f);
 
         boolean isObjectId(Field f);

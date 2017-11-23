@@ -23,9 +23,6 @@ import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import org.bson.types.ObjectId;
 import org.jongo.ObjectIdUpdater;
-import org.jongo.marshall.jackson.oid.Id;
-import org.jongo.marshall.jackson.oid.MongoId;
-import org.jongo.marshall.jackson.oid.MongoObjectId;
 
 /**
  * An ObjectIdUpdater based on Jackson's view of on object.
@@ -36,17 +33,23 @@ import org.jongo.marshall.jackson.oid.MongoObjectId;
 public class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     private final ObjectMapper mapper;
+    private final IdSelector<BeanPropertyDefinition> idSelector;
 
     public JacksonObjectIdUpdater(ObjectMapper mapper) {
+        this(mapper, new BeanPropertyDefinitionIdSelector());
+    }
+
+    public JacksonObjectIdUpdater(ObjectMapper mapper, IdSelector<BeanPropertyDefinition> idSelector) {
         this.mapper = mapper;
+        this.idSelector = idSelector;
     }
 
     public boolean mustGenerateObjectId(Object pojo) {
         for (BeanPropertyDefinition def : beanDescription(pojo.getClass()).findProperties()) {
-            if (isIdProperty(def)) {
+            if (idSelector.isId(def)) {
                 AnnotatedMember accessor = def.getAccessor();
                 accessor.fixAccess(true);
-                return isObjectId(def) && accessor.getValue(pojo) == null;
+                return idSelector.isObjectId(def) && accessor.getValue(pojo) == null;
             }
         }
         return false;
@@ -55,11 +58,11 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
     public Object getId(Object pojo) {
         BasicBeanDescription beanDescription = beanDescription(pojo.getClass());
         for (BeanPropertyDefinition def : beanDescription.findProperties()) {
-            if (isIdProperty(def)) {
+            if (idSelector.isId(def)) {
                 AnnotatedMember accessor = def.getAccessor();
                 accessor.fixAccess(true);
                 Object id = accessor.getValue(pojo);
-                if (id instanceof String && isObjectId(def)) {
+                if (id instanceof String && idSelector.isObjectId(def)) {
                     return new ObjectId(id.toString());
                 } else {
                     return id;
@@ -71,7 +74,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
 
     public void setObjectId(Object target, ObjectId id) {
         for (BeanPropertyDefinition def : beanDescription(target.getClass()).findProperties()) {
-            if (isIdProperty(def)) {
+            if (idSelector.isId(def)) {
                 AnnotatedMember accessor = def.getAccessor();
                 accessor.fixAccess(true);
                 if (accessor.getValue(target) != null) {
@@ -82,32 +85,12 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
                 Class<?> type = field.getRawType();
                 if (ObjectId.class.isAssignableFrom(type)) {
                     field.setValue(target, id);
-                } else if (type.equals(String.class) && isObjectId(def)) {
+                } else if (type.equals(String.class) && idSelector.isObjectId(def)) {
                     field.setValue(target, id.toString());
                 }
                 return;
             }
         }
-    }
-
-    private static boolean isIdProperty(BeanPropertyDefinition property) {
-        return hasIdName(property) || hasIdAnnotation(property);
-    }
-
-    private static boolean isObjectId(BeanPropertyDefinition property) {
-        return property.getPrimaryMember().getAnnotation(org.jongo.marshall.jackson.oid.ObjectId.class) != null
-                || property.getPrimaryMember().getAnnotation(MongoObjectId.class) != null
-                || ObjectId.class.isAssignableFrom(property.getAccessor().getRawType());
-    }
-
-    private static boolean hasIdName(BeanPropertyDefinition property) {
-        return "_id".equals(property.getName());
-    }
-
-    private static boolean hasIdAnnotation(BeanPropertyDefinition property) {
-        if (property == null) return false;
-        AnnotatedMember accessor = property.getPrimaryMember();
-        return accessor != null && (accessor.getAnnotation(MongoId.class) != null || accessor.getAnnotation(Id.class) != null);
     }
 
     private BasicBeanDescription beanDescription(Class<?> cls) {

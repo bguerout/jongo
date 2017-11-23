@@ -20,42 +20,44 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector;
-import org.jongo.marshall.jackson.oid.*;
+import org.jongo.marshall.jackson.oid.ObjectIdDeserializer;
+import org.jongo.marshall.jackson.oid.ObjectIdSerializer;
 
 @SuppressWarnings("deprecation")
 public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
-    private static final long serialVersionUID = 1L;
+
+    private final IdSelector<Annotated> idSelector;
+
+    public JongoAnnotationIntrospector() {
+        this(new AnnotatedIdSelector());
+    }
+
+    public JongoAnnotationIntrospector(IdSelector<Annotated> idSelector) {
+        this.idSelector = idSelector;
+    }
 
     @Override
     public Include findSerializationInclusion(Annotated a, Include defValue) {
-        return hasObjectIdAnnotation(a) ? Include.NON_NULL : defValue;
+        return idSelector.isObjectId(a) ? Include.NON_NULL : defValue;
     }
 
     @Override
     public Object findSerializer(Annotated a) {
-        return hasObjectIdAnnotation(a) ? ObjectIdSerializer.class : super.findSerializer(a);
+        return idSelector.isObjectId(a) ? ObjectIdSerializer.class : super.findSerializer(a);
     }
 
     @Override
     public Object findDeserializer(Annotated a) {
-        return hasObjectIdAnnotation(a) ? ObjectIdDeserializer.class : super.findDeserializer(a);
+        return idSelector.isObjectId(a) ? ObjectIdDeserializer.class : super.findDeserializer(a);
     }
 
     @Override
     public PropertyName findNameForSerialization(Annotated a) {
-        return hasIdAnnotation(a) ? new PropertyName("_id") : super.findNameForSerialization(a);
+        return idSelector.isId(a) ? new PropertyName("_id") : super.findNameForSerialization(a);
     }
 
     @Override
     public PropertyName findNameForDeserialization(Annotated a) {
-        return hasIdAnnotation(a) ? new PropertyName("_id") : super.findNameForDeserialization(a);
-    }
-
-    protected boolean hasIdAnnotation(Annotated a) {
-        return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class);
-    }
-
-    protected boolean hasObjectIdAnnotation(Annotated a) {
-        return a.hasAnnotation(MongoObjectId.class) || a.hasAnnotation(ObjectId.class);
+        return idSelector.isId(a) ? new PropertyName("_id") : super.findNameForDeserialization(a);
     }
 }
