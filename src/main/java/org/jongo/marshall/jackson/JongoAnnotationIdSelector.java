@@ -21,7 +21,7 @@ import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.marshall.jackson.oid.MongoObjectId;
 
-public class AnnotatedIdSelector implements IdSelector<Annotated> {
+public class JongoAnnotationIdSelector implements IdSelector<Annotated> {
 
     public boolean isId(Annotated a) {
         return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class);

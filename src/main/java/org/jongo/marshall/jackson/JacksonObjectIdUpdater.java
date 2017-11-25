@@ -36,7 +36,7 @@ public class JacksonObjectIdUpdater implements ObjectIdUpdater {
     private final IdSelector<BeanPropertyDefinition> idSelector;
 
     public JacksonObjectIdUpdater(ObjectMapper mapper) {
-        this(mapper, new BeanPropertyDefinitionIdSelector());
+        this(mapper, new JacksonObjectIdSelector());
     }
 
     public JacksonObjectIdUpdater(ObjectMapper mapper, IdSelector<BeanPropertyDefinition> idSelector) {

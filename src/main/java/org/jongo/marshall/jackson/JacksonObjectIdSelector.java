@@ -23,7 +23,7 @@ import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.marshall.jackson.oid.MongoObjectId;
 
-public class BeanPropertyDefinitionIdSelector implements IdSelector<BeanPropertyDefinition> {
+public class JacksonObjectIdSelector implements IdSelector<BeanPropertyDefinition> {
 
     public boolean isId(BeanPropertyDefinition property) {
         return hasIdName(property) || hasIdAnnotation(property);

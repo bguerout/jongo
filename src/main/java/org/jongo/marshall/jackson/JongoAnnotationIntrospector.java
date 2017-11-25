@@ -29,7 +29,7 @@ public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
     private final IdSelector<Annotated> idSelector;
 
     public JongoAnnotationIntrospector() {
-        this(new AnnotatedIdSelector());
+        this(new JongoAnnotationIdSelector());
     }
 
     public JongoAnnotationIntrospector(IdSelector<Annotated> idSelector) {
