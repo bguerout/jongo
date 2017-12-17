@@ -17,9 +17,8 @@
 package org.jongo.spike.projection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
-import org.jongo.marshall.jackson.JacksonMapper;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Fox;
 import org.jongo.model.Friend;
@@ -34,8 +33,8 @@ public class JacksonProjectionTest {
 
     @Before
     public void setUp() throws Exception {
-        ObjectMapper mapper = JacksonMapper.Builder.defaultObjectMapper();
-        projection = new JacksonProjection(mapper);
+        Mapping mapping = new Mapping.Builder().build();
+        projection = new JacksonProjection(mapping.getObjectMapper());
     }
 
     @Test

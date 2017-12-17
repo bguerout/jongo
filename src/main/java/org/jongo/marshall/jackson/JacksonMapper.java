@@ -97,9 +97,5 @@ public class JacksonMapper implements Mapper {
         public static Builder jacksonMapper() {
             return new Builder();
         }
-
-        public static ObjectMapper defaultObjectMapper() {
-            return Mapping.defaultMapping().getObjectMapper();
-        }
     }
 }

@@ -18,13 +18,17 @@ package org.jongo;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.*;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.IdSelector;
 import org.jongo.marshall.jackson.JacksonMapper;
 import org.jongo.marshall.jackson.JacksonObjectIdUpdater;
 import org.jongo.marshall.jackson.JongoAnnotationIntrospector;
 import org.jongo.marshall.jackson.configuration.AnnotationModifier;
+import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.util.compatibility.CompatibilitySuite;
 import org.jongo.util.compatibility.TestContext;
@@ -37,17 +41,20 @@ public class DeprecatedAnnotationsCompatibilitySuiteTest {
     @Parameterized.Parameters
     public static TestContext context() {
 
-        ObjectMapper objectMapper = JacksonMapper.Builder.defaultObjectMapper();
+        Mapping mapping = new Mapping.Builder()
+                .addModifier(new DeprecatedAnnotationModifier())
+                .build();
+
+        ObjectMapper objectMapper = mapping.getObjectMapper();
 
         Mapper mapper = new JacksonMapper.Builder(objectMapper)
-                .addModifier(new OnlyDeprecatedAnnotationModifier())
-                .withObjectIdUpdater(new JacksonObjectIdUpdater(objectMapper, new OnlyDeprecatedObjectIdSelector()))
+                .withObjectIdUpdater(new JacksonObjectIdUpdater(objectMapper, new DeprecatedObjectIdSelector()))
                 .build();
 
         return new TestContext("DeprecatedAnnotations", mapper);
     }
 
-    private static class OnlyDeprecatedAnnotationModifier extends AnnotationModifier  {
+    private static class DeprecatedAnnotationModifier extends AnnotationModifier {
 
         @Override
         public void modify(ObjectMapper mapper) {
@@ -69,7 +76,7 @@ public class DeprecatedAnnotationsCompatibilitySuiteTest {
         }
     }
 
-    private static class OnlyDeprecatedObjectIdSelector implements IdSelector<BeanPropertyDefinition> {
+    private static class DeprecatedObjectIdSelector implements IdSelector<BeanPropertyDefinition> {
 
         public boolean isId(BeanPropertyDefinition property) {
             return "_id".equals(property.getName()) || hasIdAnnotation(property);
