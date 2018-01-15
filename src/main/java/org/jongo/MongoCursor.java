@@ -23,6 +23,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.jongo.function.Function;
 
 public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
 
@@ -61,4 +62,9 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
     public int count() {
         return cursor.count();
     }
+
+    public <R> R to(Function<MongoCursor<E>, R> toType) {
+        return toType.apply(this);
+    }
+
 }
