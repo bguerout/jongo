@@ -27,20 +27,16 @@ import com.fasterxml.jackson.databind.node.BinaryNode;
 import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import org.bson.conversions.Bson;
 import org.bson.types.*;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Map;
 
 class BsonDeserializers extends SimpleDeserializers {
 
     public BsonDeserializers() {
-        addDeserializer(Bson.class, new BsonDeserializer());
         addDeserializer(Date.class, new DateDeserializer());
         addDeserializer(MinKey.class, new MinKeyDeserializer());
         addDeserializer(MaxKey.class, new MaxKeyDeserializer());
@@ -111,14 +107,6 @@ class BsonDeserializers extends SimpleDeserializers {
         public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             String asString = jp.readValueAsTree().toString();
             return (T) JSON.parse(asString);
-        }
-    }
-
-    private static class BsonDeserializer extends JsonDeserializer<Bson> {
-        @Override
-        public Bson deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            Map map = jp.readValueAs(Map.class);
-            return new BasicDBObject(map);
         }
     }
 
