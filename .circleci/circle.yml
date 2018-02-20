@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/circleci-demo-java-spring
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    steps:
+      - checkout
+      - restore_cache:
+          key: circleci-jongo-{{ checksum "pom.xml" }}
+      - run: mvn dependency:go-offline
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: circleci-jongo-{{ checksum "pom.xml" }}
+      - run: mvn verify
+      - store_test_results:
+          path: target/surefire-reports
+      - store_artifacts:
+          path: target/jongo-SNAPSHOT.jar
