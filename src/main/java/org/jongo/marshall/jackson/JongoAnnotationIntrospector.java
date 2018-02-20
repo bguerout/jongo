@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector;
-import org.jongo.marshall.jackson.oid.ObjectIdDeserializer;
-import org.jongo.marshall.jackson.oid.ObjectIdSerializer;
+import org.jongo.marshall.jackson.oid.*;
 
 @SuppressWarnings("deprecation")
 public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
@@ -29,7 +28,7 @@ public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
     private final IdSelector<Annotated> idSelector;
 
     public JongoAnnotationIntrospector() {
-        this(new JongoAnnotationIdSelector());
+        this(new AnnotatedIdSelector());
     }
 
     public JongoAnnotationIntrospector(IdSelector<Annotated> idSelector) {
@@ -59,5 +58,16 @@ public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
     @Override
     public PropertyName findNameForDeserialization(Annotated a) {
         return idSelector.isId(a) ? new PropertyName("_id") : super.findNameForDeserialization(a);
+    }
+
+    public static class AnnotatedIdSelector implements IdSelector<Annotated> {
+
+        public boolean isId(Annotated a) {
+            return a.hasAnnotation(MongoId.class) || a.hasAnnotation(Id.class);
+        }
+
+        public boolean isObjectId(Annotated a) {
+            return a.hasAnnotation(MongoObjectId.class) || a.hasAnnotation(ObjectId.class);
+        }
     }
 }
