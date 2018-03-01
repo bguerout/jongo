@@ -19,14 +19,13 @@
 ##
 #####################################################################
 
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-MAGENTA=$(tput setaf 5)
-NORMAL=$(tput sgr0)
-BOLD=$(tput bold)
+RED='\e[0;31m'
+GREEN='\e[0;32m'
+MAGENTA='\e[1;35m'
+NORMAL='\e[1;37m'
 
 log_header() {
-  printf "\n${BOLD}${MAGENTA}==========  %s  ==========${NORMAL}\n" "$@" >&2
+  printf "\n${MAGENTA}==========  %s  ==========${NORMAL}\n" "$@" >&2
   }
 
 log_success() {

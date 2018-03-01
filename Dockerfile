@@ -11,3 +11,5 @@ RUN apt-get update \
 COPY . /opt/jongo/sources
 
 WORKDIR /opt/jongo/sources
+
+ENTRYPOINT ["bash", "./bin/release-cli.sh"]

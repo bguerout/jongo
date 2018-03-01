@@ -57,7 +57,7 @@ function determine_early_release_version {
 
 function determine_hotfix_version_pattern {
     local branch_name="${1}"
-    echo $(determine_release_version "${branch_name}") | cut -d '.' -f1 -f2 | xargs -I % echo "%.x"
+    echo $(determine_release_version "${branch_name}") | awk -F  "." '{print $1"."$2;}' | xargs -I % echo "%.x"
 }
 
 function set_version {
@@ -99,7 +99,7 @@ function bump_to_next_minor_snapshot_version {
 
 function create_bare_repository {
     local source_repo=${1}
-    local bare_repo_dir=$(mktemp -d -t "jongo-release-bare-repo")
+    local bare_repo_dir=$(mktemp -d -t "jongo-release-bare-repo-XXXXX")
     cp -R ${source_repo}/.git/ ${bare_repo_dir}/
     pushd ${bare_repo_dir} > /dev/null
         git config --bool core.bare true
@@ -109,9 +109,9 @@ function create_bare_repository {
 }
 
 function clone_repository {
-    local clone_dir=$(mktemp -d -t "jongo-release-repo")
-    local remote_url=$(git config --get remote.origin.url)
-    git clone -q "${remote_url}" "${clone_dir}"
+    local clone_dir=$(mktemp -d -t "jongo-release-repo-XXXXX")
+    local remote_url="https://github.com/bguerout/jongo.git"
+    git clone "${remote_url}" "${clone_dir}"
     echo "${clone_dir}"
 }
 
@@ -128,5 +128,5 @@ function update_origin_with_fake_remote {
 
 function clean_resources {
     echo "Cleaning resources..."
-    find ${TMPDIR} -depth -type d -name "jongo-release*" -exec rm -rf {} \;
+    find ${TMPDIR:-$(dirname $(mktemp))/} -depth -type d -name "jongo-release*" -exec rm -rf {} \;
 }

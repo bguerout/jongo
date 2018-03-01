@@ -20,6 +20,8 @@ function before_all {
     log_header "Starting testing suite"
     readonly JONGO_TEST_BRANCH="${1}"
     import_gpg "${JONGO_BASE_DIR}/src/test/resources/gpg-test-jongo.asc"
+    git config user.email "test@jongo.org"
+    git config user.name "Robert Hue"
 }
 
 function after_all {
