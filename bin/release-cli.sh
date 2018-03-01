@@ -58,6 +58,10 @@ function __main() {
             readonly dirty=true
             shift
         ;;
+        --debug)
+            set -x
+            shift
+        ;;
         -d|--dry-run)
             readonly dry_run="$2"
             shift
