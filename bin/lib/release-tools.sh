@@ -1,24 +1,4 @@
 
-function _mvn() {
-    mvn ${JONGO_MAVEN_OPTIONS:-""} $@
-}
-
-function checkout() {
-   git checkout -q $@
-}
-
-function uncheckout() {
-   git checkout -q -
-}
-
-function import_gpg() {
-    local gpg_file="${1}"
-
-    echo "Importing gpg file ${gpg_file} into keyring..."
-    export GPG_TTY=$(tty)
-    gpg -q --no-tty --batch --import "${gpg_file}"
-}
-
 function get_current_branch_name {
     echo $(git rev-parse --abbrev-ref HEAD)
 }
@@ -81,7 +61,7 @@ function bump_to_next_hotfix_snapshot_version {
         git add pom.xml
         git commit -q -a -m "[release] Prepare for next hotfix version"
     uncheckout
-    echo "[INFO] Branch ${branch_name} bumped to $(get_current_version "${branch_name}" )"
+    log_info "Branch ${branch_name} bumped to $(get_current_version "${branch_name}" )"
 }
 
 function bump_to_next_minor_snapshot_version {
@@ -94,39 +74,13 @@ function bump_to_next_minor_snapshot_version {
         git add pom.xml
         git commit -q -a -m "[release] Prepare for next development version"
     uncheckout
-    echo "[INFO] Branch ${branch_name} bumped to $(get_current_version "${branch_name}" )"
+    log_info "Branch ${branch_name} bumped to $(get_current_version "${branch_name}" )"
 }
 
-function create_bare_repository {
-    local source_repo=${1}
-    local bare_repo_dir=$(mktemp -d -t "jongo-release-bare-repo-XXXXX")
-    cp -R ${source_repo}/.git/ ${bare_repo_dir}/
-    pushd ${bare_repo_dir} > /dev/null
-        git config --bool core.bare true
-        git fetch -q origin '*:*'
-    popd > /dev/null
-    echo "${bare_repo_dir}"
-}
+function import_gpg() {
+    local gpg_file="${1}"
 
-function clone_repository {
-    local clone_dir=$(mktemp -d -t "jongo-release-repo-XXXXX")
-    local remote_url="https://github.com/bguerout/jongo.git"
-    git clone "${remote_url}" "${clone_dir}"
-    echo "${clone_dir}"
-}
-
-function update_origin_with_fake_remote {
-    local repo_dir="${1}"
-    local bare_repo_dir=$(create_bare_repository ${repo_dir})
-
-    pushd ${repo_dir} > /dev/null
-        git remote remove origin
-        git remote add origin "${bare_repo_dir}"
-        git fetch -q origin
-    popd > /dev/null
-}
-
-function clean_resources {
-    echo "Cleaning resources..."
-    find ${TMPDIR:-$(dirname $(mktemp))/} -depth -type d -name "jongo-release*" -exec rm -rf {} \;
+    log_info "Importing gpg file ${gpg_file} into keyring..."
+    export GPG_TTY=$(tty)
+    gpg -q --no-tty --batch --import "${gpg_file}"
 }

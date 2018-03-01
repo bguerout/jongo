@@ -22,7 +22,7 @@
 RED='\e[0;31m'
 GREEN='\e[0;32m'
 MAGENTA='\e[1;35m'
-NORMAL='\e[1;37m'
+NORMAL='\e[39m'
 
 log_header() {
   printf "\n${MAGENTA}==========  %s  ==========${NORMAL}\n" "$@" >&2

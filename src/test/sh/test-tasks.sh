@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/assert.sh"
+readonly JONGO_TEST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+source "${JONGO_TEST_DIR}/sh/assert.sh"
 
 function run_test_suite {
-    local script_branch="${1}"
+    readonly JONGO_TEST_TARGET_BRANCH="${1}"
 
-    before_all "${script_branch}"
+    before_all
         should_validate_utils
-
-        bump_to_test_version "${JONGO_TEST_BRANCH}"
         can_create_an_early_release
         can_create_a_new_release
         can_create_an_hotfix_release
@@ -18,13 +17,17 @@ function run_test_suite {
 
 function before_all {
     log_header "Starting testing suite"
-    readonly JONGO_TEST_BRANCH="${1}"
-    import_gpg "${JONGO_BASE_DIR}/src/test/resources/gpg-test-jongo.asc"
+
     git config user.email "test@jongo.org"
     git config user.name "Robert Hue"
+
+    checkout "${JONGO_TEST_TARGET_BRANCH}"
+
+    bump_to_test_version "${JONGO_TEST_TARGET_BRANCH}"
 }
 
 function after_all {
+    uncheckout
     echo ""
 }
 
@@ -39,29 +42,27 @@ function after_each {
 
 function should_validate_utils {
     before_each
-        bump_to_test_version "${JONGO_TEST_BRANCH}"
-
         echo "[TEST] --> can get the current project version"
-        assert_eq "$(get_current_version "${JONGO_TEST_BRANCH}")" "42.0.0-SNAPSHOT" "Current versions mismatched"
+        assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-SNAPSHOT" "Current versions mismatched"
 
         echo "[TEST] --> can determine the release version when project will be released"
-        assert_eq "$(determine_release_version "${JONGO_TEST_BRANCH}")" "42.0.0" "Release versions mismatched"
+        assert_eq "$(determine_release_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0" "Release versions mismatched"
 
         echo "[TEST] --> can determine the early release version when project will be released"
-        assert_eq "$(determine_early_release_version "${JONGO_TEST_BRANCH}")" "42.0.0-$(date +%Y%m%d-%H%M)" "Early release versions mismatched"
+        assert_eq "$(determine_early_release_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-$(date +%Y%m%d-%H%M)" "Early release versions mismatched"
 
         echo "[TEST] --> can determine the hotfix version pattern when project will be released"
-        assert_eq "$(determine_hotfix_version_pattern "${JONGO_TEST_BRANCH}")" "42.0.x" "Versions mismatched"
+        assert_eq "$(determine_hotfix_version_pattern "${JONGO_TEST_TARGET_BRANCH}")" "42.0.x" "Versions mismatched"
 
         echo "[TEST] --> should update project version to the next hotfix version"
-        bump_to_next_hotfix_snapshot_version "${JONGO_TEST_BRANCH}"
-        assert_eq "$(get_current_version "${JONGO_TEST_BRANCH}")" "42.0.1-SNAPSHOT" "Versions mismatched"
+        bump_to_next_hotfix_snapshot_version "${JONGO_TEST_TARGET_BRANCH}"
+        assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.1-SNAPSHOT" "Versions mismatched"
 
         echo "[TEST] --> should update project version in pom.xml to the next minor version"
-        bump_to_next_minor_snapshot_version "${JONGO_TEST_BRANCH}"
-        assert_eq "$(get_current_version "${JONGO_TEST_BRANCH}")" "42.1.0-SNAPSHOT" "Versions mismatched"
+        bump_to_next_minor_snapshot_version "${JONGO_TEST_TARGET_BRANCH}"
+        assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.1.0-SNAPSHOT" "Versions mismatched"
 
-        git reset -q --hard "origin/${JONGO_TEST_BRANCH}"
+        git reset -q --hard "origin/${JONGO_TEST_TARGET_BRANCH}"
     after_each
 }
 
@@ -70,10 +71,10 @@ function can_create_an_early_release {
 
         local expected_early_tag="42.0.0-$(date +%Y%m%d-%H%M)"
 
-        create_early_release "${JONGO_TEST_BRANCH}"
+        create_early_release "${JONGO_TEST_TARGET_BRANCH}"
 
-        local early_commit="$(get_head_commit ${JONGO_TEST_BRANCH}^)"
-        assert_eq "$(get_current_version ${JONGO_TEST_BRANCH})" "42.0.0-SNAPSHOT" "HEAD version of the base branch should be left intact"
+        local early_commit="$(get_head_commit ${JONGO_TEST_TARGET_BRANCH}^)"
+        assert_eq "$(get_current_version ${JONGO_TEST_TARGET_BRANCH})" "42.0.0-SNAPSHOT" "HEAD version of the base branch should be left intact"
         assert_eq "$(get_current_version ${early_commit})" "${expected_early_tag}" "early version in pom.xml has not been set"
         assert_eq "$(git tag -l ${expected_early_tag})" "${expected_early_tag}" "Tag does not exist"
         assert_eq "$(git show-ref -s "${expected_early_tag}")" "${early_commit}" "Tag does not point to the right commit"
@@ -82,7 +83,7 @@ function can_create_an_early_release {
 
 function can_create_a_new_release {
     before_each
-        create_release "${JONGO_TEST_BRANCH}"
+        create_release "${JONGO_TEST_TARGET_BRANCH}"
 
         local release_commit="$(get_head_commit releases_42.0.x^)"
         assert_eq "$(git branch -r | grep releases_42.0.x | sed -e 's/ //g')" "origin/releases_42.0.x" "Hotfixes branch has not been created or pushed"
@@ -90,7 +91,7 @@ function can_create_a_new_release {
         assert_eq "$(git tag -l 42.0.0)" "42.0.0" "Tag does not exist"
         assert_eq "$(git show-ref -s 42.0.0)" "${release_commit}" "Tag does not point to the right commit"
         assert_eq "$(get_current_version ${release_commit})" "42.0.0" "Release version in pom.xml has not been set"
-        assert_eq "$(get_current_version "${JONGO_TEST_BRANCH}")" "42.1.0-SNAPSHOT" "HEAD version of the base branch has not been set to the next version"
+        assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.1.0-SNAPSHOT" "HEAD version of the base branch has not been set to the next version"
     after_each
 }
 
@@ -103,7 +104,7 @@ function can_create_an_hotfix_release {
         assert_eq "$(git tag -l 42.0.1)" "42.0.1" "Hotfix tag does not exist"
         assert_eq "$(git show-ref -s 42.0.1)" "${hotfix_commit}" "Tag does not point to the right commit"
         assert_eq "$(get_current_version ${hotfix_commit})" "42.0.1" "Hotfix version in pom.xml has not been set"
-        assert_eq "$(get_current_version "${JONGO_TEST_BRANCH}")" "42.1.0-SNAPSHOT" "Version into test branch should be left intact"
+        assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.1.0-SNAPSHOT" "Version into test branch should be left intact"
     after_each
 }
 
@@ -112,6 +113,7 @@ function can_deploy_artifacts {
         local tag="42.0.0"
         local deploy_dir="$(pwd)/target/deploy/org/jongo/jongo/${tag}"
         local gpg_key="48EFB7C6F6C92BC3"
+        import_gpg "${JONGO_TEST_DIR}/resources/gpg-test-jongo.asc"
 
         deploy ${tag} "${gpg_key}"
 
