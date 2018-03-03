@@ -6,8 +6,10 @@ set -euo pipefail
 #########################
 
 readonly JONGO_BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
-source "${JONGO_BASE_DIR}/bin/lib/_mvn.sh"
-source "${JONGO_BASE_DIR}/bin/lib/repository-tools.sh"
+source "${JONGO_BASE_DIR}/bin/lib/common/mvn-tools.sh"
+source "${JONGO_BASE_DIR}/bin/lib/common/git-tools.sh"
+source "${JONGO_BASE_DIR}/bin/lib/common/gpg-tools.sh"
+source "${JONGO_BASE_DIR}/bin/lib/common/logger.sh"
 
 function __main() {
 
@@ -25,8 +27,13 @@ function __main() {
             shift
             shift
         ;;
-         -s|--settings-file)
+        -s|--settings-file)
             append_maven_options "--settings ${2}"
+            shift
+            shift
+        ;;
+        -s|--settings-security)
+            append_maven_options "-Dsettings.security=${2}"
             shift
             shift
         ;;
@@ -63,20 +70,20 @@ function __main() {
     done
     set -- "${job[@]}"
 
-    source "${JONGO_BASE_DIR}/bin/lib/log.sh"
-    source "${JONGO_BASE_DIR}/bin/lib/tasks.sh"
+    source "${JONGO_BASE_DIR}/bin/lib/release/tasks.sh"
 
     local target_branch="${branch:-$(get_current_branch_name)}"
+    [[ "${dry_run}" = true ]] &&  append_maven_options "-P test" && log_warn "Script is running in dry mode"
+    [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
 
     function before_task {
-        local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
+        local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git ")
 
         [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
-        [[ "${dry_run}" = true ]] &&  append_maven_options "-P test" &&  update_origin_with_fake_remote "${repo_dir}" && log_warn "Script is running in dry mode"
-        [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
+        [[ "${dry_run}" = true ]] &&  update_origin_with_fake_remote "${repo_dir}"
 
         log_info "***************************************************************************************"
-        log_info "* Running job ${job} with parameters:"
+        log_info "* Running task ${job} with parameters:"
         log_info "*   Dry mode '${dry_run}'"
         log_info "*   Maven options '$(get_maven_options)'"
         log_info "*   Target Branch '${target_branch}'"
@@ -118,7 +125,7 @@ function __main() {
             after_task
         ;;
         TEST)
-            mvn clean verify
+            _mvn clean verify
         ;;
         *)
          log_error "Unknown job ${job}"

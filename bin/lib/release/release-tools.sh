@@ -76,11 +76,3 @@ function bump_to_next_minor_snapshot_version {
     uncheckout
     log_info "Branch ${branch_name} bumped to $(get_current_version "${branch_name}" )"
 }
-
-function import_gpg() {
-    local gpg_file="${1}"
-
-    log_info "Importing gpg file ${gpg_file} into keyring..."
-    export GPG_TTY=$(tty)
-    gpg -q --no-tty --batch --import "${gpg_file}"
-}
