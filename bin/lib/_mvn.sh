@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-JONGO_MAVEN_OPTIONS="--quiet --errors --batch-mode -P release"
+JONGO_MAVEN_OPTIONS="--errors --batch-mode -P release"
 
 function _mvn() {
     mvn ${JONGO_MAVEN_OPTIONS:-""} $@

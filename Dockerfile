@@ -12,4 +12,4 @@ COPY . /opt/jongo/sources
 
 WORKDIR /opt/jongo/sources
 
-ENTRYPOINT ["bash", "./bin/release-cli.sh"]
+ENTRYPOINT ["bash", "./bin/cli.sh"]

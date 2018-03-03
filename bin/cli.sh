@@ -13,6 +13,7 @@ function __main() {
 
     local dry_run=true
     local dirty=false
+    local debug=false
     local job=()
 
     while [[ $# -gt 0 ]]
@@ -30,12 +31,12 @@ function __main() {
             shift
         ;;
         -b|--branch)
-            readonly branch="$2"
+            local -r branch="$2"
             shift
             shift
         ;;
         -t|--tag)
-            readonly tag="$2"
+            local -r tag="$2"
             shift
             shift
         ;;
@@ -46,6 +47,7 @@ function __main() {
         ;;
         --debug)
             set -x
+            readonly debug=true
             shift
         ;;
         -d|--dry-run)
@@ -62,57 +64,61 @@ function __main() {
     set -- "${job[@]}"
 
     source "${JONGO_BASE_DIR}/bin/lib/log.sh"
-    [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
-    [[ "${dry_run}" = true ]] &&  append_maven_options "-P test" && log_warn "Script is running in dry mode"
-
     source "${JONGO_BASE_DIR}/bin/lib/tasks.sh"
+
     local target_branch="${branch:-$(get_current_branch_name)}"
 
-    log_info "***************************************************************************************"
-    log_info "* Running job ${job} with parameters:"
-    log_info "*   Maven options '$(get_maven_options)'"
-    log_info "*   Target Branch '${target_branch}'"
-    log_info "***************************************************************************************"
-
-    function prepare_repository {
+    function before_task {
         local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
-        if [ "${dry_run}" = true ] ; then
-            update_origin_with_fake_remote "${repo_dir}"
-        fi
-        echo "${repo_dir}"
+
+        [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
+        [[ "${dry_run}" = true ]] &&  append_maven_options "-P test" &&  update_origin_with_fake_remote "${repo_dir}" && log_warn "Script is running in dry mode"
+        [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
+
+        log_info "***************************************************************************************"
+        log_info "* Running job ${job} with parameters:"
+        log_info "*   Dry mode '${dry_run}'"
+        log_info "*   Maven options '$(get_maven_options)'"
+        log_info "*   Target Branch '${target_branch}'"
+        log_info "*   Repository '${repo_dir}'"
+        log_info "***************************************************************************************"
+
+        pushd "${repo_dir}" > /dev/null
+    }
+
+    function after_task {
+        popd > /dev/null
     }
 
     case "${job}" in
         RELEASE_EARLY)
-            local repo_dir=$(prepare_repository)
-            pushd "${repo_dir}" > /dev/null
+            before_task
                 create_early_release "${target_branch}"
-            popd > /dev/null
+            after_task
         ;;
         RELEASE)
-            local repo_dir=$(prepare_repository)
-            pushd "${repo_dir}" > /dev/null
+            before_task
                 create_release "${target_branch}"
-            popd > /dev/null
+            after_task
         ;;
         RELEASE_HOTFIX)
-            local repo_dir=$(prepare_repository)
-            pushd "${repo_dir}" > /dev/null
+            before_task
                 create_hotfix_release "${target_branch}"
-            popd > /dev/null
+            after_task
         ;;
         DEPLOY)
-            local repo_dir=$(prepare_repository)
-            pushd "${repo_dir}" > /dev/null
+            before_task
                 deploy "${tag}" "AB643632CF5E746D"
-            popd > /dev/null
+            after_task
         ;;
         TEST_RELEASE_FLOW)
-            local repo_dir=$(prepare_repository)
-            pushd "${repo_dir}" > /dev/null
+            before_task
                 source "${JONGO_BASE_DIR}/src/test/sh/test-tasks.sh"
                 run_test_suite "${target_branch}"
-            popd > /dev/null
+            after_task
+        ;;
+        TEST)
+            mvn clean verify
         ;;
         *)
          log_error "Unknown job ${job}"
