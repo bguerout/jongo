@@ -47,7 +47,7 @@ function set_version {
     checkout "${branch_name}"
         _mvn versions:set -DnewVersion="${next_version}" -DgenerateBackupPoms=false
         git add pom.xml
-        git commit -q -a -m "[release] Set project version to ${next_version}"
+        git_commit "[release] Set project version to ${next_version}"
     uncheckout
 }
 
@@ -59,7 +59,7 @@ function bump_to_next_hotfix_snapshot_version {
             -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT' \
             -DgenerateBackupPoms=false
         git add pom.xml
-        git commit -q -a -m "[release] Prepare for next hotfix version"
+        git_commit "[release] Prepare for next hotfix version"
     uncheckout
     log_info "Branch ${branch_name} bumped to $(get_current_version "${branch_name}" )"
 }
@@ -72,7 +72,7 @@ function bump_to_next_minor_snapshot_version {
             -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT' \
             -DgenerateBackupPoms=false
         git add pom.xml
-        git commit -q -a -m "[release] Prepare for next development version"
+        git_commit "[release] Prepare for next development version"
     uncheckout
     log_info "Branch ${branch_name} bumped to $(get_current_version "${branch_name}" )"
 }

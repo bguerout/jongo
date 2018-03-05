@@ -3,8 +3,8 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/release-tools.sh"
 
 function create_early_release {
     local target_branch="${1}"
-    local current_version=$(get_current_version "${target_branch}")
-    local tag_early_version=$(determine_early_release_version "${target_branch}")
+    local current_version=$(get_current_version "origin/${target_branch}")
+    local tag_early_version=$(determine_early_release_version "origin/${target_branch}")
 
     log_info "***************************************************************************************"
     log_info "* Releasing early ${tag_early_version} from branch ${target_branch}"
@@ -29,8 +29,8 @@ function create_early_release {
 
 function create_release {
     local target_branch="${1}"
-    local hotfix_branch="releases_$(determine_hotfix_version_pattern "${target_branch}")"
-    local tag_release_version=$(determine_release_version "${target_branch}")
+    local hotfix_branch="releases_$(determine_hotfix_version_pattern "origin/${target_branch}")"
+    local tag_release_version=$(determine_release_version "origin/${target_branch}")
 
     log_info "***************************************************************************************"
     log_info "* Releasing ${tag_release_version} from branch ${target_branch}"
@@ -58,7 +58,7 @@ function create_release {
 
 function create_hotfix_release {
     local hotfix_branch="${1}"
-    local tag_release_version=$(determine_release_version "${hotfix_branch}")
+    local tag_release_version=$(determine_release_version "origin/${hotfix_branch}")
 
     log_info "***************************************************************************************"
     log_info "* Releasing hotfix ${tag_release_version} from branch ${hotfix_branch}"
@@ -83,14 +83,13 @@ function create_hotfix_release {
 
 function deploy {
     local tag="${1}"
-    local keyname="${2}"
 
     log_info "***************************************************************************************"
-    log_info "* Deploying ${tag} into repository with maven options"
+    log_info "* Deploying ${tag}"
     log_info "***************************************************************************************"
 
     checkout "${tag}"
-        _mvn deploy -Dgpg.keyname="${keyname}"
+        _mvn deploy
     uncheckout
 }
 

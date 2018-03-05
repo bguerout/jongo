@@ -1,12 +1,12 @@
 
-readonly JONGO_TEST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
-source "${JONGO_TEST_DIR}/sh/assert.sh"
+readonly JONGO_TEST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "${JONGO_TEST_DIR}/assert.sh"
 
 function run_test_suite {
     readonly JONGO_TEST_TARGET_BRANCH="${1}"
 
     before_all
-        should_validate_utils
+        should_validate_tools
         can_create_an_early_release
         can_create_a_new_release
         can_create_an_hotfix_release
@@ -39,7 +39,7 @@ function after_each {
     log_success "${FUNCNAME[1]} passed"
 }
 
-function should_validate_utils {
+function should_validate_tools {
     before_each
         echo "[TEST] --> can get the current project version"
         assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-SNAPSHOT" "Current versions mismatched"
@@ -111,10 +111,8 @@ function can_deploy_artifacts {
     before_each
         local tag="42.0.0"
         local deploy_dir="$(pwd)/target/deploy/org/jongo/jongo/${tag}"
-        local gpg_key="48EFB7C6F6C92BC3"
-        import_gpg "${JONGO_TEST_DIR}/resources/gpg-test-jongo.asc"
 
-        deploy ${tag} "${gpg_key}"
+        deploy ${tag}
 
         assert_file_exists "${deploy_dir}/jongo-42.0.0-javadoc.jar"
         assert_file_exists "${deploy_dir}/jongo-42.0.0-javadoc.jar.asc"

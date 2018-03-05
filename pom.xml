@@ -384,7 +384,6 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
-                                    <passphraseServerId>gpg.server</passphraseServerId>
                                     <gpgArguments>
                                         <arg>--no-tty</arg>
                                         <arg>--batch</arg>
