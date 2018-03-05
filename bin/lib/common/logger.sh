@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 function log_error() {
     printf "\e[91m[ERROR] %s\e[39m\n" "$@" >&2

@@ -21,7 +21,7 @@ function create_bare_repository {
 function clone_repository {
     local remote_url="${1}"
     local clone_dir=$(mktemp -d -t "jongo-release-repo-XXXXX")
-    git clone "${remote_url}" "${clone_dir}"
+    git clone -q "${remote_url}" "${clone_dir}"
     echo "${clone_dir}"
 }
 

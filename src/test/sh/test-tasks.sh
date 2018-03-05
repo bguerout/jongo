@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 readonly JONGO_TEST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 source "${JONGO_TEST_DIR}/sh/assert.sh"

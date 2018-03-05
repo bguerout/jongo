@@ -89,6 +89,20 @@ function deploy {
     log_info "* Deploying ${tag} into repository with maven options"
     log_info "***************************************************************************************"
 
-    git checkout -q "${tag}"
-    _mvn deploy -Dgpg.keyname="${keyname}"
+    checkout "${tag}"
+        _mvn deploy -Dgpg.keyname="${keyname}"
+    uncheckout
+}
+
+function test_app {
+    local target_branch="${1}"
+
+    log_info "***************************************************************************************"
+    log_info "* Running test against branch ${target_branch}"
+    log_info "***************************************************************************************"
+
+    checkout "${target_branch}"
+        _mvn dependency:go-offline
+        _mvn verify
+    uncheckout
 }

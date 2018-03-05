@@ -10,20 +10,33 @@ source "${JONGO_BASE_DIR}/bin/lib/common/mvn-tools.sh"
 source "${JONGO_BASE_DIR}/bin/lib/common/git-tools.sh"
 source "${JONGO_BASE_DIR}/bin/lib/common/gpg-tools.sh"
 source "${JONGO_BASE_DIR}/bin/lib/common/logger.sh"
+source "${JONGO_BASE_DIR}/bin/lib/release/tasks.sh"
 
 function __main() {
 
     local dry_run=true
     local dirty=false
     local debug=false
-    local job=()
+    local task=()
 
     while [[ $# -gt 0 ]]
     do
     key="$1"
     case $key in
+        -b|--branch)
+            local -r target_branch="$2"
+            shift
+            shift
+        ;;
+        #Optional
+        -t|--tag)
+            local -r tag="$2"
+            shift
+            shift
+        ;;
         -g|--gpg-file)
-            import_gpg "${2}"
+            log_info "Importing gpg file ${2} into keyring..."
+            local -r gpg_key_id=$(import_gpg "${2}")
             shift
             shift
         ;;
@@ -37,17 +50,6 @@ function __main() {
             shift
             shift
         ;;
-        -b|--branch)
-            local -r branch="$2"
-            shift
-            shift
-        ;;
-        -t|--tag)
-            local -r tag="$2"
-            shift
-            shift
-        ;;
-        #Optional
         --dirty)
             readonly dirty=true
             shift
@@ -63,75 +65,55 @@ function __main() {
             shift
         ;;
         *)
-        job+=("$1")
+        task+=("$1")
         shift
         ;;
     esac
     done
-    set -- "${job[@]}"
+    set -- "${task[@]}"
 
-    source "${JONGO_BASE_DIR}/bin/lib/release/tasks.sh"
-
-    local target_branch="${branch:-$(get_current_branch_name)}"
-    [[ "${dry_run}" = true ]] &&  append_maven_options "-P test" && log_warn "Script is running in dry mode"
+    local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
+    [[ "${dry_run}" = true ]] &&  append_maven_options "-P test" &&  update_origin_with_fake_remote "${repo_dir}" && log_warn "Script is running in dry mode"
     [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
+    [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
 
-    function before_task {
-        local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git ")
-
-        [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
-        [[ "${dry_run}" = true ]] &&  update_origin_with_fake_remote "${repo_dir}"
+    pushd "${repo_dir}" > /dev/null
 
         log_info "***************************************************************************************"
-        log_info "* Running task ${job} with parameters:"
-        log_info "*   Dry mode '${dry_run}'"
-        log_info "*   Maven options '$(get_maven_options)'"
-        log_info "*   Target Branch '${target_branch}'"
-        log_info "*   Repository '${repo_dir}'"
+        log_info "* Running task ${task} with parameters:"
+        log_info "*   Dry mode:       '${dry_run}'"
+        log_info "*   Maven options:  '$(get_maven_options)'"
+        log_info "*   Target branch:  '${target_branch}'"
+        log_info "*   GPG key branch: '${gpg_key_id:-none}'"
+        log_info "*   Repository:     '${repo_dir}'"
         log_info "***************************************************************************************"
 
-        pushd "${repo_dir}" > /dev/null
-    }
-
-    function after_task {
-        popd > /dev/null
-    }
-
-    case "${job}" in
-        RELEASE_EARLY)
-            before_task
+        case "${task}" in
+            RELEASE_EARLY)
                 create_early_release "${target_branch}"
-            after_task
-        ;;
-        RELEASE)
-            before_task
+            ;;
+            RELEASE)
                 create_release "${target_branch}"
-            after_task
-        ;;
-        RELEASE_HOTFIX)
-            before_task
+            ;;
+            RELEASE_HOTFIX)
                 create_hotfix_release "${target_branch}"
-            after_task
-        ;;
-        DEPLOY)
-            before_task
-                deploy "${tag}" "AB643632CF5E746D"
-            after_task
-        ;;
-        TEST_RELEASE_FLOW)
-            before_task
+            ;;
+            DEPLOY)
+                deploy "${tag}" "${gpg_key_id}"
+            ;;
+            TEST)
+                test_app "${target_branch}"
+            ;;
+            TEST_RELEASE_FLOW)
                 source "${JONGO_BASE_DIR}/src/test/sh/test-tasks.sh"
                 run_test_suite "${target_branch}"
-            after_task
-        ;;
-        TEST)
-            _mvn clean verify
-        ;;
-        *)
-         log_error "Unknown job ${job}"
-         exit 1;
-        ;;
-    esac
+            ;;
+            *)
+             log_error "Unknown task ${task}"
+             exit 1;
+            ;;
+        esac
+    popd > /dev/null
 }
 
 __main "$@"

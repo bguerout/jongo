@@ -8,8 +8,8 @@ RUN apt-get update \
     && rm -rf /tmp/* \
     && rm -rf /var/tmp/*
 
-COPY . /opt/jongo/sources
+COPY ./bin /opt/jongo/bin
 
-WORKDIR /opt/jongo/sources
+WORKDIR /opt/jongo/bin
 
-ENTRYPOINT ["bash", "./bin/cli.sh"]
+ENTRYPOINT ["bash", "./cli.sh"]
