@@ -93,7 +93,20 @@ function __main() {
     [[ "${early}" = true ]] && append_maven_options "-P early"
     [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
-    [[ "${dry_run}" = true ]] &&  append_maven_options "-P test" &&  update_origin_with_fake_remote "${repo_dir}" && log_warn "Script is running in dry mode. Nothing will pushed nor deployed."
+    if [[ "${dry_run}" = true ]]; then
+        append_maven_options "-P test"
+        update_origin_with_fake_remote "${repo_dir}"
+        log_warn "Script is running in dry mode."
+    else
+        while true; do
+            read -p "[WARN] Do you really want to run ${task} without dry mode?" yn
+            case $yn in
+                [Yy]* ) break;;
+                [Nn]* ) exit;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    fi
 
     pushd "${repo_dir}" > /dev/null
 
