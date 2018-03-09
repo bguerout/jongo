@@ -9,7 +9,7 @@ source "${JONGO_BASE_DIR}/bin/lib/common/gpg-tools.sh"
 source "${JONGO_BASE_DIR}/bin/lib/common/logger.sh"
 source "${JONGO_BASE_DIR}/bin/lib/release/tasks.sh"
 
-function safeguard(){
+function safeguard() {
     local task="${1}"
     while true; do
         read -p "[WARN] Do you really want to run ${task} for real?" yn
@@ -21,10 +21,38 @@ function safeguard(){
     done
 }
 
-function configure_dry_mode(){
+function configure_dry_mode() {
     local repo_dir="${1}"
     append_maven_options "-P test"
     update_origin_with_fake_remote "${repo_dir}"
+}
+
+function usage {
+    echo "Usage: $0 [option...] {RELEASE_EARLY|RELEASE|RELEASE_HOTFIX|DEPLOY|TEST|TEST_CLI}"
+    echo
+    echo "Command line interface to build, package and deploy Jongo"
+    echo
+    echo "   -b, --branch               The branch where task will be executed"
+    echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed"
+    echo "   -t, --tag                  The git tag used to deploy artifacts (only used by DEPLOY task)"
+    echo "   --early                    Run Maven with the early profile"
+    echo "   --gpg-file                 Path the GPG file used to sign artifacts"
+    echo "   --settings-file            Path to the Maven settings file (default ~/.m2/settings.xml)"
+    echo "   --settings-security        Path to the Maven security file (default ~/.m2/settings-security.xml)"
+    echo "   --dirty                    Do not clean generated resources during execution (eg. cloned repository)"
+    echo "   --debug                    Print all executed commands and run Maven in debug mode"
+    echo
+    echo "Usage example:"
+    echo "It's recommended to run this script inside a docker container."
+    echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
+    echo
+    echo "  docker build . -t jongo && \\"
+    echo "  docker run -it -v /path/to/maven-and-secret/files:/opt/jongo/maven jongo \\"
+    echo "      --settings-file /opt/jongo/maven/jongo-settings.xml \\"
+    echo "      --settings-security /opt/jongo/maven/jongo-settings-security.xml \\"
+    echo "      --gpg-file /opt/jongo/maven/jongo.asc \\"
+    echo "      --branch master \\"
+    echo "      <TASK>"
 }
 
 function __main() {
@@ -86,32 +114,7 @@ function __main() {
             shift
         ;;
         -?|--help)
-
-            echo "Usage: $0 [option...] {RELEASE_EARLY|RELEASE|RELEASE_HOTFIX|DEPLOY|TEST|TEST_CLI}" >&2
-            echo
-            echo "Command line interface to build, package and deploy Jongo"
-            echo
-            echo "   -b, --branch               The branch where task will be executed"
-            echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed"
-            echo "   -t, --tag                  The git tag used to deploy artifacts (only used by DEPLOY task)"
-            echo "   --early                    Run Maven with the early profile"
-            echo "   --gpg-file                 Path the GPG file used to sign artifacts"
-            echo "   --settings-file            Path to the Maven settings file (default ~/.m2/settings.xml)"
-            echo "   --settings-security        Path to the Maven security file (default ~/.m2/settings-security.xml)"
-            echo "   --dirty                    Do not clean generated resources during execution (eg. cloned repository)"
-            echo "   --debug                    Print all executed commands and run Maven in debug mode"
-            echo
-            echo "Usage example:"
-            echo "It's recommended to run this script inside a docker container."
-            echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
-            echo
-            echo "  docker build . -t jongo && \\"
-            echo "  docker run -it -v /path/to/maven-and-secret/files:/opt/jongo/maven jongo \\"
-            echo "      --settings-file /opt/jongo/maven/jongo-settings.xml \\"
-            echo "      --settings-security /opt/jongo/maven/jongo-settings-security.xml \\"
-            echo "      --gpg-file /opt/jongo/maven/jongo.asc \\"
-            echo "      --branch master \\"
-            echo "      <TASK>"
+            usage
             exit 0
         ;;
         *)
@@ -133,11 +136,11 @@ function __main() {
 
         log_info "***************************************************************************************"
         log_success "* Running ${task}..."
-        log_info "*   Dry mode:       '${dry_run}'"
-        log_info "*   Maven options:  '$(get_maven_options)'"
-        log_info "*   Target branch:  '${target_branch}'"
-        log_info "*   GPG key:        '${gpg_keyname:-none}'"
         log_info "*   Repository:     '${repo_dir}'"
+        log_info "*   Maven options:  '$(get_maven_options)'"
+        log_info "*   Dry mode:       '${dry_run}'"
+        log_info "*   Target branch:  '${target_branch:-none}'"
+        log_info "*   GPG key:        '${gpg_keyname:-none}'"
         log_info "***************************************************************************************"
         echo
 
@@ -162,7 +165,8 @@ function __main() {
                 deploy "${tag}"
             ;;
             *)
-             log_error "Unknown task ${task}"
+             log_error "Unknown task '${task}'"
+             usage
              exit 1;
             ;;
         esac
