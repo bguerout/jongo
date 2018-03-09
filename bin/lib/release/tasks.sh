@@ -93,7 +93,7 @@ function deploy {
     uncheckout
 }
 
-function test_app {
+function test_jongo {
     local target_branch="${1}"
 
     log_info "***************************************************************************************"

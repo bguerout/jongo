@@ -111,6 +111,8 @@ function can_deploy_artifacts {
     before_each
         local tag="42.0.0"
         local deploy_dir="$(pwd)/target/deploy/org/jongo/jongo/${tag}"
+        local -r gpg_keyname=$(import_gpg "${JONGO_TEST_DIR}/resources/jongo-dummy-key.gpg")
+        append_maven_options "-Dgpg.keyname=${gpg_keyname}"
 
         deploy ${tag}
 
