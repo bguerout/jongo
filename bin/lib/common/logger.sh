@@ -10,3 +10,7 @@ function log_warn() {
 function log_info() {
     printf "\e[39m[INFO] %s\e[39m\n" "$@" >&2
 }
+
+function log_success() {
+    printf "\e[92m[INFO] %s\e[39m\n" "$@" >&2
+}

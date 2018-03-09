@@ -6,10 +6,6 @@ function create_early_release {
     local current_version=$(get_current_version "origin/${target_branch}")
     local tag_early_version=$(determine_early_release_version "origin/${target_branch}")
 
-    log_info "***************************************************************************************"
-    log_info "* Releasing early ${tag_early_version} from branch ${target_branch}"
-    log_info "***************************************************************************************"
-
     checkout "${target_branch}"
         set_version "${target_branch}" "${tag_early_version}"
         log_info "Branch ${target_branch} updated to project version ${tag_early_version}"
@@ -24,17 +20,13 @@ function create_early_release {
 
     git push -q origin "${target_branch}"
 
-    log_info "SUCCESS "${tag_early_version}" early version released"
+    log_success "${tag_early_version} early version released"
 }
 
 function create_release {
     local target_branch="${1}"
     local hotfix_branch="releases_$(determine_hotfix_version_pattern "origin/${target_branch}")"
     local tag_release_version=$(determine_release_version "origin/${target_branch}")
-
-    log_info "***************************************************************************************"
-    log_info "* Releasing ${tag_release_version} from branch ${target_branch}"
-    log_info "***************************************************************************************"
 
     checkout -b "${hotfix_branch}" "${target_branch}"
         set_version "${hotfix_branch}" "${tag_release_version}"
@@ -53,16 +45,12 @@ function create_release {
     git push -q origin "${tag_release_version}"
     git push -q origin "${target_branch}"
 
-    log_info "SUCCESS "${tag_release_version}" version released"
+    log_success "${tag_release_version} version released"
 }
 
 function create_hotfix_release {
     local hotfix_branch="${1}"
     local tag_release_version=$(determine_release_version "origin/${hotfix_branch}")
-
-    log_info "***************************************************************************************"
-    log_info "* Releasing hotfix ${tag_release_version} from branch ${hotfix_branch}"
-    log_info "***************************************************************************************"
 
     checkout "${hotfix_branch}"
         set_version "${hotfix_branch}" "${tag_release_version}"
@@ -78,15 +66,11 @@ function create_hotfix_release {
 
     git push -q origin "${hotfix_branch}"
 
-    log_info "SUCCESS "${tag_release_version}" hotfix version released"
+    log_success "${tag_release_version} hotfix version released"
 }
 
 function deploy {
     local tag="${1}"
-
-    log_info "***************************************************************************************"
-    log_info "* Deploying ${tag}"
-    log_info "***************************************************************************************"
 
     checkout "${tag}"
         _mvn deploy
@@ -95,10 +79,6 @@ function deploy {
 
 function test_jongo {
     local target_branch="${1}"
-
-    log_info "***************************************************************************************"
-    log_info "* Running test against branch ${target_branch}"
-    log_info "***************************************************************************************"
 
     checkout "${target_branch}"
         _mvn dependency:go-offline

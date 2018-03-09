@@ -25,7 +25,6 @@ function configure_dry_mode(){
     local repo_dir="${1}"
     append_maven_options "-P test"
     update_origin_with_fake_remote "${repo_dir}"
-    log_warn "Script is running in dry mode."
 }
 
 function __main() {
@@ -125,7 +124,7 @@ function __main() {
 
     local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
 
-    [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
+    [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" && log_warn "Script is running in dry mode." || safeguard "${task}"
     [[ "${early}" = true ]] && append_maven_options "-P early"
     [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
@@ -133,7 +132,7 @@ function __main() {
     pushd "${repo_dir}" > /dev/null
 
         log_info "***************************************************************************************"
-        log_info "* Running task ${task} with parameters:"
+        log_success "* Running ${task}..."
         log_info "*   Dry mode:       '${dry_run}'"
         log_info "*   Maven options:  '$(get_maven_options)'"
         log_info "*   Target branch:  '${target_branch}'"
