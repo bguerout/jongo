@@ -28,13 +28,15 @@ function configure_dry_mode() {
 }
 
 function usage {
-    echo "Usage: $0 [option...] {RELEASE_EARLY|RELEASE|RELEASE_HOTFIX|DEPLOY|TEST|TEST_CLI}"
+    echo "Usage: $0 [option...] {release_early|release|release_hotfix|deploy|test|test_cli}"
     echo
     echo "Command line interface to build, package and deploy Jongo"
+    echo "It's recommended to run this script inside a docker container."
+    echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
     echo
     echo "   -b, --branch               The branch where task will be executed"
     echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed"
-    echo "   -t, --tag                  The git tag used to deploy artifacts (only used by DEPLOY task)"
+    echo "   -t, --tag                  The git tag used to deploy artifacts (only used by deploy task)"
     echo "   --early                    Run Maven with the early profile"
     echo "   --gpg-file                 Path the GPG file used to sign artifacts"
     echo "   --settings-file            Path to the Maven settings file (default ~/.m2/settings.xml)"
@@ -43,9 +45,6 @@ function usage {
     echo "   --debug                    Print all executed commands and run Maven in debug mode"
     echo
     echo "Usage example:"
-    echo "It's recommended to run this script inside a docker container."
-    echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
-    echo
     echo "  docker build . -t jongo && \\"
     echo "  docker run -it -v /path/to/maven-and-secret/files:/opt/jongo/maven jongo \\"
     echo "      --settings-file /opt/jongo/maven/jongo-settings.xml \\"
@@ -115,7 +114,7 @@ function __main() {
         ;;
         -?|--help)
             usage
-            exit 0
+            exit 0;
         ;;
         *)
         task+=("$1")
@@ -142,26 +141,26 @@ function __main() {
         log_info "*   Target branch:  '${target_branch:-none}'"
         log_info "*   GPG key:        '${gpg_keyname:-none}'"
         log_info "***************************************************************************************"
-        echo
+        echo ""
 
         case "${task}" in
-            TEST)
+            test)
                 test_jongo "${target_branch}"
             ;;
-            TEST_CLI)
+            test_cli)
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
                 run_test_suite "${target_branch}"
             ;;
-            RELEASE_EARLY)
+            release_early)
                 create_early_release "${target_branch}"
             ;;
-            RELEASE)
+            release)
                 create_release "${target_branch}"
             ;;
-            RELEASE_HOTFIX)
+            release_hotfix)
                 create_hotfix_release "${target_branch}"
             ;;
-            DEPLOY)
+            deploy)
                 deploy "${tag}"
             ;;
             *)
