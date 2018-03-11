@@ -6,6 +6,8 @@ function create_early_release {
     local current_version=$(get_current_version "origin/${target_branch}")
     local tag_early_version=$(determine_early_release_version "origin/${target_branch}")
 
+    test_jongo "${target_branch}"
+
     checkout "${target_branch}"
         set_version "${target_branch}" "${tag_early_version}"
         log_info "Branch ${target_branch} updated to project version ${tag_early_version}"
@@ -28,6 +30,8 @@ function create_release {
     local hotfix_branch="releases_$(determine_hotfix_version_pattern "origin/${target_branch}")"
     local tag_release_version=$(determine_release_version "origin/${target_branch}")
 
+    test_jongo "${target_branch}"
+
     checkout -b "${hotfix_branch}" "${target_branch}"
         set_version "${hotfix_branch}" "${tag_release_version}"
         log_info "New branch ${hotfix_branch} created"
@@ -49,22 +53,24 @@ function create_release {
 }
 
 function create_hotfix_release {
-    local hotfix_branch="${1}"
-    local tag_release_version=$(determine_release_version "origin/${hotfix_branch}")
+    local target_branch="${1}"
+    local tag_release_version=$(determine_release_version "origin/${target_branch}")
 
-    checkout "${hotfix_branch}"
-        set_version "${hotfix_branch}" "${tag_release_version}"
+    test_jongo "${target_branch}"
 
-        log_info "New branch ${hotfix_branch} updated to project version ${tag_release_version}"
+    checkout "${target_branch}"
+        set_version "${target_branch}" "${tag_release_version}"
 
-        local commit_to_tag=$(get_head_commit "${hotfix_branch}")
+        log_info "New branch ${target_branch} updated to project version ${tag_release_version}"
+
+        local commit_to_tag=$(get_head_commit "${target_branch}")
         git tag "${tag_release_version}" "${commit_to_tag}"
         log_info "New tag ${tag_release_version} created refs to ${commit_to_tag}"
 
-        bump_to_next_hotfix_snapshot_version "${hotfix_branch}"
+        bump_to_next_hotfix_snapshot_version "${target_branch}"
     uncheckout
 
-    git push -q origin "${hotfix_branch}"
+    git push -q origin "${target_branch}"
 
     log_success "${tag_release_version} hotfix version released"
 }

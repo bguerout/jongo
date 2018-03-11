@@ -8,7 +8,7 @@ RUN apt-get update \
     && rm -rf /tmp/* \
     && rm -rf /var/tmp/*
 
-COPY ./bin /opt/jongo/bin
+COPY . /opt/jongo/bin
 
 WORKDIR /opt/jongo/bin
 

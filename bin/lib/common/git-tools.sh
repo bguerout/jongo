@@ -8,7 +8,7 @@ function uncheckout() {
 }
 
 function git_commit() {
-    git -c user.name="Jongo Release" -c user.email="release@jongo.org" commit -q -a -m "${1}"
+    git -c user.name="Jongo Script" -c user.email="contact@jongo.org" commit -q -a -m "${1}"
 }
 
 function create_bare_repository {
