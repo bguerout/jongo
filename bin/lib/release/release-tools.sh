@@ -32,7 +32,7 @@ function determine_early_release_version {
     local release_version=$(determine_release_version "${branch_name}")
     local early=$(date +%Y%m%d-%H%M)
 
-    echo "${release_version}-${early}"
+    echo "${release_version}-early-${early}"
 }
 
 function determine_hotfix_version_pattern {
