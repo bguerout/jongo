@@ -48,7 +48,7 @@ function should_validate_tools {
         assert_eq "$(determine_release_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0" "Release versions mismatched"
 
         echo "[TEST] --> can determine the early release version when project will be released"
-        assert_eq "$(determine_early_release_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-$(date +%Y%m%d-%H%M)" "Early release versions mismatched"
+        assert_eq "$(determine_early_release_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-early-$(date +%Y%m%d-%H%M)" "Early release versions mismatched"
 
         echo "[TEST] --> can determine the hotfix version pattern when project will be released"
         assert_eq "$(determine_hotfix_version_pattern "${JONGO_TEST_TARGET_BRANCH}")" "42.0.x" "Versions mismatched"
@@ -68,7 +68,7 @@ function should_validate_tools {
 function can_create_an_early_release {
     before_each
 
-        local expected_early_tag="42.0.0-$(date +%Y%m%d-%H%M)"
+        local expected_early_tag="42.0.0-early-$(date +%Y%m%d-%H%M)"
 
         create_early_release "${JONGO_TEST_TARGET_BRANCH}"
 

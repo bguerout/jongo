@@ -33,8 +33,8 @@ function usage {
     echo "Command line interface to build, package and deploy Jongo"
     echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
     echo
-    echo "   -b, --branch               The branch where task will be executed"
-    echo "   -t, --tag                  The git tag used to deploy artifacts (only used by deploy task)"
+    echo "   -b, --branch               The branch where task will be executed (default: master)"
+    echo "   -t, --tag                  The tag used to deploy artifacts (only used by deploy task)"
     echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
     echo "   --early                    Run Maven with the early profile"
     echo "   --gpg-file                 Path the GPG file used to sign artifacts"
@@ -45,7 +45,8 @@ function usage {
     echo
     echo "Usage examples:"
     echo ""
-    echo "  #Release the master branch"
+    echo " Release a new version from the master branch:"
+    echo ""
     echo "  bash ./bin/cli.sh \\"
     echo "      release \\"
     echo "      --settings-file /path/to/settings.xml \\"
@@ -53,7 +54,9 @@ function usage {
     echo "      --gpg-file /path/to/file.gpg \\"
     echo "      --branch master"
     echo ""
-    echo "  #Deploy a version from inside a docker container"
+    echo " Deploy a version from inside a docker container."
+    echo " Note that on macOS you can emulate SSH forwarding with https://github.com/avsm/docker-ssh-agent-forward:"
+    echo ""
     echo "  docker build bin -t jongo-docker-image && \\"
     echo "  docker run -it \\"
     echo "      --volume \$SSH_AUTH_SOCK:/ssh-agent \\"
@@ -68,6 +71,7 @@ function usage {
 
 function __main() {
 
+    local git_revision='master'
     local dry_run=true
     local dirty=false
     local debug=false
@@ -78,23 +82,18 @@ function __main() {
     do
     key="$1"
     case $key in
-        -b|--branch)
-            local -r target_branch="$2"
+        -b|-t|--branch|--tag)
+            local git_revision="$2"
             shift
             shift
         ;;
-        -t|--tag)
-            local -r tag="$2"
-            shift
-            shift
-            ;;
         --early)
             readonly early=true
             shift
         ;;
         --gpg-file)
-            log_info "Importing gpg file ${2} into keyring..."
             local -r gpg_keyname=$(import_gpg "${2}")
+            log_info "GPG key ${gpg_keyname} imported from file ${2}"
             append_maven_options "-Dgpg.keyname=${gpg_keyname}"
             append_maven_options "-Dgpg.passphraseServerId=jongo.gpg.passphrase.server"
             shift
@@ -143,37 +142,35 @@ function __main() {
     [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
 
-    pushd "${repo_dir}" > /dev/null
+    log_info    "***************************************************************************************"
+    log_success "* Running task '${task}'..."
+    log_info    "*   Maven options:  '$(get_maven_options)'"
+    log_info    "*   Dry mode:       '${dry_run}'"
+    log_info    "*   Git revision:   '${git_revision}'"
+    log_info    "***************************************************************************************"
+    echo ""
 
-        log_info "***************************************************************************************"
-        log_success "* Running ${task}..."
-        log_info "*   Repository:     '${repo_dir}'"
-        log_info "*   Maven options:  '$(get_maven_options)'"
-        log_info "*   Dry mode:       '${dry_run}'"
-        log_info "*   Target branch:  '${target_branch:-none}'"
-        log_info "*   GPG key:        '${gpg_keyname:-none}'"
-        log_info "***************************************************************************************"
-        echo ""
+    pushd "${repo_dir}" > /dev/null
 
         case "${task}" in
             test)
-                test_jongo "${target_branch}"
+                test_jongo "${git_revision}"
             ;;
             test_cli)
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
-                run_test_suite "${target_branch}"
+                run_test_suite "${git_revision}"
             ;;
             release_early)
-                create_early_release "${target_branch}"
+                create_early_release "${git_revision}"
             ;;
             release)
-                create_release "${target_branch}"
+                create_release "${git_revision}"
             ;;
             release_hotfix)
-                create_hotfix_release "${target_branch}"
+                create_hotfix_release "${git_revision}"
             ;;
             deploy)
-                deploy "${tag}"
+                deploy "${git_revision}"
             ;;
             *)
              log_error "Unknown task '${task}'"
