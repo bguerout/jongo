@@ -21,6 +21,7 @@ function create_early_release {
     uncheckout
 
     git push -q origin "${base_branch}"
+    git push -q origin "${tag_early_version}"
 
     log_success "${tag_early_version} early version released"
 }

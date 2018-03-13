@@ -75,7 +75,7 @@ function can_create_an_early_release {
         local early_commit="$(get_head_commit ${JONGO_TEST_TARGET_BRANCH}^)"
         assert_eq "$(get_current_version ${JONGO_TEST_TARGET_BRANCH})" "42.0.0-SNAPSHOT" "HEAD version of the base branch should be left intact"
         assert_eq "$(get_current_version ${early_commit})" "${expected_early_tag}" "early version in pom.xml has not been set"
-        assert_eq "$(git tag -l ${expected_early_tag})" "${expected_early_tag}" "Tag does not exist"
+        assert_not_eq "$(git ls-remote origin refs/tags/${expected_early_tag})" "" "Tag does not exist or has not been pushed"
         assert_eq "$(git show-ref -s "${expected_early_tag}")" "${early_commit}" "Tag does not point to the right commit"
     after_each
 }
@@ -87,7 +87,7 @@ function can_create_a_new_release {
         local release_commit="$(get_head_commit releases_42.0.x^)"
         assert_eq "$(git branch -r | grep releases_42.0.x | sed -e 's/ //g')" "origin/releases_42.0.x" "Hotfixes branch has not been created or pushed"
         assert_eq "$(get_current_version releases_42.0.x)" "42.0.1-SNAPSHOT" "HEAD version of the hotfix branch has not been set to the next hotfix snapshot version"
-        assert_eq "$(git tag -l 42.0.0)" "42.0.0" "Tag does not exist"
+        assert_not_eq "$(git ls-remote origin refs/tags/42.0.0)" "" "Tag does not exist or has not been pushed"
         assert_eq "$(git show-ref -s 42.0.0)" "${release_commit}" "Tag does not point to the right commit"
         assert_eq "$(get_current_version ${release_commit})" "42.0.0" "Release version in pom.xml has not been set"
         assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.1.0-SNAPSHOT" "HEAD version of the base branch has not been set to the next version"
