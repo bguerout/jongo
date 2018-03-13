@@ -36,6 +36,7 @@ function usage {
     echo "   -b, --branch               The branch where task will be executed (default: master)"
     echo "   -t, --tag                  The tag used to deploy artifacts (only used by deploy task)"
     echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
+    echo "   --early                    Run Maven with the early profile"
     echo "   --gpg-file                 Path the GPG file used to sign artifacts"
     echo "   --settings-file            Path to the Maven settings file (default: ~/.m2/settings.xml)"
     echo "   --settings-security        Path to the Maven security file (default: ~/.m2/settings-security.xml)"
@@ -75,6 +76,7 @@ function __main() {
     local dry_run=true
     local dirty=false
     local debug=false
+    local early=false
     local task=()
 
     while [[ $# -gt 0 ]]
@@ -84,6 +86,10 @@ function __main() {
         -b|-t|--branch|--tag)
             local git_revision="$2"
             shift
+            shift
+        ;;
+        --early)
+            readonly early=true
             shift
         ;;
         --gpg-file)
@@ -134,7 +140,7 @@ function __main() {
     local repo_dir=$(clone_repository "git@github.com:bguerout/jongo.git")
 
     [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" && log_warn "Script is running in dry mode." || safeguard "${task}"
-    [[ "${task}" = "release_early" ]] && append_maven_options "-P early"
+    [[ "${early}" = true ]] && append_maven_options "-P early"
     [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
 
@@ -157,11 +163,12 @@ function __main() {
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
                 run_test_suite "${git_revision}"
             ;;
-            release_early)
-                create_early_release "${git_revision}"
-            ;;
             release)
-                create_release "${git_revision}"
+                if [ "${early}" = true ]; then
+                    create_early_release "${git_revision}"
+                else
+                    create_release "${git_revision}"
+                fi
             ;;
             release_hotfix)
                 create_hotfix_release "${git_revision}"
