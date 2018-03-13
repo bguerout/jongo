@@ -58,6 +58,7 @@ function usage {
     echo ""
     echo "  docker build bin -t jongo-docker-image && \\"
     echo "  docker run -it \\"
+    echo "      --volume /path/to/known_hosts:/root/.ssh/known_hosts \\"
     echo "      --volume \$SSH_AUTH_SOCK:/ssh-agent \\"
     echo "      --env SSH_AUTH_SOCK=/ssh-agent \\"
     echo "      --volume /path/to/conf:/opt/jongo/conf jongo-docker-image \\"
@@ -130,13 +131,14 @@ function __main() {
     set -- "${task[@]}"
 
     log_info "Cloning repository..."
-    local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
+    local repo_dir=$(clone_repository "git@github.com:bguerout/jongo.git")
 
     [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" && log_warn "Script is running in dry mode." || safeguard "${task}"
     [[ "${task}" = "release_early" ]] && append_maven_options "-P early"
     [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
 
+    echo ""
     log_info    "***************************************************************************************"
     log_success "* Running task '${task}'..."
     log_info    "*   Maven options:  '$(get_maven_options)'"

@@ -87,7 +87,10 @@ function test_jongo {
     local base_branch="${1}"
 
     checkout "${base_branch}"
+         log_info "Retrieving all Maven dependencies..."
         _mvn dependency:go-offline
+
+        log_info "Running Jongo tests..."
         _mvn verify
     uncheckout
 }
