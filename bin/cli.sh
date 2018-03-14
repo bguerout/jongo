@@ -77,7 +77,7 @@ function __main() {
     local dirty=false
     local debug=false
     local early=false
-    local task=()
+    local positional=()
 
     while [[ $# -gt 0 ]]
     do
@@ -129,29 +129,30 @@ function __main() {
             exit 0;
         ;;
         *)
-        task+=("$1")
+        positional+=("$1")
         shift
         ;;
     esac
     done
-    set -- "${task[@]}"
+    set -- "${positional[@]}"
 
-    log_info "Cloning repository..."
-    local repo_dir=$(clone_repository "git@github.com:bguerout/jongo.git")
-
-    [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" && log_warn "Script is running in dry mode." || safeguard "${task}"
+    local task="${1}"
     [[ "${early}" = true ]] && append_maven_options "-P early"
     [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
+    [[ "${dry_run}" = true ]] && log_warn "Script is running in dry mode."
 
     echo ""
     log_info    "***************************************************************************************"
     log_success "* Running task '${task}'..."
     log_info    "*   Maven options:  '$(get_maven_options)'"
-    log_info    "*   Dry mode:       '${dry_run}'"
     log_info    "*   Git revision:   '${git_revision}'"
     log_info    "***************************************************************************************"
     echo ""
+
+    log_info "Cloning repository..."
+    local repo_dir=$(clone_repository "git@github.com:bguerout/jongo.git")
+    [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
 
     pushd "${repo_dir}" > /dev/null
 
