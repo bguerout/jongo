@@ -72,6 +72,7 @@ function create_hotfix_release {
     uncheckout
 
     git push -q origin "${base_branch}"
+    git push -q origin "${tag_release_version}"
 
     log_success "${tag_release_version} hotfix version released"
 }

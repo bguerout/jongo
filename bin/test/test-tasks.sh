@@ -100,7 +100,7 @@ function can_create_an_hotfix_release {
 
         local hotfix_commit="$(get_head_commit releases_42.0.x^)"
         assert_eq "$(get_current_version releases_42.0.x)" "42.0.2-SNAPSHOT" "Version into hotfixes branch has not been set to the next version"
-        assert_eq "$(git tag -l 42.0.1)" "42.0.1" "Hotfix tag does not exist"
+        assert_not_eq "$(git ls-remote origin refs/tags/42.0.1)" "" "Hotfix tag does not exist or has not been pushed"
         assert_eq "$(git show-ref -s 42.0.1)" "${hotfix_commit}" "Tag does not point to the right commit"
         assert_eq "$(get_current_version ${hotfix_commit})" "42.0.1" "Hotfix version in pom.xml has not been set"
         assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.1.0-SNAPSHOT" "Version into test branch should be left intact"
