@@ -1,16 +1,10 @@
-machine:
-  services:
-    - docker
+cache_directories:
+    - "~/.m2"
 
 branches:
     ignore:
       - gh-pages
       - site
-
-dependencies:
-  override:
-    - docker info
-    - docker build -t jongo-ci .
 test:
   override:
-    - docker run -it -w /root/sources jongo-ci bash build.sh --job CI
+    - ./bin/cli.sh test

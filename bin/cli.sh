@@ -34,7 +34,7 @@ function usage {
     echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
     echo
     echo "   -b, --branch               The branch where task will be executed (default: master)"
-    echo "   -t, --tag                  The tag used to deploy artifacts (only used by deploy task)"
+    echo "   -t, --tag                  The tag used to deploy artifacts (required for deploy task)"
     echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
     echo "   --early                    Run Maven with the early profile"
     echo "   --gpg-file                 Path the GPG file used to sign artifacts"
@@ -55,7 +55,7 @@ function usage {
     echo "      --branch master"
     echo ""
     echo " Deploy a version from inside a docker container."
-    echo " Note that on macOS you can emulate SSH forwarding with https://github.com/avsm/docker-ssh-agent-forward:"
+    echo " Note that on macOS you can emulate SSH forwarding with https://github.com/nardeas/docker-ssh-agent:"
     echo ""
     echo "  docker build bin -t jongo-docker-image && \\"
     echo "  docker run -it \\"
@@ -151,7 +151,7 @@ function __main() {
     echo ""
 
     log_info "Cloning repository..."
-    local repo_dir=$(clone_repository "git@github.com:bguerout/jongo.git")
+    local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
     [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
 
     pushd "${repo_dir}" > /dev/null
