@@ -1,3 +1,7 @@
+machine:
+  services:
+    - docker
+
 cache_directories:
     - "~/.m2"
 
@@ -5,6 +9,11 @@ branches:
     ignore:
       - gh-pages
       - site
+
+dependencies:
+  override:
+    - docker build -t jongo-ci bin
+
 test:
   override:
-    - ./bin/cli.sh test
+    - docker run -it --volume ~/.m2:/opt/jongo/conf/repository jongo-ci --maven-options "-Dmaven.repo.local=/opt/jongo/conf/repository" test
