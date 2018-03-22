@@ -2,7 +2,7 @@
 readonly JONGO_TEST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "${JONGO_TEST_DIR}/assert.sh"
 
-function run_test_suite {
+function test_cli {
     readonly JONGO_TEST_TARGET_BRANCH="${1}"
 
     before_all

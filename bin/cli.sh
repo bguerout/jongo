@@ -28,7 +28,7 @@ function configure_dry_mode() {
 }
 
 function usage {
-    echo "Usage: $0 [option...] {release_early|release|release_hotfix|deploy|test|test_cli}"
+    echo "Usage: $0 [option...] {release|release_hotfix|test}"
     echo
     echo "Command line interface to build, package and deploy Jongo"
     echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
@@ -36,8 +36,8 @@ function usage {
     echo "   -b, --branch               The branch where task will be executed (default: master)"
     echo "   -t, --tag                  The tag used to deploy artifacts (required for deploy task)"
     echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
-    echo "   --early                    Run script in early mode"
-    echo "   --gpg-file                 Path the GPG file used to sign artifacts"
+    echo "   --early                    Run release in early mode"
+    echo "   --gpg-file                 Path to the GPG file used to sign artifacts"
     echo "   --maven-options            Maven options (eg. --settings /path/to/settings.xml)"
     echo "   --dirty                    Do not clean generated resources during execution (eg. cloned repository)"
     echo "   --debug                    Print all executed commands and run Maven in debug mode"
@@ -125,6 +125,10 @@ function __main() {
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
     [[ "${dry_run}" = true ]] && log_warn "Script is running in dry mode."
 
+    log_info "Cloning repository..."
+    local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
+    [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
+
     echo ""
     log_info    "***************************************************************************************"
     log_success "* Running task '${task}'..."
@@ -133,19 +137,14 @@ function __main() {
     log_info    "***************************************************************************************"
     echo ""
 
-    log_info "Cloning repository..."
-    local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
-    [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
-
     pushd "${repo_dir}" > /dev/null
 
         case "${task}" in
             test)
-                test_jongo "${git_revision}"
-            ;;
-            test_cli)
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
-                run_test_suite "${git_revision}"
+                test_jongo "${git_revision}"
+                append_maven_options "-DskipTests"
+                test_cli "${git_revision}"
             ;;
             release)
                 if [ "${early}" = true ]; then
@@ -153,11 +152,10 @@ function __main() {
                 else
                     create_release "${git_revision}"
                 fi
+                deploy "${git_revision}"
             ;;
             release_hotfix)
                 create_hotfix_release "${git_revision}"
-            ;;
-            deploy)
                 deploy "${git_revision}"
             ;;
             *)
