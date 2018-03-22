@@ -34,12 +34,11 @@ function usage {
     echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
     echo
     echo "   -b, --branch               The branch where task will be executed (default: master)"
-    echo "   -t, --tag                  The tag used to deploy artifacts (only used by deploy task)"
+    echo "   -t, --tag                  The tag used to deploy artifacts (required for deploy task)"
     echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
-    echo "   --early                    Run Maven with the early profile"
+    echo "   --early                    Run script in early mode"
     echo "   --gpg-file                 Path the GPG file used to sign artifacts"
-    echo "   --settings-file            Path to the Maven settings file (default: ~/.m2/settings.xml)"
-    echo "   --settings-security        Path to the Maven security file (default: ~/.m2/settings-security.xml)"
+    echo "   --maven-options            Maven options (eg. --settings /path/to/settings.xml)"
     echo "   --dirty                    Do not clean generated resources during execution (eg. cloned repository)"
     echo "   --debug                    Print all executed commands and run Maven in debug mode"
     echo
@@ -47,27 +46,16 @@ function usage {
     echo ""
     echo " Release a new version from the master branch:"
     echo ""
-    echo "  bash ./bin/cli.sh \\"
-    echo "      release \\"
-    echo "      --settings-file /path/to/settings.xml \\"
-    echo "      --settings-security /path/to/settings-security.xml \\"
-    echo "      --gpg-file /path/to/file.gpg \\"
-    echo "      --branch master"
+    echo "      bash ./bin/cli.sh release --gpg-file /path/to/file.gpg --branch master"
     echo ""
     echo " Deploy a version from inside a docker container."
-    echo " Note that on macOS you can emulate SSH forwarding with https://github.com/avsm/docker-ssh-agent-forward:"
     echo ""
-    echo "  docker build bin -t jongo-docker-image && \\"
-    echo "  docker run -it \\"
-    echo "      --volume /path/to/known_hosts:/root/.ssh/known_hosts \\"
-    echo "      --volume \$SSH_AUTH_SOCK:/ssh-agent \\"
-    echo "      --env SSH_AUTH_SOCK=/ssh-agent \\"
-    echo "      --volume /path/to/conf:/opt/jongo/conf jongo-docker-image \\"
-    echo "       deploy \\"
-    echo "      --settings-file /opt/jongo/conf/settings.xml \\"
-    echo "      --settings-security /opt/jongo/conf/settings-security.xml \\"
-    echo "      --gpg-file /opt/jongo/conf/file.gpg \\"
-    echo "      --tag 42.0.0"
+    echo "      docker build bin -t jongo-releaser && \\"
+    echo "      docker run -it --volume /path/to/files:/opt/jongo/conf jongo-releaser \\"
+    echo "         deploy \\"
+    echo "        --maven-options \"--settings /opt/jongo/conf/settings.xml\" \\"
+    echo "        --gpg-file /opt/jongo/conf/file.gpg \\"
+    echo "        --tag 42.0.0"
 }
 
 function __main() {
@@ -100,13 +88,8 @@ function __main() {
             shift
             shift
         ;;
-        --settings-file)
-            append_maven_options "--settings ${2}"
-            shift
-            shift
-        ;;
-        --settings-security)
-            append_maven_options "-Dsettings.security=${2}"
+        --maven-options)
+            append_maven_options "${2}"
             shift
             shift
         ;;
@@ -151,7 +134,7 @@ function __main() {
     echo ""
 
     log_info "Cloning repository..."
-    local repo_dir=$(clone_repository "git@github.com:bguerout/jongo.git")
+    local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
     [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
 
     pushd "${repo_dir}" > /dev/null

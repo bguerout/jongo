@@ -1,12 +1,8 @@
-language: bash
+language: java
 
-sudo: required
-
-services:
-  - docker
-
-before_install:
-  - docker build -t jongo-ci .
+cache:
+  directories:
+  - $HOME/.m2
 
 script:
-  - docker run -it -w /root/sources jongo-ci bash build.sh --job CI
+  - mvn clean verify
