@@ -16,4 +16,4 @@ dependencies:
 
 test:
   override:
-    - docker run -it --volume ~/.m2:/opt/jongo/conf/repository jongo-ci --maven-options "-Dmaven.repo.local=/opt/jongo/conf/repository" test
+    - docker run -it --volume ~/.m2:/opt/jongo/conf/repository jongo-ci --branch ${CIRCLE_BRANCH} --maven-options "-Dmaven.repo.local=/opt/jongo/conf/repository" test
