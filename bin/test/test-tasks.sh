@@ -4,6 +4,7 @@ source "${JONGO_TEST_DIR}/assert.sh"
 
 function test_cli {
     readonly JONGO_TEST_TARGET_BRANCH="${1}"
+    append_maven_options "-DskipTests"
 
     before_all
         should_validate_tools

@@ -85,13 +85,19 @@ function deploy {
     uncheckout
 }
 
-function test_jongo {
+function download_all_dependencies {
     local base_branch="${1}"
 
     checkout "${base_branch}"
          log_info "Retrieving all Maven dependencies..."
         _mvn dependency:go-offline
+    uncheckout
+}
 
+function test_jongo {
+    local base_branch="${1}"
+
+    checkout "${base_branch}"
         log_info "Running Jongo tests..."
         _mvn verify
     uncheckout

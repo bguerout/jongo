@@ -139,11 +139,12 @@ function __main() {
 
     pushd "${repo_dir}" > /dev/null
 
+        download_all_dependencies "${git_revision}"
+
         case "${task}" in
             test)
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
                 test_jongo "${git_revision}"
-                append_maven_options "-DskipTests"
                 test_cli "${git_revision}"
             ;;
             release)
