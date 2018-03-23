@@ -2,12 +2,15 @@
 readonly JONGO_TEST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "${JONGO_TEST_DIR}/assert.sh"
 
-function test_cli {
+function run_test_suite {
     readonly JONGO_TEST_TARGET_BRANCH="${1}"
+    local -r gpg_keyname=$(import_gpg "${JONGO_TEST_DIR}/resources/jongo-dummy-key.gpg")
+    append_maven_options "-Dgpg.keyname=${gpg_keyname}"
     append_maven_options "-DskipTests"
 
     before_all
         should_validate_tools
+        can_download_all_dependencies
         can_create_an_early_release
         can_create_a_new_release
         can_create_an_hotfix_release
@@ -66,6 +69,12 @@ function should_validate_tools {
     after_each
 }
 
+function can_download_all_dependencies {
+    before_each
+        download_all_dependencies "${JONGO_TEST_TARGET_BRANCH}"
+    after_each
+}
+
 function can_create_an_early_release {
     before_each
 
@@ -112,8 +121,6 @@ function can_deploy_artifacts {
     before_each
         local tag="42.0.0"
         local deploy_dir="$(pwd)/target/deploy/org/jongo/jongo/${tag}"
-        local -r gpg_keyname=$(import_gpg "${JONGO_TEST_DIR}/resources/jongo-dummy-key.gpg")
-        append_maven_options "-Dgpg.keyname=${gpg_keyname}"
 
         deploy ${tag}
 

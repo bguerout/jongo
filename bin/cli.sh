@@ -139,23 +139,18 @@ function __main() {
 
     pushd "${repo_dir}" > /dev/null
 
-        download_all_dependencies "${git_revision}"
-
         case "${task}" in
             test)
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
-                test_jongo "${git_revision}"
-                test_cli "${git_revision}"
+                run_test_suite "${git_revision}"
             ;;
             release)
-                if [ "${early}" = true ]; then
-                    create_early_release "${git_revision}"
-                else
-                    create_release "${git_revision}"
-                fi
+                download_all_dependencies "${git_revision}"
+                [[ "${early}" = true ]] && create_early_release "${git_revision}" || create_release "${git_revision}"
                 deploy "${git_revision}"
             ;;
             release_hotfix)
+                download_all_dependencies "${git_revision}"
                 create_hotfix_release "${git_revision}"
                 deploy "${git_revision}"
             ;;
