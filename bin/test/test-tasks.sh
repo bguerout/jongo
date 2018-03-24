@@ -10,7 +10,6 @@ function run_test_suite {
 
     before_all
         should_validate_tools
-        can_download_all_dependencies
         can_create_an_early_release
         can_create_a_new_release
         can_create_an_hotfix_release
@@ -66,12 +65,6 @@ function should_validate_tools {
         assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.1.0-SNAPSHOT" "Versions mismatched"
 
         git reset -q --hard "origin/${JONGO_TEST_TARGET_BRANCH}"
-    after_each
-}
-
-function can_download_all_dependencies {
-    before_each
-        download_all_dependencies "${JONGO_TEST_TARGET_BRANCH}"
     after_each
 }
 

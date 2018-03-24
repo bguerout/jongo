@@ -9,6 +9,37 @@ source "${JONGO_BASE_DIR}/bin/lib/common/gpg-tools.sh"
 source "${JONGO_BASE_DIR}/bin/lib/common/logger.sh"
 source "${JONGO_BASE_DIR}/bin/lib/release/tasks.sh"
 
+function usage {
+    echo "Usage: $0 [option...] {release|release_hotfix|test}"
+    echo
+    echo "Command line interface to build, package and deploy Jongo"
+    echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
+    echo
+    echo "   --branch           The base branch to release"
+    echo "   --tag              The tag used to deploy artifacts"
+    echo "   --dry-run          Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
+    echo "   --early            Run release in early mode"
+    echo "   --gpg-file         Path to the GPG file used to sign artifacts"
+    echo "   --maven-options    Maven options (eg. --settings /path/to/settings.xml)"
+    echo "   --dirty            Do not clean generated resources during execution (eg. cloned repository)"
+    echo "   --debug            Print all executed commands and run Maven in debug mode"
+    echo
+    echo "Usage examples:"
+    echo ""
+    echo " Release a new version from the master branch:"
+    echo ""
+    echo "      bash ./bin/cli.sh release --gpg-file /path/to/file.gpg --branch master"
+    echo ""
+    echo " Deploy a version from inside a docker container."
+    echo ""
+    echo "      docker build bin -t jongo-releaser && \\"
+    echo "      docker run -it --volume /path/to/files:/opt/jongo/conf jongo-releaser \\"
+    echo "         deploy \\"
+    echo "        --maven-options \"--settings /opt/jongo/conf/settings.xml\" \\"
+    echo "        --gpg-file /opt/jongo/conf/file.gpg \\"
+    echo "        --tag 42.0.0"
+}
+
 function safeguard() {
     local task="${1}"
     while true; do
@@ -27,43 +58,9 @@ function configure_dry_mode() {
     update_origin_with_fake_remote "${repo_dir}"
 }
 
-function usage {
-    echo "Usage: $0 [option...] {release|release_hotfix|test}"
-    echo
-    echo "Command line interface to build, package and deploy Jongo"
-    echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
-    echo
-    echo "   -b, --branch               The branch where task will be executed (default: master)"
-    echo "   -t, --tag                  The tag used to deploy artifacts (required for deploy task)"
-    echo "   -d, --dry-run              Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
-    echo "   --early                    Run release in early mode"
-    echo "   --gpg-file                 Path to the GPG file used to sign artifacts"
-    echo "   --maven-options            Maven options (eg. --settings /path/to/settings.xml)"
-    echo "   --dirty                    Do not clean generated resources during execution (eg. cloned repository)"
-    echo "   --debug                    Print all executed commands and run Maven in debug mode"
-    echo
-    echo "Usage examples:"
-    echo ""
-    echo " Release a new version from the master branch:"
-    echo ""
-    echo "      bash ./bin/cli.sh release --gpg-file /path/to/file.gpg --branch master"
-    echo ""
-    echo " Deploy a version from inside a docker container."
-    echo ""
-    echo "      docker build bin -t jongo-releaser && \\"
-    echo "      docker run -it --volume /path/to/files:/opt/jongo/conf jongo-releaser \\"
-    echo "         deploy \\"
-    echo "        --maven-options \"--settings /opt/jongo/conf/settings.xml\" \\"
-    echo "        --gpg-file /opt/jongo/conf/file.gpg \\"
-    echo "        --tag 42.0.0"
-}
-
 function __main() {
 
-    local git_revision='master'
     local dry_run=true
-    local dirty=false
-    local debug=false
     local early=false
     local positional=()
 
@@ -71,13 +68,19 @@ function __main() {
     do
     key="$1"
     case $key in
-        -b|-t|--branch|--tag)
-            local git_revision="$2"
+        --branch)
+            local branch="$2"
+            shift
+            shift
+        ;;
+        --tag)
+            local tag="$2"
             shift
             shift
         ;;
         --early)
             readonly early=true
+            append_maven_options "-P early"
             shift
         ;;
         --gpg-file)
@@ -94,16 +97,19 @@ function __main() {
             shift
         ;;
         --dirty)
-            readonly dirty=true
+            trap clean_resources EXIT
+            log_warn "Dirty mode activated."
             shift
         ;;
         --debug)
             set -x
             readonly debug=true
+            append_maven_options "-Dsurefire.printSummary=true"
             shift
         ;;
         -d|--dry-run)
             readonly dry_run="$2"
+            log_warn "Script is running in dry mode."
             shift
             shift
         ;;
@@ -120,32 +126,27 @@ function __main() {
     set -- "${positional[@]}"
 
     local task="${1}"
-    [[ "${early}" = true ]] && append_maven_options "-P early"
-    [[ "${debug}" = true ]] &&  append_maven_options "-Dsurefire.printSummary=true"
-    [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
-    [[ "${dry_run}" = true ]] && log_warn "Script is running in dry mode."
 
     log_info "Cloning repository..."
     local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
     [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
+
     log_info "Maven options:  '$(get_maven_options)'"
 
     pushd "${repo_dir}" > /dev/null
-
         case "${task}" in
             test)
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
-                run_test_suite "${git_revision}"
+                run_test_suite "${branch}"
             ;;
             release)
-                download_all_dependencies "${git_revision}"
-                [[ "${early}" = true ]] && create_early_release "${git_revision}" || create_release "${git_revision}"
-                deploy "${git_revision}"
+                [[ "${early}" = true ]] && create_early_release "${branch}" || create_release "${branch}"
             ;;
             release_hotfix)
-                download_all_dependencies "${git_revision}"
-                create_hotfix_release "${git_revision}"
-                deploy "${git_revision}"
+                create_hotfix_release "${branch}"
+            ;;
+            deploy)
+                deploy "${tag}"
             ;;
             *)
              log_error "Unknown task '${task}'"

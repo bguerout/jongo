@@ -94,6 +94,12 @@ function create_hotfix_release {
 
 function deploy {
     local tag="${1}"
+    local current_version=$(get_current_version "${tag}")
+
+    if [[ ${current_version} = *"early"* && ! $(get_maven_options) = *"-P early"* ]]; then
+      log_error "Can't deploy an early tag without early maven profile activated. Please run task with --early parameter"
+      exit 1
+    fi
 
     log_info ""
     log_info "***************************************************************************************"
@@ -105,15 +111,6 @@ function deploy {
     uncheckout
 
     log_success "${tag} deployed into Maven repository version released"
-}
-
-function download_all_dependencies {
-    local base_branch="${1}"
-
-    checkout "${base_branch}"
-         log_info "Retrieving all Maven dependencies..."
-        _mvn --quiet dependency:go-offline
-    uncheckout
 }
 
 function test_jongo {
