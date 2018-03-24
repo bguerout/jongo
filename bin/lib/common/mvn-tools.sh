@@ -1,5 +1,5 @@
 
-JONGO_MAVEN_OPTIONS="--errors --batch-mode -P release"
+JONGO_MAVEN_OPTIONS="--errors --batch-mode -P release -Dsurefire.printSummary=false"
 
 function _mvn() {
     mvn ${JONGO_MAVEN_OPTIONS:-""} $@

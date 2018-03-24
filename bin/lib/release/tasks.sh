@@ -6,6 +6,11 @@ function create_early_release {
     local current_version=$(get_current_version "origin/${base_branch}")
     local tag_early_version=$(determine_early_release_version "origin/${base_branch}")
 
+    log_info ""
+    log_info "***************************************************************************************"
+    log_info "* Creating early release ${tag_early_version} on branch '${base_branch}'"
+    log_info "***************************************************************************************"
+
     test_jongo "${base_branch}"
 
     checkout "${base_branch}"
@@ -30,6 +35,11 @@ function create_release {
     local base_branch="${1}"
     local hotfix_branch="releases_$(determine_hotfix_version_pattern "origin/${base_branch}")"
     local tag_release_version=$(determine_release_version "origin/${base_branch}")
+
+    log_info ""
+    log_info "***************************************************************************************"
+    log_info "* Creating release ${tag_release_version} on branch '${base_branch}'"
+    log_info "***************************************************************************************"
 
     test_jongo "${base_branch}"
 
@@ -57,6 +67,11 @@ function create_hotfix_release {
     local base_branch="${1}"
     local tag_release_version=$(determine_release_version "origin/${base_branch}")
 
+    log_info ""
+    log_info "***************************************************************************************"
+    log_info "* Creating hotfix release ${tag_release_version} on branch '${base_branch}'"
+    log_info "***************************************************************************************"
+
     test_jongo "${base_branch}"
 
     checkout "${base_branch}"
@@ -80,9 +95,16 @@ function create_hotfix_release {
 function deploy {
     local tag="${1}"
 
+    log_info ""
+    log_info "***************************************************************************************"
+    log_info "* Deploying tag ${tag}..."
+    log_info "***************************************************************************************"
+
     checkout "${tag}"
         _mvn deploy
     uncheckout
+
+    log_success "${tag} deployed into Maven repository version released"
 }
 
 function download_all_dependencies {
@@ -90,7 +112,7 @@ function download_all_dependencies {
 
     checkout "${base_branch}"
          log_info "Retrieving all Maven dependencies..."
-        _mvn dependency:go-offline
+        _mvn --quiet dependency:go-offline
     uncheckout
 }
 

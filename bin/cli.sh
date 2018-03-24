@@ -121,21 +121,14 @@ function __main() {
 
     local task="${1}"
     [[ "${early}" = true ]] && append_maven_options "-P early"
-    [[ "${debug}" = false ]] &&  append_maven_options "--quiet"
+    [[ "${debug}" = true ]] &&  append_maven_options "-Dsurefire.printSummary=true"
     [[ "${dirty}" = false ]] && trap clean_resources EXIT || log_warn "Dirty mode activated."
     [[ "${dry_run}" = true ]] && log_warn "Script is running in dry mode."
 
     log_info "Cloning repository..."
     local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
     [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
-
-    echo ""
-    log_info    "***************************************************************************************"
-    log_success "* Running task '${task}'..."
-    log_info    "*   Maven options:  '$(get_maven_options)'"
-    log_info    "*   Git revision:   '${git_revision}'"
-    log_info    "***************************************************************************************"
-    echo ""
+    log_info "Maven options:  '$(get_maven_options)'"
 
     pushd "${repo_dir}" > /dev/null
 
