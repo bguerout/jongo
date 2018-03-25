@@ -18,7 +18,6 @@ function usage {
     echo "   --branch           The base branch to release"
     echo "   --tag              The tag used to deploy artifacts"
     echo "   --dry-run          Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
-    echo "   --early            Run release in early mode"
     echo "   --gpg-file         Path to the GPG file used to sign artifacts"
     echo "   --maven-options    Maven options (eg. --settings /path/to/settings.xml)"
     echo "   --dirty            Do not clean generated resources during execution (eg. cloned repository)"
@@ -40,10 +39,16 @@ function usage {
     echo "        --tag 42.0.0"
 }
 
+function configure_dry_mode() {
+    local repo_dir="${1}"
+    configure_deploy_plugin_for_test ${JONGO_BASE_DIR}
+    update_origin_with_fake_remote "${repo_dir}"
+    log_warn "Script is running in dry mode."
+}
+
 function safeguard() {
-    local task="${1}"
     while true; do
-        read -p "[WARN] Do you really want to run '${task}' for real?" yn
+        read -p "[WARN] Do you really want to run this task for real?" yn
         case $yn in
             [Yy]* ) break;;
             [Nn]* ) exit;;
@@ -52,16 +57,9 @@ function safeguard() {
     done
 }
 
-function configure_dry_mode() {
-    local repo_dir="${1}"
-    append_maven_options "-P test"
-    update_origin_with_fake_remote "${repo_dir}"
-}
-
 function __main() {
 
     local dry_run=true
-    local early=false
     local positional=()
 
     while [[ $# -gt 0 ]]
@@ -69,25 +67,19 @@ function __main() {
     key="$1"
     case $key in
         --branch)
-            local branch="$2"
+            local git_revision="$2"
             shift
             shift
         ;;
         --tag)
-            local tag="$2"
+            local git_revision="$2"
             shift
-            shift
-        ;;
-        --early)
-            readonly early=true
-            append_maven_options "-P early"
             shift
         ;;
         --gpg-file)
             local -r gpg_keyname=$(import_gpg "${2}")
             log_info "GPG key ${gpg_keyname} imported from file ${2}"
-            append_maven_options "-Dgpg.keyname=${gpg_keyname}"
-            append_maven_options "-Dgpg.passphraseServerId=jongo.gpg.passphrase.server"
+            configure_maven_gpg_plugin "${gpg_keyname}"
             shift
             shift
         ;;
@@ -109,7 +101,6 @@ function __main() {
         ;;
         -d|--dry-run)
             readonly dry_run="$2"
-            log_warn "Script is running in dry mode."
             shift
             shift
         ;;
@@ -125,28 +116,35 @@ function __main() {
     done
     set -- "${positional[@]}"
 
-    local task="${1}"
-
-    log_info "Cloning repository..."
-    local repo_dir=$(clone_repository "https://github.com/bguerout/jongo.git")
-    [[ "${dry_run}" = true ]] && configure_dry_mode "${repo_dir}" || safeguard "${task}"
-
-    log_info "Maven options:  '$(get_maven_options)'"
-
+    local repo_dir=$(clone_repository "${dry_run}")
     pushd "${repo_dir}" > /dev/null
+
+        local task="${1}"
+        if [[ "${dry_run}" = true ]] ; then
+            configure_dry_mode "${repo_dir}"
+        else
+            if [[ ${git_revision} = *"-early-"* ]]  || [[ "${task}" == "release_early" ]]; then
+                configure_deploy_plugin_for_early
+            fi
+            safeguard
+        fi
+
         case "${task}" in
             test)
                 source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
-                run_test_suite "${branch}"
+                run_test_suite "${git_revision}"
+            ;;
+            release_early)
+                create_early_release "${git_revision}"
             ;;
             release)
-                [[ "${early}" = true ]] && create_early_release "${branch}" || create_release "${branch}"
+                create_release "${git_revision}"
             ;;
             release_hotfix)
-                create_hotfix_release "${branch}"
+                create_hotfix_release "${git_revision}"
             ;;
             deploy)
-                deploy "${tag}"
+                deploy "${git_revision}"
             ;;
             *)
              log_error "Unknown task '${task}'"

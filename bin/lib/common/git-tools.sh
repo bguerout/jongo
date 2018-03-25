@@ -23,10 +23,13 @@ function create_bare_repository {
 }
 
 function clone_repository {
-    local remote_url="${1}"
-    local clone_dir=$(mktemp -d -t "jongo-release-repo-XXXXX")
-    git clone "${remote_url}" "${clone_dir}"
-    echo "${clone_dir}"
+    local dry_run="${1}"
+    local remote_url="https://github.com/bguerout/jongo.git"
+    local repo_dir=$(mktemp -d -t "jongo-release-repo-XXXXX")
+
+    git clone "${remote_url}" "${repo_dir}"
+
+    echo "${repo_dir}"
 }
 
 function update_origin_with_fake_remote {

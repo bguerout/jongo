@@ -113,7 +113,7 @@ function can_create_an_hotfix_release {
 function can_deploy_artifacts {
     before_each
         local tag="42.0.0"
-        local deploy_dir="$(pwd)/target/deploy/org/jongo/jongo/${tag}"
+        local deploy_dir="${JONGO_TEST_DIR}/../../target/deploy/org/jongo/jongo/${tag}"
 
         deploy ${tag}
 

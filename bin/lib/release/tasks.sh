@@ -6,10 +6,7 @@ function create_early_release {
     local current_version=$(get_current_version "origin/${base_branch}")
     local tag_early_version=$(determine_early_release_version "origin/${base_branch}")
 
-    log_info ""
-    log_info "***************************************************************************************"
-    log_info "* Creating early release ${tag_early_version} on branch '${base_branch}'"
-    log_info "***************************************************************************************"
+    log_task "Creating early release ${tag_early_version} on branch '${base_branch}'"
 
     test_jongo "${base_branch}"
 
@@ -36,10 +33,7 @@ function create_release {
     local hotfix_branch="releases_$(determine_hotfix_version_pattern "origin/${base_branch}")"
     local tag_release_version=$(determine_release_version "origin/${base_branch}")
 
-    log_info ""
-    log_info "***************************************************************************************"
-    log_info "* Creating release ${tag_release_version} on branch '${base_branch}'"
-    log_info "***************************************************************************************"
+    log_task "Creating release ${tag_release_version} on branch '${base_branch}'"
 
     test_jongo "${base_branch}"
 
@@ -67,10 +61,7 @@ function create_hotfix_release {
     local base_branch="${1}"
     local tag_release_version=$(determine_release_version "origin/${base_branch}")
 
-    log_info ""
-    log_info "***************************************************************************************"
-    log_info "* Creating hotfix release ${tag_release_version} on branch '${base_branch}'"
-    log_info "***************************************************************************************"
+    log_task "Creating hotfix release ${tag_release_version} on branch '${base_branch}'"
 
     test_jongo "${base_branch}"
 
@@ -94,17 +85,8 @@ function create_hotfix_release {
 
 function deploy {
     local tag="${1}"
-    local current_version=$(get_current_version "${tag}")
 
-    if [[ ${current_version} = *"early"* && ! $(get_maven_options) = *"-P early"* ]]; then
-      log_error "Can't deploy an early tag without early maven profile activated. Please run task with --early parameter"
-      exit 1
-    fi
-
-    log_info ""
-    log_info "***************************************************************************************"
-    log_info "* Deploying tag ${tag}..."
-    log_info "***************************************************************************************"
+    log_task "Deploying tag ${tag}..."
 
     checkout "${tag}"
         _mvn deploy
