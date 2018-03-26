@@ -32,6 +32,11 @@ class MongoBsonGenerator extends BsonGenerator {
         super(jsonFeatures, bsonFeatures, out);
     }
 
+    @Override
+    public void flush() throws IOException {
+        _out.flush();
+    }
+
     public void writeNativeObjectId(org.bson.types.ObjectId objectId) throws IOException {
         _writeArrayFieldNameIfNeeded();
         _verifyValueWrite("write datetime");
