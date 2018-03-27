@@ -106,7 +106,7 @@ public class MongoResource {
         }
 
         private static IDirectory getMongoPath() {
-            String path = System.getProperty("jongo.test.db.path");
+            String path = System.getProperty("jongo.test.embedmongo.dir");
             if (path == null) {
                 return new UserHome(".embedmongo");
             }

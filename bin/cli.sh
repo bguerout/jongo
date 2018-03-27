@@ -3,52 +3,44 @@
 set -euo pipefail
 
 readonly JONGO_BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
-source "${JONGO_BASE_DIR}/bin/lib/common/mvn-tools.sh"
-source "${JONGO_BASE_DIR}/bin/lib/common/git-tools.sh"
-source "${JONGO_BASE_DIR}/bin/lib/common/gpg-tools.sh"
-source "${JONGO_BASE_DIR}/bin/lib/common/logger.sh"
-source "${JONGO_BASE_DIR}/bin/lib/release/tasks.sh"
+source "${JONGO_BASE_DIR}/bin/lib/utils/mvn-utils.sh"
+source "${JONGO_BASE_DIR}/bin/lib/utils/git-utils.sh"
+source "${JONGO_BASE_DIR}/bin/lib/utils/logger-utils.sh"
+source "${JONGO_BASE_DIR}/bin/lib/tasks.sh"
 
 function usage {
-    echo "Usage: $0 [option...] {release|release_hotfix|test}"
+    echo "Usage: $0 [option...] <tag|tag_early|tag_hotfix|deploy|test> <git_revision>"
     echo
     echo "Command line interface to build, package and deploy Jongo"
     echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
     echo
-    echo "   --branch           The base branch to release"
-    echo "   --tag              The tag used to deploy artifacts"
-    echo "   --dry-run          Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
-    echo "   --gpg-file         Path to the GPG file used to sign artifacts"
-    echo "   --maven-options    Maven options (eg. --settings /path/to/settings.xml)"
-    echo "   --dirty            Do not clean generated resources during execution (eg. cloned repository)"
-    echo "   --debug            Print all executed commands and run Maven in debug mode"
+    echo "   --maven-options <options>      Maven options (eg. '--settings /path/to/settings.xml')"
+    echo "   --remote-repository-url <url>  The remote repository url used to clone the project (default https://github.com/bguerout/jongo.git)"
+    echo "   --docker                       Build image from Dockerfile and run this script into a Docker container"
+    echo "   --mount <path>                 Mount an host dir to '/opt/jongo/conf' in the Docker container (default: target/docker)"
+    echo "   --dry-run                      Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
+    echo "   --dirty                        Do not clean resources generated during the execution (eg. cloned repository / default: false)"
+    echo "   --debug                        Print all executed commands and run Maven in debug mode"
     echo
     echo "Usage examples:"
     echo ""
-    echo " Release a new version from the master branch:"
+    echo " Run tests: "
     echo ""
-    echo "      bash ./bin/cli.sh release --gpg-file /path/to/file.gpg --branch master"
+    echo "      ./bin/cli.sh test"
     echo ""
-    echo " Deploy a version from inside a docker container."
+    echo " Create a tag inside a docker container: "
     echo ""
-    echo "      docker build bin -t jongo-releaser && \\"
-    echo "      docker run -it --volume /path/to/files:/opt/jongo/conf jongo-releaser \\"
-    echo "         deploy \\"
-    echo "        --maven-options \"--settings /opt/jongo/conf/settings.xml\" \\"
-    echo "        --gpg-file /opt/jongo/conf/file.gpg \\"
-    echo "        --tag 42.0.0"
-}
-
-function configure_dry_mode() {
-    local repo_dir="${1}"
-    configure_deploy_plugin_for_test ${JONGO_BASE_DIR}
-    update_origin_with_fake_remote "${repo_dir}"
-    log_warn "Script is running in dry mode."
+    echo "      ./bin/cli.sh tag --docker"
+    echo ""
+    echo " Create an hotfix from a custom branch: "
+    echo ""
+    echo "      ./bin/cli.sh <hotfix_branch_name>"
+    echo ""
 }
 
 function safeguard() {
     while true; do
-        read -p "[WARN] Do you really want to run this task for real?" yn
+        read -p "[WARN] Do you really want to run this task for real (y/n)?" yn
         case $yn in
             [Yy]* ) break;;
             [Nn]* ) exit;;
@@ -57,50 +49,110 @@ function safeguard() {
     done
 }
 
-function __main() {
+function clean_resources {
+    log_info "Cleaning resources..."
+    kill $(jobs -p)
+    find ${TMPDIR:-$(dirname $(mktemp))/} -depth -type d -name "jongo-release*" -exec rm -rf {} \;
+}
 
+function activate_profiles() {
+    local git_revision="${1}"
+
+    if [[ "${git_revision}" = *"-early-"* ]]; then
+        append_maven_options "-Pcloudbees"
+    else
+        append_maven_options "-Psonatype"
+    fi
+    safeguard
+}
+
+function activate_test_profiles() {
+    local repo_dir="${1}"
+
+    append_maven_options "-Ptest"
+    update_origin_with_fake_remote "${repo_dir}"
+    log_warn "Script is running in dry mode."
+}
+
+function check_if_running_inside_docker() {
+    if [ -f /.dockerenv ]; then
+        log_info "Script is running inside a Docker container"
+    fi
+}
+
+function run_script_inside_docker() {
+    local arguments="${1}"
+    local mount_dir="${2}"
+    local docker_command=$(echo "${arguments}" | sed -e 's/\(--docker\)*//g')
+    local maven_options=(
+        "-Dmaven.repo.local=/opt/jongo/conf/.m2/repository"
+        "-Djongo.test.embedmongo.dir=/opt/jongo/conf/.m2/mongodb"
+    )
+
+    log_info "Host dir ${mount_dir} is mounted into container on path '/opt/jongo/conf'"
+
+    docker build . -t jongo
+    docker run -it --volume "${mount_dir}:/opt/jongo/conf:cached" jongo bash -c \
+        "./bin/cli.sh ${docker_command} --maven-options \"$( IFS=$' '; echo "${maven_options[*]}" )\""
+}
+
+function main() {
+
+    local git_revision="$(git rev-parse --abbrev-ref HEAD)"
     local dry_run=true
+    local dirty=false
+    local docker=false
+    local remote_repository_url="https://github.com/bguerout/jongo.git"
     local positional=()
+    local docker_options=()
 
     while [[ $# -gt 0 ]]
     do
     key="$1"
     case $key in
         --branch)
-            local git_revision="$2"
-            shift
-            shift
-        ;;
-        --tag)
-            local git_revision="$2"
-            shift
-            shift
-        ;;
-        --gpg-file)
-            local -r gpg_keyname=$(import_gpg "${2}")
-            log_info "GPG key ${gpg_keyname} imported from file ${2}"
-            configure_maven_gpg_plugin "${gpg_keyname}"
+            git_revision="${2}"
             shift
             shift
         ;;
         --maven-options)
             append_maven_options "${2}"
+            docker_options+=("${key} '${2}'")
+            shift
+            shift
+        ;;
+        --remote-repository-url)
+            readonly remote_repository_url="${2}"
+            docker_options+=("${key} ${2}")
+            shift
+            shift
+        ;;
+        --docker)
+            readonly docker=true
+            docker_options+=("")
+            log_warn "Docker mode activated."
+            shift
+        ;;
+         --mount)
+            readonly mount="${2}"
             shift
             shift
         ;;
         --dirty)
-            trap clean_resources EXIT
+            readonly dirty=true
+            docker_options+=("${key}")
             log_warn "Dirty mode activated."
             shift
         ;;
         --debug)
+            append_maven_options "-Dsurefire.printSummary=true -X"
             set -x
-            readonly debug=true
-            append_maven_options "-Dsurefire.printSummary=true"
+            docker_options+=("${key}")
             shift
         ;;
         -d|--dry-run)
             readonly dry_run="$2"
+            docker_options+=("${key}")
             shift
             shift
         ;;
@@ -109,42 +161,54 @@ function __main() {
             exit 0;
         ;;
         *)
-        positional+=("$1")
-        shift
+            positional+=("$1")
+            shift
         ;;
     esac
     done
+
     set -- "${positional[@]}"
+    local task="${1}"
 
-    local repo_dir=$(clone_repository "${dry_run}")
+    if [[ "${docker}" = true ]]; then
+        local raw_arguments="${positional[@]} ${docker_options[@]}"
+        run_script_inside_docker "${raw_arguments}" "${mount:-"${JONGO_BASE_DIR}/target/docker"}"
+        exit 0
+    else
+        check_if_running_inside_docker
+    fi
+
+    [[ "${dirty}" = false ]] &&  trap clean_resources EXIT
+
+    local repo_dir=$(clone_repository "${remote_repository_url}")
+
+    if [[ "${dry_run}" = false ]]; then
+        activate_profiles "${git_revision}"
+    else
+        activate_test_profiles "${repo_dir}"
+    fi
+
     pushd "${repo_dir}" > /dev/null
-
-        local task="${1}"
-        if [[ "${dry_run}" = true ]] ; then
-            configure_dry_mode "${repo_dir}"
-        else
-            if [[ ${git_revision} = *"-early-"* ]]  || [[ "${task}" == "release_early" ]]; then
-                configure_deploy_plugin_for_early
-            fi
-            safeguard
-        fi
-
         case "${task}" in
             test)
-                source "${JONGO_BASE_DIR}/bin/test/test-tasks.sh"
-                run_test_suite "${git_revision}"
+                source "${JONGO_BASE_DIR}/src/test/sh/cli/tasks-tests.sh"
+                run_test_suite "${git_revision}" "${repo_dir}"
             ;;
-            release_early)
-                create_early_release "${git_revision}"
+            tag_early)
+                create_early_tag "${git_revision}"
             ;;
-            release)
-                create_release "${git_revision}"
+            tag)
+                create_tag "${git_revision}"
             ;;
-            release_hotfix)
-                create_hotfix_release "${git_revision}"
+            tag_hotfix)
+                create_hotfix_tag "${git_revision}"
             ;;
             deploy)
-                deploy "${git_revision}"
+                if [[ "${git_revision}" = *"-SNAPSHOT"* ]]; then
+                    deploy_snapshot "${git_revision}"
+                else
+                    deploy "${git_revision}"
+                fi
             ;;
             *)
              log_error "Unknown task '${task}'"
@@ -155,4 +219,4 @@ function __main() {
     popd > /dev/null
 }
 
-__main "$@"
+main "$@"

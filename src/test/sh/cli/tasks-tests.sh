@@ -1,18 +1,21 @@
 
-readonly JONGO_TEST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "${JONGO_TEST_DIR}/assert.sh"
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "${SCRIPT_DIR}/assert.sh"
 
 function run_test_suite {
     readonly JONGO_TEST_TARGET_BRANCH="${1}"
-    local -r gpg_keyname=$(import_gpg "${JONGO_TEST_DIR}/resources/jongo-dummy-key.gpg")
-    append_maven_options "-Dgpg.keyname=${gpg_keyname}"
-    append_maven_options "-DskipTests"
+    readonly JONGO_TEST_TARGET_DIR="${2}/target"
 
+    append_maven_options "-Dgpg.passphrase='' -Dgpg.keyname=test@jongo.org -Dgpg.file=${SCRIPT_DIR}/jongo-fake-secret-key.asc"
+    append_maven_options "-DskipTests --quiet"
+
+    log_task "Running tasks test suite..."
     before_all
         should_validate_tools
-        can_create_an_early_release
-        can_create_a_new_release
-        can_create_an_hotfix_release
+        can_deploy_snapshot
+        can_create_an_early_tag
+        can_create_a_new_tag
+        can_create_an_hotfix_tag
         can_deploy_artifacts
     after_all
 }
@@ -34,7 +37,6 @@ function after_all {
 }
 
 function before_each {
-    echo ""
     log_header "${FUNCNAME[1]}"
 }
 
@@ -47,11 +49,11 @@ function should_validate_tools {
         echo "[TEST] --> can get the current project version"
         assert_eq "$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-SNAPSHOT" "Current versions mismatched"
 
-        echo "[TEST] --> can determine the release version when project will be released"
-        assert_eq "$(determine_release_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0" "Release versions mismatched"
+        echo "[TEST] --> can determine the version when project will be released"
+        assert_eq "$(determine_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0" "Versions mismatched"
 
-        echo "[TEST] --> can determine the early release version when project will be released"
-        assert_eq "$(determine_early_release_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-early-$(date +%Y%m%d-%H%M)" "Early release versions mismatched"
+        echo "[TEST] --> can determine the early version when project will be released"
+        assert_eq "$(determine_early_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-early-$(date +%Y%m%d-%H%M)" "Early versions mismatched"
 
         echo "[TEST] --> can determine the hotfix version pattern when project will be released"
         assert_eq "$(determine_hotfix_version_pattern "${JONGO_TEST_TARGET_BRANCH}")" "42.0.x" "Versions mismatched"
@@ -68,24 +70,37 @@ function should_validate_tools {
     after_each
 }
 
-function can_create_an_early_release {
+function can_deploy_snapshot {
     before_each
+        local current_version=$(get_current_version "${JONGO_TEST_TARGET_BRANCH}")
+        local deploy_dir="${JONGO_TEST_TARGET_DIR}/deploy/org/jongo/jongo/${current_version}"
 
+        deploy_snapshot "${JONGO_TEST_TARGET_BRANCH}"
+
+        assert_directory_exists "${deploy_dir}"
+    after_each
+}
+
+function can_create_an_early_tag {
+    before_each
         local expected_early_tag="42.0.0-early-$(date +%Y%m%d-%H%M)"
+        local deploy_dir="${JONGO_TEST_TARGET_DIR}/deploy/org/jongo/jongo/${expected_early_tag}"
 
-        create_early_release "${JONGO_TEST_TARGET_BRANCH}"
+        create_early_tag "${JONGO_TEST_TARGET_BRANCH}"
 
         local early_commit="$(get_head_commit ${JONGO_TEST_TARGET_BRANCH}^)"
         assert_eq "$(get_current_version ${JONGO_TEST_TARGET_BRANCH})" "42.0.0-SNAPSHOT" "HEAD version of the base branch should be left intact"
         assert_eq "$(get_current_version ${early_commit})" "${expected_early_tag}" "early version in pom.xml has not been set"
         assert_not_eq "$(git ls-remote origin refs/tags/${expected_early_tag})" "" "Tag does not exist or has not been pushed"
         assert_eq "$(git show-ref -s "${expected_early_tag}")" "${early_commit}" "Tag does not point to the right commit"
+        assert_file_exists "${deploy_dir}/jongo-${expected_early_tag}.jar"
+        assert_file_exists "${deploy_dir}/jongo-${expected_early_tag}.jar.asc"
     after_each
 }
 
-function can_create_a_new_release {
+function can_create_a_new_tag {
     before_each
-        create_release "${JONGO_TEST_TARGET_BRANCH}"
+        create_tag "${JONGO_TEST_TARGET_BRANCH}"
 
         local release_commit="$(get_head_commit releases_42.0.x^)"
         assert_eq "$(git branch -r | grep releases_42.0.x | sed -e 's/ //g')" "origin/releases_42.0.x" "Hotfixes branch has not been created or pushed"
@@ -97,9 +112,9 @@ function can_create_a_new_release {
     after_each
 }
 
-function can_create_an_hotfix_release {
+function can_create_an_hotfix_tag {
     before_each
-        create_hotfix_release "releases_42.0.x"
+        create_hotfix_tag "releases_42.0.x"
 
         local hotfix_commit="$(get_head_commit releases_42.0.x^)"
         assert_eq "$(get_current_version releases_42.0.x)" "42.0.2-SNAPSHOT" "Version into hotfixes branch has not been set to the next version"
@@ -113,7 +128,7 @@ function can_create_an_hotfix_release {
 function can_deploy_artifacts {
     before_each
         local tag="42.0.0"
-        local deploy_dir="${JONGO_TEST_DIR}/../../target/deploy/org/jongo/jongo/${tag}"
+        local deploy_dir="${JONGO_TEST_TARGET_DIR}/deploy/org/jongo/jongo/${tag}"
 
         deploy ${tag}
 
@@ -152,13 +167,20 @@ function can_deploy_artifacts {
 
 function assert_file_exists {
     assert_eq "$([ -f "${1}" ] && echo 'pass' || echo 'fail')" \
-            "pass" "File is missing"
+            "pass" "File ${1} is missing"
+}
+
+function assert_directory_exists {
+    assert_eq "$([ -d "${1}" ] && echo 'pass' || echo 'fail')" \
+            "pass" "Directory ${1} is missing"
 }
 
 function assert_signature_is_valid {
     local file="${1}"
 
-     assert_eq "$(gpg -v --no-tty --batch --verify "${file}.asc" ${file} && echo 'pass' || echo 'fail')" \
+     assert_eq "$(gpg -v --no-tty --batch \
+                --no-default-keyring --keyring "${SCRIPT_DIR}/jongo-fake-public-key.gpg" \
+                --verify "${file}.asc" ${file} && echo 'pass' || echo 'fail')" \
                 "pass" "file signature seems invalid"
 }
 
