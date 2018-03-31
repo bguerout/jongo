@@ -26,13 +26,16 @@ import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class Jongo {
 
+
     private final DB database;
     private final Mapper mapper;
 
+    @Deprecated
     public Jongo(DB database) {
         this(database, jacksonMapper().build());
     }
 
+    @Deprecated
     public Jongo(DB database, Mapper mapper) {
         this.database = database;
         this.mapper = mapper;
@@ -64,5 +67,13 @@ public class Jongo {
 
     public Command runCommand(String query, Object... parameters) {
         return new Command(database, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
+    }
+
+    public static JongoNative useNative() {
+        return new JongoNative();
+    }
+
+    public static JongoNative useNative(Mapper mapper) {
+        return new JongoNative(mapper);
     }
 }

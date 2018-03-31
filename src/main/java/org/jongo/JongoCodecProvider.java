@@ -14,14 +14,31 @@
  * limitations under the License.
  */
 
-package org.jongo.query;
+package org.jongo;
 
-import com.mongodb.DBObject;
-import org.bson.conversions.Bson;
 
-public interface Query {
+import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecProvider;
+import org.bson.codecs.configuration.CodecRegistry;
 
-    DBObject toDBObject();
+import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
-    Bson toBson();
+public class JongoCodecProvider implements CodecProvider {
+
+    private final Mapper mapper;
+
+    public JongoCodecProvider() {
+        this.mapper = jacksonMapper().build();
+    }
+
+    public JongoCodecProvider(Mapper mapper) {
+        this.mapper = mapper;
+    }
+
+    public <T> Codec<T> get(final Class<T> type, final CodecRegistry registry) {
+        return new JongoCodec<T>(mapper, type, registry);
+    }
+
+
+
 }

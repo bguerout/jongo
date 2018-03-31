@@ -82,5 +82,9 @@ public class JacksonProjection implements Projection {
         public DBObject toDBObject() {
             return dbo;
         }
+
+        public Bson toBson() {
+            return BsonDocumentWrapper.asBsonDocument(dbo, MongoClient.getDefaultCodecRegistry());
+        }
     }
 }
