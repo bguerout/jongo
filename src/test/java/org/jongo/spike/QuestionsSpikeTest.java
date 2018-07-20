@@ -19,6 +19,7 @@ package org.jongo.spike;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -205,24 +206,7 @@ public class QuestionsSpikeTest extends JongoTestBase {
 
     private static class Decimal {
         ObjectId _id;
-        @JsonSerialize(using = Decimal128JsonSerializer.class)
-        @JsonDeserialize(using = Decimal128JsonDeserializer.class)
         Decimal128 total;
-    }
-
-    private static class Decimal128JsonDeserializer extends JsonDeserializer<Decimal128> {
-        @Override
-        public Decimal128 deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-            return new Decimal128(new BigDecimal(jp.getValueAsString()));
-        }
-    }
-
-    private static class Decimal128JsonSerializer extends JsonSerializer<Decimal128> {
-
-        @Override
-        public void serialize(Decimal128 decimal, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeString(decimal.bigDecimalValue().toString());
-        }
     }
 
     private static class Party {

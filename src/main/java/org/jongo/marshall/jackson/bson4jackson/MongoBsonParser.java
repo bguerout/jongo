@@ -19,6 +19,7 @@ package org.jongo.marshall.jackson.bson4jackson;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.io.IOContext;
 import de.undercouch.bson4jackson.BsonParser;
+import de.undercouch.bson4jackson.types.Decimal128;
 import de.undercouch.bson4jackson.types.ObjectId;
 import de.undercouch.bson4jackson.types.Timestamp;
 import org.bson.types.BSONTimestamp;
@@ -41,6 +42,9 @@ class MongoBsonParser extends BsonParser {
         if (object instanceof Timestamp) {
             return convertToBSONTimestamp((Timestamp) object);
         }
+        if (object instanceof Decimal128) {
+            return convertToNativeDecimal128((Decimal128) object);
+        }
         return object;
     }
 
@@ -50,5 +54,9 @@ class MongoBsonParser extends BsonParser {
 
     private org.bson.types.ObjectId convertToNativeObjectId(ObjectId id) {
         return org.bson.types.ObjectId.createFromLegacyFormat(id.getTime(), id.getMachine(), id.getInc());
+    }
+
+    private org.bson.types.Decimal128 convertToNativeDecimal128(Decimal128 decimal) {
+        return new org.bson.types.Decimal128(decimal.bigDecimalValue());
     }
 }
