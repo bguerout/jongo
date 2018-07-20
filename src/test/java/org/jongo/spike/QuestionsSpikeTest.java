@@ -17,9 +17,15 @@
 package org.jongo.spike;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+import org.bson.types.Decimal128;
+import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 import org.jongo.Mapper;
 import org.jongo.MongoCollection;
@@ -30,12 +36,15 @@ import org.jongo.marshall.Unmarshaller;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.MapperModifier;
 import org.jongo.marshall.jackson.configuration.Mapping;
+import org.jongo.marshall.jackson.oid.ObjectIdDeserializer;
 import org.jongo.model.Friend;
 import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -180,6 +189,40 @@ public class QuestionsSpikeTest extends JongoTestBase {
         long nb = collection.count("{email:#}", "bob.o'shea@gmail.com");
 
         assertThat(nb).isEqualTo(1);
+    }
+
+    @Test
+    public void canHandleDecimal128() {
+
+        Decimal decimal = new Decimal();
+        decimal.total = Decimal128.parse("10");
+
+        collection.save(decimal);
+
+        Decimal result = this.collection.findOne(decimal._id).as(Decimal.class);
+        assertThat(result.total).isEqualTo(new Decimal128(10));
+    }
+
+    private static class Decimal {
+        ObjectId _id;
+        @JsonSerialize(using = Decimal128JsonSerializer.class)
+        @JsonDeserialize(using = Decimal128JsonDeserializer.class)
+        Decimal128 total;
+    }
+
+    private static class Decimal128JsonDeserializer extends JsonDeserializer<Decimal128> {
+        @Override
+        public Decimal128 deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+            return new Decimal128(new BigDecimal(jp.getValueAsString()));
+        }
+    }
+
+    private static class Decimal128JsonSerializer extends JsonSerializer<Decimal128> {
+
+        @Override
+        public void serialize(Decimal128 decimal, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(decimal.bigDecimalValue().toString());
+        }
     }
 
     private static class Party {
