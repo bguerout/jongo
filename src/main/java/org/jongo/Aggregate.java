@@ -17,11 +17,14 @@
 package org.jongo;
 
 import com.mongodb.AggregationOptions;
+import com.mongodb.Cursor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.jongo.marshall.Unmarshaller;
 import org.jongo.query.QueryFactory;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -72,7 +75,7 @@ public class Aggregate {
         return new ResultsIterator<T>(results, resultHandler);
     }
 
-    public static class ResultsIterator<E> implements Iterator<E>, Iterable<E> {
+    public static class ResultsIterator<E> implements Iterator<E>, Iterable<E>, Closeable {
 
         private Iterator<DBObject> results;
         private ResultHandler<E> resultHandler;
@@ -100,6 +103,17 @@ public class Aggregate {
 
         public void remove() {
             throw new UnsupportedOperationException("remove() method is not supported");
+        }
+
+        public void close() throws IOException {
+            if (results instanceof Closeable) {
+                Closeable closeable = (Closeable) results;
+                closeable.close();
+            }
+        }
+
+        boolean isCursor() {
+            return (results instanceof Cursor);
         }
     }
 }
