@@ -21,11 +21,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import org.bson.types.*;
 
 import java.io.IOException;
 
 class BsonSerializers extends SimpleSerializers {
+
     public BsonSerializers() {
         addSerializer(org.bson.types.ObjectId.class, new BsonObjectIdSerializer());
         addSerializer(BSONTimestamp.class, new BSONTimestampSerializer());
@@ -40,10 +42,12 @@ class BsonSerializers extends SimpleSerializers {
         public void serialize(MaxKey obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             if (jsonGenerator instanceof MongoBsonGenerator) {
                 ((MongoBsonGenerator) jsonGenerator).writeMaxKey(obj);
-            } else {
+            } else if (jsonGenerator instanceof TokenBuffer) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeNumberField("$maxKey", 1);
                 jsonGenerator.writeEndObject();
+            } else {
+                handleUnsupportedGenerator(jsonGenerator);
             }
         }
     }
@@ -53,10 +57,12 @@ class BsonSerializers extends SimpleSerializers {
         public void serialize(MinKey obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             if (jsonGenerator instanceof MongoBsonGenerator) {
                 ((MongoBsonGenerator) jsonGenerator).writeMinKey(obj);
-            } else {
+            } else if (jsonGenerator instanceof TokenBuffer) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeNumberField("$minKey", 1);
                 jsonGenerator.writeEndObject();
+            } else {
+                handleUnsupportedGenerator(jsonGenerator);
             }
         }
     }
@@ -66,7 +72,7 @@ class BsonSerializers extends SimpleSerializers {
         public void serialize(BSONTimestamp obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             if (jsonGenerator instanceof MongoBsonGenerator) {
                 ((MongoBsonGenerator) jsonGenerator).writeBSONTimestamp(obj);
-            } else {
+            } else if (jsonGenerator instanceof TokenBuffer) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeFieldName("$timestamp");
                 jsonGenerator.writeStartObject();
@@ -74,6 +80,8 @@ class BsonSerializers extends SimpleSerializers {
                 jsonGenerator.writeNumberField("i", obj.getInc());
                 jsonGenerator.writeEndObject();
                 jsonGenerator.writeEndObject();
+            } else {
+                handleUnsupportedGenerator(jsonGenerator);
             }
         }
     }
@@ -83,10 +91,12 @@ class BsonSerializers extends SimpleSerializers {
         public void serialize(ObjectId obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             if (jsonGenerator instanceof MongoBsonGenerator) {
                 ((MongoBsonGenerator) jsonGenerator).writeNativeObjectId(obj);
-            } else {
+            } else if (jsonGenerator instanceof TokenBuffer) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("$oid", obj.toHexString());
                 jsonGenerator.writeEndObject();
+            } else {
+                handleUnsupportedGenerator(jsonGenerator);
             }
         }
     }
@@ -96,11 +106,13 @@ class BsonSerializers extends SimpleSerializers {
         public void serialize(Binary obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             if (jsonGenerator instanceof MongoBsonGenerator) {
                 ((MongoBsonGenerator) jsonGenerator).writeBinary(obj);
-            } else {
+            } else if (jsonGenerator instanceof TokenBuffer) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeBinaryField("$binary", obj.getData());
                 jsonGenerator.writeStringField("$type", Integer.toHexString(obj.getType()).toUpperCase());
                 jsonGenerator.writeEndObject();
+            } else {
+                handleUnsupportedGenerator(jsonGenerator);
             }
         }
     }
@@ -110,13 +122,19 @@ class BsonSerializers extends SimpleSerializers {
         public void serialize(Decimal128 decimal, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             if (jsonGenerator instanceof MongoBsonGenerator) {
                 ((MongoBsonGenerator) jsonGenerator).writeDecima128(decimal);
-            } else {
+            } else if (jsonGenerator instanceof TokenBuffer) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeFieldName("$numberDecimal");
                 jsonGenerator.writeString(decimal.bigDecimalValue().toString());
                 jsonGenerator.writeEndObject();
+            } else {
+                handleUnsupportedGenerator(jsonGenerator);
             }
         }
+    }
+
+    private static void handleUnsupportedGenerator(JsonGenerator jsonGenerator) {
+        throw new IllegalArgumentException("BsonSerializer can only be used with MongoBsonGenerator or TokenBuffer. Found " + jsonGenerator.getClass().getName());
     }
 
 }
