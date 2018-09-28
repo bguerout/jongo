@@ -34,6 +34,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ class BsonDeserializers extends SimpleDeserializers {
         addDeserializer(DBObject.class, new NativeDeserializer<DBObject>());
         addDeserializer(ObjectId.class, new ObjectIdDeserializer());
         addDeserializer(BSONTimestamp.class, new BSONTimestampDeserializer());
+        addDeserializer(Decimal128.class, new Decimal128Deserializer());
     }
 
     private static class DateDeserializer extends JsonDeserializer<Date> {
@@ -171,6 +173,21 @@ class BsonDeserializers extends SimpleDeserializers {
                 return (BSONTimestamp) ((POJONode) tree).getPojo();
             } else {
                 throw ctxt.mappingException(BSONTimestamp.class);
+            }
+        }
+    }
+
+    private static class Decimal128Deserializer extends JsonDeserializer<Decimal128> {
+        @Override
+        public Decimal128 deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            TreeNode tree = jp.getCodec().readTree(jp);
+            if (tree.isObject()) {
+                String value = ((ValueNode) tree.get("$numberDecimal")).asText();
+                return new Decimal128(new BigDecimal(value));
+            } else if (tree instanceof POJONode) {
+                return (Decimal128) ((POJONode) tree).getPojo();
+            } else {
+                throw ctxt.mappingException(Decimal128.class);
             }
         }
     }

@@ -86,6 +86,19 @@ public class DocumentMarshallingTest extends JongoTestBase {
     }
 
     @Test
+    public void canHandleDecimal128() throws Exception {
+
+        BSONPrimitiveType type = new BSONPrimitiveType();
+        type.decimal128 = Decimal128.parse("10");
+
+        collection.save(type);
+
+        assertHasBeenPersistedAs("{'decimal128' : { '$type' : 'decimal'}}");
+        BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
+        assertThat(result.decimal128).isNotNull();
+    }
+
+    @Test
     public void canHandleObjectId() throws Exception {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
@@ -280,6 +293,7 @@ public class DocumentMarshallingTest extends JongoTestBase {
         List<Friend> complexList;
         List<Date> dateList;
         byte[] bytes;
+        Decimal128 decimal128;
     }
 
     private static class JavaNativeType {

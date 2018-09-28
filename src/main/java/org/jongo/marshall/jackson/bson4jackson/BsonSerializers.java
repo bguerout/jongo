@@ -32,6 +32,7 @@ class BsonSerializers extends SimpleSerializers {
         addSerializer(MinKey.class, new MinKeySerializer());
         addSerializer(MaxKey.class, new MaxKeySerializer());
         addSerializer(Binary.class, new BinarySerializer());
+        addSerializer(Decimal128.class, new Decimal128Serializer());
     }
 
     static class MaxKeySerializer extends JsonSerializer<MaxKey> {
@@ -99,6 +100,20 @@ class BsonSerializers extends SimpleSerializers {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeBinaryField("$binary", obj.getData());
                 jsonGenerator.writeStringField("$type", Integer.toHexString(obj.getType()).toUpperCase());
+                jsonGenerator.writeEndObject();
+            }
+        }
+    }
+
+    static class Decimal128Serializer extends JsonSerializer<Decimal128> {
+
+        public void serialize(Decimal128 decimal, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            if (jsonGenerator instanceof MongoBsonGenerator) {
+                ((MongoBsonGenerator) jsonGenerator).writeDecima128(decimal);
+            } else {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeFieldName("$numberDecimal");
+                jsonGenerator.writeString(decimal.bigDecimalValue().toString());
                 jsonGenerator.writeEndObject();
             }
         }

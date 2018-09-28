@@ -18,10 +18,7 @@ package org.jongo.marshall.jackson.bson4jackson;
 
 import de.undercouch.bson4jackson.BsonConstants;
 import de.undercouch.bson4jackson.BsonGenerator;
-import org.bson.types.BSONTimestamp;
-import org.bson.types.Binary;
-import org.bson.types.MaxKey;
-import org.bson.types.MinKey;
+import org.bson.types.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -76,6 +73,15 @@ class MongoBsonGenerator extends BsonGenerator {
         _buffer.putInt(bytes.length);
         _buffer.putByte(binary.getType());
         _buffer.putBytes(binary.getData());
+        flushBuffer();
+    }
+
+    public void writeDecima128(Decimal128 decimal) throws IOException {
+        _writeArrayFieldNameIfNeeded();
+        _verifyValueWrite("write number");
+        _buffer.putByte(_typeMarker, BsonConstants.TYPE_DECIMAL128);
+        _buffer.putLong(decimal.getLow());
+        _buffer.putLong(decimal.getHigh());
         flushBuffer();
     }
 }
