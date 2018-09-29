@@ -29,7 +29,11 @@ import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.extract.UserTempNaming;
 import de.flapdoodle.embed.process.io.IStreamProcessor;
 import de.flapdoodle.embed.process.io.NullProcessor;
+import de.flapdoodle.embed.process.io.directories.FixedPath;
+import de.flapdoodle.embed.process.io.directories.IDirectory;
+import de.flapdoodle.embed.process.io.directories.UserHome;
 import de.flapdoodle.embed.process.runtime.Network;
+import de.flapdoodle.embed.process.store.IArtifactStore;
 
 import java.net.UnknownHostException;
 
@@ -66,9 +70,16 @@ public class MongoResource {
                 Command mongoD = Command.MongoD;
                 int port = RandomPortNumberGenerator.pickAvailableRandomEphemeralPortNumber();
 
-                ArtifactStoreBuilder artifactStoreBuilder = new ArtifactStoreBuilder();
-                artifactStoreBuilder.defaults(mongoD);
-                artifactStoreBuilder.executableNaming(new UserTempNaming());
+                de.flapdoodle.embed.process.config.store.DownloadConfigBuilder downloadConfigBuilder = new DownloadConfigBuilder()
+                        .defaultsForCommand(mongoD)
+                        .defaults()
+                        .artifactStorePath(getMongoPath());
+
+                IArtifactStore artifactStore = new ArtifactStoreBuilder()
+                        .defaults(mongoD)
+                        .executableNaming(new UserTempNaming())
+                        .download(downloadConfigBuilder)
+                        .build();
 
                 IStreamProcessor output = new NullProcessor();
                 ProcessOutput processOutput = new ProcessOutput(output, output, output);
@@ -76,14 +87,13 @@ public class MongoResource {
                 IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
                         .defaults(mongoD)
                         .processOutput(processOutput)
-                        .artifactStore(artifactStoreBuilder.build())
+                        .artifactStore(artifactStore)
                         .build();
 
-                Net network = new Net(port, Network.localhostIsIPv6());
                 IMongodConfig mongodConfig = new MongodConfigBuilder()
                         .version(getVersion())
                         .cmdOptions(new MongoCmdOptionsBuilder().useStorageEngine("ephemeralForTest").build())
-                        .net(network)
+                        .net(new Net(port, Network.localhostIsIPv6()))
                         .build();
 
                 MongodStarter.getInstance(runtimeConfig).prepare(mongodConfig).start();
@@ -93,6 +103,14 @@ public class MongoResource {
             } catch (Exception e) {
                 throw new RuntimeException("Failed to initialize Embedded Mongo instance: " + e, e);
             }
+        }
+
+        private static IDirectory getMongoPath() {
+            String path = System.getProperty("jongo.test.db.path");
+            if (path == null) {
+                return new UserHome(".embedmongo");
+            }
+            return new FixedPath(path);
         }
 
         private static Version.Main getVersion() {
