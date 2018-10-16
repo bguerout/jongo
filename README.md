@@ -1,6 +1,8 @@
-<img src="https://github.com/bguerout/jongo/raw/gh-pages/assets/img/jongo_big.png" alt="Jongo logo" title="Jongo" align="right">
+<img src="https://github.com/bguerout/jongo/raw/gh-pages/assets/img/jongo_big.png" alt="Jongo logo" title="Jongo" align="right"/>
 
 ### Jongo, Query in Java as in Mongo shell
+
+<img src="https://api.travis-ci.org/bguerout/jongo.svg?branch=master" alt="travis ci build status" title="travis CI build status" >
 
 **Faithful spirit**, Mongo query language isn't available in Java, Jongo fixes that. Copy/paste your queries to string.
 
