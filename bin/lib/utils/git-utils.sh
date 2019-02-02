@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 function checkout() {
    git checkout -q $@
@@ -9,6 +10,11 @@ function uncheckout() {
 
 function git_commit() {
     git -c user.name="Jongo Script" -c user.email="contact@jongo.org" commit -q -a -m "${1}"
+}
+
+function get_head_commit {
+    local base_commit="${1}"
+    echo $(git rev-parse "${base_commit}")
 }
 
 function create_bare_repository {
@@ -23,8 +29,7 @@ function create_bare_repository {
 }
 
 function clone_repository {
-    local dry_run="${1}"
-    local remote_url="https://github.com/bguerout/jongo.git"
+    local remote_url="${1}"
     local repo_dir=$(mktemp -d -t "jongo-release-repo-XXXXX")
 
     git clone "${remote_url}" "${repo_dir}"
@@ -41,9 +46,4 @@ function update_origin_with_fake_remote {
         git remote add origin "${bare_repo_dir}"
         git fetch -q origin
     popd > /dev/null
-}
-
-function clean_resources {
-    log_info "Cleaning resources..."
-    find ${TMPDIR:-$(dirname $(mktemp))/} -depth -type d -name "jongo-release*" -exec rm -rf {} \;
 }
