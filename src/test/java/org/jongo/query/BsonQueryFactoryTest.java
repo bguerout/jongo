@@ -277,7 +277,7 @@ public class BsonQueryFactoryTest {
 
         Query query = factory.createQuery("{ name.#: 'John'}", "first");
 
-        assertThat(query.toDBObject().toString()).isEqualTo("{ \"name.first\" : \"John\"}");
+        assertThat(query.toDBObject().toString()).isEqualTo("{\"name.first\": \"John\"}");
     }
 
     @Test

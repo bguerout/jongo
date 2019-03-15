@@ -42,7 +42,7 @@ public class JacksonProjectionTest {
 
         DBObject fields = projection.getProjectionQuery(Friend.class).toDBObject();
 
-        assertThat(fields.toString()).isEqualTo("{ \"name\" : 1 , \"address\" : 1 , \"coordinate\" : { \"lat\" : 1 , \"lng\" : 1} , \"gender\" : 1}");
+        assertThat(fields.toString()).isEqualTo("{\"name\": 1, \"address\": 1, \"coordinate\": {\"lat\": 1, \"lng\": 1}, \"gender\": 1}");
     }
 
     @Test
@@ -50,7 +50,7 @@ public class JacksonProjectionTest {
 
         DBObject fields = projection.getProjectionQuery(Fox.class).toDBObject();
 
-        assertThat(fields.toString()).isEqualTo("{ \"name\" : 1 , \"color\" : 1 , \"gender\" : 1}");
+        assertThat(fields.toString()).isEqualTo("{\"name\": 1, \"color\": 1, \"gender\": 1}");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class JacksonProjectionTest {
 
         DBObject fields = projection.getProjectionQuery(HiddenCoordinate.class).toDBObject();
 
-        assertThat(fields.toString()).isEqualTo("{ \"lng\" : 1}");
+        assertThat(fields.toString()).isEqualTo("{\"lng\": 1}");
     }
 
     @Test(expected = RuntimeException.class)
