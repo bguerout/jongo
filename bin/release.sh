@@ -19,7 +19,7 @@ function usage {
     echo "   --remote-repository-url <url>  The remote repository url used to clone the project (default https://github.com/bguerout/jongo.git)"
     echo "   --docker                       Build image from Dockerfile and run this script into a Docker container"
     echo "   --mount <path>                 Mount an host dir to '/opt/jongo/conf' in the Docker container (default: target/docker)"
-    echo "   --dry-run                      Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
+    echo "   --dry-run <dryRun>             Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
     echo "   --dirty                        Do not clean resources generated during the execution (eg. cloned repository / default: false)"
     echo "   --debug                        Print all executed commands and run Maven in debug mode"
     echo
