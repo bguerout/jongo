@@ -9,11 +9,12 @@ source "${JONGO_BASE_DIR}/bin/lib/utils/logger-utils.sh"
 source "${JONGO_BASE_DIR}/bin/lib/tasks.sh"
 
 function usage {
-    echo "Usage: $0 [option...] <tag|tag_early|tag_hotfix|deploy|test> <git_revision>"
+    echo "Usage: $0 [option...] <tag|tag_early|tag_hotfix|deploy|test>"
     echo
     echo "Command line interface to release and deploy Jongo"
     echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
     echo
+    echo "   --branch <branch>              The branch to release"
     echo "   --maven-options <options>      Maven options (eg. '--settings /path/to/settings.xml')"
     echo "   --remote-repository-url <url>  The remote repository url used to clone the project (default https://github.com/bguerout/jongo.git)"
     echo "   --docker                       Build image from Dockerfile and run this script into a Docker container"

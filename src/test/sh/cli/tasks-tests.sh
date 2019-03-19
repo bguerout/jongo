@@ -93,8 +93,6 @@ function can_create_an_early_tag {
         assert_eq "$(get_current_version ${early_commit})" "${expected_early_tag}" "early version in pom.xml has not been set"
         assert_not_eq "$(git ls-remote origin refs/tags/${expected_early_tag})" "" "Tag does not exist or has not been pushed"
         assert_eq "$(git show-ref -s "${expected_early_tag}")" "${early_commit}" "Tag does not point to the right commit"
-        assert_file_exists "${deploy_dir}/jongo-${expected_early_tag}.jar"
-        assert_file_exists "${deploy_dir}/jongo-${expected_early_tag}.jar.asc"
     after_each
 }
 
