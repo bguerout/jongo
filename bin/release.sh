@@ -145,6 +145,12 @@ function main() {
             shift
             shift
         ;;
+        --dry-run)
+            readonly dry_run="$2"
+            docker_options+=("${key} '${2}'")
+            shift
+            shift
+        ;;
         --dirty)
             readonly dirty=true
             docker_options+=("${key}")
@@ -155,12 +161,6 @@ function main() {
             append_maven_options "-Dsurefire.printSummary=true -X"
             set -x
             docker_options+=("${key}")
-            shift
-        ;;
-        -d|--dry-run)
-            readonly dry_run="$2"
-            docker_options+=("${key}")
-            shift
             shift
         ;;
         -?|--help)
