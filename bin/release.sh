@@ -17,8 +17,6 @@ function usage {
     echo "   --branch <branch>              The branch to release"
     echo "   --maven-options <options>      Maven options (eg. '--settings /path/to/settings.xml')"
     echo "   --remote-repository-url <url>  The remote repository url used to clone the project (default https://github.com/bguerout/jongo.git)"
-    echo "   --docker                       Build image from Dockerfile and run this script into a Docker container"
-    echo "   --mount <path>                 Mount an host dir to '/opt/jongo/conf' in the Docker container (default: target/docker)"
     echo "   --dry-run <dryRun>             Run task in dry mode. Nothing will be pushed nor deployed (default: true)"
     echo "   --dirty                        Do not clean resources generated during the execution (eg. cloned repository / default: false)"
     echo "   --debug                        Print all executed commands and run Maven in debug mode"
@@ -27,11 +25,11 @@ function usage {
     echo ""
     echo " Create a tag for the current branch:"
     echo ""
-    echo "      ./bin/release.sh tag --docker"
+    echo "      ./bin/release.sh tag"
     echo ""
-    echo " Create an hotfix tag for the branch releases/1.4.x inside a docker container:"
+    echo " Create an hotfix tag for the branch releases/1.4.x:"
     echo ""
-    echo "      ./bin/release.sh tag_hotfix --branch releases/1.4.x --docker"
+    echo "      ./bin/release.sh tag_hotfix --branch releases/1.4.x"
     echo ""
     echo " Run CLI tests: "
     echo ""
@@ -76,37 +74,13 @@ function activate_test_profiles() {
     log_warn "Script is running in dry mode."
 }
 
-function check_if_running_inside_docker() {
-    if [ -f /.dockerenv ]; then
-        log_info "Script is running inside a Docker container"
-    fi
-}
-
-function run_script_inside_docker() {
-    local arguments="${1}"
-    local mount_dir="${2}"
-    local docker_command=$(echo "${arguments}" | sed -e 's/\(--docker\)*//g')
-    local maven_options=(
-        "-Dmaven.repo.local=/opt/jongo/conf/.m2/repository"
-        "-Djongo.test.embedmongo.dir=/opt/jongo/conf/.m2/mongodb"
-    )
-
-    log_info "Host dir ${mount_dir} is mounted into container on path '/opt/jongo/conf'"
-
-    docker build . -t jongo
-    docker run -it --volume "${mount_dir}:/opt/jongo/conf:cached" jongo bash -c \
-        "./bin/release.sh ${docker_command} --maven-options \"$( IFS=$' '; echo "${maven_options[*]}" )\""
-}
-
 function main() {
 
     local git_revision="$(git rev-parse --abbrev-ref HEAD)"
     local dry_run=true
     local dirty=false
-    local docker=false
     local remote_repository_url="https://github.com/bguerout/jongo.git"
     local positional=()
-    local docker_options=()
 
     if [ $# -eq 0 ]; then
         usage
@@ -124,43 +98,27 @@ function main() {
         ;;
         --maven-options)
             append_maven_options "${2}"
-            docker_options+=("${key} '${2}'")
             shift
             shift
         ;;
         --remote-repository-url)
             readonly remote_repository_url="${2}"
-            docker_options+=("${key} ${2}")
-            shift
-            shift
-        ;;
-        --docker)
-            readonly docker=true
-            docker_options+=("")
-            log_warn "Docker mode activated."
-            shift
-        ;;
-         --mount)
-            readonly mount="${2}"
             shift
             shift
         ;;
         --dry-run)
             readonly dry_run="$2"
-            docker_options+=("${key} '${2}'")
             shift
             shift
         ;;
         --dirty)
             readonly dirty=true
-            docker_options+=("${key}")
             log_warn "Dirty mode activated."
             shift
         ;;
         --debug)
             append_maven_options "-Dsurefire.printSummary=true -X"
             set -x
-            docker_options+=("${key}")
             shift
         ;;
         -?|--help)
@@ -176,14 +134,6 @@ function main() {
 
     set -- "${positional[@]}"
     local task="${1}"
-
-    if [[ "${docker}" = true ]]; then
-        local raw_arguments="${positional[@]} ${docker_options[@]}"
-        run_script_inside_docker "${raw_arguments}" "${mount:-"${JONGO_BASE_DIR}/target/docker"}"
-        exit 0
-    else
-        check_if_running_inside_docker
-    fi
 
     [[ "${dirty}" = false ]] &&  trap clean_resources EXIT HUP INT QUIT PIPE TERM
 
