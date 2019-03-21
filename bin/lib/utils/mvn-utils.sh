@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 JONGO_MAVEN_OPTIONS="--errors --batch-mode -Psign-artefacts -Dsurefire.printSummary=false"
 

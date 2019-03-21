@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 #---------------------------------------
 # UTILS
@@ -78,8 +79,6 @@ function create_early_tag {
     git push -q origin "${early_tag}"
 
     log_success "${early_tag} early version released"
-
-    deploy "${early_tag}"
 }
 
 function create_tag {

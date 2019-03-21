@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function checkout() {
    git checkout -q $@
 }
