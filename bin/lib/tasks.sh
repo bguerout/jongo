@@ -11,14 +11,6 @@ function determine_version {
     echo $(echo "${current_version}" | sed -e 's/-SNAPSHOT//g')
 }
 
-function determine_early_version {
-    local base_commit="${1}"
-    local release_version=$(determine_version "${base_commit}")
-    local early=$(date +%Y%m%d-%H%M)
-
-    echo "${release_version}-early-${early}"
-}
-
 function determine_hotfix_version_pattern {
     local base_commit="${1}"
     echo $(determine_version "${base_commit}") | awk -F  "." '{print $1"."$2;}' | xargs -I % echo "%.x"
@@ -53,33 +45,6 @@ function bump_to_next_minor_snapshot_version {
 #---------------------------------------
 # TASKS
 #---------------------------------------
-
-function create_early_tag {
-    local base_branch="${1}"
-    local current_version=$(get_current_version "origin/${base_branch}")
-    local early_tag=$(determine_early_version "origin/${base_branch}")
-
-    log_task "Creating early tag ${early_tag} from branch '${base_branch}'"
-
-    checkout "${base_branch}"
-        _mvn verify
-
-        set_version "${base_branch}" "${early_tag}"
-        log_info "Branch ${base_branch} updated to project version ${early_tag}"
-
-        local commit_to_tag=$(get_head_commit "${base_branch}")
-        git tag "${early_tag}" "${commit_to_tag}"
-        log_info "New tag ${early_tag} created refs to ${commit_to_tag}"
-
-        set_version "${base_branch}" "${current_version}"
-        log_info "Branch ${base_branch} updated to project version ${current_version}"
-    uncheckout
-
-    git push -q origin "${base_branch}"
-    git push -q origin "${early_tag}"
-
-    log_success "${early_tag} early version released"
-}
 
 function create_tag {
     local base_branch="${1}"

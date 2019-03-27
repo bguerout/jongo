@@ -42,8 +42,8 @@
     </issueManagement>
 
     <ciManagement>
-        <system>Jenkins</system>
-        <url>https://jongo.ci.cloudbees.com/</url>
+        <system>Travis</system>
+        <url>https://travis-ci.org/bguerout/jongo</url>
     </ciManagement>
 
     <developers>
@@ -437,15 +437,6 @@
                 <repository>
                     <id>test-release</id>
                     <url>file:${project.build.directory}/deploy</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-        <profile>
-            <id>cloudbees</id>
-            <distributionManagement>
-                <repository>
-                    <id>cloudbees-release</id>
-                    <url>dav:https://repository-jongo.forge.cloudbees.com/release</url>
                 </repository>
             </distributionManagement>
         </profile>

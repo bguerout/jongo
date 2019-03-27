@@ -9,7 +9,7 @@ source "${JONGO_BASE_DIR}/bin/lib/utils/logger-utils.sh"
 source "${JONGO_BASE_DIR}/bin/lib/tasks.sh"
 
 function usage {
-    echo "Usage: $0 [option...] <tag|tag_early|tag_hotfix|deploy|test>"
+    echo "Usage: $0 [option...] <tag|tag_hotfix|deploy|deploy_snapshot|test>"
     echo
     echo "Command line interface to release and deploy Jongo"
     echo "Note that by default all tasks are ran in dry mode. Set '--dry-run false' to run it for real. "
@@ -57,11 +57,7 @@ function clean_resources {
 function activate_profiles() {
     local git_revision="${1}"
 
-    if [[ "${git_revision}" = *"-early-"* ]]; then
-        append_maven_options "-Pcloudbees"
-    else
-        append_maven_options "-Psonatype"
-    fi
+    append_maven_options "-Psonatype"
     safeguard
 }
 
@@ -151,9 +147,6 @@ function main() {
                 source "${JONGO_BASE_DIR}/src/test/sh/cli/tasks-tests.sh"
                 run_test_suite "${git_revision}" "${repo_dir}"
             ;;
-            tag_early)
-                create_early_tag "${git_revision}"
-            ;;
             tag)
                 create_tag "${git_revision}"
             ;;
@@ -161,11 +154,10 @@ function main() {
                 create_hotfix_tag "${git_revision}"
             ;;
             deploy)
-                if [[ "${git_revision}" = *"-SNAPSHOT"* ]]; then
-                    deploy_snapshot "${git_revision}"
-                else
-                    deploy "${git_revision}"
-                fi
+                deploy "${git_revision}"
+            ;;
+            deploy_snapshot)
+                deploy_snapshot "${git_revision}"
             ;;
             *)
              log_error "Unknown task '${task}'"

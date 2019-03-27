@@ -12,10 +12,9 @@ function run_test_suite {
     log_task "Running tasks test suite..."
     before_all
         should_validate_tools
-        can_deploy_snapshot
-        can_create_an_early_tag
         can_create_a_new_tag
         can_create_an_hotfix_tag
+        can_deploy_snapshot
         can_deploy_artifacts
     after_all
 }
@@ -52,9 +51,6 @@ function should_validate_tools {
         echo "[TEST] --> can determine the version when project will be released"
         assert_eq "$(determine_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0" "Versions mismatched"
 
-        echo "[TEST] --> can determine the early version when project will be released"
-        assert_eq "$(determine_early_version "${JONGO_TEST_TARGET_BRANCH}")" "42.0.0-early-$(date +%Y%m%d-%H%M)" "Early versions mismatched"
-
         echo "[TEST] --> can determine the hotfix version pattern when project will be released"
         assert_eq "$(determine_hotfix_version_pattern "${JONGO_TEST_TARGET_BRANCH}")" "42.0.x" "Versions mismatched"
 
@@ -78,21 +74,6 @@ function can_deploy_snapshot {
         deploy_snapshot "${JONGO_TEST_TARGET_BRANCH}"
 
         assert_directory_exists "${deploy_dir}"
-    after_each
-}
-
-function can_create_an_early_tag {
-    before_each
-        local expected_early_tag="42.0.0-early-$(date +%Y%m%d-%H%M)"
-        local deploy_dir="${JONGO_TEST_TARGET_DIR}/deploy/org/jongo/jongo/${expected_early_tag}"
-
-        create_early_tag "${JONGO_TEST_TARGET_BRANCH}"
-
-        local early_commit="$(get_head_commit ${JONGO_TEST_TARGET_BRANCH}^)"
-        assert_eq "$(get_current_version ${JONGO_TEST_TARGET_BRANCH})" "42.0.0-SNAPSHOT" "HEAD version of the base branch should be left intact"
-        assert_eq "$(get_current_version ${early_commit})" "${expected_early_tag}" "early version in pom.xml has not been set"
-        assert_not_eq "$(git ls-remote origin refs/tags/${expected_early_tag})" "" "Tag does not exist or has not been pushed"
-        assert_eq "$(git show-ref -s "${expected_early_tag}")" "${early_commit}" "Tag does not point to the right commit"
     after_each
 }
 
