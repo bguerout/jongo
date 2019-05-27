@@ -82,6 +82,7 @@ public class MongoResource {
                 Net network = new Net(port, Network.localhostIsIPv6());
                 IMongodConfig mongodConfig = new MongodConfigBuilder()
                         .version(getVersion())
+                        .cmdOptions(new MongoCmdOptionsBuilder().useStorageEngine("ephemeralForTest").build())
                         .net(network)
                         .build();
 
@@ -97,7 +98,7 @@ public class MongoResource {
         private static Version.Main getVersion() {
             String version = System.getProperty("jongo.test.db.version");
             if (version == null) {
-                return Version.Main.PRODUCTION;
+                return Version.Main.PRODUCTION; //V4_0
             }
             return Version.Main.valueOf("V" + version.replaceAll("\\.", "_"));
         }
@@ -118,7 +119,7 @@ public class MongoResource {
 
     private static MongoClient createClient(int port) throws UnknownHostException {
         MongoClient mongo = new MongoClient("127.0.0.1", port);
-        mongo.setWriteConcern(WriteConcern.FSYNC_SAFE);
+        mongo.setWriteConcern(WriteConcern.SAFE);
         return mongo;
     }
 }

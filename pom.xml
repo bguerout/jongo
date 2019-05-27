@@ -73,7 +73,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mongo.min.version>3.5.0</mongo.min.version>
-        <mongo.max.version>3.11.0</mongo.max.version>
+        <mongo.max.version>3.10.1</mongo.max.version>
         <mongo.version>3.10.1</mongo.version>
         <jackson.version>2.9.8</jackson.version>
         <bson4jackson.version>2.9.2</bson4jackson.version>
@@ -149,7 +149,7 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>1.47.3</version>
+            <version>2.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
