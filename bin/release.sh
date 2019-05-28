@@ -65,7 +65,7 @@ function activate_test_profiles() {
     local repo_dir="${1}"
 
     append_maven_options "-Ptest -Dgpg.passphrase='' -Dgpg.keyname=test@jongo.org \
-        -Dgpg.file=${JONGO_BASE_DIR}/src/test/sh/cli/jongo-fake-secret-key.asc"
+        -Dgpg.file=${JONGO_BASE_DIR}/bin/test/jongo-fake-secret-key.asc"
     update_origin_with_fake_remote "${repo_dir}"
     log_warn "Script is running in dry mode."
 }
@@ -144,7 +144,7 @@ function main() {
     pushd "${repo_dir}" > /dev/null
         case "${task}" in
             test)
-                source "${JONGO_BASE_DIR}/src/test/sh/cli/tasks-tests.sh"
+                source "${JONGO_BASE_DIR}/bin/test/tasks-tests.sh"
                 run_test_suite "${git_revision}" "${repo_dir}"
             ;;
             tag)
