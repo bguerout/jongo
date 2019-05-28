@@ -224,11 +224,6 @@
                         </goals>
                         <configuration>
                             <manifestLocation>${project.build.directory}</manifestLocation>
-                            <instructions>
-                                <Import-Package>
-                                    com.mongodb.*;version="${mongodb.java.driver.version}}",org.bson.*;version="${mongodb.java.driver.version}}",*
-                                </Import-Package>
-                            </instructions>
                         </configuration>
                     </execution>
                 </executions>
