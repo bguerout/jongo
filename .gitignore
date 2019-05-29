@@ -1,5 +1,9 @@
 .idea/
-node_modules/
-dist/
 target/
 *.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+node_modules/

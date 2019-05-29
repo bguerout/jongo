@@ -1,0 +1,27 @@
+{
+  "name": "jongo",
+  "version": "1.0.0",
+  "description": "website",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bguerout/jongo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bguerout/jongo/issues"
+  },
+  "homepage": "http://jongo.org",
+  "scripts": {
+    "build": "lessc assets/css/jongo.less --clean-css='--s1 --advanced --compatibility=ie8' assets/css/jongo.css",
+    "serve": "npm run build ; serve",
+    "serve:watch": "nodemon --watch assets/css --ext less --exec npm run serve"
+  },
+  "devDependencies": {
+    "less": "3.9.0",
+    "less-plugin-clean-css": "1.5.1",
+    "nodemon": "1.19.1",
+    "serve": "11.0.1"
+  }
+}
