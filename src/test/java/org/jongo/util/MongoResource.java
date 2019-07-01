@@ -48,8 +48,8 @@ public class MongoResource {
     }
 
     public MongoClient getInstance() {
-        String isLocal = System.getProperty("jongo.test.mongo.local");
-        if (isLocal != null && isLocal.equals("true")) {
+        String isDisabled = System.getProperty("embedmongo.disabled");
+        if (isDisabled != null && isDisabled.equals("true")) {
             return LocalMongo.instance;
         } else {
             return EmbeddedMongo.instance;
@@ -90,10 +90,19 @@ public class MongoResource {
                         .artifactStore(artifactStore)
                         .build();
 
+                Net network = new Net(port, Network.localhostIsIPv6());
+                Version version = getVersion();
+
+
+                MongoCmdOptionsBuilder mongoCmdOptionsBuilder = new MongoCmdOptionsBuilder();
+                if (version.compareTo(Version.V3_2_0) > -1) {
+                    mongoCmdOptionsBuilder.useStorageEngine("ephemeralForTest");
+                }
+
                 IMongodConfig mongodConfig = new MongodConfigBuilder()
-                        .version(getVersion())
-                        .cmdOptions(new MongoCmdOptionsBuilder().useStorageEngine("ephemeralForTest").build())
-                        .net(new Net(port, Network.localhostIsIPv6()))
+                        .version(version)
+                        .cmdOptions(mongoCmdOptionsBuilder.build())
+                        .net(network)
                         .build();
 
                 MongodStarter.getInstance(runtimeConfig).prepare(mongodConfig).start();
@@ -113,12 +122,12 @@ public class MongoResource {
             return new FixedPath(path);
         }
 
-        private static Version.Main getVersion() {
-            String version = System.getProperty("jongo.test.db.version");
+        private static Version getVersion() {
+            String version = System.getProperty("embedmongo.version");
             if (version == null) {
-                return Version.Main.PRODUCTION;
+                return Version.V4_0_2;
             }
-            return Version.Main.valueOf("V" + version.replaceAll("\\.", "_"));
+            return Version.valueOf("V" + version.replaceAll("\\.", "_"));
         }
     }
 

@@ -277,7 +277,7 @@ public class BsonQueryFactoryTest {
 
         Query query = factory.createQuery("{ name.#: 'John'}", "first");
 
-        assertThat(query.toDBObject().toString()).isEqualTo("{\"name.first\": \"John\"}");
+        assertThat(sanitize(query.toDBObject().toString())).isEqualTo(sanitize("{\"name.first\":\"John\"}"));
     }
 
     @Test
@@ -286,5 +286,9 @@ public class BsonQueryFactoryTest {
         Query query = factory.createQuery("#", new Friend("John"));
 
         assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("name").is("John").get());
+    }
+
+    private String sanitize(String value) {
+        return value.replaceAll(" ", "");
     }
 }

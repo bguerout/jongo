@@ -26,7 +26,6 @@ import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class Jongo {
 
-
     private final DB database;
     private final Mapper mapper;
 
