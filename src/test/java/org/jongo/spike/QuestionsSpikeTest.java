@@ -193,6 +193,16 @@ public class QuestionsSpikeTest extends JongoTestBase {
     }
 
     @Test
+    public void canBindAParameterWithSingleQuoteInParameter() throws Exception {
+
+        collection.insert("{someField:#}", "value with ' inside");
+
+        long nb = collection.count("{someField:#}", "value with ' inside");
+
+        assertThat(nb).isEqualTo(1);
+    }
+
+    @Test
     public void canHandleDecimal128() {
 
         Decimal decimal = new Decimal();
