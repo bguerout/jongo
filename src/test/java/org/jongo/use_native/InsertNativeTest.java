@@ -39,7 +39,7 @@ public class InsertNativeTest extends NativeTestBase {
 
     @Before
     public void setUp() throws Exception {
-        collection = jongo.wrap(database.getCollection("friends", Friend.class));
+        collection = jongo.getCollection("friends", Friend.class);
     }
 
     @After
@@ -145,7 +145,7 @@ public class InsertNativeTest extends NativeTestBase {
     @Test
     public void canOnlyInsertOnceAPojoWithACustomId() throws Exception {
 
-        MongoCollection<ExternalFriend> friends = jongo.wrap(database.getCollection("friends", ExternalFriend.class));
+        MongoCollection<ExternalFriend> friends = jongo.getCollection("friends", ExternalFriend.class);
 
         friends.insertOne(new ExternalFriend("122", "value"));
 

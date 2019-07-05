@@ -23,23 +23,21 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.BsonDocument;
+import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.jongo.model.Friend;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class WithStringNativeTest extends NativeTestBase {
+public class BsonNativeTest extends NativeTestBase {
 
     private MongoCollection<Bson> collection;
 
     @Before
     public void setUp() throws Exception {
-        MongoCollection<Friend> friends = database.getCollection("friends", Friend.class)
-                .withWriteConcern(WriteConcern.ACKNOWLEDGED);
-        collection = jongo.raw(friends);
+        collection = jongo.getCollection("friends", Bson.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
     }
 
     @After
@@ -52,7 +50,7 @@ public class WithStringNativeTest extends NativeTestBase {
 
         collection.insertOne(q("{name : 'Abby'}"));
 
-        assertThat(collection.count(q("{name : 'Abby'}"))).isEqualTo(1);
+        assertThat(collection.countDocuments(q("{name : 'Abby'}"))).isEqualTo(1);
     }
 
     @Test
@@ -60,7 +58,7 @@ public class WithStringNativeTest extends NativeTestBase {
 
         collection.insertOne(q("{name : #}", "Abby"));
 
-        assertThat(collection.count(q("{name : 'Abby'}"))).isEqualTo(1);
+        assertThat(collection.countDocuments(q("{name : 'Abby'}"))).isEqualTo(1);
     }
 
     @Test
@@ -80,6 +78,18 @@ public class WithStringNativeTest extends NativeTestBase {
                 return null;
             }
         });
+    }
+
+    @Test
+    public void canQueryWithNativeDocument() throws Exception {
+
+        Document document = new Document("name", "Abby").append("address", "123 Wall Street");
+
+        collection.insertOne(document);
+
+        Bson result = collection.find(new Document("address", "123 Wall Street")).first();
+        BsonDocument bsonDocument = result.toBsonDocument(DBObject.class, MongoClient.getDefaultCodecRegistry());
+        assertThat(bsonDocument.toJson()).contains("123 Wall Street");
     }
 
 

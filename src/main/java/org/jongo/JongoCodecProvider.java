@@ -28,7 +28,7 @@ public class JongoCodecProvider implements CodecProvider {
     private final Mapper mapper;
 
     public JongoCodecProvider() {
-        this.mapper = jacksonMapper().build();
+        this(jacksonMapper().build());
     }
 
     public JongoCodecProvider(Mapper mapper) {
@@ -38,7 +38,4 @@ public class JongoCodecProvider implements CodecProvider {
     public <T> Codec<T> get(final Class<T> type, final CodecRegistry registry) {
         return new JongoCodec<T>(mapper, type, registry);
     }
-
-
-
 }

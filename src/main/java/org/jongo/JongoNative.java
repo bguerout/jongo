@@ -18,6 +18,9 @@ package org.jongo;
 
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.bson.codecs.BsonValueCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -30,14 +33,25 @@ public class JongoNative {
 
     private final Mapper mapper;
     private final CodecRegistry codecRegistry;
+    private final MongoDatabase database;
 
-    public JongoNative() {
-        this(jacksonMapper().build());
+    public JongoNative(MongoDatabase database) {
+        this(database, jacksonMapper().build());
     }
 
-    public JongoNative(Mapper mapper) {
+    public JongoNative(MongoDatabase database, Mapper mapper) {
         this.mapper = mapper;
+        this.database = database;
         this.codecRegistry = createCodecRegistry(mapper);
+    }
+
+    public MongoCollection<Document> getCollection(String collectionName) {
+        return this.database.getCollection(collectionName);
+    }
+
+    public <T> MongoCollection<T> getCollection(String collectionName, Class<T> documentClass) {
+        MongoCollection<T> collection = this.database.getCollection(collectionName, documentClass);
+        return wrapCollection(collection);
     }
 
     public Bson query(String query, Object... parameters) {
@@ -49,12 +63,8 @@ public class JongoNative {
         return query("{_id:#}", id);
     }
 
-    public <T> com.mongodb.client.MongoCollection<T> wrap(com.mongodb.client.MongoCollection<T> collection) {
+    private <T> com.mongodb.client.MongoCollection<T> wrapCollection(com.mongodb.client.MongoCollection<T> collection) {
         return collection.withCodecRegistry(codecRegistry);
-    }
-
-    public com.mongodb.client.MongoCollection<Bson> raw(com.mongodb.client.MongoCollection<?> collection) {
-        return wrap(collection).withDocumentClass(Bson.class);
     }
 
     private CodecRegistry createCodecRegistry(Mapper mapper) {

@@ -17,46 +17,41 @@
 package org.jongo.use_native;
 
 import com.mongodb.client.MongoCollection;
-import org.bson.conversions.Bson;
-import org.jongo.model.Article;
+import org.jongo.model.Friend;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AggregateNativeTest extends NativeTestBase {
+public class ParametersNativeTest extends NativeTestBase {
 
-    private MongoCollection<Article> collection;
+    private MongoCollection<Friend> collection;
 
     @Before
     public void setUp() throws Exception {
-        collection = jongo.getCollection("articles", Article.class);
-        collection.insertOne(new Article("Zombie Panic", "Kirsty Mckay", "horror", "virus"));
-        collection.insertOne(new Article("Apocalypse Zombie", "Maberry Jonathan", "horror", "dead"));
-        collection.insertOne(new Article("World War Z", "Max Brooks", "horror", "virus", "pandemic"));
+        collection = jongo.getCollection("friends", Friend.class);
     }
 
     @After
     public void tearDown() throws Exception {
-        this.collection.drop();
+        collection.drop();
     }
 
     @Test
-    public void canAggregate() throws Exception {
+    //https://groups.google.com/forum/?fromgroups#!topic/jongo-user/p9CEKnkKX9Q
+    public void canUpdateIntoAnArray() throws Exception {
 
-        List<Bson> pipeline = asList(q("{$match:{tags:'virus'}}"));
-        Iterable<Article> articles = collection.aggregate(pipeline);
+        collection.insertMany(asList(new Friend("Peter"), new Friend("Robert")));
 
-        assertThat(articles.iterator().hasNext()).isTrue();
-        int size = 0;
-        for (Article article : articles) {
-            assertThat(article.getTags()).contains("virus");
-            size++;
-        }
-        assertThat(size).isEqualTo(2);
+        collection.updateMany(q("{ 'name' : 'Peter' }"), q("{ $set : # }", new Friend("John")));
+
+        Friend friend = collection.find(q("{ 'name' : 'John' }")).first();
+
+        assertThat(friend).isNotNull();
+        assertThat(friend.getName()).isEqualTo("John");
     }
+
+
 }

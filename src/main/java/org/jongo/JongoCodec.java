@@ -24,8 +24,6 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
-import org.jongo.Mapper;
-import org.jongo.ObjectIdUpdater;
 import org.jongo.bson.Bson;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.Unmarshaller;

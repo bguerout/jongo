@@ -31,15 +31,14 @@ public abstract class NativeTestBase {
     private static MongoResource MONGO_RESOURCE;
 
     protected JongoNative jongo;
-    protected MongoDatabase database;
 
     public NativeTestBase() {
         this(jacksonMapper().build());
     }
 
     protected NativeTestBase(Mapper mapper) {
-        this.jongo = Jongo.useNative(mapper);
-        this.database = MONGO_RESOURCE.getDatabase("test_jongo");
+        MongoDatabase database = MONGO_RESOURCE.getDatabase("test_jongo");
+        this.jongo = Jongo.useNative(database, mapper);
     }
 
     @BeforeClass

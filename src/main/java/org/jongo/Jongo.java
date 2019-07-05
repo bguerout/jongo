@@ -18,6 +18,7 @@ package org.jongo;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.client.MongoDatabase;
 import org.jongo.bson.BsonDBDecoder;
 import org.jongo.bson.BsonDBEncoder;
 import org.jongo.query.Query;
@@ -68,11 +69,11 @@ public class Jongo {
         return new Command(database, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
-    public static JongoNative useNative() {
-        return new JongoNative();
+    public static JongoNative useNative(MongoDatabase database) {
+        return new JongoNative(database);
     }
 
-    public static JongoNative useNative(Mapper mapper) {
-        return new JongoNative(mapper);
+    public static JongoNative useNative(MongoDatabase database, Mapper mapper) {
+        return new JongoNative(database, mapper);
     }
 }
