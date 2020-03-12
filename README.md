@@ -11,6 +11,3 @@
 **Wood solid**, As fast as Mongo Java driver. Open source, fully tested & made of rock solid libraries.
 
 Documentation available at <a href="http://www.jongo.org/">jongo.org</a>
-
-Java docs at https://jongo.ci.cloudbees.com/job/jongo-ci/site/apidocs/index.html
-
