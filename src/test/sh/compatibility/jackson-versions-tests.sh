@@ -53,6 +53,7 @@ function main {
     run_tests 	"2.9.7" 	"${output_dir}"
     run_tests 	"2.9.8" 	"${output_dir}"
     run_tests 	"2.9.9" 	"${output_dir}"
+    run_tests 	"2.9.10" 	"${output_dir}"
 }
 
 main "$@"

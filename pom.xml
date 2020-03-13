@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2011 Benoit GUEROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
+  ~ Copyright (C) 2011 Benoît GUÉROUT <bguerout at gmail dot com> and Yves AMSELLEM <amsellem dot yves at gmail dot com>
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mongo.version>[3.5.0,3.10.1]</mongo.version>
-        <jackson.version>2.10.0</jackson.version>
+        <mongo-java-driver.version>[3.5.0,3.10.1]</mongo-java-driver.version>
+        <jackson.version>2.10.3</jackson.version>
         <bson4jackson.version>2.9.2</bson4jackson.version>
     </properties>
 
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>${mongo.version}</version>
+            <version>${mongo-java-driver.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
