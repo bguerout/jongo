@@ -3,19 +3,19 @@
 set -euo pipefail
 
 function run_tests {
-    local mongodb_driver_version=${1}
-    local mongo_version=${2}
+    local mongodb_java_driver_version=${1}
+    local mongodb_version=${2}
     local output_dir=${3}
 
-    echo "Running tests against mongo-java-driver ${mongodb_driver_version} and MongoDB ${mongo_version}"
+    echo "Running tests against mongo-java-driver ${mongodb_java_driver_version} and MongoDB ${mongodb_version}"
     mvn verify \
-    -Dmongo.version="${mongodb_driver_version}" \
-    -Dmongodb.version="${mongo_version}" \
+    -Dmongo-java-driver.version="${mongodb_java_driver_version}" \
+    -Dembedmongo.version="${mongodb_version}" \
     -DreportFormat=plain \
     -DuseFile=false \
     -Dmaven.source.skip=true \
     -Dmaven.javadoc.skip=true \
-    --log-file "${output_dir}/build-driver-$mongodb_driver_version-db-$mongo_version.log"
+    --log-file "${output_dir}/build-driver-$mongodb_java_driver_version-db-$mongodb_version.log"
 }
 
 function main {
