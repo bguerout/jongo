@@ -131,7 +131,7 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     private String addRequiredQuotes(String query) {
-        if (query.equals("#")) {
+        if (query.trim().equals("#")) {
             return query;
         }
 
