@@ -59,7 +59,7 @@ public class MongoDumpTest extends JongoTestBase {
         try {
             while (iterator.hasNext()) {
                 BSONObject bsonObject = iterator.next();
-                collection.withWriteConcern(WriteConcern.SAFE).save(bsonObject);
+                collection.withWriteConcern(WriteConcern.MAJORITY).save(bsonObject);
             }
         } finally {
             iterator.close();

@@ -77,7 +77,7 @@ public class UpdateTest extends JongoTestBase {
         collection.save(new Friend("John"));
 
         /* when */
-        collection.withWriteConcern(WriteConcern.SAFE).update("{name:'John'}").multi().with("{$unset:{name:1}}");
+        collection.withWriteConcern(WriteConcern.MAJORITY).update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
         Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);

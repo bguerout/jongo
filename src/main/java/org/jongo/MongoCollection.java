@@ -103,7 +103,7 @@ public class MongoCollection {
     }
 
     public long count() {
-        return collection.getCount(readPreference);
+        return collection.getCount();
     }
 
     public long count(String query) {
@@ -112,7 +112,7 @@ public class MongoCollection {
 
     public long count(String query, Object... parameters) {
         DBObject dbQuery = createQuery(query, parameters).toDBObject();
-        return collection.getCount(dbQuery, null, readPreference);
+        return collection.getCount(dbQuery, null);
     }
 
     public Update update(String query) {

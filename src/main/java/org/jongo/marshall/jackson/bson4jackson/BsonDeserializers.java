@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.bson.conversions.Bson;
 import org.bson.types.*;
 
@@ -112,7 +111,7 @@ class BsonDeserializers extends SimpleDeserializers {
         @Override
         public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             String asString = jp.readValueAsTree().toString();
-            return (T) JSON.parse(asString);
+            return (T) BasicDBObject.parse(asString);
         }
     }
 

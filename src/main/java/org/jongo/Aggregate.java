@@ -70,7 +70,7 @@ public class Aggregate {
         if (options != null) {
             results = collection.aggregate(pipeline, options);
         } else {
-            results = collection.aggregate(pipeline).results().iterator();
+            results = collection.aggregate(pipeline, AggregationOptions.builder().build());
         }
         return new ResultsIterator<T>(results, resultHandler);
     }

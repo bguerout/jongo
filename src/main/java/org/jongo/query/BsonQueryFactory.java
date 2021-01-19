@@ -17,27 +17,21 @@
 package org.jongo.query;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.util.JSON;
-import com.mongodb.util.JSONCallback;
-import org.bson.BSON;
-import org.bson.BSONObject;
 import org.bson.BsonDocumentWrapper;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
-    private static final String MARSHALL_OPERATOR = "$marshall";
+    private static final String MARSHALL_OPERATOR = UUID.randomUUID() + "marshall";
 
     private final String token;
     private final Marshaller marshaller;
@@ -70,11 +64,13 @@ public class BsonQueryFactory implements QueryFactory {
     public Query createQuery(final String query, Object... parameters) {
 
         if (query == null) {
-            return new BsonQuery((DBObject) JSON.parse(query));
+            return new BsonQuery(null);
         }
         if (parameters == null) {
             parameters = new Object[]{null};
         }
+
+        String quotedQuery = addRequiredQuotes(query);
 
         // We have two different cases:
         //
@@ -85,28 +81,25 @@ public class BsonQueryFactory implements QueryFactory {
         //   therefore marshalled as DBObjects (actually LazyDBObjects).
 
         StringBuilder sb = new StringBuilder();
-        int paramIncrement = 0; // how many params must be skipped by the next value param
         int paramPos = 0;       // current position in the parameter list
         int start = 0;          // start of the current string segment
         int pos;                // position of the last token found
-        while ((pos = query.indexOf(token, start)) != -1) {
+        while ((pos = quotedQuery.indexOf(token, start)) != -1) {
             if (paramPos >= parameters.length) {
                 throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
             }
 
             // Insert chars before the token
-            sb.append(query, start, pos);
+            sb.append(quotedQuery, start, pos);
 
             // Check if the character preceding the token is one that separates values.
             // Otherwise, it's a property name substitution
-            if (isValueToken(query, pos)) {
+            if (isValueToken(quotedQuery, pos)) {
                 // Will be resolved by the JSON parser below
-                sb.append("{\"").append(MARSHALL_OPERATOR).append("\":").append(paramIncrement).append("}");
-                paramIncrement = 0;
+                sb.append("{\"").append(MARSHALL_OPERATOR).append("\":").append(paramPos).append("}");
             } else {
                 // Resolve it now
                 sb.append(parameters[paramPos]);
-                paramIncrement++;
             }
 
             paramPos++;
@@ -114,7 +107,7 @@ public class BsonQueryFactory implements QueryFactory {
         }
 
         // Add remaining chars
-        sb.append(query, start, query.length());
+        sb.append(quotedQuery, start, quotedQuery.length());
 
         if (paramPos < parameters.length) {
             throw new IllegalArgumentException("Too many parameters passed to query: " + query);
@@ -126,49 +119,39 @@ public class BsonQueryFactory implements QueryFactory {
         // Parse the query with a callback that will weave in marshalled parameters
         DBObject dbo;
         try {
-            dbo = (DBObject) JSON.parse(sb.toString(), new JSONCallback() {
-
-                int paramPos = 0;
-
-                @Override
-                public Object objectDone() {
-                    String name = curName();
-                    Object o = super.objectDone();
-
-                    if (o instanceof BSONObject && !(o instanceof List<?>)) {
-                        BSONObject dbo = (BSONObject) o;
-                        Object marshallValue = dbo.get(MARSHALL_OPERATOR);
-                        if (marshallValue != null) {
-                            paramPos += ((Number) marshallValue).intValue();
-                            if (paramPos >= params.length) {
-                                throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
-                            }
-
-                            o = marshallParameter(params[paramPos++]);
-
-                            // Replace value set by super.objectDone()
-                            if (!isStackEmpty()) {
-                                _put(name, o);
-                            } else {
-                                o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks(o);
-                                setRoot(o);
-                            }
-                        }
-                    }
-
-                    if (isStackEmpty()) {
-                        // End of object
-                    }
-
-                    return o;
-                }
-            });
-
+            dbo = BasicDBObject.parse(sb.toString());
+            if (params.length != 0) {
+                dbo = (DBObject) replaceParams(dbo, params);
+            }
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot parse query: " + query, e);
         }
 
         return new BsonQuery(dbo);
+    }
+
+    private String addRequiredQuotes(String query) {
+        // TODO add required quotes around keys
+        return query;
+    }
+
+    private Object replaceParams(DBObject dbo, Object[] params) {
+        Set<String> keySet = dbo.keySet();
+        if (keySet.size() == 1 && keySet.contains(MARSHALL_OPERATOR)) {
+            return marshallParameter(params[(int) dbo.get(MARSHALL_OPERATOR)]);
+        }
+
+        keySet.forEach(key -> {
+            Object value = dbo.get(key);
+            if (value instanceof DBObject) {
+                Object newValue = replaceParams((DBObject) value, params);
+                if (newValue != value) {
+                    dbo.put(key, newValue);
+                }
+            }
+        });
+
+        return dbo;
 
     }
 

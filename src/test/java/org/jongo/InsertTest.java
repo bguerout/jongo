@@ -100,7 +100,7 @@ public class InsertTest extends JongoTestBase {
 
         ObjectId id = ObjectId.get();
 
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+        collection.withWriteConcern(WriteConcern.MAJORITY).insert(new Friend(id, "John"));
 
         assertThat(collection.count("{name : 'John'}")).isEqualTo(1);
 
@@ -111,7 +111,7 @@ public class InsertTest extends JongoTestBase {
     @Test
     public void canInsertAPojoWithACustomId() throws Exception {
 
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend("122", "value"));
+        collection.withWriteConcern(WriteConcern.MAJORITY).insert(new ExternalFriend("122", "value"));
 
         ExternalFriend result = collection.findOne("{name:'value'}").as(ExternalFriend.class);
         assertThat(result.getId()).isEqualTo("122");
@@ -122,10 +122,10 @@ public class InsertTest extends JongoTestBase {
 
         ObjectId id = ObjectId.get();
 
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+        collection.withWriteConcern(WriteConcern.MAJORITY).insert(new Friend(id, "John"));
 
         try {
-            collection.withWriteConcern(WriteConcern.SAFE).insert(new Friend(id, "John"));
+            collection.withWriteConcern(WriteConcern.MAJORITY).insert(new Friend(id, "John"));
             Assert.fail();
         } catch (DuplicateKeyException e) {
         }
@@ -134,10 +134,10 @@ public class InsertTest extends JongoTestBase {
     @Test
     public void canOnlyInsertOnceAPojoWithACustomId() throws Exception {
 
-        collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend("122", "value"));
+        collection.withWriteConcern(WriteConcern.MAJORITY).insert(new ExternalFriend("122", "value"));
 
         try {
-            collection.withWriteConcern(WriteConcern.SAFE).insert(new ExternalFriend("122", "other value"));
+            collection.withWriteConcern(WriteConcern.MAJORITY).insert(new ExternalFriend("122", "other value"));
             Assert.fail();
         } catch (DuplicateKeyException e) {
         }

@@ -36,9 +36,7 @@ import java.util.concurrent.TimeUnit;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class AggregateTest extends JongoTestBase {
 
@@ -110,7 +108,7 @@ public class AggregateTest extends JongoTestBase {
     @Test
     public void canAggregateWithOptions() {
 
-        AggregationOptions options = spy(AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).allowDiskUse(true).build());
+        AggregationOptions options = spy(AggregationOptions.builder().allowDiskUse(true).build());
 
         articles = collection.aggregate("{$match:{}}").options(options).as(Article.class);
 
@@ -121,7 +119,6 @@ public class AggregateTest extends JongoTestBase {
         verify(options, atLeastOnce()).getAllowDiskUse();
         verify(options, atLeastOnce()).getMaxTime(any(TimeUnit.class));
         verify(options, atLeastOnce()).getBatchSize();
-        verify(options, atLeastOnce()).getOutputMode();
         assertThat(articles.isCursor()).isTrue();
     }
 

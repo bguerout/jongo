@@ -53,7 +53,7 @@ class MongoBsonParser extends BsonParser {
     }
 
     private org.bson.types.ObjectId convertToNativeObjectId(ObjectId id) {
-        return org.bson.types.ObjectId.createFromLegacyFormat(id.getTime(), id.getMachine(), id.getInc());
+        return new org.bson.types.ObjectId(id.getTime(), id.getInc());
     }
 
     private org.bson.types.Decimal128 convertToNativeDecimal128(Decimal128 decimal) {

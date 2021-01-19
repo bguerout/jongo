@@ -49,12 +49,12 @@ class BenchUtil {
     }
 
     public static DBCollection getCollectionFromDriver() throws UnknownHostException {
-        Mongo nativeMongo = new MongoClient();
+        MongoClient nativeMongo = new MongoClient();
         return nativeMongo.getDB("jongo").getCollection("benchmark");
     }
 
     public static MongoCollection getCollectionFromJongo(Mapper mapper) throws UnknownHostException {
-        Mongo mongo = new MongoClient();
+        MongoClient mongo = new MongoClient();
         DB db = mongo.getDB("jongo");
         Jongo jongo = new Jongo(db, mapper);
         return jongo.getCollection("benchmark");
@@ -64,7 +64,7 @@ class BenchUtil {
         MongoCollection collection = getCollectionFromJongo(jacksonMapper().build());
         collection.drop();
         for (int i = 0; i < nbDocuments; i++) {
-            collection.withWriteConcern(WriteConcern.SAFE).save(createFriend(i));
+            collection.withWriteConcern(WriteConcern.MAJORITY).save(createFriend(i));
         }
         long count = collection.count();
         if (count < nbDocuments) {
