@@ -131,8 +131,118 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     private String addRequiredQuotes(String query) {
-        // TODO add required quotes around keys
-        return query;
+        if (query.equals("#")) {
+            return query;
+        }
+
+        StringBuilder sb = new StringBuilder(query.length());
+
+        int position = 0;
+        Stack<Context> stack = new Stack<>();
+        String token = "";
+        for (char c : query.toCharArray()) {
+            if (c == '{') {
+                stack.push(Context.OBJECT);
+                sb.append("{");
+            } else if (c == '[') {
+                stack.push(Context.ARRAY);
+                sb.append("[");
+            } else if (c == '}') {
+                Optional<Context> ctx = stack.pop();
+                if (!ctx.isPresent() || ctx.get() != Context.OBJECT) {
+                    throw new IllegalArgumentException("Invalid token at position: " + position);
+                }
+
+                if (!token.isEmpty()) {
+                    sb.append(token);
+                }
+
+                token = "";
+                sb.append("}");
+            } else if (c == ']') {
+                Optional<Context> ctx = stack.pop();
+                if (!ctx.isPresent() || ctx.get() != Context.ARRAY) {
+                    throw new IllegalArgumentException("Invalid token at position: " + position);
+                }
+
+                if (!token.isEmpty()) {
+                    sb.append(token);
+                }
+
+                token = "";
+                sb.append("]");
+            } else if (c == ':') {
+                String key = token.trim();
+                if (key.isEmpty() || key.equals("\"\"") || key.equals("''")) {
+                    throw new IllegalArgumentException("Invalid token at position: " + position);
+                }
+
+                sb.append(isQuoted(key) ? key : quote(key));
+                sb.append(":");
+                token = "";
+            } else if (c == ',') {
+                sb.append(token);
+                sb.append(",");
+                token = "";
+            } else {
+                token += c;
+            }
+
+            position++;
+        }
+
+        return sb.toString();
+    }
+
+    public enum Context {
+        OBJECT,
+        ARRAY,
+    }
+
+    private static boolean isQuoted(String token) {
+        char start = token.charAt(0);
+        char end = token.charAt(token.length() - 1);
+        if (start == '\'' && end == '\'') {
+            return true;
+        }
+
+        if (start == '"' && end == '"') {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static String quote(String token) {
+        return "\"" + token + "\"";
+    }
+
+    private static class Stack<T> {
+        private final LinkedList<T> stack;
+
+        private Stack() {
+            this.stack = new LinkedList<>();
+        }
+
+        public Optional<T> peek() {
+            if (stack.isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(stack.peek());
+        }
+
+        public Optional<T> pop() {
+            if (stack.isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(this.stack.removeLast());
+        }
+
+        public void push(T value) {
+            this.stack.addLast(value);
+        }
     }
 
     private Object replaceParams(DBObject dbo, Object[] params) {
