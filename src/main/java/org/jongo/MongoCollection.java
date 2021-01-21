@@ -112,7 +112,7 @@ public class MongoCollection {
 
     public long count(String query, Object... parameters) {
         DBObject dbQuery = createQuery(query, parameters).toDBObject();
-        return collection.getCount(dbQuery, null);
+        return collection.getCount(dbQuery);
     }
 
     public Update update(String query) {
