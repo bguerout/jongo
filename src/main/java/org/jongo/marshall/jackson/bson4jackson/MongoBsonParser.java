@@ -26,6 +26,7 @@ import org.bson.types.BSONTimestamp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 class MongoBsonParser extends BsonParser {
 
@@ -53,10 +54,40 @@ class MongoBsonParser extends BsonParser {
     }
 
     private org.bson.types.ObjectId convertToNativeObjectId(ObjectId id) {
-        return new org.bson.types.ObjectId(id.getTime(), id.getInc());
+        // Evil hack because of bson4jackson library which is not compatible with the new ObjectId spec
+        ByteBuffer buffer = ByteBuffer.allocate(12);
+        buffer.put(int3(id.getTime()));
+        buffer.put(int2(id.getTime()));
+        buffer.put(int1(id.getTime()));
+        buffer.put(int0(id.getTime()));
+        buffer.put(int3(id.getMachine()));
+        buffer.put(int2(id.getMachine()));
+        buffer.put(int1(id.getMachine()));
+        buffer.put(int0(id.getMachine()));
+        buffer.put(int3(id.getInc()));
+        buffer.put(int2(id.getInc()));
+        buffer.put(int1(id.getInc()));
+        buffer.put(int0(id.getInc()));
+        return new org.bson.types.ObjectId(buffer.array());
     }
 
     private org.bson.types.Decimal128 convertToNativeDecimal128(Decimal128 decimal) {
         return new org.bson.types.Decimal128(decimal.bigDecimalValue());
+    }
+
+    private static byte int3(int x) {
+        return (byte) (x >> 24);
+    }
+
+    private static byte int2(int x) {
+        return (byte) (x >> 16);
+    }
+
+    private static byte int1(int x) {
+        return (byte) (x >> 8);
+    }
+
+    private static byte int0(int x) {
+        return (byte) x;
     }
 }
