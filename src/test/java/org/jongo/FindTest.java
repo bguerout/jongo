@@ -87,7 +87,7 @@ public class FindTest extends JongoTestBase {
             results.next();
             fail();
         } catch (MarshallingException e) {
-            assertThat(e.getMessage()).contains(" \"error\" : \"NotaDate\"");
+            assertThat(e.getMessage()).contains(" \"error\": \"NotaDate\"");
         }
     }
 
