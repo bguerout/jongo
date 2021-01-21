@@ -44,6 +44,14 @@ public class BsonQueryFactoryTest {
         factory = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()));
     }
 
+    @Test
+    public void shouldCreateSimpleQuery() throws Exception {
+
+        Query query = factory.createQuery("{id:'\"[12,.:[]{}3]'}");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is("\"[12,.:[]{}3]").get());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithInvalidParameter() throws Exception {
 

@@ -70,56 +70,13 @@ public class BsonQueryFactory implements QueryFactory {
             parameters = new Object[]{null};
         }
 
-        String quotedQuery = addRequiredQuotes(query);
-
-        // We have two different cases:
-        //
-        // - tokens as property names "{scores.#: 1}": they must be expanded before going
-        //   through the JSON parser, and their toString() is inserted in the query
-        //
-        // - tokens as property values "{id: #}": they are resolved by the JSON parser and
-        //   therefore marshalled as DBObjects (actually LazyDBObjects).
-
-        StringBuilder sb = new StringBuilder();
-        int paramPos = 0;       // current position in the parameter list
-        int start = 0;          // start of the current string segment
-        int pos;                // position of the last token found
-        while ((pos = quotedQuery.indexOf(token, start)) != -1) {
-            if (paramPos >= parameters.length) {
-                throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
-            }
-
-            // Insert chars before the token
-            sb.append(quotedQuery, start, pos);
-
-            // Check if the character preceding the token is one that separates values.
-            // Otherwise, it's a property name substitution
-            if (isValueToken(quotedQuery, pos)) {
-                // Will be resolved by the JSON parser below
-                sb.append("{\"").append(MARSHALL_OPERATOR).append("\":").append(paramPos).append("}");
-            } else {
-                // Resolve it now
-                sb.append(parameters[paramPos]);
-            }
-
-            paramPos++;
-            start = pos + token.length();
-        }
-
-        // Add remaining chars
-        sb.append(quotedQuery, start, quotedQuery.length());
-
-        if (paramPos < parameters.length) {
-            throw new IllegalArgumentException("Too many parameters passed to query: " + query);
-        }
-
+        String quotedQuery = addRequiredQuotesAndParameters(query, parameters);
 
         final Object[] params = parameters;
 
-        // Parse the query with a callback that will weave in marshalled parameters
         DBObject dbo;
         try {
-            dbo = BasicDBObject.parse(sb.toString());
+            dbo = BasicDBObject.parse(quotedQuery);
             if (params.length != 0) {
                 dbo = (DBObject) replaceParams(dbo, params);
             }
@@ -130,18 +87,41 @@ public class BsonQueryFactory implements QueryFactory {
         return new BsonQuery(dbo);
     }
 
-    private String addRequiredQuotes(String query) {
-        if (query.trim().equals("#")) {
-            return query;
-        }
-
+    private String addRequiredQuotesAndParameters(String query, Object[] parameters) {
         StringBuilder sb = new StringBuilder(query.length());
 
         int position = 0;
+        int paramIndex = 0;
         Stack<Context> stack = new Stack<>();
         String token = "";
+        String previousToken = "";
+        char currentStringStartingQuote = ' ';
         for (char c : query.toCharArray()) {
-            if (c == '{') {
+            if (stack.peek().isPresent() && stack.peek().get().equals(Context.STRING)) {
+                token += c;
+                if (c == currentStringStartingQuote) {
+                    stack.pop();
+                }
+            } else if (c == '\'' || c == '"') {
+                stack.push(Context.STRING);
+                currentStringStartingQuote = c;
+                token += c;
+            } else if ((token + c).lastIndexOf(this.token) == token.length() - this.token.length() + 1) {
+                if (paramIndex >= parameters.length) {
+                    throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
+                }
+                if ("$oid".equals(previousToken) ||
+                        "$set".equals(previousToken) ||
+                        !isValueToken(query, position)) {
+                    token = "\"" + token.trim() + parameters[paramIndex] + "\"";
+                } else {
+                    sb.append("{\"")
+                            .append(MARSHALL_OPERATOR)
+                            .append("\":")
+                            .append(paramIndex).append("}");
+                }
+                paramIndex++;
+            } else if (c == '{') {
                 stack.push(Context.OBJECT);
                 sb.append("{");
             } else if (c == '[') {
@@ -157,6 +137,7 @@ public class BsonQueryFactory implements QueryFactory {
                     sb.append(token);
                 }
 
+                previousToken = token;
                 token = "";
                 sb.append("}");
             } else if (c == ']') {
@@ -169,6 +150,7 @@ public class BsonQueryFactory implements QueryFactory {
                     sb.append(token);
                 }
 
+                previousToken = token;
                 token = "";
                 sb.append("]");
             } else if (c == ':') {
@@ -179,10 +161,12 @@ public class BsonQueryFactory implements QueryFactory {
 
                 sb.append(isQuoted(key) ? key : quote(key));
                 sb.append(":");
+                previousToken = token;
                 token = "";
             } else if (c == ',') {
                 sb.append(token);
                 sb.append(",");
+                previousToken = token;
                 token = "";
             } else {
                 token += c;
@@ -191,12 +175,17 @@ public class BsonQueryFactory implements QueryFactory {
             position++;
         }
 
+        if (paramIndex < parameters.length) {
+            throw new IllegalArgumentException("Too many parameters passed to query: " + query);
+        }
+
         return sb.toString();
     }
 
     public enum Context {
         OBJECT,
         ARRAY,
+        STRING;
     }
 
     private static boolean isQuoted(String token) {
@@ -229,7 +218,7 @@ public class BsonQueryFactory implements QueryFactory {
                 return Optional.empty();
             }
 
-            return Optional.of(stack.peek());
+            return Optional.of(stack.peekLast());
         }
 
         public Optional<T> pop() {
