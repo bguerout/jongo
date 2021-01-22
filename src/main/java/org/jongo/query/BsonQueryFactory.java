@@ -76,7 +76,15 @@ public class BsonQueryFactory implements QueryFactory {
 
         DBObject dbo;
         try {
-            dbo = BasicDBObject.parse(quotedQuery);
+            if (quotedQuery.charAt(0) == '[') {
+                // little hack to handle first class arrays as BasicDBObject cannot parse them
+                // also we could do this for simple objects but it would not handle properly queries like
+                // "{'a':1}, {'b':1}" as tested in MongoCollectionTest.canCreateGeospacialIndex()
+                dbo = (DBObject) BasicDBObject.parse("{'query':" + quotedQuery + "}").get("query");
+            } else {
+                dbo = BasicDBObject.parse(quotedQuery);
+            }
+
             if (params.length != 0) {
                 dbo = (DBObject) replaceParams(dbo, params);
             }
@@ -178,7 +186,7 @@ public class BsonQueryFactory implements QueryFactory {
             throw new IllegalArgumentException("Too many parameters passed to query: " + query);
         }
 
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     public enum Context {
