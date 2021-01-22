@@ -18,6 +18,8 @@ package org.jongo.marshall;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.bson.BsonBinary;
+import org.bson.UuidRepresentation;
 import org.bson.types.*;
 import org.jongo.MongoCollection;
 import org.jongo.model.Friend;
@@ -166,10 +168,11 @@ public class DocumentMarshallingTest extends JongoTestBase {
 
         BSONPrimitiveType type = new BSONPrimitiveType();
         type.uuid = UUID.fromString("cf0eddfa-2670-4929-a581-eb263d839cab");
+        String uuidBase64 = Base64.getEncoder().encodeToString(new BsonBinary(type.uuid, UuidRepresentation.JAVA_LEGACY).getData());
 
         collection.save(type);
 
-        assertHasBeenPersistedAs("{'uuid' : { '$uuid' : 'cf0eddfa-2670-4929-a581-eb263d839cab'}}");
+        assertHasBeenPersistedAs("{'uuid' : {'$binary': {'base64': '" + uuidBase64 + "', 'subType': '03'}}}");
         BSONPrimitiveType result = collection.findOne("{}").as(BSONPrimitiveType.class);
         assertThat(result.uuid).isEqualTo(type.uuid);
     }
