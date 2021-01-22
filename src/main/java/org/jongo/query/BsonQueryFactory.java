@@ -111,7 +111,6 @@ public class BsonQueryFactory implements QueryFactory {
                     throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
                 }
                 if ("$oid".equals(previousToken) ||
-                        "$set".equals(previousToken) ||
                         !isValueToken(query, position)) {
                     token = "\"" + token.trim() + parameters[paramIndex] + "\"";
                 } else {

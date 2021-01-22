@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Coordinate;
@@ -100,6 +101,15 @@ public class BsonQueryFactoryTest {
         Query query = factory.createQuery("{id:#}", null);
 
         assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", null));
+    }
+
+    @Test
+    public void shouldBindObjectIdParameter() throws Exception {
+
+        ObjectId objectId = new ObjectId();
+        Query query = factory.createQuery("{_id:{$oid:#}}", objectId.toHexString());
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("_id", objectId));
     }
 
     @Test
