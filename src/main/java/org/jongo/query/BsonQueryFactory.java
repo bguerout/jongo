@@ -47,7 +47,7 @@ public class BsonQueryFactory implements QueryFactory {
             return dbo;
         }
 
-        public org.bson.conversions.Bson toBson() {
+        public org.bson.BsonDocument toBsonDocument() {
             return BsonDocumentWrapper.asBsonDocument(dbo, MongoClient.getDefaultCodecRegistry());
         }
     }

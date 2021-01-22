@@ -17,6 +17,7 @@
 package org.jongo.use_native;
 
 import com.mongodb.client.MongoDatabase;
+import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.jongo.Jongo;
 import org.jongo.JongoNative;
@@ -46,7 +47,7 @@ public abstract class NativeTestBase {
         MONGO_RESOURCE = new MongoResource();
     }
 
-    protected Bson q(String query, Object... parameters) {
+    protected BsonDocument q(String query, Object... parameters) {
         return jongo.query(query, parameters);
     }
 

@@ -23,6 +23,7 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.BsonDocument;
+import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.After;
@@ -33,11 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BsonNativeTest extends NativeTestBase {
 
-    private MongoCollection<Bson> collection;
+    private MongoCollection<BsonDocument> collection;
 
     @Before
     public void setUp() throws Exception {
-        collection = jongo.getCollection("friends", Bson.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
+        collection = jongo.getCollection("friends", BsonDocument.class).withWriteConcern(WriteConcern.ACKNOWLEDGED);
     }
 
     @After
@@ -66,12 +67,12 @@ public class BsonNativeTest extends NativeTestBase {
 
         collection.insertOne(q("{name : 'Abby'}"));
 
-        FindIterable<Bson> results = collection.find(q("{name:'Abby'}")).projection(q("{name:#}", 1));
+        FindIterable<BsonDocument> results = collection.find(q("{name:'Abby'}")).projection(q("{name:#}", 1));
 
         assertThat(results).isNotEmpty();
-        results.map(new Function<Bson, String>() {
+        results.map(new Function<BsonDocument, String>() {
 
-            public String apply(Bson bson) {
+            public String apply(BsonDocument bson) {
                 BsonDocument document = bson.toBsonDocument(DBObject.class, MongoClient.getDefaultCodecRegistry());
                 assertThat(document.containsKey("address")).isFalse();
                 assertThat(document.containsKey("name")).isTrue();
@@ -83,7 +84,7 @@ public class BsonNativeTest extends NativeTestBase {
     @Test
     public void canQueryWithNativeDocument() throws Exception {
 
-        Document document = new Document("name", "Abby").append("address", "123 Wall Street");
+        BsonDocument document = new BsonDocument("name", new BsonString("Abby")).append("address", new BsonString("123 Wall Street"));
 
         collection.insertOne(document);
 
