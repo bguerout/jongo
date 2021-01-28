@@ -109,12 +109,14 @@ public class BsonQueryFactory implements QueryFactory {
 
         int position = 0;
         int paramIndex = 0;
-        Stack<Context> stack = new Stack<>();
+        Stack<Context> stack = new Stack<>(Context.NONE);
+        Context ctx;
         String token = "";
         String previousToken = "";
         char currentStringStartingQuote = ' ';
         for (char c : query.toCharArray()) {
-            if (stack.peek().isPresent() && stack.peek().get().equals(Context.STRING)) {
+            ctx = stack.peek();
+            if (ctx == Context.STRING) {
                 token += c;
                 if (c == currentStringStartingQuote) {
                     stack.pop();
@@ -144,8 +146,8 @@ public class BsonQueryFactory implements QueryFactory {
                 stack.push(Context.ARRAY);
                 sb.append("[");
             } else if (c == '}') {
-                Optional<Context> ctx = stack.pop();
-                if (!ctx.isPresent() || ctx.get() != Context.OBJECT) {
+                ctx = stack.pop();
+                if (ctx != Context.OBJECT) {
                     throw new IllegalArgumentException("Invalid token at position: " + position);
                 }
 
@@ -157,8 +159,8 @@ public class BsonQueryFactory implements QueryFactory {
                 token = "";
                 sb.append("}");
             } else if (c == ']') {
-                Optional<Context> ctx = stack.pop();
-                if (!ctx.isPresent() || ctx.get() != Context.ARRAY) {
+                ctx = stack.pop();
+                if (ctx != Context.ARRAY) {
                     throw new IllegalArgumentException("Invalid token at position: " + position);
                 }
 
@@ -199,6 +201,7 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     public enum Context {
+        NONE,
         OBJECT,
         ARRAY,
         STRING;
@@ -224,25 +227,27 @@ public class BsonQueryFactory implements QueryFactory {
 
     private static class Stack<T> {
         private final LinkedList<T> stack;
+        private final T noValue;
 
-        private Stack() {
+        private Stack(T noValue) {
             this.stack = new LinkedList<>();
+            this.noValue = noValue;
         }
 
-        public Optional<T> peek() {
+        public T peek() {
             if (stack.isEmpty()) {
-                return Optional.empty();
+                return noValue;
             }
 
-            return Optional.of(stack.peekLast());
+            return stack.peekLast();
         }
 
-        public Optional<T> pop() {
+        public T pop() {
             if (stack.isEmpty()) {
-                return Optional.empty();
+                return noValue;
             }
 
-            return Optional.of(this.stack.removeLast());
+            return this.stack.removeLast();
         }
 
         public void push(T value) {
