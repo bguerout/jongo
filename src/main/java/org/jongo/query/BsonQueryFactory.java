@@ -31,7 +31,16 @@ import java.util.*;
 public class BsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
-    private static final String MARSHALL_OPERATOR = UUID.randomUUID() + "marshall";
+
+    /**
+     * The marshall operator will be replacing the token during query parsing as following:
+     * {"firstname":#} -> {"firstname":{MARSHALL_OPERATOR: 0}}
+     * 0 being the index of the parameter to be inserted in place of that placeholder.
+     * Previously $marshall but upgrading to mongo driver 4 the new parser does not allow $ prefixed strings
+     * if they're not mongo operators.
+     * With a UUID prefixed string there should be no risk of collision.
+     */
+    private static final String MARSHALL_OPERATOR = "8a6e4178-8fba-4d22-af43-840512e3a999-marshall";
 
     private final String token;
     private final Marshaller marshaller;
