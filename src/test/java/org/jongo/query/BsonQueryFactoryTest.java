@@ -123,6 +123,16 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldBindParameterWithCustomLongToken() throws Exception {
+
+        QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "#!!");
+
+        Query query = factoryWithToken.createQuery("{id:#!!}", 123);
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", 123));
+    }
+
+    @Test
     public void shouldBindHashSign() throws Exception {
 
         Query query = factory.createQuery("{id:#}", "string with # sign");

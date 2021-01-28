@@ -26,7 +26,13 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+
+import static org.jongo.query.BsonSpecialChar.itIsABsonSpecialChar;
+import static org.jongo.query.BsonSpecialChar.specialChar;
 
 public class BsonQueryFactory implements QueryFactory {
 
@@ -43,6 +49,7 @@ public class BsonQueryFactory implements QueryFactory {
     private static final String MARSHALL_OPERATOR = "8a6e4178-8fba-4d22-af43-840512e3a999-marshall";
 
     private final String token;
+    private final boolean singleCharToken;
     private final Marshaller marshaller;
 
     private static class BsonQuery implements Query {
@@ -66,6 +73,7 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     public BsonQueryFactory(Marshaller marshaller, String token) {
+        this.singleCharToken = token.length() == 1;
         this.token = token;
         this.marshaller = marshaller;
     }
@@ -105,89 +113,41 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     private String addRequiredQuotesAndParameters(String query, Object[] parameters) {
-        StringBuilder sb = new StringBuilder(query.length());
+        StringBuilder result = new StringBuilder(query.length());
 
         int position = 0;
         int paramIndex = 0;
-        Stack<Context> stack = new Stack<>(Context.NONE);
-        Context ctx;
-        String token = "";
+        Stack<Context> ctxStack = new Stack<>(Context.NONE);
+        StringBuilder currentToken = new StringBuilder();
         String previousToken = "";
         char currentStringStartingQuote = ' ';
-        for (char c : query.toCharArray()) {
-            ctx = stack.peek();
-            if (ctx == Context.STRING) {
-                token += c;
-                if (c == currentStringStartingQuote) {
-                    stack.pop();
+
+        for (char nextChar : query.toCharArray()) {
+            if (ctxStack.peek() == Context.STRING) {
+                currentToken.append(nextChar);
+                if (nextChar == currentStringStartingQuote) {
+                    ctxStack.pop();
                 }
-            } else if (c == '\'' || c == '"') {
-                stack.push(Context.STRING);
-                currentStringStartingQuote = c;
-                token += c;
-            } else if ((token + c).lastIndexOf(this.token) == token.length() - this.token.length() + 1) {
+            } else if (isAQuote(nextChar)) {
+                ctxStack.push(Context.STRING);
+                currentStringStartingQuote = nextChar;
+                currentToken.append(nextChar);
+            } else if (currentTokenWithNextCharIsToken(currentToken, nextChar)) {
                 if (paramIndex >= parameters.length) {
                     throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
                 }
                 if ("$oid".equals(previousToken) ||
                         !isValueToken(query, position)) {
-                    token = "\"" + token.trim() + parameters[paramIndex] + "\"";
+                    currentToken = trimAppendParamAndQuote(currentToken, parameters[paramIndex]);
                 } else {
-                    sb.append("{\"")
-                            .append(MARSHALL_OPERATOR)
-                            .append("\":")
-                            .append(paramIndex).append("}");
+                    appendParamPlaceholder(result, paramIndex);
+                    currentToken.setLength(0);
                 }
                 paramIndex++;
-            } else if (c == '{') {
-                stack.push(Context.OBJECT);
-                sb.append("{");
-            } else if (c == '[') {
-                stack.push(Context.ARRAY);
-                sb.append("[");
-            } else if (c == '}') {
-                ctx = stack.pop();
-                if (ctx != Context.OBJECT) {
-                    throw new IllegalArgumentException("Invalid token at position: " + position);
-                }
-
-                if (!token.isEmpty()) {
-                    sb.append(token);
-                }
-
-                previousToken = token;
-                token = "";
-                sb.append("}");
-            } else if (c == ']') {
-                ctx = stack.pop();
-                if (ctx != Context.ARRAY) {
-                    throw new IllegalArgumentException("Invalid token at position: " + position);
-                }
-
-                if (!token.isEmpty()) {
-                    sb.append(token);
-                }
-
-                previousToken = token;
-                token = "";
-                sb.append("]");
-            } else if (c == ':') {
-                String key = token.trim();
-                if (key.isEmpty() || key.equals("\"\"") || key.equals("''")) {
-                    throw new IllegalArgumentException("Invalid token at position: " + position);
-                }
-
-                sb.append(isQuoted(key) ? key : quote(key));
-                sb.append(":");
-                previousToken = token;
-                token = "";
-            } else if (c == ',') {
-                sb.append(token);
-                sb.append(",");
-                previousToken = token;
-                token = "";
+            } else if (itIsABsonSpecialChar(nextChar)) {
+                previousToken = specialChar(nextChar).applySpecificBehaviour(result, currentToken, ctxStack, position);
             } else {
-                token += c;
+                currentToken.append(nextChar);
             }
 
             position++;
@@ -197,62 +157,35 @@ public class BsonQueryFactory implements QueryFactory {
             throw new IllegalArgumentException("Too many parameters passed to query: " + query);
         }
 
-        return sb.toString().trim();
+        return result.toString().trim();
     }
 
-    public enum Context {
-        NONE,
-        OBJECT,
-        ARRAY,
-        STRING;
+    private boolean currentTokenWithNextCharIsToken(StringBuilder currentToken, char nextChar) {
+        if (this.singleCharToken) {
+            return this.token.charAt(0) == nextChar;
+        }
+        return (currentToken.toString().trim() + nextChar).lastIndexOf(this.token) >= 0;
     }
 
-    private static boolean isQuoted(String token) {
-        char start = token.charAt(0);
-        char end = token.charAt(token.length() - 1);
-        if (start == '\'' && end == '\'') {
-            return true;
-        }
-
-        if (start == '"' && end == '"') {
-            return true;
-        }
-
-        return false;
+    private void appendParamPlaceholder(StringBuilder result, int paramIndex) {
+        result.append('{')
+                .append('"')
+                .append(MARSHALL_OPERATOR)
+                .append('"')
+                .append(':')
+                .append(paramIndex)
+                .append('}');
     }
 
-    private static String quote(String token) {
-        return "\"" + token + "\"";
+    private StringBuilder trimAppendParamAndQuote(StringBuilder currentToken, Object parameter) {
+        return new StringBuilder().append('"')
+                .append(currentToken.toString().trim())
+                .append(parameter)
+                .append('"');
     }
 
-    private static class Stack<T> {
-        private final LinkedList<T> stack;
-        private final T noValue;
-
-        private Stack(T noValue) {
-            this.stack = new LinkedList<>();
-            this.noValue = noValue;
-        }
-
-        public T peek() {
-            if (stack.isEmpty()) {
-                return noValue;
-            }
-
-            return stack.peekLast();
-        }
-
-        public T pop() {
-            if (stack.isEmpty()) {
-                return noValue;
-            }
-
-            return this.stack.removeLast();
-        }
-
-        public void push(T value) {
-            this.stack.addLast(value);
-        }
+    private boolean isAQuote(char c) {
+        return c == '\'' || c == '"';
     }
 
     private Object replaceParams(DBObject dbo, Object[] params) {
