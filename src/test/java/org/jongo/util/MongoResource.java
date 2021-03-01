@@ -118,7 +118,7 @@ public class MongoResource {
         private static Version getVersion() {
             String version = System.getProperty("embedmongo.version");
             if (version == null) {
-                return Version.V4_0_2;
+                return Version.V4_0_12;
             }
             return Version.valueOf("V" + version.replaceAll("\\.", "_"));
         }

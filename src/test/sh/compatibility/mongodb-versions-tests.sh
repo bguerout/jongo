@@ -2,98 +2,45 @@
 
 set -euo pipefail
 
-function run_tests {
-    local mongodb_java_driver_version=${1}
-    local mongodb_version=${2}
-    local output_dir=${3}
+function run_tests() {
+  local mongo_driver_legacy_version=${1}
+  local mongodb_version=${2}
+  local output_dir=${3}
 
-    echo "Running tests against mongo-java-driver ${mongodb_java_driver_version} and MongoDB ${mongodb_version}"
-    mvn verify \
-    -Dmongo-java-driver.version="${mongodb_java_driver_version}" \
+  echo "Running tests against mongo-driver-legacy ${mongo_driver_legacy_version} and MongoDB ${mongodb_version}"
+  mvn verify \
+    -Dmongo-driver-legacy.version="${mongo_driver_legacy_version}" \
     -Dembedmongo.version="${mongodb_version}" \
     -DreportFormat=plain \
     -DuseFile=false \
     -Dmaven.source.skip=true \
     -Dmaven.javadoc.skip=true \
-    --log-file "${output_dir}/build-driver-$mongodb_java_driver_version-db-$mongodb_version.log"
+    --log-file "${output_dir}/build-driver-$mongo_driver_legacy_version-db-$mongodb_version.log"
 }
 
-function main {
-    local output_dir="./target/jongo-compatibility"
+function main() {
+  local output_dir="./target/jongo-compatibility"
 
-    mkdir -p "./target/jongo-compatibility"
+  mkdir -p "./target/jongo-compatibility"
 
-    run_tests   "3.5.0"     "3.4.15"     "${output_dir}"
-    run_tests   "3.5.0"     "3.6.5"      "${output_dir}"
-    run_tests   "3.5.0"     "4.0.2"      "${output_dir}"
+  run_tests "4.0.6" "3.4.15" "${output_dir}"
+  run_tests "4.0.6" "3.5.5" "${output_dir}"
+  run_tests "4.0.6" "3.6.5" "${output_dir}"
+  run_tests "4.0.6" "4.0.12" "${output_dir}"
+  #run_tests "4.0.6" "4.4.1" "${output_dir}"
+  #see https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/issues/326
 
-    run_tests   "3.6.0"     "3.4.15"     "${output_dir}"
-    run_tests   "3.6.0"     "3.6.5"      "${output_dir}"
-    run_tests   "3.6.0"     "4.0.2"      "${output_dir}"
+  run_tests "4.1.2" "3.4.15" "${output_dir}"
+  run_tests "4.1.2" "3.5.5" "${output_dir}"
+  run_tests "4.1.2" "3.6.5" "${output_dir}"
+  run_tests "4.1.2" "4.0.12" "${output_dir}"
+  #run_tests "4.1.2" "4.4.1" "${output_dir}"
 
-    run_tests   "3.6.1"     "3.4.15"     "${output_dir}"
-    run_tests   "3.6.1"     "3.6.5"      "${output_dir}"
-    run_tests   "3.6.1"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.6.2"     "3.4.15"     "${output_dir}"
-    run_tests   "3.6.2"     "3.6.5"      "${output_dir}"
-    run_tests   "3.6.2"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.6.3"     "3.4.15"     "${output_dir}"
-    run_tests   "3.6.3"     "3.6.5"      "${output_dir}"
-    run_tests   "3.6.3"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.6.4"     "3.4.15"     "${output_dir}"
-    run_tests   "3.6.4"     "3.6.5"      "${output_dir}"
-    run_tests   "3.6.4"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.7.0"     "3.4.15"     "${output_dir}"
-    run_tests   "3.7.0"     "3.6.5"      "${output_dir}"
-    run_tests   "3.7.0"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.7.1"     "3.4.15"     "${output_dir}"
-    run_tests   "3.7.1"     "3.6.5"      "${output_dir}"
-    run_tests   "3.7.1"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.8.0"     "3.4.15"     "${output_dir}"
-    run_tests   "3.8.0"     "3.6.5"      "${output_dir}"
-    run_tests   "3.8.0"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.8.1"     "3.4.15"     "${output_dir}"
-    run_tests   "3.8.1"     "3.6.5"      "${output_dir}"
-    run_tests   "3.8.1"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.8.2"     "3.4.15"     "${output_dir}"
-    run_tests   "3.8.2"     "3.6.5"      "${output_dir}"
-    run_tests   "3.8.2"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.9.0"     "3.4.15"     "${output_dir}"
-    run_tests   "3.9.0"     "3.6.5"      "${output_dir}"
-    run_tests   "3.9.0"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.9.1"     "3.4.15"     "${output_dir}"
-    run_tests   "3.9.1"     "3.6.5"      "${output_dir}"
-    run_tests   "3.9.1"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.10.1"     "3.4.15"     "${output_dir}"
-    run_tests   "3.10.1"     "3.6.5"      "${output_dir}"
-    run_tests   "3.10.1"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.10.2"     "3.4.15"     "${output_dir}"
-    run_tests   "3.10.2"     "3.6.5"      "${output_dir}"
-    run_tests   "3.10.2"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.12.0"     "3.4.15"     "${output_dir}"
-    run_tests   "3.12.0"     "3.6.5"      "${output_dir}"
-    run_tests   "3.12.0"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.12.1"     "3.4.15"     "${output_dir}"
-    run_tests   "3.12.1"     "3.6.5"      "${output_dir}"
-    run_tests   "3.12.1"     "4.0.2"      "${output_dir}"
-
-    run_tests   "3.12.2"     "3.4.15"     "${output_dir}"
-    run_tests   "3.12.2"     "3.6.5"      "${output_dir}"
-    run_tests   "3.12.2"     "4.0.2"      "${output_dir}"
+  run_tests "4.2.1" "3.4.15" "${output_dir}"
+  run_tests "4.2.1" "3.5.5" "${output_dir}"
+  run_tests "4.2.1" "3.6.5" "${output_dir}"
+  run_tests "4.2.1" "4.0.12" "${output_dir}"
+  #run_tests "4.2.1" "4.4.1" "${output_dir}"
 }
 
 main "$@"
