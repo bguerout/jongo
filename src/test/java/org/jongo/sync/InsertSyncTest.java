@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.use_native;
+package org.jongo.sync;
 
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
@@ -33,7 +33,7 @@ import java.util.Date;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InsertNativeTest extends NativeTestBase {
+public class InsertSyncTest extends SyncTestBase {
 
     private MongoCollection<Friend> collection;
 

@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package org.jongo.use_native;
+package org.jongo.sync;
 
 import com.mongodb.client.MongoDatabase;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.jongo.Jongo;
-import org.jongo.JongoNative;
+import org.jongo.JongoSync;
 import org.jongo.Mapper;
 import org.jongo.util.MongoResource;
 import org.junit.BeforeClass;
 
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
-public abstract class NativeTestBase {
+public abstract class SyncTestBase {
 
     private static MongoResource MONGO_RESOURCE;
 
-    protected JongoNative jongo;
+    protected JongoSync jongo;
 
-    public NativeTestBase() {
+    public SyncTestBase() {
         this(jacksonMapper().build());
     }
 
-    protected NativeTestBase(Mapper mapper) {
+    protected SyncTestBase(Mapper mapper) {
         MongoDatabase database = MONGO_RESOURCE.getDatabase("test_jongo");
-        this.jongo = Jongo.useNative(database, mapper);
+        this.jongo = Jongo.useSync(database, mapper);
     }
 
     @BeforeClass

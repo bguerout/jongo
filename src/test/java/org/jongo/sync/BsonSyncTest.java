@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.use_native;
+package org.jongo.sync;
 
 import com.mongodb.DBObject;
 import com.mongodb.Function;
@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BsonNativeTest extends NativeTestBase {
+public class BsonSyncTest extends SyncTestBase {
 
     private MongoCollection<BsonDocument> collection;
 
@@ -82,7 +82,7 @@ public class BsonNativeTest extends NativeTestBase {
     }
 
     @Test
-    public void canQueryWithNativeDocument() throws Exception {
+    public void canQueryWithBsonDocument() throws Exception {
 
         BsonDocument document = new BsonDocument("name", new BsonString("Abby")).append("address", new BsonString("123 Wall Street"));
 

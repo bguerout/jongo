@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.use_native;
+package org.jongo.sync;
 
 import com.mongodb.client.MongoCollection;
 import org.jongo.model.Friend;
@@ -25,7 +25,7 @@ import org.junit.Test;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ParametersNativeTest extends NativeTestBase {
+public class ParametersSyncTest extends SyncTestBase {
 
     private MongoCollection<Friend> collection;
 

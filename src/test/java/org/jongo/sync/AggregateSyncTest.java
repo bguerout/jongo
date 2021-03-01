@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.use_native;
+package org.jongo.sync;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.conversions.Bson;
@@ -28,7 +28,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AggregateNativeTest extends NativeTestBase {
+public class AggregateSyncTest extends SyncTestBase {
 
     private MongoCollection<Article> collection;
 

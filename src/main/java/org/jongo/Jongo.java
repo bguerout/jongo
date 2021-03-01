@@ -69,11 +69,11 @@ public class Jongo {
         return new Command(database, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
 
-    public static JongoNative useNative(MongoDatabase database) {
-        return new JongoNative(database);
+    public static JongoSync useSync(MongoDatabase database) {
+        return new JongoSync(database);
     }
 
-    public static JongoNative useNative(MongoDatabase database, Mapper mapper) {
-        return new JongoNative(database, mapper);
+    public static JongoSync useSync(MongoDatabase database, Mapper mapper) {
+        return new JongoSync(database, mapper);
     }
 }

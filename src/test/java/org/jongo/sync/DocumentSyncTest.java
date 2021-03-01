@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.use_native;
+package org.jongo.sync;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DocumentNativeTest extends NativeTestBase {
+public class DocumentSyncTest extends SyncTestBase {
 
     private MongoCollection<Document> collection;
 

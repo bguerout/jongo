@@ -30,17 +30,17 @@ import org.jongo.query.Query;
 
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
-public class JongoNative {
+public class JongoSync {
 
     private final Mapper mapper;
     private final CodecRegistry codecRegistry;
     private final MongoDatabase database;
 
-    public JongoNative(MongoDatabase database) {
+    public JongoSync(MongoDatabase database) {
         this(database, jacksonMapper().build());
     }
 
-    public JongoNative(MongoDatabase database, Mapper mapper) {
+    public JongoSync(MongoDatabase database, Mapper mapper) {
         this.mapper = mapper;
         this.database = database;
         this.codecRegistry = createCodecRegistry(mapper);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jongo.use_native;
+package org.jongo.sync;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UpdateNativeTest extends NativeTestBase {
+public class UpdateSyncTest extends SyncTestBase {
 
     private MongoCollection<Friend> collection;
 
