@@ -21,7 +21,7 @@
 
     <groupId>org.jongo</groupId>
     <artifactId>jongo</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Jongo</name>
     <description>Query in Java as in Mongo shell</description>
@@ -72,7 +72,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mongo-driver-legacy.version>[4.0.0,4.1.1]</mongo-driver-legacy.version>
+        <mongo-driver-legacy.version>[4.0.0,4.2.1]</mongo-driver-legacy.version>
         <jackson.version>2.10.3</jackson.version>
         <bson4jackson.version>2.12.0</bson4jackson.version>
     </properties>
