@@ -77,7 +77,7 @@ public class UpdateTest extends JongoTestBase {
         collection.save(new Friend("John"));
 
         /* when */
-        collection.withWriteConcern(WriteConcern.SAFE).update("{name:'John'}").multi().with("{$unset:{name:1}}");
+        collection.withWriteConcern(WriteConcern.MAJORITY).update("{name:'John'}").multi().with("{$unset:{name:1}}");
 
         /* then */
         Iterable<Friend> friends = collection.find("{name:{$exists:true}}").as(Friend.class);
@@ -125,7 +125,7 @@ public class UpdateTest extends JongoTestBase {
 
         collection.update("{name:'John'}").with(preexistingDocument);
 
-        Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
+        Friend johnny = collection.findOne("{name:'Johnny'}").as(Friend.class);
         assertThat(johnny).isNotNull();
         assertThat(johnny.getName()).isEqualTo("Johnny");
         assertThat(johnny.getAddress()).isEqualTo("123 Wall Street");
@@ -139,7 +139,7 @@ public class UpdateTest extends JongoTestBase {
 
         collection.update("{name:'John'}").with(newDocument);
 
-        Friend johnny = collection.findOne("{name:'Johnny'}}").as(Friend.class);
+        Friend johnny = collection.findOne("{name:'Johnny'}").as(Friend.class);
         assertThat(johnny).isNotNull();
         assertThat(johnny.getName()).isEqualTo("Johnny");
         assertThat(johnny.getAddress()).isEqualTo("123 Wall Street");

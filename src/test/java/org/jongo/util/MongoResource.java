@@ -16,24 +16,22 @@
 
 package org.jongo.util;
 
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import com.mongodb.WriteConcern;
+import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.*;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.config.IRuntimeConfig;
+import de.flapdoodle.embed.process.config.RuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
-import de.flapdoodle.embed.process.extract.UserTempNaming;
-import de.flapdoodle.embed.process.io.IStreamProcessor;
+import de.flapdoodle.embed.process.config.store.DownloadConfig;
 import de.flapdoodle.embed.process.io.NullProcessor;
+import de.flapdoodle.embed.process.io.StreamProcessor;
+import de.flapdoodle.embed.process.io.directories.Directory;
 import de.flapdoodle.embed.process.io.directories.FixedPath;
-import de.flapdoodle.embed.process.io.directories.IDirectory;
 import de.flapdoodle.embed.process.io.directories.UserHome;
 import de.flapdoodle.embed.process.runtime.Network;
-import de.flapdoodle.embed.process.store.IArtifactStore;
+import de.flapdoodle.embed.process.store.ExtractedArtifactStore;
 
 import java.net.UnknownHostException;
 
@@ -70,22 +68,17 @@ public class MongoResource {
                 Command mongoD = Command.MongoD;
                 int port = RandomPortNumberGenerator.pickAvailableRandomEphemeralPortNumber();
 
-                de.flapdoodle.embed.process.config.store.DownloadConfigBuilder downloadConfigBuilder = new DownloadConfigBuilder()
-                        .defaultsForCommand(mongoD)
-                        .defaults()
-                        .artifactStorePath(getMongoPath());
-
-                IArtifactStore artifactStore = new ArtifactStoreBuilder()
-                        .defaults(mongoD)
-                        .executableNaming(new UserTempNaming())
-                        .download(downloadConfigBuilder)
+                DownloadConfig downloadConfig = Defaults.downloadConfigFor(mongoD)
+                        .artifactStorePath(getMongoPath())
                         .build();
 
-                IStreamProcessor output = new NullProcessor();
+                ExtractedArtifactStore artifactStore = Defaults.extractedArtifactStoreFor(mongoD)
+                        .withDownloadConfig(downloadConfig);
+
+                StreamProcessor output = new NullProcessor();
                 ProcessOutput processOutput = new ProcessOutput(output, output, output);
 
-                IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
-                        .defaults(mongoD)
+                RuntimeConfig runtimeConfig = Defaults.runtimeConfigFor(mongoD)
                         .processOutput(processOutput)
                         .artifactStore(artifactStore)
                         .build();
@@ -94,12 +87,12 @@ public class MongoResource {
                 Version version = getVersion();
 
 
-                MongoCmdOptionsBuilder mongoCmdOptionsBuilder = new MongoCmdOptionsBuilder();
+                ImmutableMongoCmdOptions.Builder mongoCmdOptionsBuilder = MongoCmdOptions.builder();
                 if (version.compareTo(Version.V3_2_0) > -1) {
-                    mongoCmdOptionsBuilder.useStorageEngine("ephemeralForTest");
+                    mongoCmdOptionsBuilder.storageEngine("ephemeralForTest");
                 }
 
-                IMongodConfig mongodConfig = new MongodConfigBuilder()
+                MongodConfig mongodConfig = MongodConfig.builder()
                         .version(version)
                         .cmdOptions(mongoCmdOptionsBuilder.build())
                         .net(network)
@@ -114,7 +107,7 @@ public class MongoResource {
             }
         }
 
-        private static IDirectory getMongoPath() {
+        private static Directory getMongoPath() {
             String path = System.getProperty("jongo.test.embedmongo.dir");
             if (path == null) {
                 return new UserHome(".embedmongo");
@@ -145,8 +138,10 @@ public class MongoResource {
     }
 
     private static MongoClient createClient(int port) throws UnknownHostException {
-        MongoClient mongo = new MongoClient("127.0.0.1", port);
-        mongo.setWriteConcern(WriteConcern.SAFE);
-        return mongo;
+        return new MongoClient(
+                new ServerAddress("127.0.0.1", port),
+                MongoClientOptions.builder()
+                        .writeConcern(WriteConcern.MAJORITY)
+                        .build());
     }
 }

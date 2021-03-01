@@ -138,7 +138,7 @@ public class FindAndModifyTest extends JongoTestBase {
             collection.findAndModify("{error: 'NotaDate'}").with("{$set: {error: 'StillNotaDate'}}").as(ErrorObject.class);
             fail();
         } catch (MarshallingException e) {
-            assertThat(e.getMessage()).contains(" \"error\" : \"NotaDate\"");
+            assertThat(e.getMessage()).contains("\"error\": \"NotaDate\"");
         }
     }
 

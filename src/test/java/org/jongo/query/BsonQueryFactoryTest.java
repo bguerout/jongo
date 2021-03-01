@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+import org.bson.types.ObjectId;
 import org.jongo.marshall.jackson.JacksonEngine;
 import org.jongo.marshall.jackson.configuration.Mapping;
 import org.jongo.model.Coordinate;
@@ -42,6 +43,14 @@ public class BsonQueryFactoryTest {
     @Before
     public void setUp() throws Exception {
         factory = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()));
+    }
+
+    @Test
+    public void shouldCreateSimpleQuery() throws Exception {
+
+        Query query = factory.createQuery("{id:'\"[12,.:[]{}3]'}");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is("\"[12,.:[]{}3]").get());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -95,11 +104,30 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldBindObjectIdParameter() throws Exception {
+
+        ObjectId objectId = new ObjectId();
+        Query query = factory.createQuery("{_id:{$oid:#}}", objectId.toHexString());
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("_id", objectId));
+    }
+
+    @Test
     public void shouldBindParameterWithCustomToken() throws Exception {
 
         QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "@");
 
         Query query = factoryWithToken.createQuery("{id:@}", 123);
+
+        assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", 123));
+    }
+
+    @Test
+    public void shouldBindParameterWithCustomLongToken() throws Exception {
+
+        QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "#!!");
+
+        Query query = factoryWithToken.createQuery("{id:#!!}", 123);
 
         assertThat(query.toDBObject()).isEqualTo(new BasicDBObject("id", 123));
     }

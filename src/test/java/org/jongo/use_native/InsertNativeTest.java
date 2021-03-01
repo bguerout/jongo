@@ -162,7 +162,7 @@ public class InsertNativeTest extends NativeTestBase {
 
         collection.insertMany(newArrayList(new Friend("John"), new Friend("Robert")));
 
-        assertThat(collection.count()).isEqualTo(2);
+        assertThat(collection.countDocuments()).isEqualTo(2);
         Iterable<Friend> friends = collection.find();
         assertThat(friends).extracting("name").containsExactly("John", "Robert");
     }

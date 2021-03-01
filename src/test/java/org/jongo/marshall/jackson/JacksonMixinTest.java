@@ -44,7 +44,7 @@ public class JacksonMixinTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(external);
 
-        assertThat(document.toString()).isEqualTo("{ \"_id\" : { \"$oid\" : \"" + id + "\"} , \"name\" : \"Robert\"}");
+        assertThat(document.toString()).isEqualTo("{\"_id\": {\"$oid\": \"" + id + "\"}, \"name\": \"Robert\"}");
     }
 
     /**

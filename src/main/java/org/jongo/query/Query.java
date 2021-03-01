@@ -17,11 +17,11 @@
 package org.jongo.query;
 
 import com.mongodb.DBObject;
-import org.bson.conversions.Bson;
+import org.bson.BsonDocument;
 
 public interface Query {
 
     DBObject toDBObject();
 
-    Bson toBson();
+    BsonDocument toBsonDocument();
 }

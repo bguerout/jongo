@@ -60,25 +60,25 @@ public class WriteConcernTest {
     @Test
     public void canInsertWithCustomWriteConcernOnCollection() throws Exception {
 
-        collection.withWriteConcern(WriteConcern.SAFE).insert("{name : 'Abby'}");
+        collection.withWriteConcern(WriteConcern.MAJORITY).insert("{name : 'Abby'}");
 
-        verify(mockedDBCollection).insert(any(DBObject.class), eq(WriteConcern.SAFE));
+        verify(mockedDBCollection).insert(any(DBObject.class), eq(WriteConcern.MAJORITY));
     }
 
     @Test
     public void canUpdateWithCustomWriteConcernOnCollection() throws Exception {
 
-        collection.withWriteConcern(WriteConcern.SAFE).update("{}").upsert().with("{$set:{name:'John'}}");
+        collection.withWriteConcern(WriteConcern.MAJORITY).update("{}").upsert().with("{$set:{name:'John'}}");
 
-        verify(mockedDBCollection).update(any(DBObject.class), any(DBObject.class), eq(true), eq(false), eq(WriteConcern.SAFE));
+        verify(mockedDBCollection).update(any(DBObject.class), any(DBObject.class), eq(true), eq(false), eq(WriteConcern.MAJORITY));
     }
 
     @Test
     public void canRemoveWithCustomWriteConcernOnCollection() throws Exception {
 
-        collection.withWriteConcern(WriteConcern.SAFE).remove();
+        collection.withWriteConcern(WriteConcern.MAJORITY).remove();
 
-        verify(mockedDBCollection).remove(any(DBObject.class), eq(WriteConcern.SAFE));
+        verify(mockedDBCollection).remove(any(DBObject.class), eq(WriteConcern.MAJORITY));
     }
 
 }

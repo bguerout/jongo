@@ -120,7 +120,7 @@ public class FindOneTest extends JongoTestBase {
             collection.findOne().as(ErrorObject.class);
             fail();
         } catch (MarshallingException e) {
-            assertThat(e.getMessage()).contains(" \"error\" : \"NotaDate\"");
+            assertThat(e.getMessage()).contains(" \"error\": \"NotaDate\"");
         }
     }
 

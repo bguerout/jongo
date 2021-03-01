@@ -24,7 +24,6 @@ import org.jongo.util.ErrorObject;
 import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
@@ -161,7 +160,7 @@ public class SaveTest extends JongoTestBase {
     public void canUpdateAPojoWithACustomId() throws Exception {
 
         ExternalFriend externalFriend = new ExternalFriend("122", "John");
-        MongoCollection safeCollection = collection.withWriteConcern(WriteConcern.SAFE);
+        MongoCollection safeCollection = collection.withWriteConcern(WriteConcern.MAJORITY);
 
         safeCollection.save(externalFriend);
         externalFriend.setName("Robert");

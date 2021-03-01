@@ -20,6 +20,7 @@ package org.jongo;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.codecs.BsonValueCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -54,9 +55,9 @@ public class JongoNative {
         return wrapCollection(collection);
     }
 
-    public Bson query(String query, Object... parameters) {
+    public BsonDocument query(String query, Object... parameters) {
         Query q = mapper.getQueryFactory().createQuery(query, parameters);
-        return q.toBson();
+        return q.toBsonDocument();
     }
 
     public Bson id(Object id) {

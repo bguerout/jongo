@@ -49,7 +49,7 @@ public class AnnotationsMisusedTest extends JongoTestBase {
 
         ExternalFriend friend = ExternalFriend.createFriendWithoutId("Robert");
 
-        collection.withWriteConcern(WriteConcern.SAFE).save(friend);
+        collection.withWriteConcern(WriteConcern.MAJORITY).save(friend);
 
         ExternalFriend externalFriend = collection.findOne().as(ExternalFriend.class);
 
@@ -65,7 +65,7 @@ public class AnnotationsMisusedTest extends JongoTestBase {
 
         WithIntegerId custom = new WithIntegerId();
 
-        collection.withWriteConcern(WriteConcern.SAFE).save(custom);
+        collection.withWriteConcern(WriteConcern.MAJORITY).save(custom);
 
         try {
             collection.findOne().as(WithIntegerId.class);

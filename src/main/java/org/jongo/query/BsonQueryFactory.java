@@ -17,12 +17,9 @@
 package org.jongo.query;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.util.JSON;
-import com.mongodb.util.JSONCallback;
-import org.bson.BSON;
-import org.bson.BSONObject;
 import org.bson.BsonDocumentWrapper;
 import org.jongo.bson.Bson;
 import org.jongo.bson.BsonDocument;
@@ -31,15 +28,28 @@ import org.jongo.marshall.MarshallingException;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static org.jongo.query.BsonSpecialChar.itIsABsonSpecialChar;
+import static org.jongo.query.BsonSpecialChar.specialChar;
 
 public class BsonQueryFactory implements QueryFactory {
 
     private static final String DEFAULT_TOKEN = "#";
-    private static final String MARSHALL_OPERATOR = "$marshall";
+
+    /**
+     * The marshall operator will be replacing the token during query parsing as following:
+     * {"firstname":#} -> {"firstname":{MARSHALL_OPERATOR: 0}}
+     * 0 being the index of the parameter to be inserted in place of that placeholder.
+     * Previously $marshall but upgrading to mongo driver 4 the new parser does not allow $ prefixed strings
+     * if they're not mongo operators.
+     * With a UUID prefixed string there should be no risk of collision.
+     */
+    private static final String MARSHALL_OPERATOR = "8a6e4178-8fba-4d22-af43-840512e3a999-marshall";
 
     private final String token;
+    private final boolean singleCharToken;
     private final Marshaller marshaller;
 
     private static class BsonQuery implements Query {
@@ -53,7 +63,7 @@ public class BsonQueryFactory implements QueryFactory {
             return dbo;
         }
 
-        public org.bson.conversions.Bson toBson() {
+        public org.bson.BsonDocument toBsonDocument() {
             return BsonDocumentWrapper.asBsonDocument(dbo, MongoClient.getDefaultCodecRegistry());
         }
     }
@@ -63,6 +73,7 @@ public class BsonQueryFactory implements QueryFactory {
     }
 
     public BsonQueryFactory(Marshaller marshaller, String token) {
+        this.singleCharToken = token.length() == 1;
         this.token = token;
         this.marshaller = marshaller;
     }
@@ -70,105 +81,130 @@ public class BsonQueryFactory implements QueryFactory {
     public Query createQuery(final String query, Object... parameters) {
 
         if (query == null) {
-            return new BsonQuery((DBObject) JSON.parse(query));
+            return new BsonQuery(null);
         }
         if (parameters == null) {
             parameters = new Object[]{null};
         }
 
-        // We have two different cases:
-        //
-        // - tokens as property names "{scores.#: 1}": they must be expanded before going
-        //   through the JSON parser, and their toString() is inserted in the query
-        //
-        // - tokens as property values "{id: #}": they are resolved by the JSON parser and
-        //   therefore marshalled as DBObjects (actually LazyDBObjects).
-
-        StringBuilder sb = new StringBuilder();
-        int paramIncrement = 0; // how many params must be skipped by the next value param
-        int paramPos = 0;       // current position in the parameter list
-        int start = 0;          // start of the current string segment
-        int pos;                // position of the last token found
-        while ((pos = query.indexOf(token, start)) != -1) {
-            if (paramPos >= parameters.length) {
-                throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
-            }
-
-            // Insert chars before the token
-            sb.append(query, start, pos);
-
-            // Check if the character preceding the token is one that separates values.
-            // Otherwise, it's a property name substitution
-            if (isValueToken(query, pos)) {
-                // Will be resolved by the JSON parser below
-                sb.append("{\"").append(MARSHALL_OPERATOR).append("\":").append(paramIncrement).append("}");
-                paramIncrement = 0;
-            } else {
-                // Resolve it now
-                sb.append(parameters[paramPos]);
-                paramIncrement++;
-            }
-
-            paramPos++;
-            start = pos + token.length();
-        }
-
-        // Add remaining chars
-        sb.append(query, start, query.length());
-
-        if (paramPos < parameters.length) {
-            throw new IllegalArgumentException("Too many parameters passed to query: " + query);
-        }
-
+        String quotedQuery = addRequiredQuotesAndParameters(query, parameters);
 
         final Object[] params = parameters;
 
-        // Parse the query with a callback that will weave in marshalled parameters
         DBObject dbo;
         try {
-            dbo = (DBObject) JSON.parse(sb.toString(), new JSONCallback() {
+            if (quotedQuery.charAt(0) == '[') {
+                // little hack to handle first class arrays as BasicDBObject cannot parse them
+                // also we could do this for simple objects but it would not handle properly queries like
+                // "{'a':1}, {'b':1}" as tested in MongoCollectionTest.canCreateGeospacialIndex()
+                dbo = (DBObject) BasicDBObject.parse("{'query':" + quotedQuery + "}").get("query");
+            } else {
+                dbo = BasicDBObject.parse(quotedQuery);
+            }
 
-                int paramPos = 0;
-
-                @Override
-                public Object objectDone() {
-                    String name = curName();
-                    Object o = super.objectDone();
-
-                    if (o instanceof BSONObject && !(o instanceof List<?>)) {
-                        BSONObject dbo = (BSONObject) o;
-                        Object marshallValue = dbo.get(MARSHALL_OPERATOR);
-                        if (marshallValue != null) {
-                            paramPos += ((Number) marshallValue).intValue();
-                            if (paramPos >= params.length) {
-                                throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
-                            }
-
-                            o = marshallParameter(params[paramPos++]);
-
-                            // Replace value set by super.objectDone()
-                            if (!isStackEmpty()) {
-                                _put(name, o);
-                            } else {
-                                o = !BSON.hasDecodeHooks() ? o : BSON.applyDecodingHooks(o);
-                                setRoot(o);
-                            }
-                        }
-                    }
-
-                    if (isStackEmpty()) {
-                        // End of object
-                    }
-
-                    return o;
-                }
-            });
-
+            if (params.length != 0) {
+                dbo = (DBObject) replaceParams(dbo, params);
+            }
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot parse query: " + query, e);
         }
 
         return new BsonQuery(dbo);
+    }
+
+    private String addRequiredQuotesAndParameters(String query, Object[] parameters) {
+        StringBuilder result = new StringBuilder(query.length());
+
+        int position = 0;
+        int paramIndex = 0;
+        Stack<Context> ctxStack = new Stack<>(Context.NONE);
+        StringBuilder currentToken = new StringBuilder();
+        String previousToken = "";
+        char currentStringStartingQuote = ' ';
+
+        for (char nextChar : query.toCharArray()) {
+            if (ctxStack.peek() == Context.STRING) {
+                currentToken.append(nextChar);
+                if (nextChar == currentStringStartingQuote) {
+                    ctxStack.pop();
+                }
+            } else if (isAQuote(nextChar)) {
+                ctxStack.push(Context.STRING);
+                currentStringStartingQuote = nextChar;
+                currentToken.append(nextChar);
+            } else if (currentTokenWithNextCharIsToken(currentToken, nextChar)) {
+                if (paramIndex >= parameters.length) {
+                    throw new IllegalArgumentException("Not enough parameters passed to query: " + query);
+                }
+                if ("$oid".equals(previousToken) ||
+                        !isValueToken(query, position)) {
+                    currentToken = trimAppendParamAndQuote(currentToken, parameters[paramIndex]);
+                } else {
+                    appendParamPlaceholder(result, paramIndex);
+                    currentToken.setLength(0);
+                }
+                paramIndex++;
+            } else if (itIsABsonSpecialChar(nextChar)) {
+                previousToken = specialChar(nextChar).applySpecificBehaviour(result, currentToken, ctxStack, position);
+            } else {
+                currentToken.append(nextChar);
+            }
+
+            position++;
+        }
+
+        if (paramIndex < parameters.length) {
+            throw new IllegalArgumentException("Too many parameters passed to query: " + query);
+        }
+
+        return result.toString().trim();
+    }
+
+    private boolean currentTokenWithNextCharIsToken(StringBuilder currentToken, char nextChar) {
+        if (this.singleCharToken) {
+            return this.token.charAt(0) == nextChar;
+        }
+        return (currentToken.toString().trim() + nextChar).lastIndexOf(this.token) >= 0;
+    }
+
+    private void appendParamPlaceholder(StringBuilder result, int paramIndex) {
+        result.append('{')
+                .append('"')
+                .append(MARSHALL_OPERATOR)
+                .append('"')
+                .append(':')
+                .append(paramIndex)
+                .append('}');
+    }
+
+    private StringBuilder trimAppendParamAndQuote(StringBuilder currentToken, Object parameter) {
+        return new StringBuilder().append('"')
+                .append(currentToken.toString().trim())
+                .append(parameter)
+                .append('"');
+    }
+
+    private boolean isAQuote(char c) {
+        return c == '\'' || c == '"';
+    }
+
+    private Object replaceParams(DBObject dbo, Object[] params) {
+        Set<String> keySet = dbo.keySet();
+        if (keySet.size() == 1 && keySet.contains(MARSHALL_OPERATOR)) {
+            return marshallParameter(params[(int) dbo.get(MARSHALL_OPERATOR)]);
+        }
+
+        keySet.forEach(key -> {
+            Object value = dbo.get(key);
+            if (value instanceof DBObject) {
+                Object newValue = replaceParams((DBObject) value, params);
+                if (newValue != value) {
+                    dbo.put(key, newValue);
+                }
+            }
+        });
+
+        return dbo;
 
     }
 

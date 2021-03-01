@@ -36,7 +36,7 @@ public class SaveBench extends SimpleBenchmark {
 
     protected void setUp() throws Exception {
 
-        bsonCollection = getCollectionFromJongo(jacksonMapper().build()).withWriteConcern(WriteConcern.SAFE);
+        bsonCollection = getCollectionFromJongo(jacksonMapper().build()).withWriteConcern(WriteConcern.MAJORITY);
         dbCollection = getCollectionFromDriver();
 
         bsonCollection.drop();

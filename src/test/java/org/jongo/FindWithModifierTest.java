@@ -69,7 +69,7 @@ public class FindWithModifierTest extends JongoTestBase {
         Iterator<Friend> friends = collection.find()
                 .with(new QueryModifier() {
                     public void modify(DBCursor cursor) {
-                        cursor.addSpecial("$maxScan", 1);
+                        cursor.limit(1);
                     }
                 })
                 .as(Friend.class);

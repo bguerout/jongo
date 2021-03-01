@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
@@ -66,7 +67,7 @@ public class JacksonMapperTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(robert);
 
-        assertThat(document.toString()).contains("{ \"name\" : \"Doe\"}");
+        assertThat(document.toString()).contains("{\"name\": \"Doe\"}");
     }
 
     @Test
@@ -80,7 +81,7 @@ public class JacksonMapperTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(robert);
 
-        assertThat(document.toString()).isEqualTo("{ \"firstName\" : \"Robert\"}");
+        assertThat(document.toString()).isEqualTo("{\"firstName\": \"Robert\"}");
     }
 
     @SuppressWarnings("serial")
@@ -93,7 +94,7 @@ public class JacksonMapperTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(external);
 
-        assertThat(document.toString()).isEqualTo("{ \"name\" : \"Robert\" , \"_id\" : { \"$oid\" : \"" + id + "\"}}");
+        assertThat(document.toString()).isEqualTo("{\"_id\": {\"$oid\": \"563667f82249254c42530fe3\"}, \"name\": \"Robert\"}");
     }
 
     @Test
@@ -124,7 +125,7 @@ public class JacksonMapperTest {
 
         BsonDocument document = mapper.getMarshaller().marshall(friend);
 
-        assertThat(document.toString()).contains("\"_id\" : { \"$oid\" : \"504482e5e4b0d1b2c47fff66\"}");
+        assertThat(document.toString()).contains("\"_id\": {\"$oid\": \"504482e5e4b0d1b2c47fff66\"}");
     }
 
     @Test
