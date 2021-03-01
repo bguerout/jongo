@@ -68,12 +68,4 @@ public class Jongo {
     public Command runCommand(String query, Object... parameters) {
         return new Command(database, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
-
-    public static JongoNative useNative(MongoDatabase database) {
-        return new JongoNative(database);
-    }
-
-    public static JongoNative useNative(MongoDatabase database, Mapper mapper) {
-        return new JongoNative(database, mapper);
-    }
 }
