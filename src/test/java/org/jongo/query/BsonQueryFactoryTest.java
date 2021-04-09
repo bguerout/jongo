@@ -275,6 +275,14 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldBindKeyParameterInValueStringAndEscapeIt() throws Exception {
+
+        Query query = factory.createQuery("{id: '#, 123'}", "123\', \'toto\':\'");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is("123', 'toto':', 123").get());
+    }
+
+    @Test
     public void shouldBindKeyParameterAndIgnoreSpace() throws Exception {
 
         Query query = factory.createQuery("{ #: 123}", "id");
@@ -345,6 +353,34 @@ public class BsonQueryFactoryTest {
         Query query = factory.createQuery("#", new Friend("John"));
 
         assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("name").is("John").get());
+    }
+
+    @Test
+    public void shouldEscapeParametersInStringsWithSingleQuotes() throws Exception {
+        Query query = factory.createQuery("{'#':123}", "_id':true, 'name");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("_id':true, 'name").is(123).get());
+    }
+
+    @Test
+    public void shouldEscapeParametersInStringsWithDoubleQuote() throws Exception {
+        Query query = factory.createQuery("{\"#\":123}", "_id\":true, \"name");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("_id\":true, \"name").is(123).get());
+    }
+
+    @Test
+    public void shouldEscapeParametersInKeys() throws Exception {
+        Query query = factory.createQuery("{#:123}", "_id\":true, \"name");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("_id\":true, \"name").is(123).get());
+    }
+
+    @Test
+    public void shouldEscapeParametersInValues() throws Exception {
+        Query query = factory.createQuery("{_id:#}", "123\",\"name\": \"toto");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("_id").is("123\",\"name\": \"toto").get());
     }
 
     private String sanitize(String value) {
