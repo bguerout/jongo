@@ -267,11 +267,42 @@ public class BsonQueryFactoryTest {
     }
 
     @Test
+    public void shouldBindKeyParameterInValueString() throws Exception {
+
+        Query query = factory.createQuery("{id: '#, 123'}", "123");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is("123, 123").get());
+    }
+
+    @Test
     public void shouldBindKeyParameterAndIgnoreSpace() throws Exception {
 
         Query query = factory.createQuery("{ #: 123}", "id");
 
         assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).get());
+    }
+
+    @Test
+    public void shouldBindKeyParameterEvenIfQuoted() throws Exception {
+        Query query = factory.createQuery("{'#': 123}", "id");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).get());
+    }
+
+    @Test
+    public void shouldBindKeyParameterEvenIfQuotedAndTokenIsNotSingleChar() throws Exception {
+        QueryFactory factoryWithToken = new BsonQueryFactory(new JacksonEngine(Mapping.defaultMapping()), "#123");
+
+        Query query = factoryWithToken.createQuery("{'#123': 123}", "id");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("id").is(123).get());
+    }
+
+    @Test
+    public void shouldBindKeyParameterEvenIfQuotedAndCompound() throws Exception {
+        Query query = factory.createQuery("{'#.#': 123}", "user", "id");
+
+        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("user.id").is(123).get());
     }
 
     @Test

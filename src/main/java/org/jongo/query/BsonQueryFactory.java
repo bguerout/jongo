@@ -124,9 +124,15 @@ public class BsonQueryFactory implements QueryFactory {
 
         for (char nextChar : query.toCharArray()) {
             if (ctxStack.peek() == Context.STRING) {
-                currentToken.append(nextChar);
-                if (nextChar == currentStringStartingQuote) {
-                    ctxStack.pop();
+                if (currentTokenWithNextCharIsToken(currentToken, nextChar)) {
+                    currentToken.delete(currentToken.length() - token.length() + 1, currentToken.length());
+                    currentToken.append(parameters[paramIndex]);
+                    paramIndex++;
+                } else {
+                    currentToken.append(nextChar);
+                    if (nextChar == currentStringStartingQuote) {
+                        ctxStack.pop();
+                    }
                 }
             } else if (isAQuote(nextChar)) {
                 ctxStack.push(Context.STRING);
