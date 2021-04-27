@@ -26,10 +26,7 @@ import org.jongo.bson.BsonDocument;
 import org.jongo.marshall.Marshaller;
 import org.jongo.marshall.MarshallingException;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.jongo.query.BsonSpecialChar.itIsABsonSpecialChar;
 import static org.jongo.query.BsonSpecialChar.specialChar;
@@ -124,9 +121,15 @@ public class BsonQueryFactory implements QueryFactory {
 
         for (char nextChar : query.toCharArray()) {
             if (ctxStack.peek() == Context.STRING) {
-                currentToken.append(nextChar);
-                if (nextChar == currentStringStartingQuote) {
-                    ctxStack.pop();
+                if (currentTokenWithNextCharIsToken(currentToken, nextChar)) {
+                    currentToken.delete(currentToken.length() - token.length() + 1, currentToken.length());
+                    currentToken.append(sanitize(parameters[paramIndex], currentStringStartingQuote));
+                    paramIndex++;
+                } else {
+                    currentToken.append(nextChar);
+                    if (nextChar == currentStringStartingQuote) {
+                        ctxStack.pop();
+                    }
                 }
             } else if (isAQuote(nextChar)) {
                 ctxStack.push(Context.STRING);
@@ -160,6 +163,10 @@ public class BsonQueryFactory implements QueryFactory {
         return result.toString().trim();
     }
 
+    private String sanitize(Object parameter1, char currentStringStartingQuote) {
+        return Objects.toString(parameter1).replaceAll(String.valueOf(currentStringStartingQuote), "\\\\" + currentStringStartingQuote);
+    }
+
     private boolean currentTokenWithNextCharIsToken(StringBuilder currentToken, char nextChar) {
         if (this.singleCharToken) {
             return this.token.charAt(0) == nextChar;
@@ -180,7 +187,7 @@ public class BsonQueryFactory implements QueryFactory {
     private StringBuilder trimAppendParamAndQuote(StringBuilder currentToken, Object parameter) {
         return new StringBuilder().append('"')
                 .append(currentToken.toString().trim())
-                .append(parameter)
+                .append(sanitize(parameter, '"'))
                 .append('"');
     }
 
