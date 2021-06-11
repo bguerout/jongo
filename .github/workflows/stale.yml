@@ -11,6 +11,7 @@ jobs:
           stale-issue-label: 'stale'
           days-before-issue-stale: 60
           days-before-issue-close: 30
+          exempt-pr-labels: 'work-in-progress'
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
             recent activity. It will be closed if no further activity occurs. Thank you
