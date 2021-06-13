@@ -24,8 +24,8 @@ import org.jongo.marshall.jackson.oid.ObjectId;
 
 public class ExposableFriend {
 
-    @Id //see NewAnnotationsCompatibilitySuiteTest for more informations
-    @ObjectId //see NewAnnotationsCompatibilitySuiteTest for more informations
+    @Id //see DeprecatedAnnotationsCompatibilitySuiteTest for more informations
+    @ObjectId //see DeprecatedAnnotationsCompatibilitySuiteTest for more informations
     @MongoId
     @MongoObjectId
     private String id;

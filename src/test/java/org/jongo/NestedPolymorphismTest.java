@@ -75,7 +75,7 @@ public class NestedPolymorphismTest extends JongoTestBase {
     }
 
     public static class Owner {
-        @Id //see NewAnnotationsCompatibilitySuiteTest for more informations
+        @Id //see DeprecatedAnnotationsCompatibilitySuiteTest for more informations
         @MongoId
         private ObjectId id;
 

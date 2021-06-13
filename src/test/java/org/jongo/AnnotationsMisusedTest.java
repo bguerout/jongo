@@ -75,7 +75,7 @@ public class AnnotationsMisusedTest extends JongoTestBase {
     }
 
     private static class WithIntegerId {
-        @Id//see NewAnnotationsCompatibilitySuiteTest for more informations
+        @Id//see DeprecatedAnnotationsCompatibilitySuiteTest for more informations
         @MongoId
         private Integer id;
     }

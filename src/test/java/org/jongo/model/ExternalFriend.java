@@ -21,7 +21,7 @@ import org.jongo.marshall.jackson.oid.MongoId;
 
 public class ExternalFriend {
 
-    @Id //see NewAnnotationsCompatibilitySuiteTest for more informations
+    @Id //see DeprecatedAnnotationsCompatibilitySuiteTest for more informations
     @MongoId
     private String id;
     private String name;
