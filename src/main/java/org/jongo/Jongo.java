@@ -30,12 +30,10 @@ public class Jongo {
     private final DB database;
     private final Mapper mapper;
 
-    @Deprecated
     public Jongo(DB database) {
         this(database, jacksonMapper().build());
     }
 
-    @Deprecated
     public Jongo(DB database, Mapper mapper) {
         this.database = database;
         this.mapper = mapper;
