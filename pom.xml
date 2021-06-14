@@ -385,7 +385,7 @@
                     <plugin>
                         <groupId>com.deciphernow</groupId>
                         <artifactId>bouncycastle-maven-plugin</artifactId>
-                        <version>1.0.1-SNAPSHOT</version>
+                        <version>1.1.1</version>
                         <configuration>
                             <passphrase>${gpg.passphrase}</passphrase>
                             <passphraseServerId>${gpg.passphraseServerId}</passphraseServerId>
