@@ -66,4 +66,12 @@ public class Jongo {
     public Command runCommand(String query, Object... parameters) {
         return new Command(database, mapper.getUnmarshaller(), mapper.getQueryFactory(), query, parameters);
     }
+
+    public static JongoSync useSync(MongoDatabase database) {
+        return new JongoSync(database);
+    }
+
+    public static JongoSync useSync(MongoDatabase database, Mapper mapper) {
+        return new JongoSync(database, mapper);
+    }
 }

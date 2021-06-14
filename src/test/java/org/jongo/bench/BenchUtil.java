@@ -48,20 +48,20 @@ class BenchUtil {
         return dbo;
     }
 
-    public static DBCollection getCollectionFromDriver() throws UnknownHostException {
-        MongoClient nativeMongo = new MongoClient();
-        return nativeMongo.getDB("jongo").getCollection("benchmark");
+    public static DBCollection getDBCollection() throws UnknownHostException {
+        MongoClient client = new MongoClient();
+        return client.getDB("jongo").getCollection("benchmark");
     }
 
-    public static MongoCollection getCollectionFromJongo(Mapper mapper) throws UnknownHostException {
-        MongoClient mongo = new MongoClient();
-        DB db = mongo.getDB("jongo");
+    public static MongoCollection getMongoCollection(Mapper mapper) throws UnknownHostException {
+        MongoClient client = new MongoClient();
+        DB db = client.getDB("jongo");
         Jongo jongo = new Jongo(db, mapper);
         return jongo.getCollection("benchmark");
     }
 
     public static void injectFriendsIntoDB(int nbDocuments) throws UnknownHostException {
-        MongoCollection collection = getCollectionFromJongo(jacksonMapper().build());
+        MongoCollection collection = getMongoCollection(jacksonMapper().build());
         collection.drop();
         for (int i = 0; i < nbDocuments; i++) {
             collection.withWriteConcern(WriteConcern.MAJORITY).save(createFriend(i));
