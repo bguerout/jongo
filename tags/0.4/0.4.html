@@ -159,7 +159,7 @@ friends</span><span class="pun">.</span><span class="pln">remove</span><span cla
                       <div class="span9 header"><h1>Object Mapping</h1></div>
                       <div class="span9">
                         <p>
-                          Query results are automatically mapped to objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg constructor, even private</strong>. If the object has to be immutable, <code>@JsonCreator</code> annotation can be use instead.
+                          Query results are automatically mapped to objects. By default, this relies on Jackson; it respects document structure, handles lists and ignores missing attributes. It just needs <strong>a no-arg constructor, even private</strong>. If the object has to be immutable, <code>@JsonCreator</code> annotation can be used instead.
                         </p>
                         <p>
                           <code>_id</code> is a unique identifier available on every Mongo document. <strong>If it isn't setted, it is generated</strong>. To handle it with Jongo, one attribute has to be named <code>_id</code> or annotated with <code>@Id</code> (<i>alias for <code>@JsonProperty("_id")</code></i>). It can be handled with the dedicated <code>ObjectId</code> class or with a simple <code>String</code> — annotated <code>@ObjectId</code>.

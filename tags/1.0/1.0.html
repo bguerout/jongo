@@ -182,9 +182,9 @@ friends.remove(new ObjectId("4c...e"));</pre>
             <div class="span9">
                 <p>
                     Query results are automatically mapped to objects. By default, this relies on Jackson; it respects
-                    document structure, handles lists and ignores missing attributes. It just need <strong>a no-arg
+                    document structure, handles lists and ignores missing attributes. It just needs <strong>a no-arg
                     constructor, even private</strong> (<i>if the object has to be immutable, <code>@JsonCreator</code>
-                    annotation can be use instead</i>).
+                    annotation can be used instead</i>).
                 </p>
                 <p>
                     <code>_id</code> is a unique identifier available on every Mongo document. <strong>If it isn't
@@ -771,4 +771,3 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
 </footer>
 
 </body>
-                          
