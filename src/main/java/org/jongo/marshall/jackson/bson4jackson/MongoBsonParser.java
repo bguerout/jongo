@@ -16,7 +16,6 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.io.IOContext;
 import de.undercouch.bson4jackson.BsonParser;
 import de.undercouch.bson4jackson.types.Decimal128;
@@ -24,7 +23,6 @@ import de.undercouch.bson4jackson.types.ObjectId;
 import de.undercouch.bson4jackson.types.Timestamp;
 import org.bson.types.BSONTimestamp;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
@@ -37,7 +35,7 @@ class MongoBsonParser extends BsonParser {
     }
 
     @Override
-    public Object getEmbeddedObject() throws IOException, JsonParseException {
+    public Object getEmbeddedObject() {
         Object object = super.getEmbeddedObject();
         if (object instanceof ObjectId) {
             return convertToNativeObjectId((ObjectId) object);

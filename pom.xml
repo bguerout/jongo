@@ -72,9 +72,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mongo-driver-legacy.version>[4.0.0,4.2.1]</mongo-driver-legacy.version>
-        <jackson.version>[2.7.0,2.12.3]</jackson.version>
-        <bson4jackson.version>2.12.0</bson4jackson.version>
+        <mongo-driver-legacy.version>[4.0.0,4.8.0]</mongo-driver-legacy.version>
+        <jackson.version>[2.7.0,2.14.1]</jackson.version>
+        <bson4jackson.version>2.13.1</bson4jackson.version>
     </properties>
 
     <dependencies>
@@ -134,8 +134,8 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
+            <artifactId>mockito-core</artifactId>
+            <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -147,7 +147,7 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>3.0.0</version>
+            <version>3.5.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -379,7 +379,7 @@
                     <plugin>
                         <groupId>com.deciphernow</groupId>
                         <artifactId>bouncycastle-maven-plugin</artifactId>
-                        <version>1.0.1-SNAPSHOT</version>
+                        <version>1.1.1</version>
                         <configuration>
                             <passphrase>${gpg.passphrase}</passphrase>
                             <passphraseServerId>${gpg.passphraseServerId}</passphraseServerId>
