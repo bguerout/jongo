@@ -16,7 +16,6 @@
 
 package org.jongo.marshall.jackson.bson4jackson;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.io.IOContext;
 import de.undercouch.bson4jackson.BsonParser;
 import de.undercouch.bson4jackson.types.Decimal128;
@@ -24,7 +23,6 @@ import de.undercouch.bson4jackson.types.ObjectId;
 import de.undercouch.bson4jackson.types.Timestamp;
 import org.bson.types.BSONTimestamp;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
@@ -37,7 +35,7 @@ class MongoBsonParser extends BsonParser {
     }
 
     @Override
-    public Object getEmbeddedObject() throws IOException, JsonParseException {
+    public Object getEmbeddedObject() {
         Object object = super.getEmbeddedObject();
         if (object instanceof ObjectId) {
             return convertToNativeObjectId((ObjectId) object);
@@ -56,26 +54,29 @@ class MongoBsonParser extends BsonParser {
     }
 
     private org.bson.types.ObjectId convertToNativeObjectId(ObjectId id) {
-        return new org.bson.types.ObjectId(createFromLegacyFormat(id.getTime(), id.getMachine(), id.getInc()));
+        return new org.bson.types.ObjectId(convertToBytes(id));
     }
 
-    private byte[] createFromLegacyFormat(int time, int machine, int inc) {
-        // Reimplementing createFromLegacyFormat because bson4jackson library is not compatible with the new ObjectId spec
-        // see issue https://github.com/michel-kraemer/bson4jackson/issues/94
-        // Former implementation https://github.com/mongodb/mongo-java-driver/blob/3.12.x/bson/src/main/org/bson/types/ObjectId.java#L248
-        ByteBuffer buffer = ByteBuffer.allocate(OBJECT_ID_LENGTH);
-        buffer.put(int3(time));
-        buffer.put(int2(time));
-        buffer.put(int1(time));
-        buffer.put(int0(time));
-        buffer.put(int3(machine));
-        buffer.put(int2(machine));
-        buffer.put(int1(machine));
-        buffer.put(int0(machine));
-        buffer.put(int3(inc));
-        buffer.put(int2(inc));
-        buffer.put(int1(inc));
-        buffer.put(int0(inc));
+
+    private byte[] convertToBytes(ObjectId id) {
+        // We have to convert this ourselves because
+        // - bson4jackson only exposes timestamp r1 r2 and counter
+        // - bson4jackson does not expose hexString or byte array from which we could construct a mongo ObjectId
+        // - the only constructor exposed by mongo allowing to specify random1 and random2 number require a hexString or a byte array
+        // This logic has been copy/pasted from https://github.com/mongodb/mongo-java-driver/blob/4.6.x/bson/src/main/org/bson/types/ObjectId.java#L256
+        ByteBuffer buffer = ByteBuffer.allocate(12);
+        buffer.put(int3(id.getTimestamp()));
+        buffer.put(int2(id.getTimestamp()));
+        buffer.put(int1(id.getTimestamp()));
+        buffer.put(int0(id.getTimestamp()));
+        buffer.put(int2(id.getRandomValue1()));
+        buffer.put(int1(id.getRandomValue1()));
+        buffer.put(int0(id.getRandomValue1()));
+        buffer.put(short1(id.getRandomValue2()));
+        buffer.put(short0(id.getRandomValue2()));
+        buffer.put(int2(id.getCounter()));
+        buffer.put(int1(id.getCounter()));
+        buffer.put(int0(id.getCounter()));
         return buffer.array();
     }
 
@@ -96,6 +97,14 @@ class MongoBsonParser extends BsonParser {
     }
 
     private static byte int0(int x) {
+        return (byte) x;
+    }
+
+    private static byte short1(short x) {
+        return (byte) (x >> 8);
+    }
+
+    private static byte short0(short x) {
         return (byte) x;
     }
 }
