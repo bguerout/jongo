@@ -26,6 +26,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoCollectionTest extends JongoTestBase {
@@ -50,14 +53,14 @@ public class MongoCollectionTest extends JongoTestBase {
         collection.save(new Coordinate(3, 1));
 
         /* then */
-        assertThat(collection.find("{lat: {$gt: 2}}").as(Coordinate.class).iterator()).hasSize(1);
-        assertThat(collection.find("{lat: {$lt: 2}}").as(Coordinate.class).iterator()).hasSize(1);
-        assertThat(collection.find("{lat: {$gte: 2}}").as(Coordinate.class).iterator()).hasSize(2);
-        assertThat(collection.find("{lat: {$lte: 2}}").as(Coordinate.class).iterator()).hasSize(2);
-        assertThat(collection.find("{lat: {$gt: 1, $lt: 3}}").as(Coordinate.class).iterator()).hasSize(1);
+        assertThat(mongoCursorToList(collection.find("{lat: {$gt: 2}}").as(Coordinate.class))).hasSize(1);
+        assertThat(mongoCursorToList(collection.find("{lat: {$lt: 2}}").as(Coordinate.class))).hasSize(1);
+        assertThat(mongoCursorToList(collection.find("{lat: {$gte: 2}}").as(Coordinate.class))).hasSize(2);
+        assertThat(mongoCursorToList(collection.find("{lat: {$lte: 2}}").as(Coordinate.class))).hasSize(2);
+        assertThat(mongoCursorToList(collection.find("{lat: {$gt: 1, $lt: 3}}").as(Coordinate.class))).hasSize(1);
 
-        assertThat(collection.find("{lat: {$ne: 2}}").as(Coordinate.class).iterator()).hasSize(2);
-        assertThat(collection.find("{lat: {$in: [1,2,3]}}").as(Coordinate.class).iterator()).hasSize(3);
+        assertThat(mongoCursorToList(collection.find("{lat: {$ne: 2}}").as(Coordinate.class))).hasSize(2);
+        assertThat(mongoCursorToList(collection.find("{lat: {$in: [1,2,3]}}").as(Coordinate.class))).hasSize(3);
     }
 
     @Test
@@ -81,10 +84,10 @@ public class MongoCollectionTest extends JongoTestBase {
         collection.ensureIndex("{ 'coordinate' : '2d'},{ 'coordinate' : '2d'}");
 
         /* then */
-        assertThat(collection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class).iterator()).hasSize(1);
-        assertThat(collection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Friend.class).iterator()).hasSize(2);
-        assertThat(collection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Friend.class).iterator()).hasSize(1);
-        assertThat(collection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Friend.class).iterator()).hasSize(1);
+        assertThat(mongoCursorToList(collection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class))).hasSize(1);
+        assertThat(mongoCursorToList(collection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Friend.class))).hasSize(2);
+        assertThat(mongoCursorToList(collection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Friend.class))).hasSize(1);
+        assertThat(mongoCursorToList(collection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Friend.class))).hasSize(1);
     }
 
     @Test
@@ -119,5 +122,11 @@ public class MongoCollectionTest extends JongoTestBase {
     @Test
     public void canGetCollectionName() throws Exception {
         assertThat(collection.getName()).isEqualTo("friends");
+    }
+
+    private <T> List<T> mongoCursorToList(MongoCursor<T> cursor) {
+        LinkedList<T> result = new LinkedList<>();
+        cursor.iterator().forEachRemaining(result::add);
+        return result;
     }
 }
