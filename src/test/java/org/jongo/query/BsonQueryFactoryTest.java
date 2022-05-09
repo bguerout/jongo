@@ -352,7 +352,8 @@ public class BsonQueryFactoryTest {
 
         Query query = factory.createQuery("#", new Friend("John"));
 
-        assertThat(query.toDBObject()).isEqualTo(QueryBuilder.start("name").is("John").get());
+        assertThat(query.toDBObject().toString())
+                .isEqualTo(QueryBuilder.start("name").is("John").get().toString());
     }
 
     @Test
