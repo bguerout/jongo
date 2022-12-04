@@ -148,6 +148,43 @@
     </div>
 
     <div class="container">
+
+        <section id="maven" class="offset1">
+            <div class="row">
+                <div class="span9 header"><h1>Download</h1></div>
+                <div class="span9">
+                    <p>
+                        Jongo relies upon
+                        <a href="https://github.com/FasterXML/jackson-databind" target="_blank">Jackson</a>,
+                        <a href="https://github.com/michel-kraemer/bson4jackson" target="_blank">Bson4Jackson</a> and
+                        <a href="https://github.com/mongodb/mongo-java-driver" target="_blank">Mongo Java Driver</a>.
+                        Its Maven dependency, an OSGI compliant jar, comes with the first two, you have to <a
+                            href="http://mvnrepository.com/artifact/org.mongodb/mongo-java-driver" target="_blank">provide
+                        a
+                        dependency</a> to the driver.
+                    </p>
+
+                    <p>
+                        Jongo is deployed into OSS Sonatype (<i>Maven repository hosting service for open source
+                        projects</i>).<br/>Add the following dependency to your pom.xml
+                    </p>
+
+                    <pre class="prettyprint">
+&lt;dependency&gt;
+    &lt;groupId&gt;org.jongo&lt;/groupId&gt;
+    &lt;artifactId&gt;jongo&lt;/artifactId&gt;
+    &lt;version&gt;[1.5.0,)&lt;/version&gt;
+&lt;/dependency&gt;
+                    </pre>
+
+                    <p>You can find the available versions at
+                        <a target="_blank" href="https://mvnrepository.com/artifact/org.jongo/jongo">
+                            mvnrepository</a></p>
+
+                </div>
+            </div>
+        </section>
+
         <section id="usage" class="offset1">
             <div class="row">
                 <div class="span9 header"><h1>Set up</h1></div>
@@ -748,42 +785,6 @@ MongoCursor&lt;Integer&gt; ages = friends.find("{name: 'Joe'}").map(
                         your pojos can be exposed through Jersey (<i>or Spring or any web services library</i>) without any
                         conflicts.
                     </p>
-                </div>
-            </div>
-        </section>
-
-        <section id="maven" class="offset1">
-            <div class="row">
-                <div class="span9 header"><h1>Download</h1></div>
-                <div class="span9">
-                    <p>
-                        Jongo relies upon
-                        <a href="https://github.com/FasterXML/jackson-databind" target="_blank">Jackson</a>,
-                        <a href="https://github.com/michel-kraemer/bson4jackson" target="_blank">Bson4Jackson</a> and
-                        <a href="https://github.com/mongodb/mongo-java-driver" target="_blank">Mongo Java Driver</a>.
-                        Its Maven dependency, an OSGI compliant jar, comes with the first two, you have to <a
-                            href="http://mvnrepository.com/artifact/org.mongodb/mongo-java-driver" target="_blank">provide
-                        a
-                        dependency</a> to the driver.
-                    </p>
-
-                    <p>
-                        Jongo is deployed into OSS Sonatype (<i>Maven repository hosting service for open source
-                        projects</i>).<br/>Add the following dependency to your pom.xml
-                    </p>
-
-                    <pre class="linenums">
-&lt;dependency&gt;
-    &lt;groupId&gt;org.jongo&lt;/groupId&gt;
-    &lt;artifactId&gt;jongo&lt;/artifactId&gt;
-    &lt;version&gt;[1.5.0,)&lt;/version&gt;
-&lt;/dependency&gt;
-                    </pre>
-
-                    <p>You can find the available versions at
-                        <a target="_blank" href="https://mvnrepository.com/artifact/org.jongo/jongo">
-                        mvnrepository</a></p>
-
                 </div>
             </div>
         </section>
