@@ -16,7 +16,7 @@
 <dependency>
     <groupId>org.jongo</groupId>
     <artifactId>jongo</artifactId>
-    <version>1.5.1</version>
+    <version>[1.5.0,)</version>
 </dependency>
 ```
 
