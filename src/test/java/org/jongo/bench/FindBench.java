@@ -26,8 +26,8 @@ import org.jongo.MongoCollection;
 import org.jongo.model.Coordinate;
 import org.jongo.model.Friend;
 
-import static org.jongo.bench.BenchUtil.getCollectionFromDriver;
-import static org.jongo.bench.BenchUtil.getCollectionFromJongo;
+import static org.jongo.bench.BenchUtil.getDBCollection;
+import static org.jongo.bench.BenchUtil.getMongoCollection;
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 
 public class FindBench extends SimpleBenchmark {
@@ -39,8 +39,8 @@ public class FindBench extends SimpleBenchmark {
     private DBCollection dbCollection;
 
     protected void setUp() throws Exception {
-        bsonCollection = getCollectionFromJongo(jacksonMapper().build());
-        dbCollection = getCollectionFromDriver();
+        bsonCollection = getMongoCollection(jacksonMapper().build());
+        dbCollection = getDBCollection();
 
         if (dbCollection.count() < NB_DOCUMENTS) {
             BenchUtil.injectFriendsIntoDB(NB_DOCUMENTS);
