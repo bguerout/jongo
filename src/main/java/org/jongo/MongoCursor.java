@@ -59,6 +59,20 @@ public class MongoCursor<E> implements Iterator<E>, Iterable<E>, Closeable {
     }
 
     public int count() {
+        return count(false);
+    }
+
+    /**
+     * @param applySkipLimit if true the count will depend on the "skip" and "limit" parameters of the cursor according
+     *                       to <a href="https://www.mongodb.com/docs/v4.2/reference/method/cursor.count/index.html">
+     *                       the cursor.count() MongoDB documentation</a>
+     * @return the number of documents referenced by the cursor
+     */
+    public int count(boolean applySkipLimit) {
+        if (applySkipLimit) {
+            return cursor.size();
+        }
+
         return cursor.count();
     }
 }
