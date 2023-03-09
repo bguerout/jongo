@@ -76,6 +76,40 @@ public class FindTest extends JongoTestBase {
     }
 
     @Test
+    public void canFindAndCountRespectingTheLimitParameters() throws Exception {
+
+        Friend friend1 = new Friend(new ObjectId(), "John");
+        Friend friend2 = new Friend(new ObjectId(), "John");
+        Friend friend3 = new Friend(new ObjectId(), "John");
+        collection.insert(friend1, friend2, friend3);
+        MongoCursor<Friend> friends = collection
+                .find("{name:'John'}")
+                .limit(2)
+                .as(Friend.class);
+
+        int nbResults = friends.count(true);
+
+        assertThat(nbResults).isEqualTo(2);
+    }
+
+    @Test
+    public void canFindAndCountRespectingTheSkipParameters() throws Exception {
+
+        Friend friend1 = new Friend(new ObjectId(), "John");
+        Friend friend2 = new Friend(new ObjectId(), "John");
+        Friend friend3 = new Friend(new ObjectId(), "John");
+        collection.insert(friend1, friend2, friend3);
+        MongoCursor<Friend> friends = collection
+                .find("{name:'John'}")
+                .skip(2)
+                .as(Friend.class);
+
+        int nbResults = friends.count(true);
+
+        assertThat(nbResults).isEqualTo(1);
+    }
+
+    @Test
     public void shouldFailWhenUnableToUnmarshallResult() throws Exception {
         /* given */
         collection.insert("{error: 'NotaDate'}");
