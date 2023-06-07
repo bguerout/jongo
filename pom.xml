@@ -73,7 +73,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mongo-driver-legacy.version>[4.0.0,4.8.0]</mongo-driver-legacy.version>
-        <jackson.version>[2.7.0,2.14.1]</jackson.version>
+        <jackson.version>2.15.1</jackson.version>
         <bson4jackson.version>2.13.1</bson4jackson.version>
     </properties>
 
