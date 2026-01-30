@@ -50,14 +50,14 @@ public class MongoCollectionTest extends JongoTestBase {
         collection.save(new Coordinate(3, 1));
 
         /* then */
-        assertThat(collection.find("{lat: {$gt: 2}}").as(Coordinate.class).iterator()).hasSize(1);
-        assertThat(collection.find("{lat: {$lt: 2}}").as(Coordinate.class).iterator()).hasSize(1);
-        assertThat(collection.find("{lat: {$gte: 2}}").as(Coordinate.class).iterator()).hasSize(2);
-        assertThat(collection.find("{lat: {$lte: 2}}").as(Coordinate.class).iterator()).hasSize(2);
-        assertThat(collection.find("{lat: {$gt: 1, $lt: 3}}").as(Coordinate.class).iterator()).hasSize(1);
+        assertThat(toList(collection.find("{lat: {$gt: 2}}").as(Coordinate.class).iterator())).hasSize(1);
+        assertThat(toList(collection.find("{lat: {$lt: 2}}").as(Coordinate.class).iterator())).hasSize(1);
+        assertThat(toList(collection.find("{lat: {$gte: 2}}").as(Coordinate.class).iterator())).hasSize(2);
+        assertThat(toList(collection.find("{lat: {$lte: 2}}").as(Coordinate.class).iterator())).hasSize(2);
+        assertThat(toList(collection.find("{lat: {$gt: 1, $lt: 3}}").as(Coordinate.class).iterator())).hasSize(1);
 
-        assertThat(collection.find("{lat: {$ne: 2}}").as(Coordinate.class).iterator()).hasSize(2);
-        assertThat(collection.find("{lat: {$in: [1,2,3]}}").as(Coordinate.class).iterator()).hasSize(3);
+        assertThat(toList(collection.find("{lat: {$ne: 2}}").as(Coordinate.class).iterator())).hasSize(2);
+        assertThat(toList(collection.find("{lat: {$in: [1,2,3]}}").as(Coordinate.class).iterator())).hasSize(3);
     }
 
     @Test
@@ -81,10 +81,10 @@ public class MongoCollectionTest extends JongoTestBase {
         collection.ensureIndex("{ 'coordinate' : '2d'},{ 'coordinate' : '2d'}");
 
         /* then */
-        assertThat(collection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class).iterator()).hasSize(1);
-        assertThat(collection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Friend.class).iterator()).hasSize(2);
-        assertThat(collection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Friend.class).iterator()).hasSize(1);
-        assertThat(collection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Friend.class).iterator()).hasSize(1);
+        assertThat(toList(collection.find("{'coordinate': {'$near': [0,0], $maxDistance: 5}}").as(Friend.class).iterator())).hasSize(1);
+        assertThat(toList(collection.find("{'coordinate': {'$near': [2,2], $maxDistance: 5}}").as(Friend.class).iterator())).hasSize(2);
+        assertThat(toList(collection.find("{'coordinate': {'$within': {'$box': [[0,0],[2,2]]}}}").as(Friend.class).iterator())).hasSize(1);
+        assertThat(toList(collection.find("{'coordinate': {'$within': {'$center': [[0,0],5]}}}").as(Friend.class).iterator())).hasSize(1);
     }
 
     @Test

@@ -18,20 +18,10 @@ package org.jongo.util;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
-import de.flapdoodle.embed.mongo.Command;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.*;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.config.RuntimeConfig;
-import de.flapdoodle.embed.process.config.io.ProcessOutput;
-import de.flapdoodle.embed.process.config.store.DownloadConfig;
-import de.flapdoodle.embed.process.io.NullProcessor;
-import de.flapdoodle.embed.process.io.StreamProcessor;
-import de.flapdoodle.embed.process.io.directories.Directory;
-import de.flapdoodle.embed.process.io.directories.FixedPath;
-import de.flapdoodle.embed.process.io.directories.UserHome;
-import de.flapdoodle.embed.process.runtime.Network;
-import de.flapdoodle.embed.process.store.ExtractedArtifactStore;
+import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
+import de.flapdoodle.reverse.TransitionWalker;
 
 import java.net.UnknownHostException;
 
@@ -62,57 +52,29 @@ public class MongoResource {
     private static class EmbeddedMongo {
 
         private static MongoClient instance = getInstance();
+        private static TransitionWalker.ReachedState<RunningMongodProcess> runningMongod;
 
         private static MongoClient getInstance() {
             try {
-                Command mongoD = Command.MongoD;
-                int port = RandomPortNumberGenerator.pickAvailableRandomEphemeralPortNumber();
-
-                DownloadConfig downloadConfig = Defaults.downloadConfigFor(mongoD)
-                        .artifactStorePath(getMongoPath())
-                        .build();
-
-                ExtractedArtifactStore artifactStore = Defaults.extractedArtifactStoreFor(mongoD)
-                        .withDownloadConfig(downloadConfig);
-
-                StreamProcessor output = new NullProcessor();
-                ProcessOutput processOutput = new ProcessOutput(output, output, output);
-
-                RuntimeConfig runtimeConfig = Defaults.runtimeConfigFor(mongoD)
-                        .processOutput(processOutput)
-                        .artifactStore(artifactStore)
-                        .build();
-
-                Net network = new Net(port, Network.localhostIsIPv6());
+                applyArtifactStoreOverride();
                 Version version = getVersion();
-
-
-                ImmutableMongoCmdOptions.Builder mongoCmdOptionsBuilder = MongoCmdOptions.builder();
-                if (version.compareTo(Version.V3_2_0) > -1) {
-                    mongoCmdOptionsBuilder.storageEngine("ephemeralForTest");
-                }
-
-                MongodConfig mongodConfig = MongodConfig.builder()
-                        .version(version)
-                        .cmdOptions(mongoCmdOptionsBuilder.build())
-                        .net(network)
-                        .build();
-
-                MongodStarter.getInstance(runtimeConfig).prepare(mongodConfig).start();
-
-                return createClient(port);
+                runningMongod = Mongod.instance().start(version);
+                de.flapdoodle.embed.mongo.commands.ServerAddress address = runningMongod.current().getServerAddress();
+                MongoClient client = createClient(address.getHost(), address.getPort());
+                addShutdownHook(client);
+                return client;
 
             } catch (Exception e) {
                 throw new RuntimeException("Failed to initialize Embedded Mongo instance: " + e, e);
             }
         }
 
-        private static Directory getMongoPath() {
+        private static void applyArtifactStoreOverride() {
             String path = System.getProperty("jongo.test.embedmongo.dir");
-            if (path == null) {
-                return new UserHome(".embedmongo");
+            if (path == null || path.trim().isEmpty()) {
+                return;
             }
-            return new FixedPath(path);
+            System.setProperty("de.flapdoodle.embed.mongo.artifacts", path);
         }
 
         private static Version getVersion() {
@@ -130,16 +92,31 @@ public class MongoResource {
 
         private static MongoClient getInstance() {
             try {
-                return createClient(27017);
+                return createClient("127.0.0.1", 27017);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to initialize local Mongo instance: " + e, e);
             }
         }
     }
 
-    private static MongoClient createClient(int port) throws UnknownHostException {
+    private static void addShutdownHook(MongoClient client) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                client.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (EmbeddedMongo.runningMongod != null) {
+                    EmbeddedMongo.runningMongod.close();
+                }
+            } catch (Exception ignored) {
+            }
+        }));
+    }
+
+    private static MongoClient createClient(String host, int port) throws UnknownHostException {
         return new MongoClient(
-                new ServerAddress("127.0.0.1", port),
+                new ServerAddress(host, port),
                 MongoClientOptions.builder()
                         .writeConcern(WriteConcern.MAJORITY)
                         .build());

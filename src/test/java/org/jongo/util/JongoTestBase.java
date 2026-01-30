@@ -24,6 +24,9 @@ import org.jongo.MongoCollection;
 import org.junit.BeforeClass;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
 import static org.junit.Assume.assumeTrue;
@@ -81,5 +84,11 @@ public abstract class JongoTestBase {
         String version = (String) buildInfo.get("version");
         int currentVersion = Integer.valueOf(version.replaceAll("\\.", ""));
         assumeTrue(currentVersion >= expectedVersionAsInt);
+    }
+
+    protected static <T> List<T> toList(Iterator<T> iterator) {
+        List<T> items = new ArrayList<>();
+        iterator.forEachRemaining(items::add);
+        return items;
     }
 }
