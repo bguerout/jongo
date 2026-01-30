@@ -16,6 +16,7 @@
 
 package org.jongo.marshall.jackson;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.introspect.Annotated;
@@ -36,8 +37,11 @@ public class JongoAnnotationIntrospector extends NopAnnotationIntrospector {
     }
 
     @Override
-    public Include findSerializationInclusion(Annotated a, Include defValue) {
-        return idSelector.isObjectId(a) ? Include.NON_NULL : defValue;
+    public JsonInclude.Value findPropertyInclusion(Annotated a) {
+        if (idSelector.isObjectId(a)) {
+            return JsonInclude.Value.construct(Include.NON_NULL, Include.USE_DEFAULTS);
+        }
+        return null;
     }
 
     @Override

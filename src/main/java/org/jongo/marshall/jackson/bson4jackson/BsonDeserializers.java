@@ -76,13 +76,13 @@ class BsonDeserializers extends SimpleDeserializers {
                 if (value == 1) {
                     return new MinKey();
                 }
-                throw ctxt.mappingException(MinKey.class);
+                return ctxt.reportInputMismatch(MinKey.class, "Invalid MinKey representation");
             } else if (tree instanceof POJONode) {
                 return (MinKey) ((POJONode) tree).getPojo();
             } else if (tree instanceof TextNode) {
                 return new MinKey();
             } else {
-                throw ctxt.mappingException(MinKey.class);
+                return ctxt.reportInputMismatch(MinKey.class, "Invalid MinKey representation");
             }
         }
     }
@@ -96,13 +96,13 @@ class BsonDeserializers extends SimpleDeserializers {
                 if (value == 1) {
                     return new MaxKey();
                 }
-                throw ctxt.mappingException(MaxKey.class);
+                return ctxt.reportInputMismatch(MaxKey.class, "Invalid MaxKey representation");
             } else if (tree instanceof POJONode) {
                 return (MaxKey) ((POJONode) tree).getPojo();
             } else if (tree instanceof TextNode) {
                 return new MaxKey();
             } else {
-                throw ctxt.mappingException(MaxKey.class);
+                return ctxt.reportInputMismatch(MaxKey.class, "Invalid MaxKey representation");
             }
         }
     }
@@ -136,7 +136,7 @@ class BsonDeserializers extends SimpleDeserializers {
             } else if (tree instanceof BinaryNode) {
                 return new Binary(((BinaryNode) tree).binaryValue());
             } else {
-                throw ctxt.mappingException(ObjectId.class);
+                return ctxt.reportInputMismatch(Binary.class, "Invalid Binary representation");
             }
         }
     }
@@ -153,7 +153,7 @@ class BsonDeserializers extends SimpleDeserializers {
             } else if (tree instanceof POJONode) {
                 return (ObjectId) ((POJONode) tree).getPojo();
             } else {
-                throw ctxt.mappingException(ObjectId.class);
+                return ctxt.reportInputMismatch(ObjectId.class, "Invalid ObjectId representation");
             }
         }
 
@@ -171,7 +171,7 @@ class BsonDeserializers extends SimpleDeserializers {
             } else if (tree instanceof POJONode) {
                 return (BSONTimestamp) ((POJONode) tree).getPojo();
             } else {
-                throw ctxt.mappingException(BSONTimestamp.class);
+                return ctxt.reportInputMismatch(BSONTimestamp.class, "Invalid BSONTimestamp representation");
             }
         }
     }
@@ -186,7 +186,7 @@ class BsonDeserializers extends SimpleDeserializers {
             } else if (tree instanceof POJONode) {
                 return (Decimal128) ((POJONode) tree).getPojo();
             } else {
-                throw ctxt.mappingException(Decimal128.class);
+                return ctxt.reportInputMismatch(Decimal128.class, "Invalid Decimal128 representation");
             }
         }
     }

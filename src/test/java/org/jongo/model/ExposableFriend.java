@@ -16,7 +16,8 @@
 
 package org.jongo.model;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import java.util.Objects;
 import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.marshall.jackson.oid.MongoId;
 import org.jongo.marshall.jackson.oid.MongoObjectId;
@@ -60,12 +61,12 @@ public class ExposableFriend {
         if (o == null || !(o instanceof ExposableFriend)) return false;
         ExposableFriend ef = (ExposableFriend) o;
 
-        return Objects.equal(id, ef.id) &&
-                Objects.equal(name, ef.name);
+        return Objects.equals(id, ef.id) &&
+                Objects.equals(name, ef.name);
     }
 
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("name", name)
                 .toString();
