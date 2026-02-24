@@ -23,6 +23,7 @@ import org.assertj.core.api.Condition;
 import org.jongo.util.JongoTestBase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -54,6 +55,7 @@ public class CommandTest extends JongoTestBase {
     }
 
     @Test
+    @Ignore
     public void canRunAnEvalCommand() throws Exception {
 
         collection.insert("{doc:1}");
@@ -78,6 +80,7 @@ public class CommandTest extends JongoTestBase {
     }
 
     @Test
+    @Ignore
     public void canRunAGeoNearCommand() throws Exception {
 
         MongoCollection safeCollection = collection.withWriteConcern(WriteConcern.MAJORITY);

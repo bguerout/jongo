@@ -1,9 +1,10 @@
-.idea/
-target/
 *.iml
 *.ipr
 *.iws
-.project
 .classpath
+.compatibility/
+.idea/
+.project
 .settings/
 node_modules/
+target/
