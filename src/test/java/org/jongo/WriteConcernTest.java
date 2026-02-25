@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.jongo.marshall.jackson.JacksonMapper.Builder.jacksonMapper;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class WriteConcernTest {
